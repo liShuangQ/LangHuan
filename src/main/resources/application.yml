@@ -1,0 +1,16 @@
+server:
+  port: 8077
+
+spring:
+  application:
+    name: aiAgent
+  # 配置AI相关服务的参数
+  ai:
+    # Ollama服务的配置
+    ollama:
+      # Ollama服务的基地址
+      base-url: http://localhost:11434
+      chat:
+        options:
+          model: qwen2:latest
+          format: json
