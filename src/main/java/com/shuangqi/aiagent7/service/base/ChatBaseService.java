@@ -1,28 +1,37 @@
-package com.shuangqi.aiagent7.service;
+package com.shuangqi.aiagent7.service.base;
 
-import com.shuangqi.aiagent7.model.ChatRequest;
-import com.shuangqi.aiagent7.model.ChatResponse;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.shuangqi.aiagent7.common.BusinessException;
+import com.shuangqi.aiagent7.common.Constant;
+import com.shuangqi.aiagent7.model.request.ChatRequest;
+import com.shuangqi.aiagent7.model.response.ChatResponse;
+import com.shuangqi.aiagent7.model.response.ElephantExperimentRes;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
-
+@Slf4j
 @Service
-public class ChatService {
+public class ChatBaseService {
 
     private final ChatClient chatClient;
 
-    public ChatService(ChatClient.Builder chatClientBuilder) {
+    public ChatBaseService(ChatClient.Builder chatClientBuilder) {
         this.chatClient = chatClientBuilder.build();
     }
 
-    private static final String DEFAULT_SYSTEM_PROMPT =
-            "You are a helpful AI assistant. Provide clear and concise responses.";
-
+    /**
+     * 聊天
+     *
+     * @param request
+     * @return
+     */
     public ChatResponse chat(ChatRequest request) {
+        log.info("chat-Prompt: {}", request.getSystemPrompt());
+        log.info("chat-Message: {}", request.getMessage());
         try {
             String systemPrompt = request.getSystemPrompt() != null ?
-                    request.getSystemPrompt() : DEFAULT_SYSTEM_PROMPT;
+                    request.getSystemPrompt() : Constant.DEFAULT_SYSTEM_PROMPT;
 
             String response = chatClient.prompt(systemPrompt).user(request.getMessage()).call().content();
 
