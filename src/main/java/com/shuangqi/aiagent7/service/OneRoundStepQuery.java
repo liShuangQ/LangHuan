@@ -16,11 +16,9 @@ import java.util.List;
 @Service
 public class OneRoundStepQuery {
     private final ChatBaseService chatBaseService;
-    private final ObjectMapper objectMapper;
 
     public OneRoundStepQuery(ChatBaseService chatBaseService) {
         this.chatBaseService = chatBaseService;
-        this.objectMapper = new ObjectMapper();
     }
 
     public List<String> chat(String message) throws JsonProcessingException {
@@ -28,7 +26,7 @@ public class OneRoundStepQuery {
         ChatResponse chatResponse = chatBaseService.chat(new ChatRequest(message, prompt));
         ElephantExperimentRes elephantExperimentRes = null;
         if (chatResponse.getStatus().equals("success")) {
-            elephantExperimentRes = objectMapper.readValue(chatResponse.getResponse(), ElephantExperimentRes.class);
+            elephantExperimentRes = new ObjectMapper().readValue(chatResponse.getResponse(), ElephantExperimentRes.class);
         }
         String stepPrompt = "这个问题需要注意什么？请给我纯文字的格式";
         List<String> res = new ArrayList<>();

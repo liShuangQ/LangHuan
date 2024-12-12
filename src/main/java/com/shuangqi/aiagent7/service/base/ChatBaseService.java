@@ -27,14 +27,13 @@ public class ChatBaseService {
      * @return
      */
     public ChatResponse chat(ChatRequest request) {
-        log.info("chat-Prompt: {}", request.getSystemPrompt());
+        String systemPrompt = !request.getSystemPrompt().isEmpty() ?
+                request.getSystemPrompt() : Constant.DEFAULT_SYSTEM_PROMPT;
+        log.info("chat-Prompt: {}", systemPrompt);
         log.info("chat-Message: {}", request.getMessage());
         try {
-            String systemPrompt = request.getSystemPrompt() != null ?
-                    request.getSystemPrompt() : Constant.DEFAULT_SYSTEM_PROMPT;
-
             String response = chatClient.prompt(systemPrompt).user(request.getMessage()).call().content();
-
+            log.info("chat-response: {}", response);
             return ChatResponse.builder()
                     .response(response)
                     .status("success")
