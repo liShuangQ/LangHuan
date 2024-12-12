@@ -1,8 +1,8 @@
 package com.shuangqi.aiagent7.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.shuangqi.aiagent7.common.Result;
 import com.shuangqi.aiagent7.model.request.ChatRequest;
-import com.shuangqi.aiagent7.model.response.ChatResponse;
 import com.shuangqi.aiagent7.service.OneRoundStepQuery;
 import com.shuangqi.aiagent7.service.base.ChatBaseService;
 import org.springframework.web.bind.annotation.*;
@@ -21,14 +21,14 @@ public class ChatController {
     }
 
     @PostMapping("/chat")
-    public ChatResponse chat(@RequestBody ChatRequest request) {
-        return chatBaseService.chat(request);
+    public Result chat(@RequestBody ChatRequest request) {
+        return Result.success(chatBaseService.chat(request));
     }
 
     @PostMapping("/step")
-    public List<String> step(
+    public Result step(
             @RequestParam(value = "message", defaultValue = "", required = true) String message
     ) throws JsonProcessingException {
-        return oneRoundStepQuery.chat(message);
+        return Result.success(oneRoundStepQuery.chat(message));
     }
 }

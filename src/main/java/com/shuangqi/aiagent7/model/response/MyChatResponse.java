@@ -6,7 +6,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class ChatResponse {
+public class MyChatResponse {
     private String response;
     private String status;
 }

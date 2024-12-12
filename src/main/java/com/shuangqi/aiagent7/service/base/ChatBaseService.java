@@ -1,11 +1,8 @@
 package com.shuangqi.aiagent7.service.base;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.shuangqi.aiagent7.common.BusinessException;
 import com.shuangqi.aiagent7.common.Constant;
 import com.shuangqi.aiagent7.model.request.ChatRequest;
-import com.shuangqi.aiagent7.model.response.ChatResponse;
-import com.shuangqi.aiagent7.model.response.ElephantExperimentRes;
+import com.shuangqi.aiagent7.model.response.MyChatResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.stereotype.Service;
@@ -26,20 +23,23 @@ public class ChatBaseService {
      * @param request
      * @return
      */
-    public ChatResponse chat(ChatRequest request) {
-        String systemPrompt = !request.getSystemPrompt().isEmpty() ?
-                request.getSystemPrompt() : Constant.DEFAULT_SYSTEM_PROMPT;
-        log.info("chat-Prompt: {}", systemPrompt);
+    public MyChatResponse chat(ChatRequest request) {
+        log.info("chat-Prompt: {}", request.getSystemPrompt());
         log.info("chat-Message: {}", request.getMessage());
         try {
-            String response = chatClient.prompt(systemPrompt).user(request.getMessage()).call().content();
+            String response = "";
+            if (request.getSystemPrompt() == null || request.getSystemPrompt().isEmpty()) {
+                response = chatClient.prompt().user(request.getMessage()).call().content();
+            } else {
+                response = chatClient.prompt(request.getSystemPrompt()).user(request.getMessage()).call().content();
+            }
             log.info("chat-response: {}", response);
-            return ChatResponse.builder()
+            return MyChatResponse.builder()
                     .response(response)
                     .status("success")
                     .build();
         } catch (Exception e) {
-            return ChatResponse.builder()
+            return MyChatResponse.builder()
                     .response("Error processing request: " + e.getMessage())
                     .status("error")
                     .build();
