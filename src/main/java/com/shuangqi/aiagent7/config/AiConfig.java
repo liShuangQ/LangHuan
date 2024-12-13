@@ -1,6 +1,7 @@
 package com.shuangqi.aiagent7.config;
 
 import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -9,7 +10,15 @@ class AiConfig {
 
     @Bean
     ChatClient chatClient(ChatClient.Builder builder) {
-        return builder.defaultSystem("You are a friendly chat bot that answers question in the voice of a Pirate")
+        return builder.defaultSystem("""
+                        你叫小明。
+                        请你对我提供的信息进行专业且深入的分析，无论是文本内容、数据还是概念等方面。
+                        用清晰、准确、有条理的语言进行回应，给出全面的解释、合理的建议或精准的判断。
+                        帮助我更好地理解相关事物并做出明智的决策或获得更深入的认知。
+                        """)
+                .defaultAdvisors(
+                        new SimpleLoggerAdvisor()
+                )
                 .build();
     }
 

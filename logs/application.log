@@ -13,14 +13,14 @@
 2024-12-13 16:36:09.150 [SpringApplicationShutdownHook] INFO  o.s.boot.web.embedded.tomcat.GracefulShutdown - Commencing graceful shutdown. Waiting for active requests to complete
 2024-12-13 16:36:09.171 [tomcat-shutdown] INFO  o.s.boot.web.embedded.tomcat.GracefulShutdown - Graceful shutdown complete
 2024-12-13 17:04:17.166 [main] WARN  o.s.b.w.s.c.AnnotationConfigServletWebServerApplicationContext - Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'requestMappingHandlerMapping' defined in class path resource [org/springframework/boot/autoconfigure/web/servlet/WebMvcAutoConfiguration$EnableWebMvcConfiguration.class]: Ambiguous mapping. Cannot map 'chatMemoryController' method 
-com.shuangqi.aiagent7.controller.ChatMemoryController#chatStream(String, String)
+com.shuangqi.aiagent7.controller.ChatMemoryControllerD#chatStream(String, String)
 to {GET [/chatMemory/chat]}: There is already 'chatMemoryController' bean method
-com.shuangqi.aiagent7.controller.ChatMemoryController#chat(String, String) mapped.
+com.shuangqi.aiagent7.controller.ChatMemoryControllerD#chat(String, String) mapped.
 2024-12-13 17:04:17.192 [main] ERROR org.springframework.boot.SpringApplication - Application run failed
 org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'requestMappingHandlerMapping' defined in class path resource [org/springframework/boot/autoconfigure/web/servlet/WebMvcAutoConfiguration$EnableWebMvcConfiguration.class]: Ambiguous mapping. Cannot map 'chatMemoryController' method 
-com.shuangqi.aiagent7.controller.ChatMemoryController#chatStream(String, String)
+com.shuangqi.aiagent7.controller.ChatMemoryControllerD#chatStream(String, String)
 to {GET [/chatMemory/chat]}: There is already 'chatMemoryController' bean method
-com.shuangqi.aiagent7.controller.ChatMemoryController#chat(String, String) mapped.
+com.shuangqi.aiagent7.controller.ChatMemoryControllerD#chat(String, String) mapped.
 	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1808)
 	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:601)
 	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:523)
@@ -41,9 +41,9 @@ com.shuangqi.aiagent7.controller.ChatMemoryController#chat(String, String) mappe
 	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1350)
 	at com.shuangqi.aiagent7.Aiagent7Application.main(Aiagent7Application.java:10)
 Caused by: java.lang.IllegalStateException: Ambiguous mapping. Cannot map 'chatMemoryController' method 
-com.shuangqi.aiagent7.controller.ChatMemoryController#chatStream(String, String)
+com.shuangqi.aiagent7.controller.ChatMemoryControllerD#chatStream(String, String)
 to {GET [/chatMemory/chat]}: There is already 'chatMemoryController' bean method
-com.shuangqi.aiagent7.controller.ChatMemoryController#chat(String, String) mapped.
+com.shuangqi.aiagent7.controller.ChatMemoryControllerD#chat(String, String) mapped.
 	at org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.validateMethodMapping(AbstractHandlerMethodMapping.java:675)
 	at org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:637)
 	at org.springframework.web.servlet.handler.AbstractHandlerMethodMapping.registerHandlerMethod(AbstractHandlerMethodMapping.java:331)
@@ -60,14 +60,14 @@ com.shuangqi.aiagent7.controller.ChatMemoryController#chat(String, String) mappe
 	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1804)
 	... 18 common frames omitted
 2024-12-13 17:04:34.803 [main] WARN  o.s.b.w.s.c.AnnotationConfigServletWebServerApplicationContext - Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'requestMappingHandlerMapping' defined in class path resource [org/springframework/boot/autoconfigure/web/servlet/WebMvcAutoConfiguration$EnableWebMvcConfiguration.class]: Ambiguous mapping. Cannot map 'chatMemoryController' method 
-com.shuangqi.aiagent7.controller.ChatMemoryController#chatStream(String, String)
+com.shuangqi.aiagent7.controller.ChatMemoryControllerD#chatStream(String, String)
 to {GET [/chatMemory/chat]}: There is already 'chatMemoryController' bean method
-com.shuangqi.aiagent7.controller.ChatMemoryController#chat(String, String) mapped.
+com.shuangqi.aiagent7.controller.ChatMemoryControllerD#chat(String, String) mapped.
 2024-12-13 17:04:34.824 [main] ERROR org.springframework.boot.SpringApplication - Application run failed
 org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'requestMappingHandlerMapping' defined in class path resource [org/springframework/boot/autoconfigure/web/servlet/WebMvcAutoConfiguration$EnableWebMvcConfiguration.class]: Ambiguous mapping. Cannot map 'chatMemoryController' method 
-com.shuangqi.aiagent7.controller.ChatMemoryController#chatStream(String, String)
+com.shuangqi.aiagent7.controller.ChatMemoryControllerD#chatStream(String, String)
 to {GET [/chatMemory/chat]}: There is already 'chatMemoryController' bean method
-com.shuangqi.aiagent7.controller.ChatMemoryController#chat(String, String) mapped.
+com.shuangqi.aiagent7.controller.ChatMemoryControllerD#chat(String, String) mapped.
 	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1808)
 	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:601)
 	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:523)
@@ -88,9 +88,9 @@ com.shuangqi.aiagent7.controller.ChatMemoryController#chat(String, String) mappe
 	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1350)
 	at com.shuangqi.aiagent7.Aiagent7Application.main(Aiagent7Application.java:10)
 Caused by: java.lang.IllegalStateException: Ambiguous mapping. Cannot map 'chatMemoryController' method 
-com.shuangqi.aiagent7.controller.ChatMemoryController#chatStream(String, String)
+com.shuangqi.aiagent7.controller.ChatMemoryControllerD#chatStream(String, String)
 to {GET [/chatMemory/chat]}: There is already 'chatMemoryController' bean method
-com.shuangqi.aiagent7.controller.ChatMemoryController#chat(String, String) mapped.
+com.shuangqi.aiagent7.controller.ChatMemoryControllerD#chat(String, String) mapped.
 	at org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.validateMethodMapping(AbstractHandlerMethodMapping.java:675)
 	at org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:637)
 	at org.springframework.web.servlet.handler.AbstractHandlerMethodMapping.registerHandlerMethod(AbstractHandlerMethodMapping.java:331)
@@ -107,14 +107,14 @@ com.shuangqi.aiagent7.controller.ChatMemoryController#chat(String, String) mappe
 	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1804)
 	... 18 common frames omitted
 2024-12-13 17:07:15.027 [main] WARN  o.s.b.w.s.c.AnnotationConfigServletWebServerApplicationContext - Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'requestMappingHandlerMapping' defined in class path resource [org/springframework/boot/autoconfigure/web/servlet/WebMvcAutoConfiguration$EnableWebMvcConfiguration.class]: Ambiguous mapping. Cannot map 'chatMemoryController' method 
-com.shuangqi.aiagent7.controller.ChatMemoryController#chatStream(String, String)
+com.shuangqi.aiagent7.controller.ChatMemoryControllerD#chatStream(String, String)
 to {GET [/chatMemory/chat]}: There is already 'chatMemoryController' bean method
-com.shuangqi.aiagent7.controller.ChatMemoryController#chat(String, String) mapped.
+com.shuangqi.aiagent7.controller.ChatMemoryControllerD#chat(String, String) mapped.
 2024-12-13 17:07:15.050 [main] ERROR org.springframework.boot.SpringApplication - Application run failed
 org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'requestMappingHandlerMapping' defined in class path resource [org/springframework/boot/autoconfigure/web/servlet/WebMvcAutoConfiguration$EnableWebMvcConfiguration.class]: Ambiguous mapping. Cannot map 'chatMemoryController' method 
-com.shuangqi.aiagent7.controller.ChatMemoryController#chatStream(String, String)
+com.shuangqi.aiagent7.controller.ChatMemoryControllerD#chatStream(String, String)
 to {GET [/chatMemory/chat]}: There is already 'chatMemoryController' bean method
-com.shuangqi.aiagent7.controller.ChatMemoryController#chat(String, String) mapped.
+com.shuangqi.aiagent7.controller.ChatMemoryControllerD#chat(String, String) mapped.
 	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1808)
 	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:601)
 	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:523)
@@ -135,9 +135,9 @@ com.shuangqi.aiagent7.controller.ChatMemoryController#chat(String, String) mappe
 	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1350)
 	at com.shuangqi.aiagent7.Aiagent7Application.main(Aiagent7Application.java:10)
 Caused by: java.lang.IllegalStateException: Ambiguous mapping. Cannot map 'chatMemoryController' method 
-com.shuangqi.aiagent7.controller.ChatMemoryController#chatStream(String, String)
+com.shuangqi.aiagent7.controller.ChatMemoryControllerD#chatStream(String, String)
 to {GET [/chatMemory/chat]}: There is already 'chatMemoryController' bean method
-com.shuangqi.aiagent7.controller.ChatMemoryController#chat(String, String) mapped.
+com.shuangqi.aiagent7.controller.ChatMemoryControllerD#chat(String, String) mapped.
 	at org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.validateMethodMapping(AbstractHandlerMethodMapping.java:675)
 	at org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:637)
 	at org.springframework.web.servlet.handler.AbstractHandlerMethodMapping.registerHandlerMethod(AbstractHandlerMethodMapping.java:331)
@@ -154,14 +154,14 @@ com.shuangqi.aiagent7.controller.ChatMemoryController#chat(String, String) mappe
 	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1804)
 	... 18 common frames omitted
 2024-12-13 17:07:37.640 [main] WARN  o.s.b.w.s.c.AnnotationConfigServletWebServerApplicationContext - Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'requestMappingHandlerMapping' defined in class path resource [org/springframework/boot/autoconfigure/web/servlet/WebMvcAutoConfiguration$EnableWebMvcConfiguration.class]: Ambiguous mapping. Cannot map 'chatMemoryController' method 
-com.shuangqi.aiagent7.controller.ChatMemoryController#chatStream(String, String)
+com.shuangqi.aiagent7.controller.ChatMemoryControllerD#chatStream(String, String)
 to {GET [/chatMemory/chat]}: There is already 'chatMemoryController' bean method
-com.shuangqi.aiagent7.controller.ChatMemoryController#chat(String, String) mapped.
+com.shuangqi.aiagent7.controller.ChatMemoryControllerD#chat(String, String) mapped.
 2024-12-13 17:07:37.665 [main] ERROR org.springframework.boot.SpringApplication - Application run failed
 org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'requestMappingHandlerMapping' defined in class path resource [org/springframework/boot/autoconfigure/web/servlet/WebMvcAutoConfiguration$EnableWebMvcConfiguration.class]: Ambiguous mapping. Cannot map 'chatMemoryController' method 
-com.shuangqi.aiagent7.controller.ChatMemoryController#chatStream(String, String)
+com.shuangqi.aiagent7.controller.ChatMemoryControllerD#chatStream(String, String)
 to {GET [/chatMemory/chat]}: There is already 'chatMemoryController' bean method
-com.shuangqi.aiagent7.controller.ChatMemoryController#chat(String, String) mapped.
+com.shuangqi.aiagent7.controller.ChatMemoryControllerD#chat(String, String) mapped.
 	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1808)
 	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:601)
 	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:523)
@@ -182,9 +182,9 @@ com.shuangqi.aiagent7.controller.ChatMemoryController#chat(String, String) mappe
 	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1350)
 	at com.shuangqi.aiagent7.Aiagent7Application.main(Aiagent7Application.java:10)
 Caused by: java.lang.IllegalStateException: Ambiguous mapping. Cannot map 'chatMemoryController' method 
-com.shuangqi.aiagent7.controller.ChatMemoryController#chatStream(String, String)
+com.shuangqi.aiagent7.controller.ChatMemoryControllerD#chatStream(String, String)
 to {GET [/chatMemory/chat]}: There is already 'chatMemoryController' bean method
-com.shuangqi.aiagent7.controller.ChatMemoryController#chat(String, String) mapped.
+com.shuangqi.aiagent7.controller.ChatMemoryControllerD#chat(String, String) mapped.
 	at org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.validateMethodMapping(AbstractHandlerMethodMapping.java:675)
 	at org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:637)
 	at org.springframework.web.servlet.handler.AbstractHandlerMethodMapping.registerHandlerMethod(AbstractHandlerMethodMapping.java:331)
@@ -203,3 +203,83 @@ com.shuangqi.aiagent7.controller.ChatMemoryController#chat(String, String) mappe
 2024-12-13 17:09:12.612 [boundedElastic-1] DEBUG o.s.ai.chat.client.advisor.SimpleLoggerAdvisor - request: AdvisedRequest[chatModel=org.springframework.ai.ollama.OllamaChatModel@6d1c8669, userText=你是谁, systemText=你叫小明，你是一名非常友好的朋友，你博学多识，你会回答我的各种问题。
 , chatOptions=org.springframework.ai.ollama.api.OllamaOptions@35e6c540, media=[], functionNames=[], functionCallbacks=[], messages=[], userParams={}, systemParams={}, advisors=[org.springframework.ai.chat.client.DefaultChatClient$DefaultChatClientRequestSpec$1@43ddf659, org.springframework.ai.chat.client.DefaultChatClient$DefaultChatClientRequestSpec$2@229d0c, org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor@5c602dc, SimpleLoggerAdvisor, org.springframework.ai.chat.client.DefaultChatClient$DefaultChatClientRequestSpec$1@ce0f3c3, org.springframework.ai.chat.client.DefaultChatClient$DefaultChatClientRequestSpec$2@20a3b338], advisorParams={chat_memory_response_size=100, chat_memory_conversation_id=2}, adviseContext={chat_memory_conversation_id=2, chat_memory_response_size=100}, toolContext={}]
 2024-12-13 17:09:20.083 [boundedElastic-2] DEBUG o.s.ai.chat.client.advisor.SimpleLoggerAdvisor - response: {"result":{"output":{"messageType":"ASSISTANT","metadata":{"messageType":"ASSISTANT"},"toolCalls":[],"content":"{ \"我是小明\"  :\"很高兴认识你！如果你有任何问题或需要帮助，都可以随时向我提问哦。无论是学习上的难题，还是生活中的困惑，甚至是兴趣爱好的交流，我都将尽我所能来解答和陪伴你。\" }"},"metadata":{"finishReason":"stop","contentFilterMetadata":null}},"results":[{"output":{"messageType":"ASSISTANT","metadata":{"messageType":"ASSISTANT"},"toolCalls":[],"content":"{ \"我是小明\"  :\"很高兴认识你！如果你有任何问题或需要帮助，都可以随时向我提问哦。无论是学习上的难题，还是生活中的困惑，甚至是兴趣爱好的交流，我都将尽我所能来解答和陪伴你。\" }"},"metadata":{"finishReason":"stop","contentFilterMetadata":null}}],"metadata":{"id":"","model":"qwen2.5:3b","rateLimit":{"requestsLimit":0,"requestsRemaining":0,"requestsReset":0.0,"tokensLimit":0,"tokensRemaining":0,"tokensReset":0.0},"usage":{"promptTokens":39,"generationTokens":57,"totalTokens":96},"promptMetadata":[],"empty":true}}
+2024-12-13 17:59:17.381 [http-nio-8078-exec-1] DEBUG o.s.ai.chat.client.advisor.SimpleLoggerAdvisor - request: AdvisedRequest[chatModel=org.springframework.ai.ollama.OllamaChatModel@46fffa60, userText=你是谁, systemText=你叫小明。
+请你对我提供的信息进行专业且深入的分析，无论是文本内容、数据还是概念等方面。
+用清晰、准确、有条理的语言进行回应，给出全面的解释、合理的建议或精准的判断。
+帮助我更好地理解相关事物并做出明智的决策或获得更深入的认知。
+, chatOptions=org.springframework.ai.ollama.api.OllamaOptions@35e6c540, media=[], functionNames=[], functionCallbacks=[], messages=[], userParams={}, systemParams={}, advisors=[org.springframework.ai.chat.client.DefaultChatClient$DefaultChatClientRequestSpec$1@5f5bd21c, org.springframework.ai.chat.client.DefaultChatClient$DefaultChatClientRequestSpec$2@402dbe17, org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor@38bb7897, SimpleLoggerAdvisor, org.springframework.ai.chat.client.DefaultChatClient$DefaultChatClientRequestSpec$1@1aea91a, org.springframework.ai.chat.client.DefaultChatClient$DefaultChatClientRequestSpec$2@e45001], advisorParams={chat_memory_response_size=10, chat_memory_conversation_id=4}, adviseContext={chat_memory_conversation_id=4, chat_memory_response_size=10}, toolContext={}]
+2024-12-13 17:59:25.279 [http-nio-8078-exec-1] DEBUG o.s.ai.chat.client.advisor.SimpleLoggerAdvisor - response: {"result":{"output":{"messageType":"ASSISTANT","metadata":{"messageType":"ASSISTANT"},"toolCalls":[],"content":"{ \"name\": \"小明\", \"age\": 16, \"hobbies\": [\"编程\", \"阅读\"] } \n\n  \t\t\t\t    \t\t\t\t\n  \t\t\t\t    \t\t\t\t\n  \t\t\t\t    \t\t\t\t\n  \t\t\t\t    \t\t\t\t\n  \t\t\t\t    \t\t\t\t\n  \t\t\t\t    \t\t\t\t\n"},"metadata":{"contentFilterMetadata":null,"finishReason":null}},"results":[{"output":{"messageType":"ASSISTANT","metadata":{"messageType":"ASSISTANT"},"toolCalls":[],"content":"{ \"name\": \"小明\", \"age\": 16, \"hobbies\": [\"编程\", \"阅读\"] } \n\n  \t\t\t\t    \t\t\t\t\n  \t\t\t\t    \t\t\t\t\n  \t\t\t\t    \t\t\t\t\n  \t\t\t\t    \t\t\t\t\n  \t\t\t\t    \t\t\t\t\n  \t\t\t\t    \t\t\t\t\n"},"metadata":{"contentFilterMetadata":null,"finishReason":null}}],"metadata":{"id":"","model":"qwen2.5:3b","rateLimit":{"requestsLimit":0,"requestsRemaining":0,"requestsReset":0.0,"tokensLimit":0,"tokensRemaining":0,"tokensReset":0.0},"usage":{"promptTokens":0,"generationTokens":0,"totalTokens":0},"promptMetadata":[],"empty":false}}
+2024-12-13 17:59:49.401 [boundedElastic-1] DEBUG o.s.ai.chat.client.advisor.SimpleLoggerAdvisor - request: AdvisedRequest[chatModel=org.springframework.ai.ollama.OllamaChatModel@46fffa60, userText=你是谁, systemText=你叫小明。
+请你对我提供的信息进行专业且深入的分析，无论是文本内容、数据还是概念等方面。
+用清晰、准确、有条理的语言进行回应，给出全面的解释、合理的建议或精准的判断。
+帮助我更好地理解相关事物并做出明智的决策或获得更深入的认知。
+, chatOptions=org.springframework.ai.ollama.api.OllamaOptions@35e6c540, media=[], functionNames=[], functionCallbacks=[], messages=[UserMessage{content='你是谁', properties={messageType=USER}, messageType=USER}, AssistantMessage [messageType=ASSISTANT, toolCalls=[], textContent={ "name": "小明", "age": 16, "hobbies": ["编程", "阅读"] } 
+
+  				    				
+  				    				
+  				    				
+  				    				
+  				    				
+  				    				
+, metadata={messageType=ASSISTANT}]], userParams={}, systemParams={}, advisors=[org.springframework.ai.chat.client.DefaultChatClient$DefaultChatClientRequestSpec$1@5f5bd21c, org.springframework.ai.chat.client.DefaultChatClient$DefaultChatClientRequestSpec$2@402dbe17, org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor@38bb7897, SimpleLoggerAdvisor, org.springframework.ai.chat.client.DefaultChatClient$DefaultChatClientRequestSpec$1@421af6b5, org.springframework.ai.chat.client.DefaultChatClient$DefaultChatClientRequestSpec$2@4fed07a7], advisorParams={chat_memory_response_size=10, chat_memory_conversation_id=4}, adviseContext={chat_memory_conversation_id=4, chat_memory_response_size=10}, toolContext={}]
+2024-12-13 17:59:53.274 [boundedElastic-2] DEBUG o.s.ai.chat.client.advisor.SimpleLoggerAdvisor - response: {"result":{"output":{"messageType":"ASSISTANT","metadata":{"messageType":"ASSISTANT"},"toolCalls":[],"content":"{ \"name\": \"小明\", \"age\": 16, \"hobbies\": [\"编程\", \"阅读\"] }\n\n  \t\t\t\t\t\t\t  \n  \t\t\t\t\t\t\t\t\t                                                                                                                                                                                                                                                        \n  \t\t\t\t\t\t\t\t\t                                                                                                                                                                                                                                                   \n\n  \t\t\t\t\t\t\t\t\t                                                                                                                                                                                                                                                 \n  \t\t\t\t\t\t\t\t"},"metadata":{"contentFilterMetadata":null,"finishReason":null}},"results":[{"output":{"messageType":"ASSISTANT","metadata":{"messageType":"ASSISTANT"},"toolCalls":[],"content":"{ \"name\": \"小明\", \"age\": 16, \"hobbies\": [\"编程\", \"阅读\"] }\n\n  \t\t\t\t\t\t\t  \n  \t\t\t\t\t\t\t\t\t                                                                                                                                                                                                                                                        \n  \t\t\t\t\t\t\t\t\t                                                                                                                                                                                                                                                   \n\n  \t\t\t\t\t\t\t\t\t                                                                                                                                                                                                                                                 \n  \t\t\t\t\t\t\t\t"},"metadata":{"contentFilterMetadata":null,"finishReason":null}}],"metadata":{"id":"","model":"qwen2.5:3b","rateLimit":{"requestsLimit":0,"requestsRemaining":0,"requestsReset":0.0,"tokensLimit":0,"tokensRemaining":0,"tokensReset":0.0},"usage":{"promptTokens":0,"generationTokens":0,"totalTokens":0},"promptMetadata":[],"empty":true}}
+2024-12-13 18:00:12.043 [boundedElastic-2] DEBUG o.s.ai.chat.client.advisor.SimpleLoggerAdvisor - request: AdvisedRequest[chatModel=org.springframework.ai.ollama.OllamaChatModel@46fffa60, userText=你是谁, systemText=你叫小明。
+请你对我提供的信息进行专业且深入的分析，无论是文本内容、数据还是概念等方面。
+用清晰、准确、有条理的语言进行回应，给出全面的解释、合理的建议或精准的判断。
+帮助我更好地理解相关事物并做出明智的决策或获得更深入的认知。
+, chatOptions=org.springframework.ai.ollama.api.OllamaOptions@35e6c540, media=[], functionNames=[], functionCallbacks=[], messages=[UserMessage{content='你是谁', properties={messageType=USER}, messageType=USER}, AssistantMessage [messageType=ASSISTANT, toolCalls=[], textContent={ "name": "小明", "age": 16, "hobbies": ["编程", "阅读"] } 
+
+  				    				
+  				    				
+  				    				
+  				    				
+  				    				
+  				    				
+, metadata={messageType=ASSISTANT}], UserMessage{content='你是谁', properties={messageType=USER}, messageType=USER}, AssistantMessage [messageType=ASSISTANT, toolCalls=[], textContent={ "name": "小明", "age": 16, "hobbies": ["编程", "阅读"] }
+
+  							  
+  									                                                                                                                                                                                                                                                        
+  									                                                                                                                                                                                                                                                   
+
+  									                                                                                                                                                                                                                                                 
+  								, metadata={messageType=ASSISTANT}]], userParams={}, systemParams={}, advisors=[org.springframework.ai.chat.client.DefaultChatClient$DefaultChatClientRequestSpec$1@5f5bd21c, org.springframework.ai.chat.client.DefaultChatClient$DefaultChatClientRequestSpec$2@402dbe17, org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor@38bb7897, SimpleLoggerAdvisor, org.springframework.ai.chat.client.DefaultChatClient$DefaultChatClientRequestSpec$1@15820fa3, org.springframework.ai.chat.client.DefaultChatClient$DefaultChatClientRequestSpec$2@773b6f31], advisorParams={chat_memory_response_size=10, chat_memory_conversation_id=4}, adviseContext={chat_memory_conversation_id=4, chat_memory_response_size=10}, toolContext={}]
+2024-12-13 18:00:15.496 [boundedElastic-1] DEBUG o.s.ai.chat.client.advisor.SimpleLoggerAdvisor - response: {"result":{"output":{"messageType":"ASSISTANT","metadata":{"messageType":"ASSISTANT"},"toolCalls":[],"content":"{ \"name\": \"小明\", \"age\": 16, \"hobbies\": [\"编程\", \"阅读\"] }\n  \n  \t\t\t\t\t\t\t\t                                                                                                                                                                               \t\t\t\t\t\t\t\t                                                                                                                                                                               \t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\n  \t\t\t\t\t\t\t\t\n\n  \t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t  \t\t\t\t\t\t\t\t\n\n  "},"metadata":{"contentFilterMetadata":null,"finishReason":null}},"results":[{"output":{"messageType":"ASSISTANT","metadata":{"messageType":"ASSISTANT"},"toolCalls":[],"content":"{ \"name\": \"小明\", \"age\": 16, \"hobbies\": [\"编程\", \"阅读\"] }\n  \n  \t\t\t\t\t\t\t\t                                                                                                                                                                               \t\t\t\t\t\t\t\t                                                                                                                                                                               \t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\n  \t\t\t\t\t\t\t\t\n\n  \t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t  \t\t\t\t\t\t\t\t\n\n  "},"metadata":{"contentFilterMetadata":null,"finishReason":null}}],"metadata":{"id":"","model":"qwen2.5:3b","rateLimit":{"requestsLimit":0,"requestsRemaining":0,"requestsReset":0.0,"tokensLimit":0,"tokensRemaining":0,"tokensReset":0.0},"usage":{"promptTokens":0,"generationTokens":0,"totalTokens":0},"promptMetadata":[],"empty":true}}
+2024-12-13 18:02:19.800 [http-nio-8078-exec-2] DEBUG o.s.ai.chat.client.advisor.SimpleLoggerAdvisor - request: AdvisedRequest[chatModel=org.springframework.ai.ollama.OllamaChatModel@132be2bb, userText=你叫什么, systemText=你叫小明。
+请你对我提供的信息进行专业且深入的分析，无论是文本内容、数据还是概念等方面。
+用清晰、准确、有条理的语言进行回应，给出全面的解释、合理的建议或精准的判断。
+帮助我更好地理解相关事物并做出明智的决策或获得更深入的认知。
+, chatOptions=org.springframework.ai.ollama.api.OllamaOptions@35e6c540, media=[], functionNames=[], functionCallbacks=[], messages=[], userParams={}, systemParams={}, advisors=[org.springframework.ai.chat.client.DefaultChatClient$DefaultChatClientRequestSpec$1@1c9cca52, org.springframework.ai.chat.client.DefaultChatClient$DefaultChatClientRequestSpec$2@2b3015a7, SimpleLoggerAdvisor, org.springframework.ai.chat.client.DefaultChatClient$DefaultChatClientRequestSpec$1@1efdb12c, org.springframework.ai.chat.client.DefaultChatClient$DefaultChatClientRequestSpec$2@520fa672], advisorParams={}, adviseContext={}, toolContext={}]
+2024-12-13 18:02:21.076 [http-nio-8078-exec-2] DEBUG o.s.ai.chat.client.advisor.SimpleLoggerAdvisor - response: {"result":{"output":{"messageType":"ASSISTANT","metadata":{"messageType":"ASSISTANT"},"toolCalls":[],"content":"{ \"名字\": \"小明\" }"},"metadata":{"contentFilterMetadata":null,"finishReason":"stop"}},"results":[{"output":{"messageType":"ASSISTANT","metadata":{"messageType":"ASSISTANT"},"toolCalls":[],"content":"{ \"名字\": \"小明\" }"},"metadata":{"contentFilterMetadata":null,"finishReason":"stop"}}],"metadata":{"id":"","model":"qwen2.5:3b","rateLimit":{"requestsLimit":0,"requestsRemaining":0,"requestsReset":0.0,"tokensLimit":0,"tokensRemaining":0,"tokensReset":0.0},"usage":{"promptTokens":82,"generationTokens":10,"totalTokens":92},"promptMetadata":[],"empty":false}}
+2024-12-13 18:02:50.437 [http-nio-8078-exec-3] DEBUG o.s.ai.chat.client.advisor.SimpleLoggerAdvisor - request: AdvisedRequest[chatModel=org.springframework.ai.ollama.OllamaChatModel@132be2bb, userText=你是谁, systemText=你叫小明。
+请你对我提供的信息进行专业且深入的分析，无论是文本内容、数据还是概念等方面。
+用清晰、准确、有条理的语言进行回应，给出全面的解释、合理的建议或精准的判断。
+帮助我更好地理解相关事物并做出明智的决策或获得更深入的认知。
+, chatOptions=org.springframework.ai.ollama.api.OllamaOptions@35e6c540, media=[], functionNames=[], functionCallbacks=[], messages=[UserMessage{content='你是小丽', properties={messageType=USER}, messageType=USER}], userParams={}, systemParams={}, advisors=[org.springframework.ai.chat.client.DefaultChatClient$DefaultChatClientRequestSpec$1@1c9cca52, org.springframework.ai.chat.client.DefaultChatClient$DefaultChatClientRequestSpec$2@2b3015a7, SimpleLoggerAdvisor, org.springframework.ai.chat.client.DefaultChatClient$DefaultChatClientRequestSpec$1@21afdd80, org.springframework.ai.chat.client.DefaultChatClient$DefaultChatClientRequestSpec$2@2f6827c5], advisorParams={}, adviseContext={}, toolContext={}]
+2024-12-13 18:02:53.069 [http-nio-8078-exec-3] DEBUG o.s.ai.chat.client.advisor.SimpleLoggerAdvisor - response: {"result":{"output":{"messageType":"ASSISTANT","metadata":{"messageType":"ASSISTANT"},"toolCalls":[],"content":"{}  \t\t\t\t\t\t\t\n                                                                       \n                                                                        \n                                                        \n                                                                       \t\t\t\t\t\t\t\t\t\n                                                                       \n                                                                   \n                                                                   \n          \t\t\t\t\t\t\t\t\t\t\n                                                                               \n                                                                    \n                    \n\n    \t\t\t\t\t\t\t\t\t\n                                                                           "},"metadata":{"contentFilterMetadata":null,"finishReason":null}},"results":[{"output":{"messageType":"ASSISTANT","metadata":{"messageType":"ASSISTANT"},"toolCalls":[],"content":"{}  \t\t\t\t\t\t\t\n                                                                       \n                                                                        \n                                                        \n                                                                       \t\t\t\t\t\t\t\t\t\n                                                                       \n                                                                   \n                                                                   \n          \t\t\t\t\t\t\t\t\t\t\n                                                                               \n                                                                    \n                    \n\n    \t\t\t\t\t\t\t\t\t\n                                                                           "},"metadata":{"contentFilterMetadata":null,"finishReason":null}}],"metadata":{"id":"","model":"qwen2.5:3b","rateLimit":{"requestsLimit":0,"requestsRemaining":0,"requestsReset":0.0,"tokensLimit":0,"tokensRemaining":0,"tokensReset":0.0},"usage":{"promptTokens":0,"generationTokens":0,"totalTokens":0},"promptMetadata":[],"empty":false}}
+2024-12-13 18:03:29.764 [http-nio-8078-exec-4] DEBUG o.s.ai.chat.client.advisor.SimpleLoggerAdvisor - request: AdvisedRequest[chatModel=org.springframework.ai.ollama.OllamaChatModel@132be2bb, userText=你是谁, systemText=你叫小明。
+请你对我提供的信息进行专业且深入的分析，无论是文本内容、数据还是概念等方面。
+用清晰、准确、有条理的语言进行回应，给出全面的解释、合理的建议或精准的判断。
+帮助我更好地理解相关事物并做出明智的决策或获得更深入的认知。
+, chatOptions=org.springframework.ai.ollama.api.OllamaOptions@35e6c540, media=[], functionNames=[], functionCallbacks=[], messages=[UserMessage{content='你是小丽', properties={messageType=USER}, messageType=USER}], userParams={}, systemParams={}, advisors=[org.springframework.ai.chat.client.DefaultChatClient$DefaultChatClientRequestSpec$1@1c9cca52, org.springframework.ai.chat.client.DefaultChatClient$DefaultChatClientRequestSpec$2@2b3015a7, SimpleLoggerAdvisor, org.springframework.ai.chat.client.DefaultChatClient$DefaultChatClientRequestSpec$1@7b8cb3a7, org.springframework.ai.chat.client.DefaultChatClient$DefaultChatClientRequestSpec$2@a215dc5], advisorParams={}, adviseContext={formatParam=Your response should be in JSON format.
+Do not include any explanations, only provide a RFC8259 compliant JSON response following this format without deviation.
+Do not include markdown code blocks in your response.
+Remove the ```json markdown from the output.
+Here is the JSON Schema instance your output must adhere to:
+```{
+  "$schema" : "https://json-schema.org/draft/2020-12/schema",
+  "type" : "object",
+  "properties" : {
+    "actor" : {
+      "type" : "string"
+    },
+    "movies" : {
+      "type" : "array",
+      "items" : {
+        "type" : "string"
+      }
+    }
+  },
+  "additionalProperties" : false
+}```
+}, toolContext={}]
+2024-12-13 18:03:31.598 [http-nio-8078-exec-4] DEBUG o.s.ai.chat.client.advisor.SimpleLoggerAdvisor - response: {"result":{"output":{"messageType":"ASSISTANT","metadata":{"messageType":"ASSISTANT"},"toolCalls":[],"content":"{\n  \"actor\" : \"小丽\",\n  \"movies\" : []\n}"},"metadata":{"contentFilterMetadata":null,"finishReason":"stop"}},"results":[{"output":{"messageType":"ASSISTANT","metadata":{"messageType":"ASSISTANT"},"toolCalls":[],"content":"{\n  \"actor\" : \"小丽\",\n  \"movies\" : []\n}"},"metadata":{"contentFilterMetadata":null,"finishReason":"stop"}}],"metadata":{"id":"","model":"qwen2.5:3b","rateLimit":{"requestsLimit":0,"requestsRemaining":0,"requestsReset":0.0,"tokensLimit":0,"tokensRemaining":0,"tokensReset":0.0},"usage":{"promptTokens":267,"generationTokens":18,"totalTokens":285},"promptMetadata":[],"empty":false}}

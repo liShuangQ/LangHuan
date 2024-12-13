@@ -1,55 +1,36 @@
 package com.shuangqi.aiagent7.controller;
 
 import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
-import org.springframework.ai.chat.client.advisor.QuestionAnswerAdvisor;
 import org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor;
+import org.springframework.ai.chat.messages.Message;
+import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.prompt.Prompt;
-import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/chatDemo")
-public class ChatClientDemoController {
+@RequestMapping("/chat")
+public class ChatClientControllerD {
     private final ChatClient chatClient;
 
-    /**
-     * 构造方法：创建一个默认客户端
-     *
-     * @param chatClientBuilder ChatClient 构建器
-     */
-//    public ChatClientDemoController(ChatClient.Builder chatClientBuilder) {
-//        this.chatClient = chatClientBuilder.build();
-//    }
-
-    /**
-     * 构造方法：创建一个新的客户端
-     * - UserMessage: 用户消息，指用户输入的消息，如提问的问题。
-     * - SystemMessage: 系统限制性消息，权重较大，AI 会优先依据 SystemMessage 回复。
-     * - AssistantMessage: 大模型回复的消息。
-     * - FunctionMessage: 函数调用消息，开发中一般用不到。
-     *
-     * @param chatClientBuilder ChatClient 构建器
-     */
-    public ChatClientDemoController(ChatClient.Builder chatClientBuilder) {
+    public ChatClientControllerD(ChatClient.Builder chatClientBuilder) {
         this.chatClient = chatClientBuilder.defaultSystem("""
-                        你叫小明，你是一名非常友好的朋友，你博学多识，你会回答我的各种问题。
+                        你叫小明。
+                        请你对我提供的信息进行专业且深入的分析，无论是文本内容、数据还是概念等方面。
+                        用清晰、准确、有条理的语言进行回应，给出全面的解释、合理的建议或精准的判断。
+                        帮助我更好地理解相关事物并做出明智的决策或获得更深入的认知。
                         """)
                 .defaultAdvisors(
-//                        new MessageChatMemoryAdvisor(chatMemory), // CHAT MEMORY
-//                        new QuestionAnswerAdvisor(vectorStore, SearchRequest.defaults()), // RAG
-//                        new SimpleLoggerAdvisor()
+                        new SimpleLoggerAdvisor()
                 )
-//                .defaultFunctions("getBookingDetails", "changeBooking", "cancelBooking") // FUNCTION CALLING
                 .build();
     }
 
@@ -64,63 +45,102 @@ public class ChatClientDemoController {
      * - stream() 方法：返回异步响应
      */
 
-    // 演示方法
-    // 返回响应的 String 内容
-    @GetMapping("/ai1")
-    String ai1(String q) {
+    /**
+     * 基础单次对话
+     *
+     * @param q
+     * @return
+     */
+    @GetMapping("/string")
+    String chat(String q) {
         return this.chatClient.prompt()
                 .user(q)
                 .call()
                 .content();
     }
 
-    // 返回 ChatResponse
-    // 来自 AI 模型的响应是丰富的结构，包含生成方式的元数据和多个响应（Generations）。
-    // 元数据包括用于创建响应的令牌数，这对于计费非常重要。
-    @GetMapping("/ai2")
-    ChatResponse ai2() {
-        return chatClient.prompt(new Prompt("回答我的问题"))
-                .user("给我讲个笑话")
-                .call()
-                .chatResponse();
-    }
-
-    // 返回实体
-    // 通常需要返回从 AI 模型返回的字符串转换成的 Java 实体。
-    record ActorFilms(String actor, List<String> movies) {
-    }
-
-    @GetMapping("/ai3")
-    ActorFilms ai3() {
-        return chatClient.prompt()
-                .user("Generate the filmography for a random actor.")
-                .call()
-                .entity(ActorFilms.class);
-    }
-
-    @GetMapping("/ai4")
-    List<ActorFilms> ai4() {
-        return chatClient.prompt()
-                .user("Generate the filmography of 5 movies for Tom Hanks and Bill Murray.")
-                .call()
-                .entity(new ParameterizedTypeReference<List<ActorFilms>>() {
-                });
-    }
-
-    // 流式响应
-    // 该方法允许您获得异步响应。
-    @GetMapping("/ai5")
-    Flux<String> ai5(String q) {
+    /**
+     * 基础单次对话-流式响应
+     *
+     * @param q
+     * @return
+     */
+    @GetMapping("/stream")
+    Flux<String> stream(String q) {
         return chatClient.prompt()
                 .user(q)
                 .stream()
                 .content();
     }
 
-    // Map
-    @GetMapping("/ai6")
-    public Map<String, String> ai6(@RequestParam(value = "message", defaultValue = "讲个笑话") String message) {
-        return Map.of("completion", this.chatClient.prompt().user(message).call().content());
+    /**
+     * 基础单次对话带提示词，返回 ChatResponse
+     *
+     * @param p
+     * @param q
+     * @return 返回 ChatResponse 来自 AI 模型的响应是丰富的结构，包含生成方式的元数据和多个响应（Generations）。元数据包括用于创建响应的令牌数，这对于计费非常重要。
+     */
+    @GetMapping("/chatWithPrompt/ChatResponse")
+    ChatResponse chatWithPrompt(String p, String q) {
+        return chatClient.prompt(new Prompt(p))
+                .user(q)
+                .call()
+                .chatResponse();
+    }
+
+
+    // 返回实体
+    // 通常需要返回从 AI 模型返回的字符串转换成的 Java 实体。
+    record ActorFilms(String actor, List<String> movies) {
+    }
+
+    /**
+     * 基础单次对话带提示词，返回实体
+     *
+     * @param p
+     * @param q
+     * @return
+     */
+    @GetMapping("/chatWithPromptArray/ActorFilms")
+    ActorFilms chatWithPromptArray(String p, String q) {
+        List<Message> promptList = new ArrayList<>();
+        for (String string : p.split(",")) {
+            promptList.add(new UserMessage(string));
+        }
+        return chatClient.prompt(new Prompt(promptList))
+                .user(q)
+                .call()
+                .entity(ActorFilms.class);
+    }
+
+    /**
+     * 基础单次对话带提示词，返回实体List
+     *
+     * @param p
+     * @param q
+     * @return
+     */
+    @GetMapping("/chatWithPrompt/ListActorFilms")
+    List<ActorFilms> chatWithPromptListActorFilms(String p, String q) {
+        q = q.isEmpty() ? "Generate the filmography of 5 movies for Tom Hanks and Bill Murray." : q;
+        return chatClient.prompt(p)
+                .user(q)
+                .call()
+                .entity(new ParameterizedTypeReference<List<ActorFilms>>() {
+                });
+    }
+
+
+    /**
+     * 基础单次对话带提示词，返回Map
+     *
+     * @param p
+     * @param q
+     * @return
+     */
+    @GetMapping("/chatWithPrompt/Map")
+    public Map<String, String> chatWithPromptMap(String p, String q) {
+        return Map.of("completion", this.chatClient.prompt(p).user(q).call().content());
     }
 
 

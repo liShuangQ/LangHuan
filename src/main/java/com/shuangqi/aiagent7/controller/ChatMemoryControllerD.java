@@ -16,10 +16,10 @@ import static org.springframework.ai.chat.client.advisor.AbstractChatMemoryAdvis
 @Slf4j
 @RestController
 @RequestMapping("/chatMemory")
-public class ChatMemoryController {
+public class ChatMemoryControllerD {
     private final ChatClient chatClient;
 
-    public ChatMemoryController(ChatClient.Builder chatClientBuilder) {
+    public ChatMemoryControllerD(ChatClient.Builder chatClientBuilder) {
         this.chatClient = chatClientBuilder.defaultSystem("""
                         你叫小明。
                         请你对我提供的信息进行专业且深入的分析，无论是文本内容、数据还是概念等方面。
@@ -37,7 +37,13 @@ public class ChatMemoryController {
                 .build();
     }
 
-
+    /**
+     * 带有记忆的聊天
+     *
+     * @param id
+     * @param q
+     * @return
+     */
     @GetMapping("/chat")
     String chat(String id, String q) {
         // .chatResponse():
@@ -55,9 +61,15 @@ public class ChatMemoryController {
                 ).call().chatResponse().getResult().getOutput().getContent();
     }
 
-    @GetMapping("/chatStream")
+    /**
+     * 带有记忆的聊天-流式返回
+     *
+     * @param id
+     * @param q
+     * @return
+     */
+    @GetMapping("/stream")
     Flux<String> chatStream(String id, String q) {
-        log.info("advisor-chatStream: {}", "用户id-" + id + ":" + q);
         return this.chatClient.prompt()
                 .user(q)
                 .advisors(
@@ -67,6 +79,48 @@ public class ChatMemoryController {
                 ).stream().content();
     }
 
+    /**
+     * 有提示词带有记忆的聊天
+     *
+     * @param id
+     * @param q
+     * @return
+     */
+    @GetMapping("/chatWithPrompt")
+    String chatWithPrompt(String id, String p, String q) {
+        return this.chatClient.prompt(p)
+                .user(q)
+                .advisors(
+                        a -> a
+                                .param(CHAT_MEMORY_CONVERSATION_ID_KEY, id)
+                                .param(CHAT_MEMORY_RETRIEVE_SIZE_KEY, 10)
+                ).call().chatResponse().getResult().getOutput().getContent();
+    }
+
+    /**
+     * 有提示词带有记忆的聊天-流式返回
+     *
+     * @param id
+     * @param q
+     * @return
+     */
+    @GetMapping("/chatWithPrompt/stream")
+    Flux<String> chatWithPromptStream(String id, String p, String q) {
+        return this.chatClient.prompt(p)
+                .user(q)
+                .advisors(
+                        a -> a
+                                .param(CHAT_MEMORY_CONVERSATION_ID_KEY, id)
+                                .param(CHAT_MEMORY_RETRIEVE_SIZE_KEY, 10)
+                ).stream().content();
+    }
+
+    /**
+     * 清除记忆
+     *
+     * @param id
+     * @return
+     */
     @GetMapping("/clear")
     String clear(String id) {
         log.info("advisor-clear: {}", "用户id-" + id);
