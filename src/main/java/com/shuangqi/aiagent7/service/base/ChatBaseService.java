@@ -1,8 +1,7 @@
 package com.shuangqi.aiagent7.service.base;
 
-import com.shuangqi.aiagent7.common.Constant;
-import com.shuangqi.aiagent7.model.request.ChatRequest;
-import com.shuangqi.aiagent7.model.response.MyChatResponse;
+import com.shuangqi.aiagent7.model.dto.ChatRequest;
+import com.shuangqi.aiagent7.model.vo.MyChatResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.stereotype.Service;
@@ -33,14 +32,14 @@ public class ChatBaseService {
             } else {
                 response = chatClient.prompt(request.getSystemPrompt()).user(request.getMessage()).call().content();
             }
-            log.info("chat-response: {}", response);
+            log.info("chat-vo: {}", response);
             return MyChatResponse.builder()
                     .response(response)
                     .status("success")
                     .build();
         } catch (Exception e) {
             return MyChatResponse.builder()
-                    .response("Error processing request: " + e.getMessage())
+                    .response("Error processing dto: " + e.getMessage())
                     .status("error")
                     .build();
         }

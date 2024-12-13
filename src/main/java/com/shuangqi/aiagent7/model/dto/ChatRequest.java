@@ -1,4 +1,4 @@
-package com.shuangqi.aiagent7.model.request;
+package com.shuangqi.aiagent7.model.dto;
 
 
 import lombok.Data;

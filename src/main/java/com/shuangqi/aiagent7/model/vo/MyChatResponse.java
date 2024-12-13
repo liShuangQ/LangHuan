@@ -1,4 +1,4 @@
-package com.shuangqi.aiagent7.model.response;
+package com.shuangqi.aiagent7.model.vo;
 
 
 import lombok.Builder;
