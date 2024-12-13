@@ -4,8 +4,8 @@ package com.shuangqi.aiagent7.model.dto;
 import lombok.Data;
 
 @Data
-public class ChatRequest {
-    public ChatRequest(String message, String systemPrompt) {
+public class MyChatRequest {
+    public MyChatRequest(String message, String systemPrompt) {
         this.message = message;
         this.systemPrompt = systemPrompt;
     }

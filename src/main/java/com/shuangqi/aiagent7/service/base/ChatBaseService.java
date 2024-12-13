@@ -1,6 +1,6 @@
 package com.shuangqi.aiagent7.service.base;
 
-import com.shuangqi.aiagent7.model.dto.ChatRequest;
+import com.shuangqi.aiagent7.model.dto.MyChatRequest;
 import com.shuangqi.aiagent7.model.vo.MyChatResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
@@ -22,7 +22,7 @@ public class ChatBaseService {
      * @param request
      * @return
      */
-    public MyChatResponse chat(ChatRequest request) {
+    public MyChatResponse chat(MyChatRequest request) {
         log.info("chat-Prompt: {}", request.getSystemPrompt());
         log.info("chat-Message: {}", request.getMessage());
         try {

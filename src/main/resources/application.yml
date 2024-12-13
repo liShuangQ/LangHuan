@@ -1,5 +1,5 @@
 server:
-  port: 8077
+  port: 8078
   servlet:
     encoding:
       charset: UTF-8
@@ -59,3 +59,11 @@ spring:
           stop: # 设置停止序列，当遇到此模式时，语言模型将停止生成文本并返回
           functions: # 在单个提示请求中启用函数调用的函数列表，函数名称必须存在于函数回调注册表中
           proxy-tool-calls: false # 如果为true，Spring AI将不会内部处理函数调用，而是将其代理给客户端，默认值为false
+logging:
+  level:
+    org:
+      springframework:
+        ai:
+          chat:
+            client:
+              advisor: DEBUG

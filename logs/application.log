@@ -1,1078 +1,205 @@
-2024-12-12 15:04:57.295 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - Starting Aiagent7Application using Java 17.0.2 with PID 65973 (/Users/lishuangqi/myWork/aiagent7/target/classes started by lishuangqi in /Users/lishuangqi/myWork/aiagent7)
-2024-12-12 15:04:57.296 [main] DEBUG com.shuangqi.aiagent7.Aiagent7Application - Running with Spring Boot v3.4.1-SNAPSHOT, Spring v6.2.1-SNAPSHOT
-2024-12-12 15:04:57.296 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - No active profile set, falling back to 1 default profile: "default"
-2024-12-12 15:04:57.730 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat initialized with port 8077 (http)
-2024-12-12 15:04:57.736 [main] INFO  org.apache.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8077"]
-2024-12-12 15:04:57.737 [main] INFO  org.apache.catalina.core.StandardService - Starting service [Tomcat]
-2024-12-12 15:04:57.737 [main] INFO  org.apache.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.34]
-2024-12-12 15:04:57.760 [main] INFO  o.a.c.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
-2024-12-12 15:04:57.760 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 447 ms
-2024-12-12 15:04:58.239 [main] INFO  org.apache.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8077"]
-2024-12-12 15:04:58.245 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat started on port 8077 (http) with context path '/'
-2024-12-12 15:04:58.252 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - Started Aiagent7Application in 1.2 seconds (process running for 1.534)
-2024-12-12 15:06:21.995 [http-nio-8077-exec-2] INFO  o.a.c.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
-2024-12-12 15:06:21.995 [http-nio-8077-exec-2] INFO  org.springframework.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
-2024-12-12 15:06:21.996 [http-nio-8077-exec-2] INFO  org.springframework.web.servlet.DispatcherServlet - Completed initialization in 1 ms
-2024-12-12 15:06:22.005 [http-nio-8077-exec-2] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Request: POST /api/step
-2024-12-12 15:06:22.017 [http-nio-8077-exec-2] INFO  c.shuangqi.aiagent7.service.base.ChatBaseService - chat-Prompt: 回答时数据使用step作为key，全部的步骤作为一个数组。例如{step:[步骤一,步骤二]}这种格式给我
-2024-12-12 15:06:22.017 [http-nio-8077-exec-2] INFO  c.shuangqi.aiagent7.service.base.ChatBaseService - chat-Message: 大象装进冰箱要分为几步？
-2024-12-12 15:06:33.471 [http-nio-8077-exec-2] INFO  c.shuangqi.aiagent7.service.base.ChatBaseService - chat-Prompt: 这个问题需要注意什么？请给我纯文字的格式
-2024-12-12 15:06:33.471 [http-nio-8077-exec-2] INFO  c.shuangqi.aiagent7.service.base.ChatBaseService - chat-Message: 打开冰箱门
-2024-12-12 15:06:39.025 [http-nio-8077-exec-2] INFO  c.shuangqi.aiagent7.service.base.ChatBaseService - chat-Prompt: 这个问题需要注意什么？请给我纯文字的格式
-2024-12-12 15:06:39.025 [http-nio-8077-exec-2] INFO  c.shuangqi.aiagent7.service.base.ChatBaseService - chat-Message: 将大象放进去
-2024-12-12 15:07:00.449 [http-nio-8077-exec-2] INFO  c.shuangqi.aiagent7.service.base.ChatBaseService - chat-Prompt: 这个问题需要注意什么？请给我纯文字的格式
-2024-12-12 15:07:00.450 [http-nio-8077-exec-2] INFO  c.shuangqi.aiagent7.service.base.ChatBaseService - chat-Message: 关闭冰箱门
-2024-12-12 15:07:03.405 [http-nio-8077-exec-2] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Response: POST /api/step took 41398ms
-2024-12-12 15:52:18.932 [SpringApplicationShutdownHook] INFO  o.s.boot.web.embedded.tomcat.GracefulShutdown - Commencing graceful shutdown. Waiting for active requests to complete
-2024-12-12 15:52:20.954 [tomcat-shutdown] INFO  o.s.boot.web.embedded.tomcat.GracefulShutdown - Graceful shutdown complete
-2024-12-12 15:52:23.809 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - Starting Aiagent7Application using Java 17.0.2 with PID 69727 (/Users/lishuangqi/myWork/aiagent7/target/classes started by lishuangqi in /Users/lishuangqi/myWork/aiagent7)
-2024-12-12 15:52:23.810 [main] DEBUG com.shuangqi.aiagent7.Aiagent7Application - Running with Spring Boot v3.4.1-SNAPSHOT, Spring v6.2.1-SNAPSHOT
-2024-12-12 15:52:23.810 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - No active profile set, falling back to 1 default profile: "default"
-2024-12-12 15:52:24.253 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat initialized with port 8077 (http)
-2024-12-12 15:52:24.259 [main] INFO  org.apache.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8077"]
-2024-12-12 15:52:24.259 [main] INFO  org.apache.catalina.core.StandardService - Starting service [Tomcat]
-2024-12-12 15:52:24.260 [main] INFO  org.apache.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.34]
-2024-12-12 15:52:24.284 [main] INFO  o.a.c.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
-2024-12-12 15:52:24.285 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 457 ms
-2024-12-12 15:52:24.525 [main] INFO  o.s.b.a.web.servlet.WelcomePageHandlerMapping - Adding welcome page: class path resource [static/index.html]
-2024-12-12 15:52:24.653 [main] INFO  org.apache.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8077"]
-2024-12-12 15:52:24.657 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat started on port 8077 (http) with context path '/'
-2024-12-12 15:52:24.663 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - Started Aiagent7Application in 1.1 seconds (process running for 1.446)
-2024-12-12 15:52:40.320 [http-nio-8077-exec-1] INFO  o.a.c.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
-2024-12-12 15:52:40.320 [http-nio-8077-exec-1] INFO  org.springframework.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
-2024-12-12 15:52:40.321 [http-nio-8077-exec-1] INFO  org.springframework.web.servlet.DispatcherServlet - Completed initialization in 1 ms
-2024-12-12 15:52:40.336 [http-nio-8077-exec-1] ERROR c.shuangqi.aiagent7.common.GlobalExceptionHandler - System Exception: uri=/api/chat
-java.lang.IllegalArgumentException: When allowCredentials is true, allowedOrigins cannot contain the special value "*" since that cannot be set on the "Access-Control-Allow-Origin" response header. To allow credentials to a set of origins, list them explicitly or consider using "allowedOriginPatterns" instead.
-	at org.springframework.web.cors.CorsConfiguration.validateAllowCredentials(CorsConfiguration.java:575)
-	at org.springframework.web.servlet.handler.AbstractHandlerMapping.getHandler(AbstractHandlerMapping.java:544)
-	at org.springframework.web.servlet.DispatcherServlet.getHandler(DispatcherServlet.java:1283)
-	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1064)
-	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:978)
-	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1014)
-	at org.springframework.web.servlet.FrameworkServlet.doOptions(FrameworkServlet.java:950)
-	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:599)
-	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:885)
-	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:658)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:195)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
-	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:51)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
-	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100)
-	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
-	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93)
-	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
-	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201)
-	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
-	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:167)
-	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:90)
-	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:483)
-	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:115)
-	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:93)
-	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:74)
-	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:344)
-	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:397)
-	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:63)
-	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:905)
-	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1741)
-	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:52)
-	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1190)
-	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659)
-	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:63)
-	at java.base/java.lang.Thread.run(Thread.java:833)
-2024-12-12 15:53:38.767 [SpringApplicationShutdownHook] INFO  o.s.boot.web.embedded.tomcat.GracefulShutdown - Commencing graceful shutdown. Waiting for active requests to complete
-2024-12-12 15:53:40.786 [tomcat-shutdown] INFO  o.s.boot.web.embedded.tomcat.GracefulShutdown - Graceful shutdown complete
-2024-12-12 15:53:43.224 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - Starting Aiagent7Application using Java 17.0.2 with PID 69848 (/Users/lishuangqi/myWork/aiagent7/target/classes started by lishuangqi in /Users/lishuangqi/myWork/aiagent7)
-2024-12-12 15:53:43.225 [main] DEBUG com.shuangqi.aiagent7.Aiagent7Application - Running with Spring Boot v3.4.1-SNAPSHOT, Spring v6.2.1-SNAPSHOT
-2024-12-12 15:53:43.225 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - No active profile set, falling back to 1 default profile: "default"
-2024-12-12 15:53:43.644 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat initialized with port 8077 (http)
-2024-12-12 15:53:43.650 [main] INFO  org.apache.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8077"]
-2024-12-12 15:53:43.651 [main] INFO  org.apache.catalina.core.StandardService - Starting service [Tomcat]
-2024-12-12 15:53:43.651 [main] INFO  org.apache.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.34]
-2024-12-12 15:53:43.674 [main] INFO  o.a.c.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
-2024-12-12 15:53:43.674 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 431 ms
-2024-12-12 15:53:43.934 [main] INFO  o.s.b.a.web.servlet.WelcomePageHandlerMapping - Adding welcome page: class path resource [static/index.html]
-2024-12-12 15:53:44.062 [main] INFO  org.apache.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8077"]
-2024-12-12 15:53:44.067 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat started on port 8077 (http) with context path '/'
-2024-12-12 15:53:44.073 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - Started Aiagent7Application in 1.086 seconds (process running for 1.568)
-2024-12-12 15:54:12.185 [http-nio-8077-exec-1] INFO  o.a.c.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
-2024-12-12 15:54:12.186 [http-nio-8077-exec-1] INFO  org.springframework.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
-2024-12-12 15:54:12.187 [http-nio-8077-exec-1] INFO  org.springframework.web.servlet.DispatcherServlet - Completed initialization in 1 ms
-2024-12-12 15:54:12.200 [http-nio-8077-exec-1] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Request: OPTIONS /api/chat
-2024-12-12 15:54:12.201 [http-nio-8077-exec-1] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Response: OPTIONS /api/chat took 0ms
-2024-12-12 15:54:12.206 [http-nio-8077-exec-2] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Request: POST /api/chat
-2024-12-12 15:54:12.239 [http-nio-8077-exec-2] INFO  c.shuangqi.aiagent7.service.base.ChatBaseService - chat-Prompt: 
-2024-12-12 15:54:12.239 [http-nio-8077-exec-2] INFO  c.shuangqi.aiagent7.service.base.ChatBaseService - chat-Message: 你的名字是星期五
-2024-12-12 15:54:12.248 [http-nio-8077-exec-2] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Response: POST /api/chat took 42ms
-2024-12-12 15:55:28.912 [http-nio-8077-exec-4] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Request: POST /api/chat
-2024-12-12 15:55:28.913 [http-nio-8077-exec-4] INFO  c.shuangqi.aiagent7.service.base.ChatBaseService - chat-Prompt: 
-2024-12-12 15:55:28.913 [http-nio-8077-exec-4] INFO  c.shuangqi.aiagent7.service.base.ChatBaseService - chat-Message: 你的名字是星期五
-2024-12-12 15:55:28.914 [http-nio-8077-exec-4] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Response: POST /api/chat took 2ms
-2024-12-12 15:55:31.954 [http-nio-8077-exec-5] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Request: POST /api/chat
-2024-12-12 15:55:31.955 [http-nio-8077-exec-5] INFO  c.shuangqi.aiagent7.service.base.ChatBaseService - chat-Prompt: 1
-2024-12-12 15:55:31.955 [http-nio-8077-exec-5] INFO  c.shuangqi.aiagent7.service.base.ChatBaseService - chat-Message: 你的名字是星期五
-2024-12-12 15:56:59.652 [SpringApplicationShutdownHook] INFO  o.s.boot.web.embedded.tomcat.GracefulShutdown - Commencing graceful shutdown. Waiting for active requests to complete
-2024-12-12 15:57:31.770 [SpringApplicationShutdownHook] INFO  o.s.context.support.DefaultLifecycleProcessor - Shutdown phase 2147482623 ends with 1 bean still running after timeout of 30000ms: [webServerGracefulShutdown]
-2024-12-12 15:57:31.811 [tomcat-shutdown] INFO  o.s.boot.web.embedded.tomcat.GracefulShutdown - Graceful shutdown aborted with one or more requests still active
-2024-12-12 15:57:31.863 [http-nio-8077-exec-5] ERROR c.shuangqi.aiagent7.common.GlobalExceptionHandler - System Exception: uri=/api/chat
-org.springframework.web.context.request.async.AsyncRequestNotUsableException: ServletOutputStream failed to flush: java.nio.channels.ClosedChannelException
-	at org.springframework.web.context.request.async.StandardServletAsyncWebRequest$LifecycleHttpServletResponse.handleIOException(StandardServletAsyncWebRequest.java:346)
-	at org.springframework.web.context.request.async.StandardServletAsyncWebRequest$LifecycleServletOutputStream.flush(StandardServletAsyncWebRequest.java:418)
-	at java.base/java.io.FilterOutputStream.flush(FilterOutputStream.java:153)
-	at com.fasterxml.jackson.core.json.UTF8JsonGenerator.flush(UTF8JsonGenerator.java:1205)
-	at com.fasterxml.jackson.databind.ObjectWriter.writeValue(ObjectWriter.java:1063)
-	at org.springframework.http.converter.json.AbstractJackson2HttpMessageConverter.writeInternal(AbstractJackson2HttpMessageConverter.java:486)
-	at org.springframework.http.converter.AbstractGenericHttpMessageConverter.write(AbstractGenericHttpMessageConverter.java:126)
-	at org.springframework.web.servlet.mvc.method.annotation.AbstractMessageConverterMethodProcessor.writeWithMessageConverters(AbstractMessageConverterMethodProcessor.java:345)
-	at org.springframework.web.servlet.mvc.method.annotation.RequestResponseBodyMethodProcessor.handleReturnValue(RequestResponseBodyMethodProcessor.java:208)
-	at org.springframework.web.method.support.HandlerMethodReturnValueHandlerComposite.handleReturnValue(HandlerMethodReturnValueHandlerComposite.java:78)
-	at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:136)
-	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:986)
-	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:891)
-	at org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:87)
-	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1088)
-	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:978)
-	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1014)
-	at org.springframework.web.servlet.FrameworkServlet.doPost(FrameworkServlet.java:914)
-	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:590)
-	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:885)
-	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:658)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:195)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
-	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:51)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
-	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100)
-	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
-	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93)
-	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
-	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201)
-	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
-	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:167)
-	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:90)
-	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:483)
-	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:115)
-	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:93)
-	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:74)
-	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:344)
-	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:397)
-	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:63)
-	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:905)
-	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1741)
-	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:52)
-	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1190)
-	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659)
-	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:63)
-	at java.base/java.lang.Thread.run(Thread.java:833)
-Caused by: org.apache.catalina.connector.ClientAbortException: java.nio.channels.ClosedChannelException
-	at org.apache.catalina.connector.OutputBuffer.realWriteBytes(OutputBuffer.java:346)
-	at org.apache.catalina.connector.OutputBuffer.flushByteBuffer(OutputBuffer.java:781)
-	at org.apache.catalina.connector.OutputBuffer.doFlush(OutputBuffer.java:297)
-	at org.apache.catalina.connector.OutputBuffer.flush(OutputBuffer.java:270)
-	at org.apache.catalina.connector.CoyoteOutputStream.flush(CoyoteOutputStream.java:136)
-	at org.springframework.web.context.request.async.StandardServletAsyncWebRequest$LifecycleServletOutputStream.flush(StandardServletAsyncWebRequest.java:415)
-	... 52 common frames omitted
-Caused by: java.nio.channels.ClosedChannelException: null
-	at org.apache.tomcat.util.net.NioEndpoint$NioSocketWrapper.doWrite(NioEndpoint.java:1343)
-	at org.apache.tomcat.util.net.SocketWrapperBase.doWrite(SocketWrapperBase.java:764)
-	at org.apache.tomcat.util.net.SocketWrapperBase.writeBlocking(SocketWrapperBase.java:589)
-	at org.apache.tomcat.util.net.SocketWrapperBase.write(SocketWrapperBase.java:533)
-	at org.apache.coyote.http11.Http11OutputBuffer$SocketOutputBuffer.doWrite(Http11OutputBuffer.java:548)
-	at org.apache.coyote.http11.filters.ChunkedOutputFilter.doWrite(ChunkedOutputFilter.java:109)
-	at org.apache.coyote.http11.Http11OutputBuffer.doWrite(Http11OutputBuffer.java:193)
-	at org.apache.coyote.Response.doWrite(Response.java:631)
-	at org.apache.catalina.connector.OutputBuffer.realWriteBytes(OutputBuffer.java:334)
-	... 57 common frames omitted
-2024-12-12 15:57:34.322 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - Starting Aiagent7Application using Java 17.0.2 with PID 70143 (/Users/lishuangqi/myWork/aiagent7/target/classes started by lishuangqi in /Users/lishuangqi/myWork/aiagent7)
-2024-12-12 15:57:34.322 [main] DEBUG com.shuangqi.aiagent7.Aiagent7Application - Running with Spring Boot v3.4.1-SNAPSHOT, Spring v6.2.1-SNAPSHOT
-2024-12-12 15:57:34.323 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - No active profile set, falling back to 1 default profile: "default"
-2024-12-12 15:57:34.813 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat initialized with port 8077 (http)
-2024-12-12 15:57:34.820 [main] INFO  org.apache.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8077"]
-2024-12-12 15:57:34.821 [main] INFO  org.apache.catalina.core.StandardService - Starting service [Tomcat]
-2024-12-12 15:57:34.821 [main] INFO  org.apache.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.34]
-2024-12-12 15:57:34.847 [main] INFO  o.a.c.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
-2024-12-12 15:57:34.848 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 505 ms
-2024-12-12 15:57:35.123 [main] INFO  o.s.b.a.web.servlet.WelcomePageHandlerMapping - Adding welcome page: class path resource [static/index.html]
-2024-12-12 15:57:35.272 [main] INFO  org.apache.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8077"]
-2024-12-12 15:57:35.278 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat started on port 8077 (http) with context path '/'
-2024-12-12 15:57:35.284 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - Started Aiagent7Application in 1.249 seconds (process running for 1.618)
-2024-12-12 15:57:52.429 [http-nio-8077-exec-1] INFO  o.a.c.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
-2024-12-12 15:57:52.429 [http-nio-8077-exec-1] INFO  org.springframework.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
-2024-12-12 15:57:52.432 [http-nio-8077-exec-1] INFO  org.springframework.web.servlet.DispatcherServlet - Completed initialization in 2 ms
-2024-12-12 15:57:52.456 [http-nio-8077-exec-1] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Request: POST /api/chat
-2024-12-12 15:57:52.512 [http-nio-8077-exec-1] INFO  c.shuangqi.aiagent7.service.base.ChatBaseService - chat-Prompt: 
-2024-12-12 15:57:52.513 [http-nio-8077-exec-1] INFO  c.shuangqi.aiagent7.service.base.ChatBaseService - chat-Message: 你好，你的名字叫星期五
-2024-12-12 15:57:52.528 [http-nio-8077-exec-1] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Response: POST /api/chat took 71ms
-2024-12-12 15:58:32.432 [SpringApplicationShutdownHook] INFO  o.s.boot.web.embedded.tomcat.GracefulShutdown - Commencing graceful shutdown. Waiting for active requests to complete
-2024-12-12 15:58:34.484 [tomcat-shutdown] INFO  o.s.boot.web.embedded.tomcat.GracefulShutdown - Graceful shutdown complete
-2024-12-12 15:58:36.781 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - Starting Aiagent7Application using Java 17.0.2 with PID 70255 (/Users/lishuangqi/myWork/aiagent7/target/classes started by lishuangqi in /Users/lishuangqi/myWork/aiagent7)
-2024-12-12 15:58:36.781 [main] DEBUG com.shuangqi.aiagent7.Aiagent7Application - Running with Spring Boot v3.4.1-SNAPSHOT, Spring v6.2.1-SNAPSHOT
-2024-12-12 15:58:36.782 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - No active profile set, falling back to 1 default profile: "default"
-2024-12-12 15:58:37.257 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat initialized with port 8077 (http)
-2024-12-12 15:58:37.264 [main] INFO  org.apache.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8077"]
-2024-12-12 15:58:37.265 [main] INFO  org.apache.catalina.core.StandardService - Starting service [Tomcat]
-2024-12-12 15:58:37.265 [main] INFO  org.apache.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.34]
-2024-12-12 15:58:37.291 [main] INFO  o.a.c.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
-2024-12-12 15:58:37.291 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 491 ms
-2024-12-12 15:58:37.582 [main] INFO  o.s.b.a.web.servlet.WelcomePageHandlerMapping - Adding welcome page: class path resource [static/index.html]
-2024-12-12 15:58:37.729 [main] INFO  org.apache.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8077"]
-2024-12-12 15:58:37.734 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat started on port 8077 (http) with context path '/'
-2024-12-12 15:58:37.740 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - Started Aiagent7Application in 1.275 seconds (process running for 1.628)
-2024-12-12 15:58:39.388 [http-nio-8077-exec-1] INFO  o.a.c.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
-2024-12-12 15:58:39.389 [http-nio-8077-exec-1] INFO  org.springframework.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
-2024-12-12 15:58:39.390 [http-nio-8077-exec-1] INFO  org.springframework.web.servlet.DispatcherServlet - Completed initialization in 1 ms
-2024-12-12 15:58:39.402 [http-nio-8077-exec-1] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Request: POST /api/chat
-2024-12-12 15:58:39.440 [http-nio-8077-exec-1] INFO  c.shuangqi.aiagent7.service.base.ChatBaseService - chat-Prompt: 
-2024-12-12 15:58:39.440 [http-nio-8077-exec-1] INFO  c.shuangqi.aiagent7.service.base.ChatBaseService - chat-Message: 你好，你的名字叫星期五
-2024-12-12 15:58:39.451 [http-nio-8077-exec-1] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Response: POST /api/chat took 48ms
-2024-12-12 15:59:10.356 [SpringApplicationShutdownHook] INFO  o.s.boot.web.embedded.tomcat.GracefulShutdown - Commencing graceful shutdown. Waiting for active requests to complete
-2024-12-12 15:59:12.401 [tomcat-shutdown] INFO  o.s.boot.web.embedded.tomcat.GracefulShutdown - Graceful shutdown complete
-2024-12-12 15:59:14.640 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - Starting Aiagent7Application using Java 17.0.2 with PID 70314 (/Users/lishuangqi/myWork/aiagent7/target/classes started by lishuangqi in /Users/lishuangqi/myWork/aiagent7)
-2024-12-12 15:59:14.641 [main] DEBUG com.shuangqi.aiagent7.Aiagent7Application - Running with Spring Boot v3.4.1-SNAPSHOT, Spring v6.2.1-SNAPSHOT
-2024-12-12 15:59:14.642 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - No active profile set, falling back to 1 default profile: "default"
-2024-12-12 15:59:15.117 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat initialized with port 8077 (http)
-2024-12-12 15:59:15.124 [main] INFO  org.apache.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8077"]
-2024-12-12 15:59:15.125 [main] INFO  org.apache.catalina.core.StandardService - Starting service [Tomcat]
-2024-12-12 15:59:15.125 [main] INFO  org.apache.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.34]
-2024-12-12 15:59:15.149 [main] INFO  o.a.c.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
-2024-12-12 15:59:15.149 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 488 ms
-2024-12-12 15:59:15.406 [main] INFO  o.s.b.a.web.servlet.WelcomePageHandlerMapping - Adding welcome page: class path resource [static/index.html]
-2024-12-12 15:59:15.560 [main] INFO  org.apache.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8077"]
-2024-12-12 15:59:15.566 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat started on port 8077 (http) with context path '/'
-2024-12-12 15:59:15.572 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - Started Aiagent7Application in 1.285 seconds (process running for 1.653)
-2024-12-12 15:59:25.195 [http-nio-8077-exec-1] INFO  o.a.c.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
-2024-12-12 15:59:25.195 [http-nio-8077-exec-1] INFO  org.springframework.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
-2024-12-12 15:59:25.197 [http-nio-8077-exec-1] INFO  org.springframework.web.servlet.DispatcherServlet - Completed initialization in 2 ms
-2024-12-12 15:59:25.212 [http-nio-8077-exec-1] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Request: POST /api/chat
-2024-12-12 15:59:25.258 [http-nio-8077-exec-1] INFO  c.shuangqi.aiagent7.service.base.ChatBaseService - chat-Prompt: 
-2024-12-12 15:59:25.258 [http-nio-8077-exec-1] INFO  c.shuangqi.aiagent7.service.base.ChatBaseService - chat-Message: 你好，你的名字叫星期五
-2024-12-12 15:59:25.271 [http-nio-8077-exec-1] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Response: POST /api/chat took 57ms
-2024-12-12 15:59:40.040 [http-nio-8077-exec-3] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Request: POST /api/chat
-2024-12-12 15:59:40.046 [http-nio-8077-exec-3] INFO  c.shuangqi.aiagent7.service.base.ChatBaseService - chat-Prompt: 回答我的问题。
-2024-12-12 15:59:40.046 [http-nio-8077-exec-3] INFO  c.shuangqi.aiagent7.service.base.ChatBaseService - chat-Message: 你好，你的名字叫星期五
-2024-12-12 15:59:41.902 [http-nio-8077-exec-3] INFO  c.shuangqi.aiagent7.service.base.ChatBaseService - chat-response: {   }
-2024-12-12 15:59:41.903 [http-nio-8077-exec-3] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Response: POST /api/chat took 1862ms
-2024-12-12 16:01:32.517 [http-nio-8077-exec-5] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Request: POST /api/chat
-2024-12-12 16:01:32.529 [http-nio-8077-exec-5] INFO  c.shuangqi.aiagent7.service.base.ChatBaseService - chat-Prompt: 回答我的问题。
-2024-12-12 16:01:32.530 [http-nio-8077-exec-5] INFO  c.shuangqi.aiagent7.service.base.ChatBaseService - chat-Message: 你是谁
-2024-12-12 16:01:37.803 [http-nio-8077-exec-5] INFO  c.shuangqi.aiagent7.service.base.ChatBaseService - chat-response: {
-"answer": "我是阿里云开发的一款超大规模语言模型，我叫通义千问。"
-}
-2024-12-12 16:01:37.805 [http-nio-8077-exec-5] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Response: POST /api/chat took 5286ms
-2024-12-12 16:01:58.520 [http-nio-8077-exec-7] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Request: POST /api/chat
-2024-12-12 16:01:58.522 [http-nio-8077-exec-7] INFO  c.shuangqi.aiagent7.service.base.ChatBaseService - chat-Prompt: 回答我的问题。
-2024-12-12 16:01:58.523 [http-nio-8077-exec-7] INFO  c.shuangqi.aiagent7.service.base.ChatBaseService - chat-Message: 你的名字叫星期五
-2024-12-12 16:02:00.521 [http-nio-8077-exec-7] INFO  c.shuangqi.aiagent7.service.base.ChatBaseService - chat-response: {   }
-2024-12-12 16:02:00.524 [http-nio-8077-exec-7] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Response: POST /api/chat took 2003ms
-2024-12-12 16:02:01.821 [http-nio-8077-exec-8] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Request: POST /api/chat
-2024-12-12 16:02:01.822 [http-nio-8077-exec-8] INFO  c.shuangqi.aiagent7.service.base.ChatBaseService - chat-Prompt: 回答我的问题。
-2024-12-12 16:02:01.822 [http-nio-8077-exec-8] INFO  c.shuangqi.aiagent7.service.base.ChatBaseService - chat-Message: { "answer": "我是阿里
-2024-12-12 16:02:23.786 [http-nio-8077-exec-9] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Request: POST /api/chat
-2024-12-12 16:02:23.787 [http-nio-8077-exec-9] INFO  c.shuangqi.aiagent7.service.base.ChatBaseService - chat-Prompt: 回答我的问题。
-2024-12-12 16:02:23.788 [http-nio-8077-exec-9] INFO  c.shuangqi.aiagent7.service.base.ChatBaseService - chat-Message: 你是谁
-2024-12-12 16:02:24.399 [http-nio-8077-exec-8] INFO  c.shuangqi.aiagent7.service.base.ChatBaseService - chat-response: { "answer": "您提到的“我”是阿里，这可能指的是阿里巴巴集团。阿里巴巴（Alibaba）是一个全球性的电子商务巨头，创建于1999年，并在2014年通过历史上最大的IPO（首次公开募股）上市。它由马云创立并领导，总部位于中国杭州。阿里巴巴旗下拥有众多业务和子公司，如淘宝、天猫、菜鸟网络、阿里云等，在电商、物流、云计算等领域发挥着重要作用。如果您有关于阿里巴巴的具体问题，请提供更详细的背景信息或上下文以便我给出更加具体的答案。"}
-2024-12-12 16:02:24.401 [http-nio-8077-exec-8] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Response: POST /api/chat took 22580ms
-2024-12-12 16:02:31.920 [http-nio-8077-exec-9] INFO  c.shuangqi.aiagent7.service.base.ChatBaseService - chat-response: {   }
-
-  
-
-
-
-
-
-  
-
-  
-
-
-
-  
-  
-
-  
-
-
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-
-2024-12-12 16:02:31.922 [http-nio-8077-exec-9] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Response: POST /api/chat took 8136ms
-2024-12-12 16:03:01.869 [http-nio-8077-exec-2] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Request: POST /api/chat
-2024-12-12 16:03:01.882 [http-nio-8077-exec-2] INFO  c.shuangqi.aiagent7.service.base.ChatBaseService - chat-Prompt: 
-2024-12-12 16:03:01.882 [http-nio-8077-exec-2] INFO  c.shuangqi.aiagent7.service.base.ChatBaseService - chat-Message: 你是谁
-2024-12-12 16:03:01.886 [http-nio-8077-exec-2] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Response: POST /api/chat took 14ms
-2024-12-12 16:03:23.989 [http-nio-8077-exec-4] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Request: POST /api/chat
-2024-12-12 16:04:01.409 [http-nio-8077-exec-4] INFO  c.shuangqi.aiagent7.service.base.ChatBaseService - chat-Prompt: 
-2024-12-12 16:04:01.411 [http-nio-8077-exec-4] INFO  c.shuangqi.aiagent7.service.base.ChatBaseService - chat-Message: 你是谁
-2024-12-12 16:04:01.421 [http-nio-8077-exec-4] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Response: POST /api/chat took 37431ms
-2024-12-12 16:04:11.715 [SpringApplicationShutdownHook] INFO  o.s.boot.web.embedded.tomcat.GracefulShutdown - Commencing graceful shutdown. Waiting for active requests to complete
-2024-12-12 16:04:13.775 [tomcat-shutdown] INFO  o.s.boot.web.embedded.tomcat.GracefulShutdown - Graceful shutdown complete
-2024-12-12 16:04:16.220 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - Starting Aiagent7Application using Java 17.0.2 with PID 70684 (/Users/lishuangqi/myWork/aiagent7/target/classes started by lishuangqi in /Users/lishuangqi/myWork/aiagent7)
-2024-12-12 16:04:16.220 [main] DEBUG com.shuangqi.aiagent7.Aiagent7Application - Running with Spring Boot v3.4.1-SNAPSHOT, Spring v6.2.1-SNAPSHOT
-2024-12-12 16:04:16.221 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - No active profile set, falling back to 1 default profile: "default"
-2024-12-12 16:04:16.756 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat initialized with port 8077 (http)
-2024-12-12 16:04:16.763 [main] INFO  org.apache.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8077"]
-2024-12-12 16:04:16.764 [main] INFO  org.apache.catalina.core.StandardService - Starting service [Tomcat]
-2024-12-12 16:04:16.764 [main] INFO  org.apache.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.34]
-2024-12-12 16:04:16.794 [main] INFO  o.a.c.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
-2024-12-12 16:04:16.795 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 555 ms
-2024-12-12 16:04:17.058 [main] INFO  o.s.b.a.web.servlet.WelcomePageHandlerMapping - Adding welcome page: class path resource [static/index.html]
-2024-12-12 16:04:17.204 [main] INFO  org.apache.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8077"]
-2024-12-12 16:04:17.209 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat started on port 8077 (http) with context path '/'
-2024-12-12 16:04:17.216 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - Started Aiagent7Application in 1.323 seconds (process running for 1.684)
-2024-12-12 16:04:20.807 [http-nio-8077-exec-1] INFO  o.a.c.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
-2024-12-12 16:04:20.808 [http-nio-8077-exec-1] INFO  org.springframework.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
-2024-12-12 16:04:20.808 [http-nio-8077-exec-1] INFO  org.springframework.web.servlet.DispatcherServlet - Completed initialization in 0 ms
-2024-12-12 16:04:20.820 [http-nio-8077-exec-1] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Request: POST /api/chat
-2024-12-12 16:04:20.857 [http-nio-8077-exec-1] INFO  c.shuangqi.aiagent7.service.base.ChatBaseService - chat-Prompt: 回答我的问题。
-2024-12-12 16:04:20.860 [http-nio-8077-exec-1] INFO  c.shuangqi.aiagent7.service.base.ChatBaseService - chat-Message: 你是谁
-2024-12-12 16:04:35.231 [http-nio-8077-exec-1] INFO  c.shuangqi.aiagent7.service.base.ChatBaseService - chat-response: {  "}我是通义千问，由阿里云开发的人工智能助手。我可以回答各种问题、提供信息和与用户进行对话。有什么问题需要我来帮忙解答吗？  "   
-
-
-
-
-
-
-
-
-
-
-
-
- 
-
-
-
-
-
-  
-  
-
-  
-
-
-
-  
-
-  
-
-  
-
-
-
-  
-
-  
-
-
-
-
-
-
-
-
-  
-
-  
-
-  
-
-
-
-  
-
-  
-
-   
-  
-  
-  
-  
-
-   
-  
-
-  
-
-  
-
-
-2024-12-12 16:04:35.241 [http-nio-8077-exec-1] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Response: POST /api/chat took 14420ms
-2024-12-12 16:17:02.127 [SpringApplicationShutdownHook] INFO  o.s.boot.web.embedded.tomcat.GracefulShutdown - Commencing graceful shutdown. Waiting for active requests to complete
-2024-12-12 16:17:04.185 [tomcat-shutdown] INFO  o.s.boot.web.embedded.tomcat.GracefulShutdown - Graceful shutdown complete
-2024-12-12 16:17:05.885 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - Starting Aiagent7Application using Java 17.0.2 with PID 71693 (/Users/lishuangqi/myWork/aiagent7/target/classes started by lishuangqi in /Users/lishuangqi/myWork/aiagent7)
-2024-12-12 16:17:05.885 [main] DEBUG com.shuangqi.aiagent7.Aiagent7Application - Running with Spring Boot v3.4.1-SNAPSHOT, Spring v6.2.1-SNAPSHOT
-2024-12-12 16:17:05.886 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - No active profile set, falling back to 1 default profile: "default"
-2024-12-12 16:17:06.389 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat initialized with port 8077 (http)
-2024-12-12 16:17:06.398 [main] INFO  org.apache.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8077"]
-2024-12-12 16:17:06.399 [main] INFO  org.apache.catalina.core.StandardService - Starting service [Tomcat]
-2024-12-12 16:17:06.399 [main] INFO  org.apache.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.34]
-2024-12-12 16:17:06.430 [main] INFO  o.a.c.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
-2024-12-12 16:17:06.430 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 524 ms
-2024-12-12 16:17:06.667 [main] WARN  o.s.b.w.s.c.AnnotationConfigServletWebServerApplicationContext - Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'chatController' defined in file [/Users/lishuangqi/myWork/aiagent7/target/classes/com/shuangqi/aiagent7/controller/ChatController.class]: Unsatisfied dependency expressed through constructor parameter 0: Error creating bean with name 'chatBaseService' defined in file [/Users/lishuangqi/myWork/aiagent7/target/classes/com/shuangqi/aiagent7/service/base/ChatBaseService.class]: Unsatisfied dependency expressed through constructor parameter 0: Error creating bean with name 'chatClientBuilder' defined in class path resource [org/springframework/ai/autoconfigure/chat/client/ChatClientAutoConfiguration.class]: Unsatisfied dependency expressed through method 'chatClientBuilder' parameter 1: Error creating bean with name 'ollamaChatModel' defined in class path resource [org/springframework/ai/autoconfigure/ollama/OllamaAutoConfiguration.class]: Unsatisfied dependency expressed through method 'ollamaChatModel' parameter 2: Error creating bean with name 'spring.ai.ollama.init-org.springframework.ai.autoconfigure.ollama.OllamaInitializationProperties': Could not bind properties to 'OllamaInitializationProperties' : prefix=spring.ai.ollama.init, ignoreInvalidFields=false, ignoreUnknownFields=true
-2024-12-12 16:17:06.668 [main] INFO  org.apache.catalina.core.StandardService - Stopping service [Tomcat]
-2024-12-12 16:17:06.679 [main] INFO  o.s.b.a.logging.ConditionEvaluationReportLogger - 
-
-Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
-2024-12-12 16:17:06.688 [main] ERROR o.s.b.diagnostics.LoggingFailureAnalysisReporter - 
-
-***************************
-APPLICATION FAILED TO START
-***************************
-
-Description:
-
-Failed to bind properties under 'spring.ai.ollama.init.max-retries' to int:
-
-    Property: spring.ai.ollama.init.max-retries
-    Value: ""
-    Origin: class path resource [application.yml] - 15:21
-    Reason: failed to convert java.lang.String to int (caused by java.lang.IllegalArgumentException: A null value cannot be assigned to a primitive type)
-
-Action:
-
-Update your application's configuration
-
-2024-12-12 16:17:21.932 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - Starting Aiagent7Application using Java 17.0.2 with PID 71730 (/Users/lishuangqi/myWork/aiagent7/target/classes started by lishuangqi in /Users/lishuangqi/myWork/aiagent7)
-2024-12-12 16:17:21.933 [main] DEBUG com.shuangqi.aiagent7.Aiagent7Application - Running with Spring Boot v3.4.1-SNAPSHOT, Spring v6.2.1-SNAPSHOT
-2024-12-12 16:17:21.934 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - No active profile set, falling back to 1 default profile: "default"
-2024-12-12 16:17:22.457 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat initialized with port 8077 (http)
-2024-12-12 16:17:22.464 [main] INFO  org.apache.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8077"]
-2024-12-12 16:17:22.465 [main] INFO  org.apache.catalina.core.StandardService - Starting service [Tomcat]
-2024-12-12 16:17:22.465 [main] INFO  org.apache.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.34]
-2024-12-12 16:17:22.489 [main] INFO  o.a.c.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
-2024-12-12 16:17:22.489 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 533 ms
-2024-12-12 16:17:22.771 [main] INFO  o.s.b.a.web.servlet.WelcomePageHandlerMapping - Adding welcome page: class path resource [static/index.html]
-2024-12-12 16:17:22.909 [main] INFO  org.apache.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8077"]
-2024-12-12 16:17:22.915 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat started on port 8077 (http) with context path '/'
-2024-12-12 16:17:22.921 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - Started Aiagent7Application in 1.352 seconds (process running for 1.745)
-2024-12-12 16:17:45.682 [http-nio-8077-exec-1] INFO  o.a.c.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
-2024-12-12 16:17:45.684 [http-nio-8077-exec-1] INFO  org.springframework.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
-2024-12-12 16:17:45.686 [http-nio-8077-exec-1] INFO  org.springframework.web.servlet.DispatcherServlet - Completed initialization in 2 ms
-2024-12-12 16:17:45.709 [http-nio-8077-exec-1] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Request: OPTIONS /api/chat
-2024-12-12 16:17:45.711 [http-nio-8077-exec-1] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Response: OPTIONS /api/chat took 0ms
-2024-12-12 16:17:45.719 [http-nio-8077-exec-2] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Request: POST /api/chat
-2024-12-12 16:17:45.775 [http-nio-8077-exec-2] INFO  c.shuangqi.aiagent7.service.base.ChatBaseService - chat-Prompt: 回答我的问题。
-2024-12-12 16:17:45.775 [http-nio-8077-exec-2] INFO  c.shuangqi.aiagent7.service.base.ChatBaseService - chat-Message: 你是谁
-2024-12-12 16:17:58.950 [http-nio-8077-exec-2] INFO  c.shuangqi.aiagent7.service.base.ChatBaseService - chat-response: {"问题": "你是谁", "答案": "我是通义千问，由阿里云开发的人工智能助手。我被设计用来生成各种主题的文本内容，并且与人类用户进行对话和交流。如果你有任何其他问题或需要帮助，请随时告诉我！我会尽力提供支持和解答你的疑惑。"}
-2024-12-12 16:17:58.969 [http-nio-8077-exec-2] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Response: POST /api/chat took 13250ms
-2024-12-12 16:18:22.002 [SpringApplicationShutdownHook] INFO  o.s.boot.web.embedded.tomcat.GracefulShutdown - Commencing graceful shutdown. Waiting for active requests to complete
-2024-12-12 16:18:24.052 [tomcat-shutdown] INFO  o.s.boot.web.embedded.tomcat.GracefulShutdown - Graceful shutdown complete
-2024-12-12 16:21:03.788 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - Starting Aiagent7Application using Java 17.0.2 with PID 72051 (/Users/lishuangqi/myWork/aiagent7/target/classes started by lishuangqi in /Users/lishuangqi/myWork/aiagent7)
-2024-12-12 16:21:03.789 [main] DEBUG com.shuangqi.aiagent7.Aiagent7Application - Running with Spring Boot v3.4.1-SNAPSHOT, Spring v6.2.1-SNAPSHOT
-2024-12-12 16:21:03.789 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - No active profile set, falling back to 1 default profile: "default"
-2024-12-12 16:21:04.281 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat initialized with port 8077 (http)
-2024-12-12 16:21:04.288 [main] INFO  org.apache.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8077"]
-2024-12-12 16:21:04.288 [main] INFO  org.apache.catalina.core.StandardService - Starting service [Tomcat]
-2024-12-12 16:21:04.288 [main] INFO  org.apache.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.34]
-2024-12-12 16:21:04.317 [main] INFO  o.a.c.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
-2024-12-12 16:21:04.317 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 507 ms
-2024-12-12 16:21:04.574 [main] INFO  o.s.b.a.web.servlet.WelcomePageHandlerMapping - Adding welcome page: class path resource [static/index.html]
-2024-12-12 16:21:04.716 [main] INFO  org.apache.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8077"]
-2024-12-12 16:21:04.721 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat started on port 8077 (http) with context path '/'
-2024-12-12 16:21:04.727 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - Started Aiagent7Application in 1.278 seconds (process running for 1.658)
-2024-12-12 16:21:14.501 [http-nio-8077-exec-2] INFO  o.a.c.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
-2024-12-12 16:21:14.503 [http-nio-8077-exec-2] INFO  org.springframework.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
-2024-12-12 16:21:14.505 [http-nio-8077-exec-2] INFO  org.springframework.web.servlet.DispatcherServlet - Completed initialization in 2 ms
-2024-12-12 16:21:14.517 [http-nio-8077-exec-2] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Request: POST /api/step
-2024-12-12 16:21:14.535 [http-nio-8077-exec-2] INFO  c.shuangqi.aiagent7.service.base.ChatBaseService - chat-Prompt: 回答时数据使用step作为key，全部的步骤作为一个数组。例如{step:[步骤一,步骤二]}这种格式给我
-2024-12-12 16:21:14.535 [http-nio-8077-exec-2] INFO  c.shuangqi.aiagent7.service.base.ChatBaseService - chat-Message: 大象装进冰箱要分为几步？
-2024-12-12 16:21:21.946 [http-nio-8077-exec-2] INFO  c.shuangqi.aiagent7.service.base.ChatBaseService - chat-response: {"step": ["打开冰箱门", "把大象放在冰箱门口", "关闭冰箱门", "启动冷冻模式", "等待一段时间以确保完全冻结"]}
-2024-12-12 16:21:21.947 [http-nio-8077-exec-2] INFO  c.shuangqi.aiagent7.service.base.ChatBaseService - chat-Prompt: 这个问题需要注意什么？请给我纯文字的格式
-2024-12-12 16:21:21.948 [http-nio-8077-exec-2] INFO  c.shuangqi.aiagent7.service.base.ChatBaseService - chat-Message: 打开冰箱门
-2024-12-12 16:21:37.521 [http-nio-8077-exec-2] INFO  c.shuangqi.aiagent7.service.base.ChatBaseService - chat-response: {"注意点": ["安全", "卫生"], "解释": ["在打开冰箱门时，需要确保手部清洁，以避免引入细菌或病毒。同时，操作应轻柔，防止意外关闭导致内部食物变质或损坏。此外，在夏季高温季节里，频繁开启冰箱门会导致冷气流失，增加能源消耗，因此应尽量减少不必要的开关次数。"]}
-2024-12-12 16:21:37.523 [http-nio-8077-exec-2] INFO  c.shuangqi.aiagent7.service.base.ChatBaseService - chat-Prompt: 这个问题需要注意什么？请给我纯文字的格式
-2024-12-12 16:21:37.523 [http-nio-8077-exec-2] INFO  c.shuangqi.aiagent7.service.base.ChatBaseService - chat-Message: 把大象放在冰箱门口
-2024-12-12 16:22:15.659 [http-nio-8077-exec-2] INFO  c.shuangqi.aiagent7.service.base.ChatBaseService - chat-response: {"注意点": "这个问题是著名的逻辑谜题或者笑话，目的是考验思维和理解问题的能力。解决问题的关键在于正确地按照步骤分解问题，并以逻辑顺序执行。以下是解决这个问题时需要考虑的重点：", "步骤": ["确定有‘冰箱’这个设施存在","确认大象可以被“放”入这样一个物体中","识别可能的物理步骤，即：\n\n  a. 打开冰箱门\n  b. 将大象引导至冰箱门口\n  c. 关上冰箱门"], "提醒事项": ["思考问题的每个部分是否都被明确理解。本题看似简单却故意忽略了几个关键点（如如何搬运大象、大象是否会受损等），因此需要从逻辑和现实的角度来考量每一步操作的可能性；\n\n  - 意识到这是一道幽默或智力挑战，不要过于深究物理限制的细节，而是注重问题解决的过程和思考方式。"]}
-2024-12-12 16:22:15.661 [http-nio-8077-exec-2] INFO  c.shuangqi.aiagent7.service.base.ChatBaseService - chat-Prompt: 这个问题需要注意什么？请给我纯文字的格式
-2024-12-12 16:22:15.661 [http-nio-8077-exec-2] INFO  c.shuangqi.aiagent7.service.base.ChatBaseService - chat-Message: 关闭冰箱门
-2024-12-12 16:22:22.468 [http-nio-8077-exec-2] INFO  c.shuangqi.aiagent7.service.base.ChatBaseService - chat-response: {"关闭冰箱门": ["保持冷气不散失", "减少能源消耗", "防止食物变质", "避免异味交叉"]}
-2024-12-12 16:22:22.469 [http-nio-8077-exec-2] INFO  c.shuangqi.aiagent7.service.base.ChatBaseService - chat-Prompt: 这个问题需要注意什么？请给我纯文字的格式
-2024-12-12 16:22:22.469 [http-nio-8077-exec-2] INFO  c.shuangqi.aiagent7.service.base.ChatBaseService - chat-Message: 启动冷冻模式
-2024-12-12 16:23:08.142 [http-nio-8077-exec-2] INFO  c.shuangqi.aiagent7.service.base.ChatBaseService - chat-response: {"注意要点": ["确保设备安全", "检查系统兼容性", "了解能源消耗", "准备应对可能的问题", "合理设置温度"], "详细说明": ["在启动冷冻模式前，首先要确保你的设备（如空调或冰箱）能够安全地运行于低温环境中。避免在不适宜的温度下使用，以免对设备造成损害。", "检查设备是否兼容冷冻模式。每种设备都有其推荐的操作条件和特定功能设置，确保你了解并遵循制造商提供的指导。", "考虑到能源消耗问题。冷冻模式通常比常规操作模式耗能更高，因为它们需要更长时间来达到所需的低温。在决定使用前，评估这可能对你的电费产生的影响。", "准备应对可能出现的技术或机械问题。如制冷剂泄漏、部件损坏等，确保你了解基本的维护知识，并考虑在紧急情况下联系专业人员的帮助。", "合理设置冷冻温度。不同的应用场合（例如冷藏食品存储还是制造低温环境）需要不同的设定值，因此要根据实际需求调整温度设定，同时注意不要将温度设置得太低以避免不必要消耗和潜在的安全问题。"]}
-2024-12-12 16:23:08.143 [http-nio-8077-exec-2] INFO  c.shuangqi.aiagent7.service.base.ChatBaseService - chat-Prompt: 这个问题需要注意什么？请给我纯文字的格式
-2024-12-12 16:23:08.144 [http-nio-8077-exec-2] INFO  c.shuangqi.aiagent7.service.base.ChatBaseService - chat-Message: 等待一段时间以确保完全冻结
-2024-12-12 16:24:20.393 [http-nio-8077-exec-2] INFO  c.shuangqi.aiagent7.service.base.ChatBaseService - chat-response: {"问题": "这个问题需要注意什么？", "答案": "在编程或软件开发过程中，遇到需要等待一段时间来确保某个操作完全完成或系统完全冻结的状态时，请注意以下几点：\n1. **明确需求**：确定为什么需要等待及等待的具体原因。是为了让资源（如网络连接、数据库查询）准备好，还是为了处理程序中的某些耗时操作。\n2. **使用适当的同步机制**：根据上下文选择正确的同步方法或工具来确保等待的操作不会阻塞其他部分的执行。在多线程编程中，可以考虑使用`join()`函数、锁或其他互斥技术以避免竞态条件和死锁。\n3. **处理超时**：为等待操作设置一个合理的超时时长，并在达到时间限制后采取适当的响应策略（如重试、通知用户等待过长或直接失败）。\n4. **优化性能**：检查是否有可以优化或改进的地方，以减少等待的时间。这可能包括算法优化、资源的更有效利用或是使用异步调用等技术来并行处理任务。\n5. **日志和监控**：记录等待操作的状态和时间，以便于后续分析和调试。同时，通过监控系统性能指标（如CPU、内存使用情况）来检测是否存在瓶颈或异常。\n6. **用户体验**：在用户界面中考虑提供状态指示或反馈给用户（如进度条、加载提示等），增强用户感知操作的进行与预期。\n7. **错误处理和回滚**：确保等待过程中有适当的错误处理机制，包括可能的数据一致性问题、资源释放等。\n8. **持续测试**：在开发的不同阶段对这些等待逻辑进行彻底的测试，包括边缘情况和异常处理，以确保系统的稳定性和可靠性。"}
-2024-12-12 16:24:20.427 [http-nio-8077-exec-2] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Response: POST /api/step took 185909ms
-2024-12-12 16:30:50.738 [SpringApplicationShutdownHook] INFO  o.s.boot.web.embedded.tomcat.GracefulShutdown - Commencing graceful shutdown. Waiting for active requests to complete
-2024-12-12 16:30:52.863 [tomcat-shutdown] INFO  o.s.boot.web.embedded.tomcat.GracefulShutdown - Graceful shutdown complete
-2024-12-12 16:59:05.025 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - Starting Aiagent7Application using Java 17.0.2 with PID 74749 (/Users/lishuangqi/myWork/aiagent7/target/classes started by lishuangqi in /Users/lishuangqi/myWork/aiagent7)
-2024-12-12 16:59:05.026 [main] DEBUG com.shuangqi.aiagent7.Aiagent7Application - Running with Spring Boot v3.4.1-SNAPSHOT, Spring v6.2.1-SNAPSHOT
-2024-12-12 16:59:05.027 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - No active profile set, falling back to 1 default profile: "default"
-2024-12-12 16:59:05.495 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat initialized with port 8077 (http)
-2024-12-12 16:59:05.501 [main] INFO  org.apache.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8077"]
-2024-12-12 16:59:05.502 [main] INFO  org.apache.catalina.core.StandardService - Starting service [Tomcat]
-2024-12-12 16:59:05.502 [main] INFO  org.apache.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.34]
-2024-12-12 16:59:05.526 [main] INFO  o.a.c.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
-2024-12-12 16:59:05.526 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 469 ms
-2024-12-12 16:59:05.767 [main] INFO  o.s.b.a.web.servlet.WelcomePageHandlerMapping - Adding welcome page: class path resource [static/index.html]
-2024-12-12 16:59:05.900 [main] INFO  org.apache.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8077"]
-2024-12-12 16:59:05.905 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat started on port 8077 (http) with context path '/'
-2024-12-12 16:59:05.910 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - Started Aiagent7Application in 1.157 seconds (process running for 1.601)
-2024-12-12 16:59:17.197 [http-nio-8077-exec-1] INFO  o.a.c.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
-2024-12-12 16:59:17.199 [http-nio-8077-exec-1] INFO  org.springframework.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
-2024-12-12 16:59:17.201 [http-nio-8077-exec-1] INFO  org.springframework.web.servlet.DispatcherServlet - Completed initialization in 1 ms
-2024-12-12 16:59:17.213 [http-nio-8077-exec-1] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Request: GET /ai2
-2024-12-12 16:59:24.481 [http-nio-8077-exec-1] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Response: GET /ai2 took 7267ms
-2024-12-12 16:59:24.530 [http-nio-8077-exec-3] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Request: GET /favicon.ico
-2024-12-12 16:59:24.543 [http-nio-8077-exec-3] ERROR c.shuangqi.aiagent7.common.GlobalExceptionHandler - System Exception: uri=/favicon.ico
-org.springframework.web.servlet.resource.NoResourceFoundException: No static resource favicon.ico.
-	at org.springframework.web.servlet.resource.ResourceHttpRequestHandler.handleRequest(ResourceHttpRequestHandler.java:585)
-	at org.springframework.web.servlet.mvc.HttpRequestHandlerAdapter.handle(HttpRequestHandlerAdapter.java:52)
-	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1088)
-	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:978)
-	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1014)
-	at org.springframework.web.servlet.FrameworkServlet.doGet(FrameworkServlet.java:903)
-	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:564)
-	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:885)
-	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:658)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:195)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
-	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:51)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
-	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100)
-	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
-	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93)
-	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
-	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201)
-	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
-	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:167)
-	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:90)
-	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:483)
-	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:115)
-	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:93)
-	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:74)
-	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:344)
-	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:397)
-	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:63)
-	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:905)
-	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1741)
-	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:52)
-	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1190)
-	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659)
-	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:63)
-	at java.base/java.lang.Thread.run(Thread.java:833)
-2024-12-12 17:00:55.974 [http-nio-8077-exec-5] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Request: GET /ai1
-2024-12-12 17:01:07.711 [http-nio-8077-exec-5] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Response: GET /ai1 took 11733ms
-2024-12-12 17:01:07.734 [http-nio-8077-exec-7] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Request: GET /favicon.ico
-2024-12-12 17:01:07.741 [http-nio-8077-exec-7] ERROR c.shuangqi.aiagent7.common.GlobalExceptionHandler - System Exception: uri=/favicon.ico
-org.springframework.web.servlet.resource.NoResourceFoundException: No static resource favicon.ico.
-	at org.springframework.web.servlet.resource.ResourceHttpRequestHandler.handleRequest(ResourceHttpRequestHandler.java:585)
-	at org.springframework.web.servlet.mvc.HttpRequestHandlerAdapter.handle(HttpRequestHandlerAdapter.java:52)
-	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1088)
-	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:978)
-	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1014)
-	at org.springframework.web.servlet.FrameworkServlet.doGet(FrameworkServlet.java:903)
-	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:564)
-	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:885)
-	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:658)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:195)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
-	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:51)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
-	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100)
-	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
-	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93)
-	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
-	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201)
-	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
-	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:167)
-	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:90)
-	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:483)
-	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:115)
-	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:93)
-	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:74)
-	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:344)
-	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:397)
-	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:63)
-	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:905)
-	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1741)
-	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:52)
-	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1190)
-	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659)
-	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:63)
-	at java.base/java.lang.Thread.run(Thread.java:833)
-2024-12-12 17:05:54.896 [SpringApplicationShutdownHook] INFO  o.s.boot.web.embedded.tomcat.GracefulShutdown - Commencing graceful shutdown. Waiting for active requests to complete
-2024-12-12 17:05:56.921 [tomcat-shutdown] INFO  o.s.boot.web.embedded.tomcat.GracefulShutdown - Graceful shutdown complete
-2024-12-12 17:05:59.921 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - Starting Aiagent7Application using Java 17.0.2 with PID 75359 (/Users/lishuangqi/myWork/aiagent7/target/classes started by lishuangqi in /Users/lishuangqi/myWork/aiagent7)
-2024-12-12 17:05:59.921 [main] DEBUG com.shuangqi.aiagent7.Aiagent7Application - Running with Spring Boot v3.4.1-SNAPSHOT, Spring v6.2.1-SNAPSHOT
-2024-12-12 17:05:59.922 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - No active profile set, falling back to 1 default profile: "default"
-2024-12-12 17:06:00.356 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat initialized with port 8077 (http)
-2024-12-12 17:06:00.363 [main] INFO  org.apache.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8077"]
-2024-12-12 17:06:00.363 [main] INFO  org.apache.catalina.core.StandardService - Starting service [Tomcat]
-2024-12-12 17:06:00.364 [main] INFO  org.apache.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.34]
-2024-12-12 17:06:00.386 [main] INFO  o.a.c.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
-2024-12-12 17:06:00.387 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 446 ms
-2024-12-12 17:06:00.632 [main] INFO  o.s.b.a.web.servlet.WelcomePageHandlerMapping - Adding welcome page: class path resource [static/index.html]
-2024-12-12 17:06:00.762 [main] INFO  org.apache.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8077"]
-2024-12-12 17:06:00.766 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat started on port 8077 (http) with context path '/'
-2024-12-12 17:06:00.772 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - Started Aiagent7Application in 1.156 seconds (process running for 1.426)
-2024-12-12 17:06:06.124 [http-nio-8077-exec-1] INFO  o.a.c.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
-2024-12-12 17:06:06.124 [http-nio-8077-exec-1] INFO  org.springframework.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
-2024-12-12 17:06:06.125 [http-nio-8077-exec-1] INFO  org.springframework.web.servlet.DispatcherServlet - Completed initialization in 1 ms
-2024-12-12 17:06:06.136 [http-nio-8077-exec-1] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Request: GET /ai2
-2024-12-12 17:06:13.322 [http-nio-8077-exec-1] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Response: GET /ai2 took 7185ms
-2024-12-12 17:06:13.363 [http-nio-8077-exec-2] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Request: GET /favicon.ico
-2024-12-12 17:06:13.366 [http-nio-8077-exec-2] ERROR c.shuangqi.aiagent7.common.GlobalExceptionHandler - System Exception: uri=/favicon.ico
-org.springframework.web.servlet.resource.NoResourceFoundException: No static resource favicon.ico.
-	at org.springframework.web.servlet.resource.ResourceHttpRequestHandler.handleRequest(ResourceHttpRequestHandler.java:585)
-	at org.springframework.web.servlet.mvc.HttpRequestHandlerAdapter.handle(HttpRequestHandlerAdapter.java:52)
-	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1088)
-	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:978)
-	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1014)
-	at org.springframework.web.servlet.FrameworkServlet.doGet(FrameworkServlet.java:903)
-	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:564)
-	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:885)
-	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:658)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:195)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
-	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:51)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
-	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100)
-	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
-	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93)
-	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
-	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201)
-	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
-	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:167)
-	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:90)
-	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:483)
-	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:115)
-	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:93)
-	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:74)
-	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:344)
-	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:397)
-	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:63)
-	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:905)
-	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1741)
-	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:52)
-	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1190)
-	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659)
-	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:63)
-	at java.base/java.lang.Thread.run(Thread.java:833)
-2024-12-12 17:28:35.068 [SpringApplicationShutdownHook] INFO  o.s.boot.web.embedded.tomcat.GracefulShutdown - Commencing graceful shutdown. Waiting for active requests to complete
-2024-12-12 17:28:37.116 [tomcat-shutdown] INFO  o.s.boot.web.embedded.tomcat.GracefulShutdown - Graceful shutdown complete
-2024-12-12 17:28:40.061 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - Starting Aiagent7Application using Java 17.0.2 with PID 77405 (/Users/lishuangqi/myWork/aiagent7/target/classes started by lishuangqi in /Users/lishuangqi/myWork/aiagent7)
-2024-12-12 17:28:40.061 [main] DEBUG com.shuangqi.aiagent7.Aiagent7Application - Running with Spring Boot v3.4.1-SNAPSHOT, Spring v6.2.1-SNAPSHOT
-2024-12-12 17:28:40.062 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - No active profile set, falling back to 1 default profile: "default"
-2024-12-12 17:28:40.523 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat initialized with port 8077 (http)
-2024-12-12 17:28:40.529 [main] INFO  org.apache.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8077"]
-2024-12-12 17:28:40.530 [main] INFO  org.apache.catalina.core.StandardService - Starting service [Tomcat]
-2024-12-12 17:28:40.530 [main] INFO  org.apache.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.34]
-2024-12-12 17:28:40.554 [main] INFO  o.a.c.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
-2024-12-12 17:28:40.554 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 474 ms
-2024-12-12 17:28:40.792 [main] INFO  o.s.b.a.web.servlet.WelcomePageHandlerMapping - Adding welcome page: class path resource [static/index.html]
-2024-12-12 17:28:40.921 [main] INFO  org.apache.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8077"]
-2024-12-12 17:28:40.926 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat started on port 8077 (http) with context path '/'
-2024-12-12 17:28:40.932 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - Started Aiagent7Application in 1.195 seconds (process running for 1.596)
-2024-12-12 17:28:43.126 [http-nio-8077-exec-1] INFO  o.a.c.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
-2024-12-12 17:28:43.126 [http-nio-8077-exec-1] INFO  org.springframework.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
-2024-12-12 17:28:43.127 [http-nio-8077-exec-1] INFO  org.springframework.web.servlet.DispatcherServlet - Completed initialization in 0 ms
-2024-12-12 17:28:43.137 [http-nio-8077-exec-1] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Request: GET /ai2
-2024-12-12 17:28:50.167 [http-nio-8077-exec-1] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Response: GET /ai2 took 7029ms
-2024-12-12 17:28:50.191 [http-nio-8077-exec-2] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Request: GET /favicon.ico
-2024-12-12 17:28:50.194 [http-nio-8077-exec-2] ERROR c.shuangqi.aiagent7.common.GlobalExceptionHandler - System Exception: uri=/favicon.ico
-org.springframework.web.servlet.resource.NoResourceFoundException: No static resource favicon.ico.
-	at org.springframework.web.servlet.resource.ResourceHttpRequestHandler.handleRequest(ResourceHttpRequestHandler.java:585)
-	at org.springframework.web.servlet.mvc.HttpRequestHandlerAdapter.handle(HttpRequestHandlerAdapter.java:52)
-	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1088)
-	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:978)
-	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1014)
-	at org.springframework.web.servlet.FrameworkServlet.doGet(FrameworkServlet.java:903)
-	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:564)
-	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:885)
-	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:658)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:195)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
-	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:51)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
-	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100)
-	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
-	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93)
-	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
-	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201)
-	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
-	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:167)
-	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:90)
-	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:483)
-	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:115)
-	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:93)
-	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:74)
-	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:344)
-	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:397)
-	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:63)
-	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:905)
-	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1741)
-	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:52)
-	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1190)
-	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659)
-	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:63)
-	at java.base/java.lang.Thread.run(Thread.java:833)
-2024-12-12 17:29:19.734 [http-nio-8077-exec-3] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Request: GET /ai5
-2024-12-12 17:29:25.303 [http-nio-8077-exec-4] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Request: GET /ai5
-2024-12-12 17:29:25.307 [http-nio-8077-exec-4] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Response: GET /ai5 took 3ms
-2024-12-12 17:29:25.315 [http-nio-8077-exec-5] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Request: GET /favicon.ico
-2024-12-12 17:29:25.319 [http-nio-8077-exec-5] ERROR c.shuangqi.aiagent7.common.GlobalExceptionHandler - System Exception: uri=/favicon.ico
-org.springframework.web.servlet.resource.NoResourceFoundException: No static resource favicon.ico.
-	at org.springframework.web.servlet.resource.ResourceHttpRequestHandler.handleRequest(ResourceHttpRequestHandler.java:585)
-	at org.springframework.web.servlet.mvc.HttpRequestHandlerAdapter.handle(HttpRequestHandlerAdapter.java:52)
-	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1088)
-	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:978)
-	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1014)
-	at org.springframework.web.servlet.FrameworkServlet.doGet(FrameworkServlet.java:903)
-	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:564)
-	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:885)
-	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:658)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:195)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
-	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:51)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
-	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100)
-	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
-	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93)
-	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
-	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201)
-	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
-	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:167)
-	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:90)
-	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:483)
-	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:115)
-	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:93)
-	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:74)
-	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:344)
-	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:397)
-	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:63)
-	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:905)
-	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1741)
-	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:52)
-	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1190)
-	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659)
-	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:63)
-	at java.base/java.lang.Thread.run(Thread.java:833)
-2024-12-12 17:32:14.943 [SpringApplicationShutdownHook] INFO  o.s.boot.web.embedded.tomcat.GracefulShutdown - Commencing graceful shutdown. Waiting for active requests to complete
-2024-12-12 17:32:16.960 [tomcat-shutdown] INFO  o.s.boot.web.embedded.tomcat.GracefulShutdown - Graceful shutdown complete
-2024-12-12 17:32:18.806 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - Starting Aiagent7Application using Java 17.0.2 with PID 77645 (/Users/lishuangqi/myWork/aiagent7/target/classes started by lishuangqi in /Users/lishuangqi/myWork/aiagent7)
-2024-12-12 17:32:18.807 [main] DEBUG com.shuangqi.aiagent7.Aiagent7Application - Running with Spring Boot v3.4.1-SNAPSHOT, Spring v6.2.1-SNAPSHOT
-2024-12-12 17:32:18.808 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - No active profile set, falling back to 1 default profile: "default"
-2024-12-12 17:32:19.251 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat initialized with port 8077 (http)
-2024-12-12 17:32:19.257 [main] INFO  org.apache.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8077"]
-2024-12-12 17:32:19.258 [main] INFO  org.apache.catalina.core.StandardService - Starting service [Tomcat]
-2024-12-12 17:32:19.259 [main] INFO  org.apache.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.34]
-2024-12-12 17:32:19.284 [main] INFO  o.a.c.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
-2024-12-12 17:32:19.284 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 455 ms
-2024-12-12 17:32:19.645 [main] INFO  o.s.b.a.web.servlet.WelcomePageHandlerMapping - Adding welcome page: class path resource [static/index.html]
-2024-12-12 17:32:19.802 [main] INFO  org.apache.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8077"]
-2024-12-12 17:32:19.807 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat started on port 8077 (http) with context path '/'
-2024-12-12 17:32:19.813 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - Started Aiagent7Application in 1.341 seconds (process running for 1.596)
-2024-12-12 17:32:25.773 [http-nio-8077-exec-1] INFO  o.a.c.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
-2024-12-12 17:32:25.774 [http-nio-8077-exec-1] INFO  org.springframework.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
-2024-12-12 17:32:25.775 [http-nio-8077-exec-1] INFO  org.springframework.web.servlet.DispatcherServlet - Completed initialization in 1 ms
-2024-12-12 17:32:25.786 [http-nio-8077-exec-1] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Request: GET /ai5
-2024-12-12 17:32:44.635 [http-nio-8077-exec-2] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Request: GET /ai5
-2024-12-12 17:32:44.643 [http-nio-8077-exec-2] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Response: GET /ai5 took 7ms
-2024-12-12 17:32:44.655 [http-nio-8077-exec-3] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Request: GET /favicon.ico
-2024-12-12 17:32:44.659 [http-nio-8077-exec-3] ERROR c.shuangqi.aiagent7.common.GlobalExceptionHandler - System Exception: uri=/favicon.ico
-org.springframework.web.servlet.resource.NoResourceFoundException: No static resource favicon.ico.
-	at org.springframework.web.servlet.resource.ResourceHttpRequestHandler.handleRequest(ResourceHttpRequestHandler.java:585)
-	at org.springframework.web.servlet.mvc.HttpRequestHandlerAdapter.handle(HttpRequestHandlerAdapter.java:52)
-	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1088)
-	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:978)
-	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1014)
-	at org.springframework.web.servlet.FrameworkServlet.doGet(FrameworkServlet.java:903)
-	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:564)
-	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:885)
-	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:658)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:195)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
-	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:51)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
-	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100)
-	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
-	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93)
-	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
-	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201)
-	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
-	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:167)
-	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:90)
-	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:483)
-	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:115)
-	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:93)
-	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:74)
-	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:344)
-	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:397)
-	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:63)
-	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:905)
-	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1741)
-	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:52)
-	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1190)
-	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659)
-	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:63)
-	at java.base/java.lang.Thread.run(Thread.java:833)
-2024-12-12 17:39:42.198 [SpringApplicationShutdownHook] INFO  o.s.boot.web.embedded.tomcat.GracefulShutdown - Commencing graceful shutdown. Waiting for active requests to complete
-2024-12-12 17:39:44.225 [tomcat-shutdown] INFO  o.s.boot.web.embedded.tomcat.GracefulShutdown - Graceful shutdown complete
-2024-12-12 17:39:46.624 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - Starting Aiagent7Application using Java 17.0.2 with PID 78100 (/Users/lishuangqi/myWork/aiagent7/target/classes started by lishuangqi in /Users/lishuangqi/myWork/aiagent7)
-2024-12-12 17:39:46.625 [main] DEBUG com.shuangqi.aiagent7.Aiagent7Application - Running with Spring Boot v3.4.1-SNAPSHOT, Spring v6.2.1-SNAPSHOT
-2024-12-12 17:39:46.626 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - No active profile set, falling back to 1 default profile: "default"
-2024-12-12 17:39:47.222 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat initialized with port 8077 (http)
-2024-12-12 17:39:47.229 [main] INFO  org.apache.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8077"]
-2024-12-12 17:39:47.230 [main] INFO  org.apache.catalina.core.StandardService - Starting service [Tomcat]
-2024-12-12 17:39:47.230 [main] INFO  org.apache.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.34]
-2024-12-12 17:39:47.256 [main] INFO  o.a.c.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
-2024-12-12 17:39:47.257 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 579 ms
-2024-12-12 17:39:47.476 [main] INFO  o.s.b.a.web.servlet.WelcomePageHandlerMapping - Adding welcome page: class path resource [static/index.html]
-2024-12-12 17:39:47.617 [main] INFO  org.apache.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8077"]
-2024-12-12 17:39:47.621 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat started on port 8077 (http) with context path '/'
-2024-12-12 17:39:47.627 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - Started Aiagent7Application in 1.305 seconds (process running for 1.713)
-2024-12-12 17:40:13.271 [http-nio-8077-exec-1] INFO  o.a.c.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
-2024-12-12 17:40:13.272 [http-nio-8077-exec-1] INFO  org.springframework.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
-2024-12-12 17:40:13.273 [http-nio-8077-exec-1] INFO  org.springframework.web.servlet.DispatcherServlet - Completed initialization in 1 ms
-2024-12-12 17:40:13.281 [http-nio-8077-exec-1] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Request: POST /api/chat
-2024-12-12 17:40:13.320 [http-nio-8077-exec-1] INFO  c.shuangqi.aiagent7.service.base.ChatBaseService - chat-Prompt: 
-2024-12-12 17:40:13.321 [http-nio-8077-exec-1] INFO  c.shuangqi.aiagent7.service.base.ChatBaseService - chat-Message: 讲个笑话
-2024-12-12 17:40:13.335 [http-nio-8077-exec-1] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Response: POST /api/chat took 53ms
-2024-12-12 17:40:29.780 [http-nio-8077-exec-3] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Request: POST /api/chat
-2024-12-12 17:40:29.782 [http-nio-8077-exec-3] INFO  c.shuangqi.aiagent7.service.base.ChatBaseService - chat-Prompt: null
-2024-12-12 17:40:29.782 [http-nio-8077-exec-3] INFO  c.shuangqi.aiagent7.service.base.ChatBaseService - chat-Message: 讲个笑话
-2024-12-12 17:40:29.784 [http-nio-8077-exec-3] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Response: POST /api/chat took 4ms
-2024-12-12 17:42:59.657 [SpringApplicationShutdownHook] INFO  o.s.boot.web.embedded.tomcat.GracefulShutdown - Commencing graceful shutdown. Waiting for active requests to complete
-2024-12-12 17:43:01.675 [tomcat-shutdown] INFO  o.s.boot.web.embedded.tomcat.GracefulShutdown - Graceful shutdown complete
-2024-12-12 17:43:04.752 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - Starting Aiagent7Application using Java 17.0.2 with PID 78305 (/Users/lishuangqi/myWork/aiagent7/target/classes started by lishuangqi in /Users/lishuangqi/myWork/aiagent7)
-2024-12-12 17:43:04.753 [main] DEBUG com.shuangqi.aiagent7.Aiagent7Application - Running with Spring Boot v3.4.1-SNAPSHOT, Spring v6.2.1-SNAPSHOT
-2024-12-12 17:43:04.753 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - No active profile set, falling back to 1 default profile: "default"
-2024-12-12 17:43:05.235 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat initialized with port 8077 (http)
-2024-12-12 17:43:05.242 [main] INFO  org.apache.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8077"]
-2024-12-12 17:43:05.243 [main] INFO  org.apache.catalina.core.StandardService - Starting service [Tomcat]
-2024-12-12 17:43:05.243 [main] INFO  org.apache.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.34]
-2024-12-12 17:43:05.272 [main] INFO  o.a.c.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
-2024-12-12 17:43:05.272 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 499 ms
-2024-12-12 17:43:05.553 [main] INFO  o.s.b.a.web.servlet.WelcomePageHandlerMapping - Adding welcome page: class path resource [static/index.html]
-2024-12-12 17:43:05.689 [main] INFO  org.apache.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8077"]
-2024-12-12 17:43:05.695 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat started on port 8077 (http) with context path '/'
-2024-12-12 17:43:05.701 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - Started Aiagent7Application in 1.352 seconds (process running for 1.813)
-2024-12-12 17:43:15.463 [http-nio-8077-exec-2] INFO  o.a.c.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
-2024-12-12 17:43:15.463 [http-nio-8077-exec-2] INFO  org.springframework.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
-2024-12-12 17:43:15.464 [http-nio-8077-exec-2] INFO  org.springframework.web.servlet.DispatcherServlet - Completed initialization in 1 ms
-2024-12-12 17:43:15.480 [http-nio-8077-exec-2] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Request: POST /api/chat
-2024-12-12 17:43:37.208 [http-nio-8077-exec-2] INFO  c.shuangqi.aiagent7.service.base.ChatBaseService - chat-Prompt: null
-2024-12-12 17:43:37.210 [http-nio-8077-exec-2] INFO  c.shuangqi.aiagent7.service.base.ChatBaseService - chat-Message: 讲个笑话
-2024-12-12 17:43:37.242 [http-nio-8077-exec-2] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Response: POST /api/chat took 21760ms
-2024-12-12 17:44:13.235 [http-nio-8077-exec-3] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Request: POST /api/chat
-2024-12-12 17:44:13.238 [http-nio-8077-exec-3] INFO  c.shuangqi.aiagent7.service.base.ChatBaseService - chat-Prompt: null
-2024-12-12 17:44:13.238 [http-nio-8077-exec-3] INFO  c.shuangqi.aiagent7.service.base.ChatBaseService - chat-Message: 讲个笑话
-2024-12-12 17:44:13.240 [http-nio-8077-exec-3] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Response: POST /api/chat took 3ms
-2024-12-12 17:46:22.514 [SpringApplicationShutdownHook] INFO  o.s.boot.web.embedded.tomcat.GracefulShutdown - Commencing graceful shutdown. Waiting for active requests to complete
-2024-12-12 17:46:24.537 [tomcat-shutdown] INFO  o.s.boot.web.embedded.tomcat.GracefulShutdown - Graceful shutdown complete
-2024-12-12 17:46:26.446 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - Starting Aiagent7Application using Java 17.0.2 with PID 78492 (/Users/lishuangqi/myWork/aiagent7/target/classes started by lishuangqi in /Users/lishuangqi/myWork/aiagent7)
-2024-12-12 17:46:26.447 [main] DEBUG com.shuangqi.aiagent7.Aiagent7Application - Running with Spring Boot v3.4.1-SNAPSHOT, Spring v6.2.1-SNAPSHOT
-2024-12-12 17:46:26.447 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - No active profile set, falling back to 1 default profile: "default"
-2024-12-12 17:46:26.908 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat initialized with port 8077 (http)
-2024-12-12 17:46:26.915 [main] INFO  org.apache.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8077"]
-2024-12-12 17:46:26.916 [main] INFO  org.apache.catalina.core.StandardService - Starting service [Tomcat]
-2024-12-12 17:46:26.916 [main] INFO  org.apache.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.34]
-2024-12-12 17:46:26.941 [main] INFO  o.a.c.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
-2024-12-12 17:46:26.945 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 476 ms
-2024-12-12 17:46:27.182 [main] INFO  o.s.b.a.web.servlet.WelcomePageHandlerMapping - Adding welcome page: class path resource [static/index.html]
-2024-12-12 17:46:27.315 [main] INFO  org.apache.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8077"]
-2024-12-12 17:46:27.320 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat started on port 8077 (http) with context path '/'
-2024-12-12 17:46:27.326 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - Started Aiagent7Application in 1.182 seconds (process running for 1.483)
-2024-12-12 17:46:37.247 [http-nio-8077-exec-1] INFO  o.a.c.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
-2024-12-12 17:46:37.247 [http-nio-8077-exec-1] INFO  org.springframework.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
-2024-12-12 17:46:37.248 [http-nio-8077-exec-1] INFO  org.springframework.web.servlet.DispatcherServlet - Completed initialization in 1 ms
-2024-12-12 17:46:37.258 [http-nio-8077-exec-1] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Request: POST /api/chat
-2024-12-12 17:46:37.303 [http-nio-8077-exec-1] INFO  c.shuangqi.aiagent7.service.base.ChatBaseService - chat-Prompt: null
-2024-12-12 17:46:37.303 [http-nio-8077-exec-1] INFO  c.shuangqi.aiagent7.service.base.ChatBaseService - chat-Message: 讲个笑话
-2024-12-12 17:46:37.318 [http-nio-8077-exec-1] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Response: POST /api/chat took 59ms
-2024-12-12 17:47:25.109 [http-nio-8077-exec-3] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Request: POST /api/chat
-2024-12-12 17:47:25.114 [http-nio-8077-exec-3] INFO  c.shuangqi.aiagent7.service.base.ChatBaseService - chat-Prompt: null
-2024-12-12 17:47:25.115 [http-nio-8077-exec-3] INFO  c.shuangqi.aiagent7.service.base.ChatBaseService - chat-Message: 讲个笑话
-2024-12-12 17:47:35.769 [http-nio-8077-exec-3] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Response: POST /api/chat took 10657ms
-2024-12-12 17:49:39.607 [http-nio-8077-exec-5] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Request: POST /api/chat
-2024-12-12 17:49:39.613 [http-nio-8077-exec-5] INFO  c.shuangqi.aiagent7.service.base.ChatBaseService - chat-Prompt: null
-2024-12-12 17:49:39.613 [http-nio-8077-exec-5] INFO  c.shuangqi.aiagent7.service.base.ChatBaseService - chat-Message: 讲个笑话
-2024-12-12 17:50:19.779 [http-nio-8077-exec-5] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Response: POST /api/chat took 40170ms
-2024-12-12 17:50:25.763 [SpringApplicationShutdownHook] INFO  o.s.boot.web.embedded.tomcat.GracefulShutdown - Commencing graceful shutdown. Waiting for active requests to complete
-2024-12-12 17:50:27.791 [tomcat-shutdown] INFO  o.s.boot.web.embedded.tomcat.GracefulShutdown - Graceful shutdown complete
-2024-12-12 17:50:30.365 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - Starting Aiagent7Application using Java 17.0.2 with PID 78729 (/Users/lishuangqi/myWork/aiagent7/target/classes started by lishuangqi in /Users/lishuangqi/myWork/aiagent7)
-2024-12-12 17:50:30.367 [main] DEBUG com.shuangqi.aiagent7.Aiagent7Application - Running with Spring Boot v3.4.1-SNAPSHOT, Spring v6.2.1-SNAPSHOT
-2024-12-12 17:50:30.367 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - No active profile set, falling back to 1 default profile: "default"
-2024-12-12 17:50:30.845 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat initialized with port 8077 (http)
-2024-12-12 17:50:30.852 [main] INFO  org.apache.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8077"]
-2024-12-12 17:50:30.852 [main] INFO  org.apache.catalina.core.StandardService - Starting service [Tomcat]
-2024-12-12 17:50:30.852 [main] INFO  org.apache.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.34]
-2024-12-12 17:50:30.881 [main] INFO  o.a.c.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
-2024-12-12 17:50:30.881 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 495 ms
-2024-12-12 17:50:31.121 [main] INFO  o.s.b.a.web.servlet.WelcomePageHandlerMapping - Adding welcome page: class path resource [static/index.html]
-2024-12-12 17:50:31.253 [main] INFO  org.apache.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8077"]
-2024-12-12 17:50:31.259 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat started on port 8077 (http) with context path '/'
-2024-12-12 17:50:31.265 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - Started Aiagent7Application in 1.207 seconds (process running for 1.567)
-2024-12-12 17:50:34.459 [http-nio-8077-exec-2] INFO  o.a.c.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
-2024-12-12 17:50:34.459 [http-nio-8077-exec-2] INFO  org.springframework.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
-2024-12-12 17:50:34.460 [http-nio-8077-exec-2] INFO  org.springframework.web.servlet.DispatcherServlet - Completed initialization in 1 ms
-2024-12-12 17:50:34.468 [http-nio-8077-exec-2] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Request: POST /api/chat
-2024-12-12 17:50:34.510 [http-nio-8077-exec-2] INFO  c.shuangqi.aiagent7.service.base.ChatBaseService - chat-Prompt: null
-2024-12-12 17:50:34.510 [http-nio-8077-exec-2] INFO  c.shuangqi.aiagent7.service.base.ChatBaseService - chat-Message: 讲个笑话
-2024-12-12 17:50:43.888 [http-nio-8077-exec-2] INFO  c.shuangqi.aiagent7.service.base.ChatBaseService - chat-response: {
-"joke": "两个人在沙漠里走了三天三夜，他们发现了一大块巧克力。第一人说：‘太好了！’第二个人说：‘我早就知道你会把最后一口留给我。’"
-}
-2024-12-12 17:50:43.899 [http-nio-8077-exec-2] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Response: POST /api/chat took 9431ms
-2024-12-12 17:51:13.190 [SpringApplicationShutdownHook] INFO  o.s.boot.web.embedded.tomcat.GracefulShutdown - Commencing graceful shutdown. Waiting for active requests to complete
-2024-12-12 17:51:15.205 [tomcat-shutdown] INFO  o.s.boot.web.embedded.tomcat.GracefulShutdown - Graceful shutdown complete
-2024-12-12 17:51:17.434 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - Starting Aiagent7Application using Java 17.0.2 with PID 78785 (/Users/lishuangqi/myWork/aiagent7/target/classes started by lishuangqi in /Users/lishuangqi/myWork/aiagent7)
-2024-12-12 17:51:17.435 [main] DEBUG com.shuangqi.aiagent7.Aiagent7Application - Running with Spring Boot v3.4.1-SNAPSHOT, Spring v6.2.1-SNAPSHOT
-2024-12-12 17:51:17.435 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - No active profile set, falling back to 1 default profile: "default"
-2024-12-12 17:51:17.913 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat initialized with port 8077 (http)
-2024-12-12 17:51:17.920 [main] INFO  org.apache.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8077"]
-2024-12-12 17:51:17.921 [main] INFO  org.apache.catalina.core.StandardService - Starting service [Tomcat]
-2024-12-12 17:51:17.921 [main] INFO  org.apache.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.34]
-2024-12-12 17:51:17.946 [main] INFO  o.a.c.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
-2024-12-12 17:51:17.950 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 492 ms
-2024-12-12 17:51:18.191 [main] INFO  o.s.b.a.web.servlet.WelcomePageHandlerMapping - Adding welcome page: class path resource [static/index.html]
-2024-12-12 17:51:18.325 [main] INFO  org.apache.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8077"]
-2024-12-12 17:51:18.330 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat started on port 8077 (http) with context path '/'
-2024-12-12 17:51:18.336 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - Started Aiagent7Application in 1.157 seconds (process running for 1.474)
-2024-12-12 17:51:31.552 [http-nio-8077-exec-1] INFO  o.a.c.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
-2024-12-12 17:51:31.552 [http-nio-8077-exec-1] INFO  org.springframework.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
-2024-12-12 17:51:31.553 [http-nio-8077-exec-1] INFO  org.springframework.web.servlet.DispatcherServlet - Completed initialization in 0 ms
-2024-12-12 17:51:31.565 [http-nio-8077-exec-1] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Request: GET /ai7
-2024-12-12 17:51:36.166 [http-nio-8077-exec-1] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Response: GET /ai7 took 4600ms
-2024-12-12 17:51:36.187 [http-nio-8077-exec-3] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Request: GET /favicon.ico
-2024-12-12 17:51:36.191 [http-nio-8077-exec-3] ERROR c.shuangqi.aiagent7.common.GlobalExceptionHandler - System Exception: uri=/favicon.ico
-org.springframework.web.servlet.resource.NoResourceFoundException: No static resource favicon.ico.
-	at org.springframework.web.servlet.resource.ResourceHttpRequestHandler.handleRequest(ResourceHttpRequestHandler.java:585)
-	at org.springframework.web.servlet.mvc.HttpRequestHandlerAdapter.handle(HttpRequestHandlerAdapter.java:52)
-	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1088)
-	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:978)
-	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1014)
-	at org.springframework.web.servlet.FrameworkServlet.doGet(FrameworkServlet.java:903)
-	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:564)
-	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:885)
-	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:658)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:195)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
-	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:51)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
-	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100)
-	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
-	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93)
-	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
-	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201)
-	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
-	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:167)
-	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:90)
-	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:483)
-	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:115)
-	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:93)
-	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:74)
-	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:344)
-	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:397)
-	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:63)
-	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:905)
-	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1741)
-	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:52)
-	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1190)
-	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659)
-	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:63)
-	at java.base/java.lang.Thread.run(Thread.java:833)
-2024-12-12 17:58:33.181 [SpringApplicationShutdownHook] INFO  o.s.boot.web.embedded.tomcat.GracefulShutdown - Commencing graceful shutdown. Waiting for active requests to complete
-2024-12-12 17:58:35.209 [tomcat-shutdown] INFO  o.s.boot.web.embedded.tomcat.GracefulShutdown - Graceful shutdown complete
+2024-12-13 16:33:29.727 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat initialized with port 8078 (http)
+2024-12-13 16:33:29.738 [main] INFO  org.apache.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8078"]
+2024-12-13 16:33:29.739 [main] INFO  org.apache.catalina.core.StandardService - Starting service [Tomcat]
+2024-12-13 16:33:29.739 [main] INFO  org.apache.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.34]
+2024-12-13 16:33:29.783 [main] INFO  o.a.c.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2024-12-13 16:33:29.783 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 731 ms
+2024-12-13 16:33:30.137 [main] INFO  o.s.b.a.web.servlet.WelcomePageHandlerMapping - Adding welcome page: class path resource [static/index.html]
+2024-12-13 16:33:30.321 [main] INFO  org.apache.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8078"]
+2024-12-13 16:33:30.328 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat started on port 8078 (http) with context path '/'
+2024-12-13 16:33:34.076 [http-nio-8078-exec-1] INFO  o.a.c.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2024-12-13 16:33:34.076 [http-nio-8078-exec-1] INFO  org.springframework.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2024-12-13 16:33:34.077 [http-nio-8078-exec-1] INFO  org.springframework.web.servlet.DispatcherServlet - Completed initialization in 1 ms
+2024-12-13 16:36:09.150 [SpringApplicationShutdownHook] INFO  o.s.boot.web.embedded.tomcat.GracefulShutdown - Commencing graceful shutdown. Waiting for active requests to complete
+2024-12-13 16:36:09.171 [tomcat-shutdown] INFO  o.s.boot.web.embedded.tomcat.GracefulShutdown - Graceful shutdown complete
+2024-12-13 17:04:17.166 [main] WARN  o.s.b.w.s.c.AnnotationConfigServletWebServerApplicationContext - Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'requestMappingHandlerMapping' defined in class path resource [org/springframework/boot/autoconfigure/web/servlet/WebMvcAutoConfiguration$EnableWebMvcConfiguration.class]: Ambiguous mapping. Cannot map 'chatMemoryController' method 
+com.shuangqi.aiagent7.controller.ChatMemoryController#chatStream(String, String)
+to {GET [/chatMemory/chat]}: There is already 'chatMemoryController' bean method
+com.shuangqi.aiagent7.controller.ChatMemoryController#chat(String, String) mapped.
+2024-12-13 17:04:17.192 [main] ERROR org.springframework.boot.SpringApplication - Application run failed
+org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'requestMappingHandlerMapping' defined in class path resource [org/springframework/boot/autoconfigure/web/servlet/WebMvcAutoConfiguration$EnableWebMvcConfiguration.class]: Ambiguous mapping. Cannot map 'chatMemoryController' method 
+com.shuangqi.aiagent7.controller.ChatMemoryController#chatStream(String, String)
+to {GET [/chatMemory/chat]}: There is already 'chatMemoryController' bean method
+com.shuangqi.aiagent7.controller.ChatMemoryController#chat(String, String) mapped.
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1808)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:601)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:523)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:336)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:289)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:334)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:199)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.instantiateSingleton(DefaultListableBeanFactory.java:1122)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.preInstantiateSingleton(DefaultListableBeanFactory.java:1093)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.preInstantiateSingletons(DefaultListableBeanFactory.java:1030)
+	at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:987)
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:627)
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:146)
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:752)
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:439)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:318)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1361)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1350)
+	at com.shuangqi.aiagent7.Aiagent7Application.main(Aiagent7Application.java:10)
+Caused by: java.lang.IllegalStateException: Ambiguous mapping. Cannot map 'chatMemoryController' method 
+com.shuangqi.aiagent7.controller.ChatMemoryController#chatStream(String, String)
+to {GET [/chatMemory/chat]}: There is already 'chatMemoryController' bean method
+com.shuangqi.aiagent7.controller.ChatMemoryController#chat(String, String) mapped.
+	at org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.validateMethodMapping(AbstractHandlerMethodMapping.java:675)
+	at org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:637)
+	at org.springframework.web.servlet.handler.AbstractHandlerMethodMapping.registerHandlerMethod(AbstractHandlerMethodMapping.java:331)
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping.registerHandlerMethod(RequestMappingHandlerMapping.java:509)
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping.registerHandlerMethod(RequestMappingHandlerMapping.java:84)
+	at org.springframework.web.servlet.handler.AbstractHandlerMethodMapping.lambda$detectHandlerMethods$2(AbstractHandlerMethodMapping.java:298)
+	at java.base/java.util.LinkedHashMap.forEach(LinkedHashMap.java:721)
+	at org.springframework.web.servlet.handler.AbstractHandlerMethodMapping.detectHandlerMethods(AbstractHandlerMethodMapping.java:296)
+	at org.springframework.web.servlet.handler.AbstractHandlerMethodMapping.processCandidateBean(AbstractHandlerMethodMapping.java:265)
+	at org.springframework.web.servlet.handler.AbstractHandlerMethodMapping.initHandlerMethods(AbstractHandlerMethodMapping.java:224)
+	at org.springframework.web.servlet.handler.AbstractHandlerMethodMapping.afterPropertiesSet(AbstractHandlerMethodMapping.java:212)
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping.afterPropertiesSet(RequestMappingHandlerMapping.java:239)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.invokeInitMethods(AbstractAutowireCapableBeanFactory.java:1855)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1804)
+	... 18 common frames omitted
+2024-12-13 17:04:34.803 [main] WARN  o.s.b.w.s.c.AnnotationConfigServletWebServerApplicationContext - Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'requestMappingHandlerMapping' defined in class path resource [org/springframework/boot/autoconfigure/web/servlet/WebMvcAutoConfiguration$EnableWebMvcConfiguration.class]: Ambiguous mapping. Cannot map 'chatMemoryController' method 
+com.shuangqi.aiagent7.controller.ChatMemoryController#chatStream(String, String)
+to {GET [/chatMemory/chat]}: There is already 'chatMemoryController' bean method
+com.shuangqi.aiagent7.controller.ChatMemoryController#chat(String, String) mapped.
+2024-12-13 17:04:34.824 [main] ERROR org.springframework.boot.SpringApplication - Application run failed
+org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'requestMappingHandlerMapping' defined in class path resource [org/springframework/boot/autoconfigure/web/servlet/WebMvcAutoConfiguration$EnableWebMvcConfiguration.class]: Ambiguous mapping. Cannot map 'chatMemoryController' method 
+com.shuangqi.aiagent7.controller.ChatMemoryController#chatStream(String, String)
+to {GET [/chatMemory/chat]}: There is already 'chatMemoryController' bean method
+com.shuangqi.aiagent7.controller.ChatMemoryController#chat(String, String) mapped.
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1808)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:601)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:523)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:336)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:289)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:334)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:199)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.instantiateSingleton(DefaultListableBeanFactory.java:1122)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.preInstantiateSingleton(DefaultListableBeanFactory.java:1093)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.preInstantiateSingletons(DefaultListableBeanFactory.java:1030)
+	at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:987)
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:627)
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:146)
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:752)
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:439)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:318)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1361)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1350)
+	at com.shuangqi.aiagent7.Aiagent7Application.main(Aiagent7Application.java:10)
+Caused by: java.lang.IllegalStateException: Ambiguous mapping. Cannot map 'chatMemoryController' method 
+com.shuangqi.aiagent7.controller.ChatMemoryController#chatStream(String, String)
+to {GET [/chatMemory/chat]}: There is already 'chatMemoryController' bean method
+com.shuangqi.aiagent7.controller.ChatMemoryController#chat(String, String) mapped.
+	at org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.validateMethodMapping(AbstractHandlerMethodMapping.java:675)
+	at org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:637)
+	at org.springframework.web.servlet.handler.AbstractHandlerMethodMapping.registerHandlerMethod(AbstractHandlerMethodMapping.java:331)
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping.registerHandlerMethod(RequestMappingHandlerMapping.java:509)
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping.registerHandlerMethod(RequestMappingHandlerMapping.java:84)
+	at org.springframework.web.servlet.handler.AbstractHandlerMethodMapping.lambda$detectHandlerMethods$2(AbstractHandlerMethodMapping.java:298)
+	at java.base/java.util.LinkedHashMap.forEach(LinkedHashMap.java:721)
+	at org.springframework.web.servlet.handler.AbstractHandlerMethodMapping.detectHandlerMethods(AbstractHandlerMethodMapping.java:296)
+	at org.springframework.web.servlet.handler.AbstractHandlerMethodMapping.processCandidateBean(AbstractHandlerMethodMapping.java:265)
+	at org.springframework.web.servlet.handler.AbstractHandlerMethodMapping.initHandlerMethods(AbstractHandlerMethodMapping.java:224)
+	at org.springframework.web.servlet.handler.AbstractHandlerMethodMapping.afterPropertiesSet(AbstractHandlerMethodMapping.java:212)
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping.afterPropertiesSet(RequestMappingHandlerMapping.java:239)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.invokeInitMethods(AbstractAutowireCapableBeanFactory.java:1855)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1804)
+	... 18 common frames omitted
+2024-12-13 17:07:15.027 [main] WARN  o.s.b.w.s.c.AnnotationConfigServletWebServerApplicationContext - Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'requestMappingHandlerMapping' defined in class path resource [org/springframework/boot/autoconfigure/web/servlet/WebMvcAutoConfiguration$EnableWebMvcConfiguration.class]: Ambiguous mapping. Cannot map 'chatMemoryController' method 
+com.shuangqi.aiagent7.controller.ChatMemoryController#chatStream(String, String)
+to {GET [/chatMemory/chat]}: There is already 'chatMemoryController' bean method
+com.shuangqi.aiagent7.controller.ChatMemoryController#chat(String, String) mapped.
+2024-12-13 17:07:15.050 [main] ERROR org.springframework.boot.SpringApplication - Application run failed
+org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'requestMappingHandlerMapping' defined in class path resource [org/springframework/boot/autoconfigure/web/servlet/WebMvcAutoConfiguration$EnableWebMvcConfiguration.class]: Ambiguous mapping. Cannot map 'chatMemoryController' method 
+com.shuangqi.aiagent7.controller.ChatMemoryController#chatStream(String, String)
+to {GET [/chatMemory/chat]}: There is already 'chatMemoryController' bean method
+com.shuangqi.aiagent7.controller.ChatMemoryController#chat(String, String) mapped.
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1808)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:601)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:523)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:336)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:289)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:334)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:199)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.instantiateSingleton(DefaultListableBeanFactory.java:1122)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.preInstantiateSingleton(DefaultListableBeanFactory.java:1093)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.preInstantiateSingletons(DefaultListableBeanFactory.java:1030)
+	at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:987)
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:627)
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:146)
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:752)
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:439)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:318)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1361)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1350)
+	at com.shuangqi.aiagent7.Aiagent7Application.main(Aiagent7Application.java:10)
+Caused by: java.lang.IllegalStateException: Ambiguous mapping. Cannot map 'chatMemoryController' method 
+com.shuangqi.aiagent7.controller.ChatMemoryController#chatStream(String, String)
+to {GET [/chatMemory/chat]}: There is already 'chatMemoryController' bean method
+com.shuangqi.aiagent7.controller.ChatMemoryController#chat(String, String) mapped.
+	at org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.validateMethodMapping(AbstractHandlerMethodMapping.java:675)
+	at org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:637)
+	at org.springframework.web.servlet.handler.AbstractHandlerMethodMapping.registerHandlerMethod(AbstractHandlerMethodMapping.java:331)
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping.registerHandlerMethod(RequestMappingHandlerMapping.java:509)
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping.registerHandlerMethod(RequestMappingHandlerMapping.java:84)
+	at org.springframework.web.servlet.handler.AbstractHandlerMethodMapping.lambda$detectHandlerMethods$2(AbstractHandlerMethodMapping.java:298)
+	at java.base/java.util.LinkedHashMap.forEach(LinkedHashMap.java:721)
+	at org.springframework.web.servlet.handler.AbstractHandlerMethodMapping.detectHandlerMethods(AbstractHandlerMethodMapping.java:296)
+	at org.springframework.web.servlet.handler.AbstractHandlerMethodMapping.processCandidateBean(AbstractHandlerMethodMapping.java:265)
+	at org.springframework.web.servlet.handler.AbstractHandlerMethodMapping.initHandlerMethods(AbstractHandlerMethodMapping.java:224)
+	at org.springframework.web.servlet.handler.AbstractHandlerMethodMapping.afterPropertiesSet(AbstractHandlerMethodMapping.java:212)
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping.afterPropertiesSet(RequestMappingHandlerMapping.java:239)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.invokeInitMethods(AbstractAutowireCapableBeanFactory.java:1855)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1804)
+	... 18 common frames omitted
+2024-12-13 17:07:37.640 [main] WARN  o.s.b.w.s.c.AnnotationConfigServletWebServerApplicationContext - Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'requestMappingHandlerMapping' defined in class path resource [org/springframework/boot/autoconfigure/web/servlet/WebMvcAutoConfiguration$EnableWebMvcConfiguration.class]: Ambiguous mapping. Cannot map 'chatMemoryController' method 
+com.shuangqi.aiagent7.controller.ChatMemoryController#chatStream(String, String)
+to {GET [/chatMemory/chat]}: There is already 'chatMemoryController' bean method
+com.shuangqi.aiagent7.controller.ChatMemoryController#chat(String, String) mapped.
+2024-12-13 17:07:37.665 [main] ERROR org.springframework.boot.SpringApplication - Application run failed
+org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'requestMappingHandlerMapping' defined in class path resource [org/springframework/boot/autoconfigure/web/servlet/WebMvcAutoConfiguration$EnableWebMvcConfiguration.class]: Ambiguous mapping. Cannot map 'chatMemoryController' method 
+com.shuangqi.aiagent7.controller.ChatMemoryController#chatStream(String, String)
+to {GET [/chatMemory/chat]}: There is already 'chatMemoryController' bean method
+com.shuangqi.aiagent7.controller.ChatMemoryController#chat(String, String) mapped.
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1808)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:601)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:523)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:336)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:289)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:334)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:199)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.instantiateSingleton(DefaultListableBeanFactory.java:1122)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.preInstantiateSingleton(DefaultListableBeanFactory.java:1093)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.preInstantiateSingletons(DefaultListableBeanFactory.java:1030)
+	at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:987)
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:627)
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:146)
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:752)
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:439)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:318)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1361)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1350)
+	at com.shuangqi.aiagent7.Aiagent7Application.main(Aiagent7Application.java:10)
+Caused by: java.lang.IllegalStateException: Ambiguous mapping. Cannot map 'chatMemoryController' method 
+com.shuangqi.aiagent7.controller.ChatMemoryController#chatStream(String, String)
+to {GET [/chatMemory/chat]}: There is already 'chatMemoryController' bean method
+com.shuangqi.aiagent7.controller.ChatMemoryController#chat(String, String) mapped.
+	at org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.validateMethodMapping(AbstractHandlerMethodMapping.java:675)
+	at org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:637)
+	at org.springframework.web.servlet.handler.AbstractHandlerMethodMapping.registerHandlerMethod(AbstractHandlerMethodMapping.java:331)
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping.registerHandlerMethod(RequestMappingHandlerMapping.java:509)
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping.registerHandlerMethod(RequestMappingHandlerMapping.java:84)
+	at org.springframework.web.servlet.handler.AbstractHandlerMethodMapping.lambda$detectHandlerMethods$2(AbstractHandlerMethodMapping.java:298)
+	at java.base/java.util.LinkedHashMap.forEach(LinkedHashMap.java:721)
+	at org.springframework.web.servlet.handler.AbstractHandlerMethodMapping.detectHandlerMethods(AbstractHandlerMethodMapping.java:296)
+	at org.springframework.web.servlet.handler.AbstractHandlerMethodMapping.processCandidateBean(AbstractHandlerMethodMapping.java:265)
+	at org.springframework.web.servlet.handler.AbstractHandlerMethodMapping.initHandlerMethods(AbstractHandlerMethodMapping.java:224)
+	at org.springframework.web.servlet.handler.AbstractHandlerMethodMapping.afterPropertiesSet(AbstractHandlerMethodMapping.java:212)
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping.afterPropertiesSet(RequestMappingHandlerMapping.java:239)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.invokeInitMethods(AbstractAutowireCapableBeanFactory.java:1855)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1804)
+	... 18 common frames omitted
+2024-12-13 17:09:12.612 [boundedElastic-1] DEBUG o.s.ai.chat.client.advisor.SimpleLoggerAdvisor - request: AdvisedRequest[chatModel=org.springframework.ai.ollama.OllamaChatModel@6d1c8669, userText=你是谁, systemText=你叫小明，你是一名非常友好的朋友，你博学多识，你会回答我的各种问题。
+, chatOptions=org.springframework.ai.ollama.api.OllamaOptions@35e6c540, media=[], functionNames=[], functionCallbacks=[], messages=[], userParams={}, systemParams={}, advisors=[org.springframework.ai.chat.client.DefaultChatClient$DefaultChatClientRequestSpec$1@43ddf659, org.springframework.ai.chat.client.DefaultChatClient$DefaultChatClientRequestSpec$2@229d0c, org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor@5c602dc, SimpleLoggerAdvisor, org.springframework.ai.chat.client.DefaultChatClient$DefaultChatClientRequestSpec$1@ce0f3c3, org.springframework.ai.chat.client.DefaultChatClient$DefaultChatClientRequestSpec$2@20a3b338], advisorParams={chat_memory_response_size=100, chat_memory_conversation_id=2}, adviseContext={chat_memory_conversation_id=2, chat_memory_response_size=100}, toolContext={}]
+2024-12-13 17:09:20.083 [boundedElastic-2] DEBUG o.s.ai.chat.client.advisor.SimpleLoggerAdvisor - response: {"result":{"output":{"messageType":"ASSISTANT","metadata":{"messageType":"ASSISTANT"},"toolCalls":[],"content":"{ \"我是小明\"  :\"很高兴认识你！如果你有任何问题或需要帮助，都可以随时向我提问哦。无论是学习上的难题，还是生活中的困惑，甚至是兴趣爱好的交流，我都将尽我所能来解答和陪伴你。\" }"},"metadata":{"finishReason":"stop","contentFilterMetadata":null}},"results":[{"output":{"messageType":"ASSISTANT","metadata":{"messageType":"ASSISTANT"},"toolCalls":[],"content":"{ \"我是小明\"  :\"很高兴认识你！如果你有任何问题或需要帮助，都可以随时向我提问哦。无论是学习上的难题，还是生活中的困惑，甚至是兴趣爱好的交流，我都将尽我所能来解答和陪伴你。\" }"},"metadata":{"finishReason":"stop","contentFilterMetadata":null}}],"metadata":{"id":"","model":"qwen2.5:3b","rateLimit":{"requestsLimit":0,"requestsRemaining":0,"requestsReset":0.0,"tokensLimit":0,"tokensRemaining":0,"tokensReset":0.0},"usage":{"promptTokens":39,"generationTokens":57,"totalTokens":96},"promptMetadata":[],"empty":true}}
