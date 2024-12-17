@@ -1,5 +1,6 @@
 package com.shuangqi.aiagent7.controller;
 
+import com.shuangqi.aiagent7.common.Constant;
 import com.shuangqi.aiagent7.model.pojo.MyChatMemory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
@@ -22,9 +23,7 @@ public class AdvisorDemoController {
     private final ChatClient chatClient;
 
     public AdvisorDemoController(ChatClient.Builder chatClientBuilder) {
-        this.chatClient = chatClientBuilder.defaultSystem("""
-                        你叫小明，你是一名非常友好的朋友，你博学多识，你会回答我的各种问题。
-                        """)
+        this.chatClient = chatClientBuilder.defaultSystem(Constant.AIDEFAULTSYSTEMPROMPT)
                 .defaultAdvisors(
                         new SimpleLoggerAdvisor()
                 )
