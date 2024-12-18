@@ -1,7 +1,7 @@
 package com.shuangqi.aiagent7.service;
 
 import com.shuangqi.aiagent7.common.Constant;
-import com.shuangqi.aiagent7.utils.TokenTextSplitter;
+import com.shuangqi.aiagent7.utils.MyTokenTextSplitter;
 import lombok.SneakyThrows;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.QuestionAnswerAdvisor;
@@ -73,7 +73,7 @@ public class ChatRagService {
         }
         String documentText = String.join("\n", documentLines); // 使用换行符连接
         // 将文本内容划分成更小的块
-        List<Document> splitDocuments = new TokenTextSplitter()
+        List<Document> splitDocuments = new MyTokenTextSplitter()
                 .apply(documentText);
         // 存入向量数据库，这个过程会自动调用embeddingModel,将文本变成向量再存入。
         this.vectorStore.add(splitDocuments);
