@@ -19,6 +19,7 @@ import reactor.core.publisher.Flux;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class ChatRagService {
@@ -57,12 +58,6 @@ public class ChatRagService {
 
     @SneakyThrows
     public String addVector(MultipartFile file) {
-// 手动添加RAG
-//        List<Document> documents = List.of(
-//                new Document("Spring AI rocks!! Spring AI rocks!! Spring AI rocks!! Spring AI rocks!! Spring AI rocks!!", Map.of("meta1", "meta1")),
-//                new Document("The World is Big and Salvation Lurks Around the Corner hei hei hei"),
-//                new Document("You walk forward facing the past and you turn back toward the future.", Map.of("meta2", "meta2")));
-
         // 从IO流中读取文件
         TikaDocumentReader tikaDocumentReader = new TikaDocumentReader(new InputStreamResource(file.getInputStream()));
         // 将文本内容合并成一个单一的字符串
@@ -74,7 +69,9 @@ public class ChatRagService {
         String documentText = String.join("\n", documentLines); // 使用换行符连接
         // 将文本内容划分成更小的块
         List<Document> splitDocuments = new MyTokenTextSplitter()
-                .apply(documentText);
+                .apply(documentText, Map.of(
+                        "filename", file.getOriginalFilename(),
+                        "filetype", file.getContentType())); //创建元数据映射
         // 存入向量数据库，这个过程会自动调用embeddingModel,将文本变成向量再存入。
         this.vectorStore.add(splitDocuments);
         return "添加成功";
