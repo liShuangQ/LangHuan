@@ -667,3 +667,21 @@ Error starting ApplicationContext. To display the condition evaluation report re
 2024-12-18 17:57:33.288 [main] INFO  org.apache.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8079"]
 2024-12-18 17:57:33.293 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat started on port 8079 (http) with context path '/'
 2024-12-18 17:57:33.299 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - Started Aiagent7Application in 1.407 seconds (process running for 1.707)
+2024-12-18 17:57:49.197 [http-nio-8079-exec-2] INFO  o.a.c.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2024-12-18 17:57:49.197 [http-nio-8079-exec-2] INFO  org.springframework.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2024-12-18 17:57:49.198 [http-nio-8079-exec-2] INFO  org.springframework.web.servlet.DispatcherServlet - Completed initialization in 1 ms
+2024-12-18 17:57:49.207 [http-nio-8079-exec-2] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Request: GET /rag/string
+2024-12-18 17:57:50.826 [http-nio-8079-exec-2] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2024-12-18 17:57:50.912 [http-nio-8079-exec-2] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@1bbecd2
+2024-12-18 17:57:50.912 [http-nio-8079-exec-2] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2024-12-18 17:57:58.626 [http-nio-8079-exec-2] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Response: GET /rag/string took 9419ms
+2024-12-18 17:58:07.885 [http-nio-8079-exec-3] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Request: GET /rag/string
+2024-12-18 17:58:10.641 [http-nio-8079-exec-3] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Response: GET /rag/string took 2756ms
+2024-12-18 17:58:13.510 [http-nio-8079-exec-4] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Request: GET /rag/string
+2024-12-18 17:58:15.795 [http-nio-8079-exec-4] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Response: GET /rag/string took 2285ms
+2024-12-18 17:58:34.643 [http-nio-8079-exec-5] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Request: GET /rag/string
+2024-12-18 17:58:38.005 [http-nio-8079-exec-5] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Response: GET /rag/string took 3360ms
+2024-12-18 17:58:44.170 [http-nio-8079-exec-6] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Request: GET /rag/string
+2024-12-18 17:58:48.180 [http-nio-8079-exec-6] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Response: GET /rag/string took 4009ms
+2024-12-18 18:09:41.475 [http-nio-8079-exec-8] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Request: GET /rag/string
+2024-12-18 18:09:51.519 [http-nio-8079-exec-8] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Response: GET /rag/string took 10042ms
