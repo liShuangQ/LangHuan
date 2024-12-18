@@ -21,10 +21,6 @@ public class ChatClientService {
 
     private final ChatClient chatClient;
 
-    //    .defaultAdvisors(
-//                    new MessageChatMemoryAdvisor(chatMemory), // CHAT MEMORY
-//                    new QuestionAnswerAdvisor(vectorStore, SearchRequest.defaults()), // RAG
-//            new SimpleLoggerAdvisor())
     public ChatClientService(ChatClient.Builder chatClientBuilder) {
         this.chatClient = chatClientBuilder.defaultSystem(Constant.AIDEFAULTSYSTEMPROMPT)
                 .defaultAdvisors(
