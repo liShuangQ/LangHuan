@@ -2,13 +2,13 @@ package com.shuangqi.aiagent7.service;
 
 import com.shuangqi.aiagent7.common.Constant;
 import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.client.advisor.SafeGuardAdvisor;
 import org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor;
 import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 
@@ -21,13 +21,14 @@ public class ChatClientService {
 
     private final ChatClient chatClient;
 
-//    .defaultAdvisors(
+    //    .defaultAdvisors(
 //                    new MessageChatMemoryAdvisor(chatMemory), // CHAT MEMORY
 //                    new QuestionAnswerAdvisor(vectorStore, SearchRequest.defaults()), // RAG
 //            new SimpleLoggerAdvisor())
     public ChatClientService(ChatClient.Builder chatClientBuilder) {
         this.chatClient = chatClientBuilder.defaultSystem(Constant.AIDEFAULTSYSTEMPROMPT)
                 .defaultAdvisors(
+                        new SafeGuardAdvisor(Constant.AIDEFAULTSAFEGUARDADVISOR),
                         new SimpleLoggerAdvisor()
                 )
                 .build();

@@ -2,8 +2,10 @@ package com.shuangqi.aiagent7.controller;
 
 import com.shuangqi.aiagent7.common.Result;
 import com.shuangqi.aiagent7.service.ChatRagService;
+import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import reactor.core.publisher.Flux;
 
 @RestController
 @RequestMapping("/rag")
@@ -19,6 +21,16 @@ public class ChatRagControllerD {
         return chatRagService.chat(q);
     }
 
+    @GetMapping("/stream")
+    public Flux<String> stream(@RequestParam String p, @RequestParam String q) {
+        return chatRagService.stream(q);
+    }
+
+    @GetMapping("/chatWithPrompt/ChatResponse")
+    public ChatResponse chatWithPrompt(@RequestParam String p, @RequestParam String q) {
+        return chatRagService.chatWithPrompt(p, q);
+    }
+
     @PostMapping("/addVector")
     public Result addVector(@RequestParam("file") MultipartFile file) {
         if (file == null || file.isEmpty()) {
@@ -26,5 +38,6 @@ public class ChatRagControllerD {
         }
         return Result.success(chatRagService.addVector(file));
     }
+
 
 }

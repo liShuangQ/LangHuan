@@ -648,3 +648,22 @@ Error starting ApplicationContext. To display the condition evaluation report re
 2024-12-18 17:17:39.764 [http-nio-8079-exec-2] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@1be3bbd8
 2024-12-18 17:17:39.765 [http-nio-8079-exec-2] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
 2024-12-18 17:17:39.822 [http-nio-8079-exec-2] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Response: POST /rag/addVector took 1438ms
+2024-12-18 17:57:29.942 [SpringApplicationShutdownHook] INFO  o.s.boot.web.embedded.tomcat.GracefulShutdown - Commencing graceful shutdown. Waiting for active requests to complete
+2024-12-18 17:57:29.955 [tomcat-shutdown] INFO  o.s.boot.web.embedded.tomcat.GracefulShutdown - Graceful shutdown complete
+2024-12-18 17:57:29.970 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2024-12-18 17:57:29.974 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
+2024-12-18 17:57:32.149 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - Starting Aiagent7Application using Java 17.0.2 with PID 98149 (/Users/lishuangqi/myWork/aiagent7/target/classes started by lishuangqi in /Users/lishuangqi/myWork/aiagent7)
+2024-12-18 17:57:32.150 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - No active profile set, falling back to 1 default profile: "default"
+2024-12-18 17:57:32.728 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat initialized with port 8079 (http)
+2024-12-18 17:57:32.735 [main] INFO  org.apache.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8079"]
+2024-12-18 17:57:32.735 [main] INFO  org.apache.catalina.core.StandardService - Starting service [Tomcat]
+2024-12-18 17:57:32.736 [main] INFO  org.apache.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.34]
+2024-12-18 17:57:32.769 [main] INFO  o.a.c.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2024-12-18 17:57:32.769 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 601 ms
+2024-12-18 17:57:33.151 [main] INFO  org.springframework.ai.vectorstore.PgVectorStore - Using the vector table name: vector_store. Is empty: false
+2024-12-18 17:57:33.153 [main] INFO  org.springframework.ai.vectorstore.PgVectorStore - Initializing PGVectorStore schema for table: vector_store in schema: public
+2024-12-18 17:57:33.153 [main] INFO  org.springframework.ai.vectorstore.PgVectorStore - vectorTableValidationsEnabled false
+2024-12-18 17:57:33.172 [main] INFO  o.s.b.a.web.servlet.WelcomePageHandlerMapping - Adding welcome page: class path resource [static/index.html]
+2024-12-18 17:57:33.288 [main] INFO  org.apache.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8079"]
+2024-12-18 17:57:33.293 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat started on port 8079 (http) with context path '/'
+2024-12-18 17:57:33.299 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - Started Aiagent7Application in 1.407 seconds (process running for 1.707)

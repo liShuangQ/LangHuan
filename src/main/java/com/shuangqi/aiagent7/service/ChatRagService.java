@@ -5,6 +5,7 @@ import com.shuangqi.aiagent7.utils.MyTokenTextSplitter;
 import lombok.SneakyThrows;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.QuestionAnswerAdvisor;
+import org.springframework.ai.chat.client.advisor.SafeGuardAdvisor;
 import org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.prompt.Prompt;
@@ -29,20 +30,14 @@ public class ChatRagService {
 
 
     public ChatRagService(ChatClient.Builder chatClientBuilder, VectorStore vectorStore) {
-
         this.vectorStore = vectorStore;
-
-//        VectorStoreChatMemoryAdvisor
-//        new VectorStoreChatMemoryAdvisor(this.vectorStore, "1", 10, "", 1),
-//        从 VectorStore 中检索内存，并将其添加到提示符的系统文本中。此 advisor 可用于从大型数据集中高效搜索和检索相关信息。
-
-//        SafeGuardAdvisor
-//        一个简单的 advisor，旨在防止模型生成有害或不适当的内容。
         this.chatClient = chatClientBuilder.defaultSystem(Constant.AIDEFAULTSYSTEMPROMPT)
                 .defaultAdvisors(
                         // 此 advisor 使用向量存储来提供问答功能，实现 RAG（检索增强生成）模式。
                         new QuestionAnswerAdvisor(this.vectorStore, SearchRequest.defaults()),
+                        new SafeGuardAdvisor(Constant.AIDEFAULTSAFEGUARDADVISOR),
                         new SimpleLoggerAdvisor()
+
                 ).defaultAdvisors(advisor -> advisor.param("chat_memory_conversation_id", "678")
                         .param("chat_memory_response_size", 100))
                 .build();
@@ -54,6 +49,20 @@ public class ChatRagService {
                 .user(q)
                 .call()
                 .content();
+    }
+
+    public Flux<String> stream(String q) {
+        return chatClient.prompt()
+                .user(q)
+                .stream()
+                .content();
+    }
+
+    public ChatResponse chatWithPrompt(String p, String q) {
+        return chatClient.prompt(new Prompt(p))
+                .user(q)
+                .call()
+                .chatResponse();
     }
 
     @SneakyThrows
@@ -75,20 +84,6 @@ public class ChatRagService {
         // 存入向量数据库，这个过程会自动调用embeddingModel,将文本变成向量再存入。
         this.vectorStore.add(splitDocuments);
         return "添加成功";
-    }
-
-    public Flux<String> stream(String q) {
-        return chatClient.prompt()
-                .user(q)
-                .stream()
-                .content();
-    }
-
-    public ChatResponse chatWithPrompt(String p, String q) {
-        return chatClient.prompt(new Prompt(p))
-                .user(q)
-                .call()
-                .chatResponse();
     }
 
 
