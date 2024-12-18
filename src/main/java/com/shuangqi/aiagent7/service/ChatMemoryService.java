@@ -21,8 +21,12 @@ public class ChatMemoryService {
     public ChatMemoryService(ChatClient.Builder chatClientBuilder) {
         this.chatClient = chatClientBuilder.defaultSystem(Constant.AIDEFAULTSYSTEMPROMPT)
                 .defaultAdvisors(
-                        new MessageChatMemoryAdvisor(new MyChatMemory()),
+                        new MessageChatMemoryAdvisor(new MyChatMemory()), // 检索内存并将其作为消息集合添加到提示符中
+                        // PromptChatMemoryAdvisor：检索内存并将其添加到提示的系统文本中（为了区分优先级 暂时不用）。
                         new SimpleLoggerAdvisor()
+                ).defaultAdvisors(
+                        a -> a
+                                .param(CHAT_MEMORY_RETRIEVE_SIZE_KEY, 10)
                 )
                 .build();
     }
@@ -40,7 +44,6 @@ public class ChatMemoryService {
                 .advisors(
                         a -> a
                                 .param(CHAT_MEMORY_CONVERSATION_ID_KEY, id)
-                                .param(CHAT_MEMORY_RETRIEVE_SIZE_KEY, 10)
                 ).call().chatResponse().getResult().getOutput().getContent();
     }
 
@@ -57,7 +60,6 @@ public class ChatMemoryService {
                 .advisors(
                         a -> a
                                 .param(CHAT_MEMORY_CONVERSATION_ID_KEY, id)
-                                .param(CHAT_MEMORY_RETRIEVE_SIZE_KEY, 10)
                 ).stream().content();
     }
 
@@ -75,7 +77,6 @@ public class ChatMemoryService {
                 .advisors(
                         a -> a
                                 .param(CHAT_MEMORY_CONVERSATION_ID_KEY, id)
-                                .param(CHAT_MEMORY_RETRIEVE_SIZE_KEY, 10)
                 ).call().chatResponse().getResult().getOutput().getContent();
     }
 
@@ -93,7 +94,6 @@ public class ChatMemoryService {
                 .advisors(
                         a -> a
                                 .param(CHAT_MEMORY_CONVERSATION_ID_KEY, id)
-                                .param(CHAT_MEMORY_RETRIEVE_SIZE_KEY, 10)
                 ).stream().content();
     }
 

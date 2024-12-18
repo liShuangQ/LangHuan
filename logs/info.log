@@ -1,27 +1,545 @@
-2024-12-17 10:16:49.033 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - Starting Aiagent7Application using Java 17.0.2 with PID 25111 (/Users/lishuangqi/myWork/aiagent7/target/classes started by lishuangqi in /Users/lishuangqi/myWork/aiagent7)
-2024-12-17 10:16:49.038 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - No active profile set, falling back to 1 default profile: "default"
-2024-12-17 10:16:49.493 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat initialized with port 8078 (http)
-2024-12-17 10:16:49.500 [main] INFO  org.apache.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8078"]
-2024-12-17 10:16:49.501 [main] INFO  org.apache.catalina.core.StandardService - Starting service [Tomcat]
-2024-12-17 10:16:49.501 [main] INFO  org.apache.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.34]
-2024-12-17 10:16:49.526 [main] INFO  o.a.c.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
-2024-12-17 10:16:49.527 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 470 ms
-2024-12-17 10:16:49.775 [main] INFO  o.s.b.a.web.servlet.WelcomePageHandlerMapping - Adding welcome page: class path resource [static/index.html]
-2024-12-17 10:16:49.913 [main] INFO  org.apache.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8078"]
-2024-12-17 10:16:49.918 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat started on port 8078 (http) with context path '/'
-2024-12-17 10:16:49.924 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - Started Aiagent7Application in 1.138 seconds (process running for 1.781)
-2024-12-17 10:17:20.796 [http-nio-8078-exec-2] INFO  o.a.c.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
-2024-12-17 10:17:20.796 [http-nio-8078-exec-2] INFO  org.springframework.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
-2024-12-17 10:17:20.797 [http-nio-8078-exec-2] INFO  org.springframework.web.servlet.DispatcherServlet - Completed initialization in 1 ms
-2024-12-17 10:17:20.806 [http-nio-8078-exec-2] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Request: GET /chatMemory/chat
-2024-12-17 10:17:27.056 [http-nio-8078-exec-2] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Response: GET /chatMemory/chat took 6249ms
-2024-12-17 10:18:06.491 [http-nio-8078-exec-3] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Request: GET /chatMemory/chat
-2024-12-17 10:18:09.962 [http-nio-8078-exec-3] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Response: GET /chatMemory/chat took 3471ms
-2024-12-17 10:18:26.720 [http-nio-8078-exec-4] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Request: GET /chatMemory/chat
-2024-12-17 10:18:31.666 [http-nio-8078-exec-4] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Response: GET /chatMemory/chat took 4945ms
-2024-12-17 10:18:38.582 [http-nio-8078-exec-5] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Request: GET /chatMemory/chat
-2024-12-17 10:18:41.181 [http-nio-8078-exec-5] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Response: GET /chatMemory/chat took 2599ms
-2024-12-17 10:18:56.963 [http-nio-8078-exec-6] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Request: GET /chat/string
-2024-12-17 10:18:59.536 [http-nio-8078-exec-6] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Response: GET /chat/string took 2573ms
-2024-12-17 10:19:36.462 [http-nio-8078-exec-7] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Request: GET /chat/string
-2024-12-17 10:19:38.367 [http-nio-8078-exec-7] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Response: GET /chat/string took 1905ms
+2024-12-18 13:12:11.840 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - Starting Aiagent7Application using Java 17.0.2 with PID 78808 (/Users/lishuangqi/myWork/aiagent7/target/classes started by lishuangqi in /Users/lishuangqi/myWork/aiagent7)
+2024-12-18 13:12:11.845 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - No active profile set, falling back to 1 default profile: "default"
+2024-12-18 13:12:12.391 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat initialized with port 8078 (http)
+2024-12-18 13:12:12.398 [main] INFO  org.apache.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8078"]
+2024-12-18 13:12:12.399 [main] INFO  org.apache.catalina.core.StandardService - Starting service [Tomcat]
+2024-12-18 13:12:12.399 [main] INFO  org.apache.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.34]
+2024-12-18 13:12:12.425 [main] INFO  o.a.c.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2024-12-18 13:12:12.425 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 563 ms
+2024-12-18 13:12:12.814 [main] INFO  org.springframework.ai.vectorstore.PgVectorStore - Using the vector table name: vector_store. Is empty: false
+2024-12-18 13:12:12.816 [main] INFO  org.springframework.ai.vectorstore.PgVectorStore - Initializing PGVectorStore schema for table: vector_store in schema: public
+2024-12-18 13:12:12.816 [main] INFO  org.springframework.ai.vectorstore.PgVectorStore - vectorTableValidationsEnabled false
+2024-12-18 13:12:12.931 [main] INFO  org.apache.catalina.core.StandardService - Stopping service [Tomcat]
+2024-12-18 13:12:12.940 [main] INFO  o.s.b.a.logging.ConditionEvaluationReportLogger - 
+
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
+2024-12-18 13:30:08.057 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - Starting Aiagent7Application using Java 17.0.2 with PID 80265 (/Users/lishuangqi/myWork/aiagent7/target/classes started by lishuangqi in /Users/lishuangqi/myWork/aiagent7)
+2024-12-18 13:30:08.058 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - No active profile set, falling back to 1 default profile: "default"
+2024-12-18 13:30:08.602 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat initialized with port 8078 (http)
+2024-12-18 13:30:08.609 [main] INFO  org.apache.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8078"]
+2024-12-18 13:30:08.610 [main] INFO  org.apache.catalina.core.StandardService - Starting service [Tomcat]
+2024-12-18 13:30:08.610 [main] INFO  org.apache.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.34]
+2024-12-18 13:30:08.642 [main] INFO  o.a.c.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2024-12-18 13:30:08.642 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 565 ms
+2024-12-18 13:30:09.037 [main] INFO  org.springframework.ai.vectorstore.PgVectorStore - Using the vector table name: vector_store. Is empty: false
+2024-12-18 13:30:09.039 [main] INFO  org.springframework.ai.vectorstore.PgVectorStore - Initializing PGVectorStore schema for table: vector_store in schema: public
+2024-12-18 13:30:09.039 [main] INFO  org.springframework.ai.vectorstore.PgVectorStore - vectorTableValidationsEnabled false
+2024-12-18 13:30:09.180 [main] INFO  org.apache.catalina.core.StandardService - Stopping service [Tomcat]
+2024-12-18 13:30:09.188 [main] INFO  o.s.b.a.logging.ConditionEvaluationReportLogger - 
+
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
+2024-12-18 13:33:05.694 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - Starting Aiagent7Application using Java 17.0.2 with PID 80766 (/Users/lishuangqi/myWork/aiagent7/target/classes started by lishuangqi in /Users/lishuangqi/myWork/aiagent7)
+2024-12-18 13:33:05.695 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - No active profile set, falling back to 1 default profile: "default"
+2024-12-18 13:33:06.269 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat initialized with port 8078 (http)
+2024-12-18 13:33:06.276 [main] INFO  org.apache.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8078"]
+2024-12-18 13:33:06.276 [main] INFO  org.apache.catalina.core.StandardService - Starting service [Tomcat]
+2024-12-18 13:33:06.276 [main] INFO  org.apache.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.34]
+2024-12-18 13:33:06.309 [main] INFO  o.a.c.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2024-12-18 13:33:06.310 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 596 ms
+2024-12-18 13:33:06.662 [main] INFO  org.springframework.ai.vectorstore.PgVectorStore - Using the vector table name: vector_store. Is empty: false
+2024-12-18 13:33:06.664 [main] INFO  org.springframework.ai.vectorstore.PgVectorStore - Initializing PGVectorStore schema for table: vector_store in schema: public
+2024-12-18 13:33:06.664 [main] INFO  org.springframework.ai.vectorstore.PgVectorStore - vectorTableValidationsEnabled false
+2024-12-18 13:33:07.670 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2024-12-18 13:33:07.783 [main] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@78eb90f3
+2024-12-18 13:33:07.784 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2024-12-18 13:33:07.818 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2024-12-18 13:33:07.820 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
+2024-12-18 13:33:07.821 [main] INFO  org.apache.catalina.core.StandardService - Stopping service [Tomcat]
+2024-12-18 13:33:07.828 [main] INFO  o.s.b.a.logging.ConditionEvaluationReportLogger - 
+
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
+2024-12-18 13:48:37.396 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - Starting Aiagent7Application using Java 17.0.2 with PID 81764 (/Users/lishuangqi/myWork/aiagent7/target/classes started by lishuangqi in /Users/lishuangqi/myWork/aiagent7)
+2024-12-18 13:48:37.397 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - No active profile set, falling back to 1 default profile: "default"
+2024-12-18 13:48:37.992 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat initialized with port 8078 (http)
+2024-12-18 13:48:37.999 [main] INFO  org.apache.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8078"]
+2024-12-18 13:48:38.000 [main] INFO  org.apache.catalina.core.StandardService - Starting service [Tomcat]
+2024-12-18 13:48:38.000 [main] INFO  org.apache.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.34]
+2024-12-18 13:48:38.034 [main] INFO  o.a.c.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2024-12-18 13:48:38.034 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 617 ms
+2024-12-18 13:48:38.409 [main] INFO  org.springframework.ai.vectorstore.PgVectorStore - Using the vector table name: vector_store. Is empty: false
+2024-12-18 13:48:38.411 [main] INFO  org.springframework.ai.vectorstore.PgVectorStore - Initializing PGVectorStore schema for table: vector_store in schema: public
+2024-12-18 13:48:38.411 [main] INFO  org.springframework.ai.vectorstore.PgVectorStore - vectorTableValidationsEnabled false
+2024-12-18 13:48:38.502 [main] INFO  org.apache.catalina.core.StandardService - Stopping service [Tomcat]
+2024-12-18 13:48:38.509 [main] INFO  o.s.b.a.logging.ConditionEvaluationReportLogger - 
+
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
+2024-12-18 13:52:12.173 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - Starting Aiagent7Application using Java 17.0.2 with PID 81970 (/Users/lishuangqi/myWork/aiagent7/target/classes started by lishuangqi in /Users/lishuangqi/myWork/aiagent7)
+2024-12-18 13:52:12.175 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - No active profile set, falling back to 1 default profile: "default"
+2024-12-18 13:52:12.713 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat initialized with port 8078 (http)
+2024-12-18 13:52:12.720 [main] INFO  org.apache.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8078"]
+2024-12-18 13:52:12.720 [main] INFO  org.apache.catalina.core.StandardService - Starting service [Tomcat]
+2024-12-18 13:52:12.720 [main] INFO  org.apache.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.34]
+2024-12-18 13:52:12.752 [main] INFO  o.a.c.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2024-12-18 13:52:12.752 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 560 ms
+2024-12-18 13:52:13.130 [main] INFO  org.springframework.ai.vectorstore.PgVectorStore - Using the vector table name: vector_store. Is empty: false
+2024-12-18 13:52:13.132 [main] INFO  org.springframework.ai.vectorstore.PgVectorStore - Initializing PGVectorStore schema for table: vector_store in schema: public
+2024-12-18 13:52:13.132 [main] INFO  org.springframework.ai.vectorstore.PgVectorStore - vectorTableValidationsEnabled false
+2024-12-18 13:52:14.721 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2024-12-18 13:52:14.824 [main] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@5e9e7c18
+2024-12-18 13:52:14.825 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2024-12-18 13:52:14.866 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2024-12-18 13:52:14.867 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
+2024-12-18 13:52:14.869 [main] INFO  org.apache.catalina.core.StandardService - Stopping service [Tomcat]
+2024-12-18 13:52:14.876 [main] INFO  o.s.b.a.logging.ConditionEvaluationReportLogger - 
+
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
+2024-12-18 13:57:05.427 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - Starting Aiagent7Application using Java 17.0.2 with PID 82229 (/Users/lishuangqi/myWork/aiagent7/target/classes started by lishuangqi in /Users/lishuangqi/myWork/aiagent7)
+2024-12-18 13:57:05.433 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - No active profile set, falling back to 1 default profile: "default"
+2024-12-18 13:57:06.131 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat initialized with port 8078 (http)
+2024-12-18 13:57:06.137 [main] INFO  org.apache.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8078"]
+2024-12-18 13:57:06.138 [main] INFO  org.apache.catalina.core.StandardService - Starting service [Tomcat]
+2024-12-18 13:57:06.138 [main] INFO  org.apache.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.34]
+2024-12-18 13:57:06.176 [main] INFO  o.a.c.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2024-12-18 13:57:06.176 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 702 ms
+2024-12-18 13:57:06.557 [main] INFO  org.springframework.ai.vectorstore.PgVectorStore - Using the vector table name: vector_store. Is empty: false
+2024-12-18 13:57:06.559 [main] INFO  org.springframework.ai.vectorstore.PgVectorStore - Initializing PGVectorStore schema for table: vector_store in schema: public
+2024-12-18 13:57:06.559 [main] INFO  org.springframework.ai.vectorstore.PgVectorStore - vectorTableValidationsEnabled false
+2024-12-18 13:57:06.906 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2024-12-18 13:57:06.980 [main] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@7f212cc8
+2024-12-18 13:57:06.981 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2024-12-18 13:57:07.015 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2024-12-18 13:57:07.017 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
+2024-12-18 13:57:07.018 [main] INFO  org.apache.catalina.core.StandardService - Stopping service [Tomcat]
+2024-12-18 13:57:07.025 [main] INFO  o.s.b.a.logging.ConditionEvaluationReportLogger - 
+
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
+2024-12-18 14:05:51.641 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - Starting Aiagent7Application using Java 17.0.2 with PID 82707 (/Users/lishuangqi/myWork/aiagent7/target/classes started by lishuangqi in /Users/lishuangqi/myWork/aiagent7)
+2024-12-18 14:05:51.642 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - No active profile set, falling back to 1 default profile: "default"
+2024-12-18 14:05:52.192 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat initialized with port 8078 (http)
+2024-12-18 14:05:52.199 [main] INFO  org.apache.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8078"]
+2024-12-18 14:05:52.199 [main] INFO  org.apache.catalina.core.StandardService - Starting service [Tomcat]
+2024-12-18 14:05:52.199 [main] INFO  org.apache.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.34]
+2024-12-18 14:05:52.233 [main] INFO  o.a.c.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2024-12-18 14:05:52.233 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 572 ms
+2024-12-18 14:05:52.590 [main] INFO  org.springframework.ai.vectorstore.PgVectorStore - Using the vector table name: vector_store. Is empty: false
+2024-12-18 14:05:52.592 [main] INFO  org.springframework.ai.vectorstore.PgVectorStore - Initializing PGVectorStore schema for table: vector_store in schema: public
+2024-12-18 14:05:52.592 [main] INFO  org.springframework.ai.vectorstore.PgVectorStore - vectorTableValidationsEnabled false
+2024-12-18 14:05:54.263 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2024-12-18 14:05:54.381 [main] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@3e11ad59
+2024-12-18 14:05:54.381 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2024-12-18 14:05:54.414 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2024-12-18 14:05:54.416 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
+2024-12-18 14:05:54.417 [main] INFO  org.apache.catalina.core.StandardService - Stopping service [Tomcat]
+2024-12-18 14:05:54.424 [main] INFO  o.s.b.a.logging.ConditionEvaluationReportLogger - 
+
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
+2024-12-18 14:06:42.296 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - Starting Aiagent7Application using Java 17.0.2 with PID 82768 (/Users/lishuangqi/myWork/aiagent7/target/classes started by lishuangqi in /Users/lishuangqi/myWork/aiagent7)
+2024-12-18 14:06:42.298 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - No active profile set, falling back to 1 default profile: "default"
+2024-12-18 14:06:42.846 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat initialized with port 8078 (http)
+2024-12-18 14:06:42.853 [main] INFO  org.apache.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8078"]
+2024-12-18 14:06:42.853 [main] INFO  org.apache.catalina.core.StandardService - Starting service [Tomcat]
+2024-12-18 14:06:42.854 [main] INFO  org.apache.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.34]
+2024-12-18 14:06:42.884 [main] INFO  o.a.c.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2024-12-18 14:06:42.884 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 569 ms
+2024-12-18 14:06:43.248 [main] INFO  org.springframework.ai.vectorstore.PgVectorStore - Using the vector table name: vector_store. Is empty: false
+2024-12-18 14:06:43.250 [main] INFO  org.springframework.ai.vectorstore.PgVectorStore - Initializing PGVectorStore schema for table: vector_store in schema: public
+2024-12-18 14:06:43.250 [main] INFO  org.springframework.ai.vectorstore.PgVectorStore - vectorTableValidationsEnabled false
+2024-12-18 14:06:43.607 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2024-12-18 14:06:43.689 [main] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@6bc67c27
+2024-12-18 14:06:43.689 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2024-12-18 14:06:43.720 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2024-12-18 14:06:43.722 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
+2024-12-18 14:06:43.723 [main] INFO  org.apache.catalina.core.StandardService - Stopping service [Tomcat]
+2024-12-18 14:06:43.729 [main] INFO  o.s.b.a.logging.ConditionEvaluationReportLogger - 
+
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
+2024-12-18 14:09:09.237 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - Starting Aiagent7Application using Java 17.0.2 with PID 82898 (/Users/lishuangqi/myWork/aiagent7/target/classes started by lishuangqi in /Users/lishuangqi/myWork/aiagent7)
+2024-12-18 14:09:09.238 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - No active profile set, falling back to 1 default profile: "default"
+2024-12-18 14:09:09.781 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat initialized with port 8078 (http)
+2024-12-18 14:09:09.795 [main] INFO  org.apache.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8078"]
+2024-12-18 14:09:09.796 [main] INFO  org.apache.catalina.core.StandardService - Starting service [Tomcat]
+2024-12-18 14:09:09.796 [main] INFO  org.apache.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.34]
+2024-12-18 14:09:09.829 [main] INFO  o.a.c.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2024-12-18 14:09:09.829 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 572 ms
+2024-12-18 14:09:10.203 [main] INFO  org.springframework.ai.vectorstore.PgVectorStore - Using the vector table name: vector_store. Is empty: false
+2024-12-18 14:09:10.205 [main] INFO  org.springframework.ai.vectorstore.PgVectorStore - Initializing PGVectorStore schema for table: vector_store in schema: public
+2024-12-18 14:09:10.205 [main] INFO  org.springframework.ai.vectorstore.PgVectorStore - vectorTableValidationsEnabled false
+2024-12-18 14:09:10.552 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2024-12-18 14:09:10.648 [main] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@5625c32b
+2024-12-18 14:09:10.649 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2024-12-18 14:09:10.709 [main] INFO  o.s.b.a.web.servlet.WelcomePageHandlerMapping - Adding welcome page: class path resource [static/index.html]
+2024-12-18 14:09:10.841 [main] INFO  org.apache.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8078"]
+2024-12-18 14:09:10.845 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2024-12-18 14:09:10.873 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
+2024-12-18 14:09:10.881 [main] INFO  o.s.b.a.logging.ConditionEvaluationReportLogger - 
+
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
+2024-12-18 14:09:31.078 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - Starting Aiagent7Application using Java 17.0.2 with PID 82928 (/Users/lishuangqi/myWork/aiagent7/target/classes started by lishuangqi in /Users/lishuangqi/myWork/aiagent7)
+2024-12-18 14:09:31.080 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - No active profile set, falling back to 1 default profile: "default"
+2024-12-18 14:09:31.625 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat initialized with port 8077 (http)
+2024-12-18 14:09:31.632 [main] INFO  org.apache.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8077"]
+2024-12-18 14:09:31.633 [main] INFO  org.apache.catalina.core.StandardService - Starting service [Tomcat]
+2024-12-18 14:09:31.633 [main] INFO  org.apache.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.34]
+2024-12-18 14:09:31.668 [main] INFO  o.a.c.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2024-12-18 14:09:31.669 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 570 ms
+2024-12-18 14:09:32.027 [main] INFO  org.springframework.ai.vectorstore.PgVectorStore - Using the vector table name: vector_store. Is empty: false
+2024-12-18 14:09:32.029 [main] INFO  org.springframework.ai.vectorstore.PgVectorStore - Initializing PGVectorStore schema for table: vector_store in schema: public
+2024-12-18 14:09:32.029 [main] INFO  org.springframework.ai.vectorstore.PgVectorStore - vectorTableValidationsEnabled false
+2024-12-18 14:09:32.349 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2024-12-18 14:09:32.419 [main] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@410c869e
+2024-12-18 14:09:32.420 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2024-12-18 14:09:32.468 [main] INFO  o.s.b.a.web.servlet.WelcomePageHandlerMapping - Adding welcome page: class path resource [static/index.html]
+2024-12-18 14:09:32.590 [main] INFO  org.apache.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8077"]
+2024-12-18 14:09:32.594 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2024-12-18 14:09:32.624 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
+2024-12-18 14:09:32.633 [main] INFO  o.s.b.a.logging.ConditionEvaluationReportLogger - 
+
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
+2024-12-18 14:09:42.537 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - Starting Aiagent7Application using Java 17.0.2 with PID 82949 (/Users/lishuangqi/myWork/aiagent7/target/classes started by lishuangqi in /Users/lishuangqi/myWork/aiagent7)
+2024-12-18 14:09:42.538 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - No active profile set, falling back to 1 default profile: "default"
+2024-12-18 14:09:43.048 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat initialized with port 8079 (http)
+2024-12-18 14:09:43.054 [main] INFO  org.apache.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8079"]
+2024-12-18 14:09:43.054 [main] INFO  org.apache.catalina.core.StandardService - Starting service [Tomcat]
+2024-12-18 14:09:43.054 [main] INFO  org.apache.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.34]
+2024-12-18 14:09:43.085 [main] INFO  o.a.c.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2024-12-18 14:09:43.086 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 528 ms
+2024-12-18 14:09:43.438 [main] INFO  org.springframework.ai.vectorstore.PgVectorStore - Using the vector table name: vector_store. Is empty: false
+2024-12-18 14:09:43.441 [main] INFO  org.springframework.ai.vectorstore.PgVectorStore - Initializing PGVectorStore schema for table: vector_store in schema: public
+2024-12-18 14:09:43.441 [main] INFO  org.springframework.ai.vectorstore.PgVectorStore - vectorTableValidationsEnabled false
+2024-12-18 14:09:43.779 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2024-12-18 14:09:43.855 [main] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@76ff7be0
+2024-12-18 14:09:43.856 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2024-12-18 14:09:43.904 [main] INFO  o.s.b.a.web.servlet.WelcomePageHandlerMapping - Adding welcome page: class path resource [static/index.html]
+2024-12-18 14:09:44.033 [main] INFO  org.apache.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8079"]
+2024-12-18 14:09:44.037 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat started on port 8079 (http) with context path '/'
+2024-12-18 14:09:44.043 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - Started Aiagent7Application in 1.787 seconds (process running for 2.062)
+2024-12-18 14:12:57.120 [http-nio-8079-exec-2] INFO  o.a.c.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2024-12-18 14:12:57.120 [http-nio-8079-exec-2] INFO  org.springframework.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2024-12-18 14:12:57.122 [http-nio-8079-exec-2] INFO  org.springframework.web.servlet.DispatcherServlet - Completed initialization in 2 ms
+2024-12-18 14:13:13.742 [http-nio-8079-exec-3] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Request: GET /rag/string
+2024-12-18 14:13:26.833 [http-nio-8079-exec-3] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Response: GET /rag/string took 13091ms
+2024-12-18 14:13:26.847 [http-nio-8079-exec-3] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Request: GET /rag/{"author": "小明", "time": "2023-5-14 18:07:26"}
+
+ 
+       	
+	
+	
+       	
+	
+	
+		
+
+
+
+
+
+
+
+
+
+   
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   
+
+
+
+
+
+  
+
+   
+2024-12-18 14:14:25.550 [SpringApplicationShutdownHook] INFO  o.s.boot.web.embedded.tomcat.GracefulShutdown - Commencing graceful shutdown. Waiting for active requests to complete
+2024-12-18 14:14:27.599 [tomcat-shutdown] INFO  o.s.boot.web.embedded.tomcat.GracefulShutdown - Graceful shutdown complete
+2024-12-18 14:14:27.605 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2024-12-18 14:14:27.608 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
+2024-12-18 14:14:29.951 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - Starting Aiagent7Application using Java 17.0.2 with PID 83231 (/Users/lishuangqi/myWork/aiagent7/target/classes started by lishuangqi in /Users/lishuangqi/myWork/aiagent7)
+2024-12-18 14:14:29.952 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - No active profile set, falling back to 1 default profile: "default"
+2024-12-18 14:14:30.505 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat initialized with port 8079 (http)
+2024-12-18 14:14:30.512 [main] INFO  org.apache.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8079"]
+2024-12-18 14:14:30.513 [main] INFO  org.apache.catalina.core.StandardService - Starting service [Tomcat]
+2024-12-18 14:14:30.513 [main] INFO  org.apache.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.34]
+2024-12-18 14:14:30.546 [main] INFO  o.a.c.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2024-12-18 14:14:30.546 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 576 ms
+2024-12-18 14:14:30.939 [main] INFO  org.springframework.ai.vectorstore.PgVectorStore - Using the vector table name: vector_store. Is empty: false
+2024-12-18 14:14:30.941 [main] INFO  org.springframework.ai.vectorstore.PgVectorStore - Initializing PGVectorStore schema for table: vector_store in schema: public
+2024-12-18 14:14:30.941 [main] INFO  org.springframework.ai.vectorstore.PgVectorStore - vectorTableValidationsEnabled false
+2024-12-18 14:14:31.746 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2024-12-18 14:14:31.843 [main] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@edaaa8c
+2024-12-18 14:14:31.843 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2024-12-18 14:14:31.902 [main] INFO  o.s.b.a.web.servlet.WelcomePageHandlerMapping - Adding welcome page: class path resource [static/index.html]
+2024-12-18 14:14:32.023 [main] INFO  org.apache.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8079"]
+2024-12-18 14:14:32.028 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat started on port 8079 (http) with context path '/'
+2024-12-18 14:14:32.034 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - Started Aiagent7Application in 2.343 seconds (process running for 2.684)
+2024-12-18 14:14:34.541 [http-nio-8079-exec-2] INFO  o.a.c.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2024-12-18 14:14:34.542 [http-nio-8079-exec-2] INFO  org.springframework.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2024-12-18 14:14:34.543 [http-nio-8079-exec-2] INFO  org.springframework.web.servlet.DispatcherServlet - Completed initialization in 1 ms
+2024-12-18 14:14:34.551 [http-nio-8079-exec-2] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Request: GET /rag/string
+2024-12-18 14:14:38.821 [http-nio-8079-exec-2] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Response: GET /rag/string took 4270ms
+2024-12-18 14:14:38.832 [http-nio-8079-exec-2] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Request: GET /rag/{"content":"根据提供的信息，《The World is Big》下面的文字是《The World is Big and Salvation Lurks Around the Corner》。如果你有更多上下文或者想要了解更多，请提供更多信息，我会尽力帮助你。","language_type":"text"}
+2024-12-18 14:16:03.329 [SpringApplicationShutdownHook] INFO  o.s.boot.web.embedded.tomcat.GracefulShutdown - Commencing graceful shutdown. Waiting for active requests to complete
+2024-12-18 14:16:05.354 [tomcat-shutdown] INFO  o.s.boot.web.embedded.tomcat.GracefulShutdown - Graceful shutdown complete
+2024-12-18 14:16:05.360 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2024-12-18 14:16:05.363 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
+2024-12-18 14:16:07.568 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - Starting Aiagent7Application using Java 17.0.2 with PID 83331 (/Users/lishuangqi/myWork/aiagent7/target/classes started by lishuangqi in /Users/lishuangqi/myWork/aiagent7)
+2024-12-18 14:16:07.570 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - No active profile set, falling back to 1 default profile: "default"
+2024-12-18 14:16:08.139 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat initialized with port 8079 (http)
+2024-12-18 14:16:08.146 [main] INFO  org.apache.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8079"]
+2024-12-18 14:16:08.146 [main] INFO  org.apache.catalina.core.StandardService - Starting service [Tomcat]
+2024-12-18 14:16:08.146 [main] INFO  org.apache.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.34]
+2024-12-18 14:16:08.178 [main] INFO  o.a.c.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2024-12-18 14:16:08.178 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 590 ms
+2024-12-18 14:16:08.579 [main] INFO  org.springframework.ai.vectorstore.PgVectorStore - Using the vector table name: vector_store. Is empty: false
+2024-12-18 14:16:08.581 [main] INFO  org.springframework.ai.vectorstore.PgVectorStore - Initializing PGVectorStore schema for table: vector_store in schema: public
+2024-12-18 14:16:08.581 [main] INFO  org.springframework.ai.vectorstore.PgVectorStore - vectorTableValidationsEnabled false
+2024-12-18 14:16:09.955 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2024-12-18 14:16:10.054 [main] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@7f212cc8
+2024-12-18 14:16:10.055 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2024-12-18 14:16:10.116 [main] INFO  o.s.b.a.web.servlet.WelcomePageHandlerMapping - Adding welcome page: class path resource [static/index.html]
+2024-12-18 14:16:10.239 [main] INFO  org.apache.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8079"]
+2024-12-18 14:16:10.243 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat started on port 8079 (http) with context path '/'
+2024-12-18 14:16:10.249 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - Started Aiagent7Application in 2.968 seconds (process running for 3.3)
+2024-12-18 14:16:14.830 [http-nio-8079-exec-2] INFO  o.a.c.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2024-12-18 14:16:14.830 [http-nio-8079-exec-2] INFO  org.springframework.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2024-12-18 14:16:14.831 [http-nio-8079-exec-2] INFO  org.springframework.web.servlet.DispatcherServlet - Completed initialization in 1 ms
+2024-12-18 14:16:14.840 [http-nio-8079-exec-2] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Request: GET /rag/string
+2024-12-18 14:16:22.303 [http-nio-8079-exec-2] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Response: GET /rag/string took 7463ms
+2024-12-18 14:16:22.316 [http-nio-8079-exec-2] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Request: GET /rag/{ "error": "", "data": "", "msg": "The phrase 'The World is Big' appears at the beginning of your provided content, followed by variations of 'The World is Big and Salvation Lurks Around the Corner'. Based on this context, it seems like you're referring to a statement or sentiment that suggests opportunities and hope are present in our world. However, without additional information about what exactly you're asking for analysis on, I can't provide deeper analysis or specific recommendations. If you have any follow-up questions or need further interpretation of the provided content, feel free to ask!" }
+2024-12-18 14:16:54.093 [http-nio-8079-exec-3] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Request: GET /rag/string
+2024-12-18 14:16:57.848 [http-nio-8079-exec-3] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Response: GET /rag/string took 3754ms
+2024-12-18 14:16:57.852 [http-nio-8079-exec-3] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Request: GET /rag/{"评价等级": 1, "建议行动": "你提供的信息似乎在不断重复同一个句子“The World is Big and Salvation Lurks Around the Corner”，并没有提供更多关于“The World is Big”下面是什么的信息。因此，我无法给出更深入的分析或解释。如果你有其他问题或者需要进一步的帮助，请提供更多信息。"}
+2024-12-18 14:17:23.970 [http-nio-8079-exec-4] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Request: GET /rag/string
+2024-12-18 14:17:29.645 [http-nio-8079-exec-4] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Response: GET /rag/string took 5674ms
+2024-12-18 14:17:29.649 [http-nio-8079-exec-4] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Request: GET /rag/{"response":"根据您提供的信息，《The World is Big》下面的文字是《The World is Big and Salvation Lurks Around the Corner hei hei hei》，这似乎是一个段落，其中包含了“救赎就在转角处”这句话。如果有更多上下文或者不同的选择，请提供更多信息以便我进行更准确的分析和回答。"}
+2024-12-18 14:22:34.821 [SpringApplicationShutdownHook] INFO  o.s.boot.web.embedded.tomcat.GracefulShutdown - Commencing graceful shutdown. Waiting for active requests to complete
+2024-12-18 14:22:36.845 [tomcat-shutdown] INFO  o.s.boot.web.embedded.tomcat.GracefulShutdown - Graceful shutdown complete
+2024-12-18 14:22:36.851 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2024-12-18 14:22:36.854 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
+2024-12-18 14:22:39.069 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - Starting Aiagent7Application using Java 17.0.2 with PID 83768 (/Users/lishuangqi/myWork/aiagent7/target/classes started by lishuangqi in /Users/lishuangqi/myWork/aiagent7)
+2024-12-18 14:22:39.070 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - No active profile set, falling back to 1 default profile: "default"
+2024-12-18 14:22:39.621 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat initialized with port 8079 (http)
+2024-12-18 14:22:39.627 [main] INFO  org.apache.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8079"]
+2024-12-18 14:22:39.628 [main] INFO  org.apache.catalina.core.StandardService - Starting service [Tomcat]
+2024-12-18 14:22:39.628 [main] INFO  org.apache.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.34]
+2024-12-18 14:22:39.664 [main] INFO  o.a.c.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2024-12-18 14:22:39.665 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 576 ms
+2024-12-18 14:22:40.061 [main] INFO  org.springframework.ai.vectorstore.PgVectorStore - Using the vector table name: vector_store. Is empty: false
+2024-12-18 14:22:40.063 [main] INFO  org.springframework.ai.vectorstore.PgVectorStore - Initializing PGVectorStore schema for table: vector_store in schema: public
+2024-12-18 14:22:40.063 [main] INFO  org.springframework.ai.vectorstore.PgVectorStore - vectorTableValidationsEnabled false
+2024-12-18 14:22:41.581 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2024-12-18 14:22:41.678 [main] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@4cee2fe5
+2024-12-18 14:22:41.679 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2024-12-18 14:22:41.727 [main] INFO  o.s.b.a.web.servlet.WelcomePageHandlerMapping - Adding welcome page: class path resource [static/index.html]
+2024-12-18 14:22:41.853 [main] INFO  org.apache.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8079"]
+2024-12-18 14:22:41.857 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat started on port 8079 (http) with context path '/'
+2024-12-18 14:22:41.863 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - Started Aiagent7Application in 3.068 seconds (process running for 3.411)
+2024-12-18 14:22:43.873 [http-nio-8079-exec-2] INFO  o.a.c.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2024-12-18 14:22:43.874 [http-nio-8079-exec-2] INFO  org.springframework.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2024-12-18 14:22:43.874 [http-nio-8079-exec-2] INFO  org.springframework.web.servlet.DispatcherServlet - Completed initialization in 0 ms
+2024-12-18 14:22:43.883 [http-nio-8079-exec-2] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Request: GET /rag/string
+2024-12-18 14:22:52.858 [http-nio-8079-exec-2] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Response: GET /rag/string took 8975ms
+2024-12-18 15:15:28.439 [SpringApplicationShutdownHook] INFO  o.s.boot.web.embedded.tomcat.GracefulShutdown - Commencing graceful shutdown. Waiting for active requests to complete
+2024-12-18 15:15:30.463 [tomcat-shutdown] INFO  o.s.boot.web.embedded.tomcat.GracefulShutdown - Graceful shutdown complete
+2024-12-18 15:15:30.471 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2024-12-18 15:15:30.477 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
+2024-12-18 15:15:32.759 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - Starting Aiagent7Application using Java 17.0.2 with PID 87513 (/Users/lishuangqi/myWork/aiagent7/target/classes started by lishuangqi in /Users/lishuangqi/myWork/aiagent7)
+2024-12-18 15:15:32.760 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - No active profile set, falling back to 1 default profile: "default"
+2024-12-18 15:15:33.330 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat initialized with port 8079 (http)
+2024-12-18 15:15:33.336 [main] INFO  org.apache.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8079"]
+2024-12-18 15:15:33.337 [main] INFO  org.apache.catalina.core.StandardService - Starting service [Tomcat]
+2024-12-18 15:15:33.337 [main] INFO  org.apache.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.34]
+2024-12-18 15:15:33.367 [main] INFO  o.a.c.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2024-12-18 15:15:33.368 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 588 ms
+2024-12-18 15:15:33.781 [main] INFO  org.springframework.ai.vectorstore.PgVectorStore - Using the vector table name: vector_store. Is empty: false
+2024-12-18 15:15:33.783 [main] INFO  org.springframework.ai.vectorstore.PgVectorStore - Initializing PGVectorStore schema for table: vector_store in schema: public
+2024-12-18 15:15:33.784 [main] INFO  org.springframework.ai.vectorstore.PgVectorStore - vectorTableValidationsEnabled false
+2024-12-18 15:15:35.657 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2024-12-18 15:15:35.743 [main] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@46550223
+2024-12-18 15:15:35.743 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2024-12-18 15:15:35.806 [main] INFO  o.s.b.a.web.servlet.WelcomePageHandlerMapping - Adding welcome page: class path resource [static/index.html]
+2024-12-18 15:15:35.934 [main] INFO  org.apache.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8079"]
+2024-12-18 15:15:35.939 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat started on port 8079 (http) with context path '/'
+2024-12-18 15:15:35.945 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - Started Aiagent7Application in 3.481 seconds (process running for 3.799)
+2024-12-18 15:20:12.454 [http-nio-8079-exec-2] INFO  o.a.c.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2024-12-18 15:20:12.455 [http-nio-8079-exec-2] INFO  org.springframework.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2024-12-18 15:20:12.457 [http-nio-8079-exec-2] INFO  org.springframework.web.servlet.DispatcherServlet - Completed initialization in 2 ms
+2024-12-18 15:20:12.469 [http-nio-8079-exec-2] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Request: POST /rag/addVector
+2024-12-18 15:23:09.753 [SpringApplicationShutdownHook] INFO  o.s.boot.web.embedded.tomcat.GracefulShutdown - Commencing graceful shutdown. Waiting for active requests to complete
+2024-12-18 15:23:11.772 [tomcat-shutdown] INFO  o.s.boot.web.embedded.tomcat.GracefulShutdown - Graceful shutdown complete
+2024-12-18 15:23:11.779 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2024-12-18 15:23:11.783 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
+2024-12-18 15:23:13.998 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - Starting Aiagent7Application using Java 17.0.2 with PID 87969 (/Users/lishuangqi/myWork/aiagent7/target/classes started by lishuangqi in /Users/lishuangqi/myWork/aiagent7)
+2024-12-18 15:23:13.999 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - No active profile set, falling back to 1 default profile: "default"
+2024-12-18 15:23:14.531 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat initialized with port 8079 (http)
+2024-12-18 15:23:14.537 [main] INFO  org.apache.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8079"]
+2024-12-18 15:23:14.538 [main] INFO  org.apache.catalina.core.StandardService - Starting service [Tomcat]
+2024-12-18 15:23:14.539 [main] INFO  org.apache.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.34]
+2024-12-18 15:23:14.571 [main] INFO  o.a.c.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2024-12-18 15:23:14.571 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 554 ms
+2024-12-18 15:23:14.949 [main] INFO  org.springframework.ai.vectorstore.PgVectorStore - Using the vector table name: vector_store. Is empty: false
+2024-12-18 15:23:14.950 [main] INFO  org.springframework.ai.vectorstore.PgVectorStore - Initializing PGVectorStore schema for table: vector_store in schema: public
+2024-12-18 15:23:14.951 [main] INFO  org.springframework.ai.vectorstore.PgVectorStore - vectorTableValidationsEnabled false
+2024-12-18 15:23:16.737 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2024-12-18 15:23:16.833 [main] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@5558cc46
+2024-12-18 15:23:16.834 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2024-12-18 15:23:16.890 [main] INFO  o.s.b.a.web.servlet.WelcomePageHandlerMapping - Adding welcome page: class path resource [static/index.html]
+2024-12-18 15:23:17.010 [main] INFO  org.apache.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8079"]
+2024-12-18 15:23:17.017 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat started on port 8079 (http) with context path '/'
+2024-12-18 15:23:17.023 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - Started Aiagent7Application in 3.25 seconds (process running for 3.546)
+2024-12-18 15:23:19.392 [http-nio-8079-exec-2] INFO  o.a.c.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2024-12-18 15:23:19.393 [http-nio-8079-exec-2] INFO  org.springframework.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2024-12-18 15:23:19.393 [http-nio-8079-exec-2] INFO  org.springframework.web.servlet.DispatcherServlet - Completed initialization in 0 ms
+2024-12-18 15:23:19.401 [http-nio-8079-exec-2] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Request: POST /rag/addVector
+2024-12-18 15:24:12.103 [SpringApplicationShutdownHook] INFO  o.s.boot.web.embedded.tomcat.GracefulShutdown - Commencing graceful shutdown. Waiting for active requests to complete
+2024-12-18 15:24:14.126 [tomcat-shutdown] INFO  o.s.boot.web.embedded.tomcat.GracefulShutdown - Graceful shutdown complete
+2024-12-18 15:24:14.133 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2024-12-18 15:24:14.136 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
+2024-12-18 15:24:15.958 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - Starting Aiagent7Application using Java 17.0.2 with PID 88026 (/Users/lishuangqi/myWork/aiagent7/target/classes started by lishuangqi in /Users/lishuangqi/myWork/aiagent7)
+2024-12-18 15:24:15.959 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - No active profile set, falling back to 1 default profile: "default"
+2024-12-18 15:24:16.510 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat initialized with port 8079 (http)
+2024-12-18 15:24:16.517 [main] INFO  org.apache.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8079"]
+2024-12-18 15:24:16.517 [main] INFO  org.apache.catalina.core.StandardService - Starting service [Tomcat]
+2024-12-18 15:24:16.517 [main] INFO  org.apache.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.34]
+2024-12-18 15:24:16.551 [main] INFO  o.a.c.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2024-12-18 15:24:16.552 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 576 ms
+2024-12-18 15:24:16.945 [main] INFO  org.springframework.ai.vectorstore.PgVectorStore - Using the vector table name: vector_store. Is empty: false
+2024-12-18 15:24:16.947 [main] INFO  org.springframework.ai.vectorstore.PgVectorStore - Initializing PGVectorStore schema for table: vector_store in schema: public
+2024-12-18 15:24:16.947 [main] INFO  org.springframework.ai.vectorstore.PgVectorStore - vectorTableValidationsEnabled false
+2024-12-18 15:24:17.270 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2024-12-18 15:24:17.352 [main] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@66250681
+2024-12-18 15:24:17.352 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2024-12-18 15:24:17.399 [main] INFO  o.s.b.a.web.servlet.WelcomePageHandlerMapping - Adding welcome page: class path resource [static/index.html]
+2024-12-18 15:24:17.532 [main] INFO  org.apache.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8079"]
+2024-12-18 15:24:17.537 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat started on port 8079 (http) with context path '/'
+2024-12-18 15:24:17.543 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - Started Aiagent7Application in 1.84 seconds (process running for 2.124)
+2024-12-18 15:24:19.581 [http-nio-8079-exec-2] INFO  o.a.c.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2024-12-18 15:24:19.581 [http-nio-8079-exec-2] INFO  org.springframework.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2024-12-18 15:24:19.582 [http-nio-8079-exec-2] INFO  org.springframework.web.servlet.DispatcherServlet - Completed initialization in 1 ms
+2024-12-18 15:24:19.589 [http-nio-8079-exec-2] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Request: POST /rag/addVector
+2024-12-18 15:24:59.645 [SpringApplicationShutdownHook] INFO  o.s.boot.web.embedded.tomcat.GracefulShutdown - Commencing graceful shutdown. Waiting for active requests to complete
+2024-12-18 15:25:01.665 [tomcat-shutdown] INFO  o.s.boot.web.embedded.tomcat.GracefulShutdown - Graceful shutdown complete
+2024-12-18 15:25:01.670 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2024-12-18 15:25:01.672 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
+2024-12-18 15:25:03.499 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - Starting Aiagent7Application using Java 17.0.2 with PID 88080 (/Users/lishuangqi/myWork/aiagent7/target/classes started by lishuangqi in /Users/lishuangqi/myWork/aiagent7)
+2024-12-18 15:25:03.500 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - No active profile set, falling back to 1 default profile: "default"
+2024-12-18 15:25:04.033 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat initialized with port 8079 (http)
+2024-12-18 15:25:04.039 [main] INFO  org.apache.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8079"]
+2024-12-18 15:25:04.039 [main] INFO  org.apache.catalina.core.StandardService - Starting service [Tomcat]
+2024-12-18 15:25:04.040 [main] INFO  org.apache.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.34]
+2024-12-18 15:25:04.076 [main] INFO  o.a.c.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2024-12-18 15:25:04.076 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 557 ms
+2024-12-18 15:25:04.574 [main] INFO  org.springframework.ai.vectorstore.PgVectorStore - Using the vector table name: vector_store. Is empty: false
+2024-12-18 15:25:04.577 [main] INFO  org.springframework.ai.vectorstore.PgVectorStore - Initializing PGVectorStore schema for table: vector_store in schema: public
+2024-12-18 15:25:04.577 [main] INFO  org.springframework.ai.vectorstore.PgVectorStore - vectorTableValidationsEnabled false
+2024-12-18 15:25:05.093 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2024-12-18 15:25:05.257 [main] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@479ddb9b
+2024-12-18 15:25:05.259 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2024-12-18 15:25:05.338 [main] INFO  o.s.b.a.web.servlet.WelcomePageHandlerMapping - Adding welcome page: class path resource [static/index.html]
+2024-12-18 15:25:05.566 [main] INFO  org.apache.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8079"]
+2024-12-18 15:25:05.578 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat started on port 8079 (http) with context path '/'
+2024-12-18 15:25:05.587 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - Started Aiagent7Application in 2.343 seconds (process running for 2.632)
+2024-12-18 15:25:07.648 [http-nio-8079-exec-2] INFO  o.a.c.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2024-12-18 15:25:07.649 [http-nio-8079-exec-2] INFO  org.springframework.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2024-12-18 15:25:07.650 [http-nio-8079-exec-2] INFO  org.springframework.web.servlet.DispatcherServlet - Completed initialization in 0 ms
+2024-12-18 15:25:07.674 [http-nio-8079-exec-2] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Request: POST /rag/addVector
+2024-12-18 15:25:21.898 [http-nio-8079-exec-3] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Request: POST /rag/addVector
+2024-12-18 15:34:26.215 [http-nio-8079-exec-1] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Request: POST /rag/addVector
+2024-12-18 15:34:28.185 [http-nio-8079-exec-1] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Response: POST /rag/addVector took 1970ms
+2024-12-18 15:36:01.422 [http-nio-8079-exec-5] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Request: GET /rag/string
+2024-12-18 15:36:10.910 [http-nio-8079-exec-5] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Response: GET /rag/string took 9487ms
+2024-12-18 15:36:20.349 [http-nio-8079-exec-6] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Request: GET /rag/string
+2024-12-18 15:36:24.388 [http-nio-8079-exec-6] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Response: GET /rag/string took 4038ms
+2024-12-18 15:37:58.825 [http-nio-8079-exec-9] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Request: GET /rag/string
+2024-12-18 15:38:04.782 [http-nio-8079-exec-9] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Response: GET /rag/string took 5956ms
+2024-12-18 15:39:14.378 [SpringApplicationShutdownHook] INFO  o.s.boot.web.embedded.tomcat.GracefulShutdown - Commencing graceful shutdown. Waiting for active requests to complete
+2024-12-18 15:39:16.431 [tomcat-shutdown] INFO  o.s.boot.web.embedded.tomcat.GracefulShutdown - Graceful shutdown complete
+2024-12-18 15:39:16.451 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2024-12-18 15:39:16.475 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
+2024-12-18 15:39:19.344 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - Starting Aiagent7Application using Java 17.0.2 with PID 89154 (/Users/lishuangqi/myWork/aiagent7/target/classes started by lishuangqi in /Users/lishuangqi/myWork/aiagent7)
+2024-12-18 15:39:19.346 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - No active profile set, falling back to 1 default profile: "default"
+2024-12-18 15:39:19.917 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat initialized with port 8079 (http)
+2024-12-18 15:39:19.924 [main] INFO  org.apache.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8079"]
+2024-12-18 15:39:19.924 [main] INFO  org.apache.catalina.core.StandardService - Starting service [Tomcat]
+2024-12-18 15:39:19.924 [main] INFO  org.apache.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.34]
+2024-12-18 15:39:19.956 [main] INFO  o.a.c.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2024-12-18 15:39:19.956 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 591 ms
+2024-12-18 15:39:20.369 [main] INFO  org.springframework.ai.vectorstore.PgVectorStore - Using the vector table name: vector_store. Is empty: false
+2024-12-18 15:39:20.371 [main] INFO  org.springframework.ai.vectorstore.PgVectorStore - Initializing PGVectorStore schema for table: vector_store in schema: public
+2024-12-18 15:39:20.371 [main] INFO  org.springframework.ai.vectorstore.PgVectorStore - vectorTableValidationsEnabled false
+2024-12-18 15:39:20.390 [main] INFO  o.s.b.a.web.servlet.WelcomePageHandlerMapping - Adding welcome page: class path resource [static/index.html]
+2024-12-18 15:39:20.503 [main] INFO  org.apache.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8079"]
+2024-12-18 15:39:20.509 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat started on port 8079 (http) with context path '/'
+2024-12-18 15:39:20.515 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - Started Aiagent7Application in 1.441 seconds (process running for 1.774)
+2024-12-18 15:39:57.379 [http-nio-8079-exec-2] INFO  o.a.c.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2024-12-18 15:39:57.379 [http-nio-8079-exec-2] INFO  org.springframework.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2024-12-18 15:39:57.380 [http-nio-8079-exec-2] INFO  org.springframework.web.servlet.DispatcherServlet - Completed initialization in 1 ms
+2024-12-18 15:39:57.390 [http-nio-8079-exec-2] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Request: GET /rag/string
+2024-12-18 15:39:58.312 [http-nio-8079-exec-2] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2024-12-18 15:39:58.407 [http-nio-8079-exec-2] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@1afd34b1
+2024-12-18 15:39:58.408 [http-nio-8079-exec-2] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2024-12-18 15:40:02.581 [http-nio-8079-exec-2] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Response: GET /rag/string took 5190ms
+2024-12-18 15:40:08.212 [http-nio-8079-exec-3] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Request: GET /rag/string
+2024-12-18 15:40:12.717 [http-nio-8079-exec-3] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Response: GET /rag/string took 4505ms
+2024-12-18 15:40:40.161 [http-nio-8079-exec-4] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Request: GET /rag/string
+2024-12-18 15:40:43.998 [http-nio-8079-exec-4] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Response: GET /rag/string took 3836ms
+2024-12-18 15:41:56.956 [http-nio-8079-exec-7] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Request: POST /rag/addVector
+2024-12-18 15:41:58.650 [http-nio-8079-exec-7] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Response: POST /rag/addVector took 1693ms
+2024-12-18 15:42:15.193 [http-nio-8079-exec-8] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Request: GET /rag/string
+2024-12-18 15:42:20.361 [http-nio-8079-exec-8] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Response: GET /rag/string took 5168ms
+2024-12-18 15:43:22.729 [http-nio-8079-exec-1] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Request: POST /rag/addVector
+2024-12-18 15:44:24.180 [http-nio-8079-exec-1] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Response: POST /rag/addVector took 61450ms
+2024-12-18 15:44:36.167 [http-nio-8079-exec-2] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Request: GET /rag/string
+2024-12-18 15:44:43.127 [http-nio-8079-exec-2] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Response: GET /rag/string took 6959ms
+2024-12-18 15:45:31.605 [http-nio-8079-exec-3] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Request: GET /rag/string
+2024-12-18 15:45:34.261 [http-nio-8079-exec-3] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Response: GET /rag/string took 2655ms
+2024-12-18 15:46:27.208 [http-nio-8079-exec-4] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Request: GET /rag/string
+2024-12-18 15:46:30.145 [http-nio-8079-exec-4] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Response: GET /rag/string took 2936ms
+2024-12-18 16:00:27.045 [SpringApplicationShutdownHook] INFO  o.s.boot.web.embedded.tomcat.GracefulShutdown - Commencing graceful shutdown. Waiting for active requests to complete
+2024-12-18 16:00:29.064 [tomcat-shutdown] INFO  o.s.boot.web.embedded.tomcat.GracefulShutdown - Graceful shutdown complete
+2024-12-18 16:00:29.068 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2024-12-18 16:00:29.071 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
+2024-12-18 16:00:31.752 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - Starting Aiagent7Application using Java 17.0.2 with PID 90695 (/Users/lishuangqi/myWork/aiagent7/target/classes started by lishuangqi in /Users/lishuangqi/myWork/aiagent7)
+2024-12-18 16:00:31.753 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - No active profile set, falling back to 1 default profile: "default"
+2024-12-18 16:00:32.314 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat initialized with port 8079 (http)
+2024-12-18 16:00:32.321 [main] INFO  org.apache.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8079"]
+2024-12-18 16:00:32.322 [main] INFO  org.apache.catalina.core.StandardService - Starting service [Tomcat]
+2024-12-18 16:00:32.322 [main] INFO  org.apache.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.34]
+2024-12-18 16:00:32.361 [main] INFO  o.a.c.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2024-12-18 16:00:32.362 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 590 ms
+2024-12-18 16:00:32.768 [main] INFO  org.springframework.ai.vectorstore.PgVectorStore - Using the vector table name: vector_store. Is empty: false
+2024-12-18 16:00:32.770 [main] INFO  org.springframework.ai.vectorstore.PgVectorStore - Initializing PGVectorStore schema for table: vector_store in schema: public
+2024-12-18 16:00:32.770 [main] INFO  org.springframework.ai.vectorstore.PgVectorStore - vectorTableValidationsEnabled false
+2024-12-18 16:00:32.789 [main] INFO  o.s.b.a.web.servlet.WelcomePageHandlerMapping - Adding welcome page: class path resource [static/index.html]
+2024-12-18 16:00:32.905 [main] INFO  org.apache.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8079"]
+2024-12-18 16:00:32.909 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat started on port 8079 (http) with context path '/'
+2024-12-18 16:00:32.916 [main] INFO  com.shuangqi.aiagent7.Aiagent7Application - Started Aiagent7Application in 1.484 seconds (process running for 1.816)
+2024-12-18 16:00:41.472 [http-nio-8079-exec-2] INFO  o.a.c.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2024-12-18 16:00:41.472 [http-nio-8079-exec-2] INFO  org.springframework.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2024-12-18 16:00:41.473 [http-nio-8079-exec-2] INFO  org.springframework.web.servlet.DispatcherServlet - Completed initialization in 1 ms
+2024-12-18 16:00:41.490 [http-nio-8079-exec-2] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Request: POST /rag/addVector
+2024-12-18 16:00:43.566 [http-nio-8079-exec-2] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2024-12-18 16:00:43.673 [http-nio-8079-exec-2] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@176636fd
+2024-12-18 16:00:43.674 [http-nio-8079-exec-2] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2024-12-18 16:00:43.711 [http-nio-8079-exec-2] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Response: POST /rag/addVector took 2221ms
+2024-12-18 16:01:10.754 [http-nio-8079-exec-3] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Request: GET /rag/string
+2024-12-18 16:01:20.149 [http-nio-8079-exec-3] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Response: GET /rag/string took 9394ms
+2024-12-18 16:01:41.521 [http-nio-8079-exec-4] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Request: GET /rag/string
+2024-12-18 16:01:46.057 [http-nio-8079-exec-4] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Response: GET /rag/string took 4535ms
+2024-12-18 16:01:52.463 [http-nio-8079-exec-5] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Request: GET /rag/string
+2024-12-18 16:01:56.607 [http-nio-8079-exec-5] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Response: GET /rag/string took 4144ms
+2024-12-18 16:01:59.557 [http-nio-8079-exec-6] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Request: GET /rag/string
+2024-12-18 16:02:03.031 [http-nio-8079-exec-6] INFO  com.shuangqi.aiagent7.config.WebLogInterceptor - Response: GET /rag/string took 3474ms
