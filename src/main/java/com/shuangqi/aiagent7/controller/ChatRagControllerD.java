@@ -31,12 +31,12 @@ public class ChatRagControllerD {
         return chatRagService.chatWithPrompt(p, q);
     }
 
-    @PostMapping("/addVector")
-    public Result addVector(@RequestParam("file") MultipartFile file) {
+    @PostMapping("/addRagVector")
+    public Result addRagVector(@RequestParam("file") MultipartFile file) {
         if (file == null || file.isEmpty()) {
             return Result.success("文件为空，请选择一个有效的文件");
         }
-        return Result.success(chatRagService.addVector(file));
+        return Result.success(chatRagService.addRagVector(file));
     }
 
 

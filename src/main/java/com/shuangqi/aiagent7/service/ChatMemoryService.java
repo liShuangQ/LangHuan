@@ -27,9 +27,6 @@ public class ChatMemoryService {
                         // VectorStoreChatMemoryAdvisor：从 VectorStore 中检索内存，并将其添加到提示符的系统文本中。此 advisor 可用于从大型数据集中高效搜索和检索相关信息。主要侧重于利用向量存储（Vector Store）来管理聊天记忆。
                         new SafeGuardAdvisor(Constant.AIDEFAULTSAFEGUARDADVISOR),
                         new SimpleLoggerAdvisor()
-                ).defaultAdvisors(
-                        a -> a
-                                .param(CHAT_MEMORY_RETRIEVE_SIZE_KEY, 10)
                 )
                 .build();
     }
@@ -45,8 +42,8 @@ public class ChatMemoryService {
         return this.chatClient.prompt()
                 .user(q)
                 .advisors(
-                        a -> a
-                                .param(CHAT_MEMORY_CONVERSATION_ID_KEY, id)
+                        a -> a.param(CHAT_MEMORY_CONVERSATION_ID_KEY, id)
+                                .param(CHAT_MEMORY_RETRIEVE_SIZE_KEY, 10)
                 ).call().chatResponse().getResult().getOutput().getContent();
     }
 
@@ -63,6 +60,7 @@ public class ChatMemoryService {
                 .advisors(
                         a -> a
                                 .param(CHAT_MEMORY_CONVERSATION_ID_KEY, id)
+                                .param(CHAT_MEMORY_RETRIEVE_SIZE_KEY, 10)
                 ).stream().content();
     }
 
@@ -80,6 +78,7 @@ public class ChatMemoryService {
                 .advisors(
                         a -> a
                                 .param(CHAT_MEMORY_CONVERSATION_ID_KEY, id)
+                                .param(CHAT_MEMORY_RETRIEVE_SIZE_KEY, 10)
                 ).call().chatResponse().getResult().getOutput().getContent();
     }
 
@@ -97,6 +96,7 @@ public class ChatMemoryService {
                 .advisors(
                         a -> a
                                 .param(CHAT_MEMORY_CONVERSATION_ID_KEY, id)
+                                .param(CHAT_MEMORY_RETRIEVE_SIZE_KEY, 10)
                 ).stream().content();
     }
 
