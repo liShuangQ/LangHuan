@@ -1,7 +1,9 @@
 package com.shuangqi.aiagent7.service;
 
+import com.shuangqi.aiagent7.advisors.MySimplelogAdvisor;
 import com.shuangqi.aiagent7.common.Constant;
 import com.shuangqi.aiagent7.utils.RagVectorUtils;
+import com.shuangqi.aiagent7.advisors.ReReadingAdvisor;
 import lombok.SneakyThrows;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.QuestionAnswerAdvisor;
@@ -30,8 +32,7 @@ public class ChatRagService {
                         // 此 advisor 使用向量存储来提供问答功能，实现 RAG（检索增强生成）模式。
                         new QuestionAnswerAdvisor(this.vectorStore, SearchRequest.defaults()),
                         new SafeGuardAdvisor(Constant.AIDEFAULTSAFEGUARDADVISOR),
-                        new SimpleLoggerAdvisor()
-
+                        new MySimplelogAdvisor()
                 )
                 .build();
 

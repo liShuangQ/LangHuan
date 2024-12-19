@@ -1,9 +1,10 @@
 package com.shuangqi.aiagent7.service;
 
+import com.shuangqi.aiagent7.advisors.MySimplelogAdvisor;
+import com.shuangqi.aiagent7.advisors.ReReadingAdvisor;
 import com.shuangqi.aiagent7.common.Constant;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.SafeGuardAdvisor;
-import org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor;
 import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.model.ChatResponse;
@@ -25,7 +26,8 @@ public class ChatClientService {
         this.chatClient = chatClientBuilder.defaultSystem(Constant.AIDEFAULTSYSTEMPROMPT)
                 .defaultAdvisors(
                         new SafeGuardAdvisor(Constant.AIDEFAULTSAFEGUARDADVISOR),
-                        new SimpleLoggerAdvisor()
+                        new ReReadingAdvisor(),
+                        new MySimplelogAdvisor()
                 )
                 .build();
     }

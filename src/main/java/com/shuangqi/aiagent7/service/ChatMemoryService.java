@@ -1,5 +1,6 @@
 package com.shuangqi.aiagent7.service;
 
+import com.shuangqi.aiagent7.advisors.MySimplelogAdvisor;
 import com.shuangqi.aiagent7.common.Constant;
 import com.shuangqi.aiagent7.model.pojo.MyChatMemory;
 import lombok.extern.slf4j.Slf4j;
@@ -26,7 +27,7 @@ public class ChatMemoryService {
                         // PromptChatMemoryAdvisor：检索内存并将其添加到提示的系统文本中
                         // VectorStoreChatMemoryAdvisor：从 VectorStore 中检索内存，并将其添加到提示符的系统文本中。此 advisor 可用于从大型数据集中高效搜索和检索相关信息。主要侧重于利用向量存储（Vector Store）来管理聊天记忆。
                         new SafeGuardAdvisor(Constant.AIDEFAULTSAFEGUARDADVISOR),
-                        new SimpleLoggerAdvisor()
+                        new MySimplelogAdvisor()
                 )
                 .build();
     }
