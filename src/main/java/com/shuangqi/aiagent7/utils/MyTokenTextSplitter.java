@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 
 public class MyTokenTextSplitter {
 
-    private static final Pattern DEFAULT_SPLIT_PATTERN = Pattern.compile("[.。!?！？；；]+\\s*");
+    private static final Pattern DEFAULT_SPLIT_PATTERN = Pattern.compile("[.。!?！？;；]+\\s*");
 
     public List<Document> apply(String text) {
         return apply(text, DEFAULT_SPLIT_PATTERN, new HashMap<>());
