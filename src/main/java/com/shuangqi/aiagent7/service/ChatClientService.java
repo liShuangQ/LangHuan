@@ -26,7 +26,7 @@ public class ChatClientService {
         this.chatClient = chatClientBuilder.defaultSystem(Constant.AIDEFAULTSYSTEMPROMPT)
                 .defaultAdvisors(
                         new SafeGuardAdvisor(Constant.AIDEFAULTSAFEGUARDADVISOR),
-                        new ReReadingAdvisor(),
+//                        new ReReadingAdvisor(),  // re2能力
                         new MySimplelogAdvisor()
                 )
                 .build();
