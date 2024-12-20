@@ -75,8 +75,8 @@ public class ChatRagService {
         List<Document> documents = vectorStore.similaritySearch(
                 SearchRequest.defaults()
                         .withQuery(q) //置查询字符串
-                        .withTopK(1) //设置返回的最相似结果的数量
-                        .withSimilarityThreshold(0.5) //设置相似度阈值，常是一个介于 0 和 1 之间的浮点数，例如 0.5、0.7、0.8 等，如果设置得过高，可能会没有结果返回；如果设置得过低，可能会返回大量不相关的结果
+                        .withTopK(Constant.WITHTOPK) //设置返回的最相似结果的数量
+                        .withSimilarityThreshold(Constant.WITHSIMILARITYTHRESHOLD) //设置相似度阈值，常是一个介于 0 和 1 之间的浮点数，例如 0.5、0.7、0.8 等，如果设置得过高，可能会没有结果返回；如果设置得过低，可能会返回大量不相关的结果
                         .withFilterExpression("filetype == 'text/plain'"));//设置过滤条件
         log.debug("ragSearch: " + documents);
         StringBuilder contents = new StringBuilder();
