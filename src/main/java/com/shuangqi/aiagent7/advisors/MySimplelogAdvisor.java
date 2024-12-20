@@ -15,7 +15,7 @@ public class MySimplelogAdvisor implements CallAroundAdvisor, StreamAroundAdviso
 
     @Override
     public int getOrder() {
-        return 0;
+        return 1;
     }
 
     @Override

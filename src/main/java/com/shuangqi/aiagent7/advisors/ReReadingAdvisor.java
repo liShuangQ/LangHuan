@@ -19,6 +19,7 @@ public class ReReadingAdvisor implements CallAroundAdvisor, StreamAroundAdvisor 
         return this.getClass().getSimpleName();
     }
 
+    // 通过设置 order 值来控制执行顺序。较低的值首先执行。
     @Override
     public int getOrder() {
         return 0;

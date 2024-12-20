@@ -1,29 +1,1273 @@
-2024-12-19 10:27:55.204 [main] DEBUG com.shuangqi.aiagent7.Aiagent7Application - Running with Spring Boot v3.4.1-SNAPSHOT, Spring v6.2.1
-2024-12-19 10:35:16.926 [main] DEBUG com.shuangqi.aiagent7.Aiagent7Application - Running with Spring Boot v3.4.1-SNAPSHOT, Spring v6.2.1
-2024-12-19 10:50:50.979 [main] DEBUG com.shuangqi.aiagent7.Aiagent7Application - Running with Spring Boot v3.4.1-SNAPSHOT, Spring v6.2.1
-2024-12-19 10:50:58.748 [http-nio-8079-exec-2] DEBUG com.shuangqi.aiagent7.utils.RagVectorUtils - 向量库添加文件：TODO.md
-2024-12-19 11:04:03.883 [main] DEBUG com.shuangqi.aiagent7.Aiagent7Application - Running with Spring Boot v3.4.1-SNAPSHOT, Spring v6.2.1
-2024-12-19 11:04:40.799 [http-nio-8079-exec-2] DEBUG com.shuangqi.aiagent7.utils.RagVectorUtils - 向量库添加文件：springai.txt
-2024-12-19 17:54:32.573 [main] DEBUG com.shuangqi.aiagent7.Aiagent7Application - Running with Spring Boot v3.4.1-SNAPSHOT, Spring v6.2.1
-2024-12-19 17:55:01.846 [http-nio-8079-exec-2] DEBUG com.shuangqi.aiagent7.advisors.MySimplelogAdvisor - BEFORE: AdvisedRequest[chatModel=org.springframework.ai.ollama.OllamaChatModel@382bdc71, userText=你是谁, systemText=你叫小明。
+2024-12-20 13:52:02.709 [main] DEBUG com.shuangqi.aiagent7.Aiagent7Application - Running with Spring Boot v3.4.1-SNAPSHOT, Spring v6.2.1
+2024-12-20 13:52:28.805 [http-nio-8079-exec-2] DEBUG com.shuangqi.aiagent7.advisors.MySimplelogAdvisor - BEFORE: AdvisedRequest[chatModel=org.springframework.ai.ollama.OllamaChatModel@3c9ad0e9, userText=结合文档，The World is Big and 后是什么
+
+Context information is below, surrounded by ---------------------
+
+---------------------
+{question_answer_context}
+---------------------
+
+Given the context and provided history information and not prior knowledge,
+reply to the user comment. If the answer is not in the context, inform
+the user that you can't answer the question.
+, systemText=你叫小明。
 请你对我提供的信息进行专业且深入的分析，无论是文本内容、数据还是概念等方面。
 用清晰、准确、有条理的语言进行回应，给出全面的解释、合理的建议或精准的判断。
 帮助我更好地理解相关事物并做出明智的决策或获得更深入的认知。
-, chatOptions=org.springframework.ai.ollama.api.OllamaOptions@35e6c540, media=[], functionNames=[], functionCallbacks=[], messages=[], userParams={}, systemParams={}, advisors=[org.springframework.ai.chat.client.DefaultChatClient$DefaultChatClientRequestSpec$1@7928f8d1, org.springframework.ai.chat.client.DefaultChatClient$DefaultChatClientRequestSpec$2@52044201, org.springframework.ai.chat.client.advisor.SafeGuardAdvisor@15b655ba, com.shuangqi.aiagent7.advisors.MySimplelogAdvisor@7318cb29, org.springframework.ai.chat.client.DefaultChatClient$DefaultChatClientRequestSpec$1@4dc85beb, org.springframework.ai.chat.client.DefaultChatClient$DefaultChatClientRequestSpec$2@3d2c0c19], advisorParams={}, adviseContext={}, toolContext={}]
-2024-12-19 17:55:08.552 [http-nio-8079-exec-2] DEBUG com.shuangqi.aiagent7.advisors.MySimplelogAdvisor - AFTER: AdvisedResponse[response=ChatResponse [metadata={ id: , usage: { promptTokens: 81, generationTokens: 38, totalTokens: 119 }, rateLimit: org.springframework.ai.chat.metadata.EmptyRateLimit@3040568d }, generations=[Generation[assistantMessage=AssistantMessage [messageType=ASSISTANT, toolCalls=[], textContent={ "name": "小明", "age": 18, "hobby": ["编程", "看电影"], "favorite_color": "蓝色" }  																					
-, metadata={messageType=ASSISTANT}], chatGenerationMetadata=ChatGenerationMetadata{finishReason=stop,contentFilterMetadata=null}]]], adviseContext={}]
-2024-12-19 17:56:50.980 [main] DEBUG com.shuangqi.aiagent7.Aiagent7Application - Running with Spring Boot v3.4.1-SNAPSHOT, Spring v6.2.1
-2024-12-19 17:56:57.599 [http-nio-8079-exec-1] DEBUG com.shuangqi.aiagent7.advisors.MySimplelogAdvisor - BEFORE: AdvisedRequest[chatModel=org.springframework.ai.ollama.OllamaChatModel@adffb6c, userText=你是谁, systemText=你叫小明。
+, chatOptions=org.springframework.ai.ollama.api.OllamaOptions@35e6c540, media=[], functionNames=[], functionCallbacks=[], messages=[], userParams={question_answer_context=The World is Big and Salvation Lurks Around the Corner hei hei hei
+PromptChatMemoryAdvisor：检索内存并将其添加到提示的系统文本中
+MessageChatMemoryAdvisor：检索内存并将其作为消息集合添加到提示符中
+You walk forward facing the past and you turn back toward the future}, systemParams={}, advisors=[org.springframework.ai.chat.client.DefaultChatClient$DefaultChatClientRequestSpec$1@f73f39d, org.springframework.ai.chat.client.DefaultChatClient$DefaultChatClientRequestSpec$2@58edad7a, org.springframework.ai.chat.client.advisor.QuestionAnswerAdvisor@1682fae0, org.springframework.ai.chat.client.advisor.SafeGuardAdvisor@7cf56d41, com.shuangqi.aiagent7.advisors.MySimplelogAdvisor@6c8a8659, org.springframework.ai.chat.client.DefaultChatClient$DefaultChatClientRequestSpec$1@593970cf, org.springframework.ai.chat.client.DefaultChatClient$DefaultChatClientRequestSpec$2@58edd4f2], advisorParams={chat_memory_response_size=100, chat_memory_conversation_id=678}, adviseContext={chat_memory_response_size=100, chat_memory_conversation_id=678, qa_retrieved_documents=[Document{id='4cb56bc7-c1e9-4d31-9cb0-adb7198c8d77', metadata={filename=springai.txt, filetype=text/plain, distance=0.25564077}, content='The World is Big and Salvation Lurks Around the Corner hei hei hei', media=[]}, Document{id='ab765642-df47-4826-b8a1-63459baed4f3', metadata={filename=springai.txt, filetype=text/plain, distance=0.4470464}, content='PromptChatMemoryAdvisor：检索内存并将其添加到提示的系统文本中', media=[]}, Document{id='39f10d5e-0bc0-48f1-a537-4a841be56733', metadata={filename=springai.txt, filetype=text/plain, distance=0.46441138}, content='MessageChatMemoryAdvisor：检索内存并将其作为消息集合添加到提示符中', media=[]}, Document{id='de312838-8dd9-404e-a7db-8f198bf90727', metadata={filename=springai.txt, filetype=text/plain, distance=0.53578264}, content='You walk forward facing the past and you turn back toward the future', media=[]}]}, toolContext={}]
+2024-12-20 13:53:27.311 [http-nio-8079-exec-4] DEBUG com.shuangqi.aiagent7.advisors.MySimplelogAdvisor - BEFORE: AdvisedRequest[chatModel=org.springframework.ai.ollama.OllamaChatModel@3c9ad0e9, userText=结合文档，The World is Big and 后是什么
+
+Context information is below, surrounded by ---------------------
+
+---------------------
+{question_answer_context}
+---------------------
+
+Given the context and provided history information and not prior knowledge,
+reply to the user comment. If the answer is not in the context, inform
+the user that you can't answer the question.
+, systemText=你叫小明。
 请你对我提供的信息进行专业且深入的分析，无论是文本内容、数据还是概念等方面。
 用清晰、准确、有条理的语言进行回应，给出全面的解释、合理的建议或精准的判断。
 帮助我更好地理解相关事物并做出明智的决策或获得更深入的认知。
-, chatOptions=org.springframework.ai.ollama.api.OllamaOptions@35e6c540, media=[], functionNames=[], functionCallbacks=[], messages=[], userParams={}, systemParams={}, advisors=[org.springframework.ai.chat.client.DefaultChatClient$DefaultChatClientRequestSpec$1@5e495a96, org.springframework.ai.chat.client.DefaultChatClient$DefaultChatClientRequestSpec$2@63621a04, org.springframework.ai.chat.client.advisor.SafeGuardAdvisor@5c02bf57, com.shuangqi.aiagent7.advisors.ReReadingAdvisor@29732b20, com.shuangqi.aiagent7.advisors.MySimplelogAdvisor@3d7a5972, org.springframework.ai.chat.client.DefaultChatClient$DefaultChatClientRequestSpec$1@4e3bc6e3, org.springframework.ai.chat.client.DefaultChatClient$DefaultChatClientRequestSpec$2@78a3074], advisorParams={}, adviseContext={}, toolContext={}]
-2024-12-19 17:56:58.333 [http-nio-8079-exec-1] DEBUG com.shuangqi.aiagent7.advisors.MySimplelogAdvisor - AFTER: AdvisedResponse[response=ChatResponse [metadata={ id: , usage: { promptTokens: 90, generationTokens: 2, totalTokens: 92 }, rateLimit: org.springframework.ai.chat.metadata.EmptyRateLimit@5e47bdb6 }, generations=[Generation[assistantMessage=AssistantMessage [messageType=ASSISTANT, toolCalls=[], textContent={}, metadata={messageType=ASSISTANT}], chatGenerationMetadata=ChatGenerationMetadata{finishReason=stop,contentFilterMetadata=null}]]], adviseContext={}]
-2024-12-19 17:59:31.351 [main] DEBUG com.shuangqi.aiagent7.Aiagent7Application - Running with Spring Boot v3.4.1-SNAPSHOT, Spring v6.2.1
-2024-12-19 18:00:11.504 [http-nio-8079-exec-2] DEBUG com.shuangqi.aiagent7.advisors.MySimplelogAdvisor - BEFORE: AdvisedRequest[chatModel=org.springframework.ai.ollama.OllamaChatModel@69f85ad6, userText=你是谁, systemText=你叫小明。
+, chatOptions=org.springframework.ai.ollama.api.OllamaOptions@35e6c540, media=[], functionNames=[], functionCallbacks=[], messages=[], userParams={question_answer_context=The World is Big and Salvation Lurks Around the Corner hei hei hei
+PromptChatMemoryAdvisor：检索内存并将其添加到提示的系统文本中
+MessageChatMemoryAdvisor：检索内存并将其作为消息集合添加到提示符中
+You walk forward facing the past and you turn back toward the future}, systemParams={}, advisors=[org.springframework.ai.chat.client.DefaultChatClient$DefaultChatClientRequestSpec$1@f73f39d, org.springframework.ai.chat.client.DefaultChatClient$DefaultChatClientRequestSpec$2@58edad7a, org.springframework.ai.chat.client.advisor.QuestionAnswerAdvisor@1682fae0, org.springframework.ai.chat.client.advisor.SafeGuardAdvisor@7cf56d41, com.shuangqi.aiagent7.advisors.MySimplelogAdvisor@6c8a8659, org.springframework.ai.chat.client.DefaultChatClient$DefaultChatClientRequestSpec$1@2773bd4a, org.springframework.ai.chat.client.DefaultChatClient$DefaultChatClientRequestSpec$2@234c3d7c], advisorParams={chat_memory_response_size=100, chat_memory_conversation_id=678}, adviseContext={chat_memory_response_size=100, chat_memory_conversation_id=678, qa_retrieved_documents=[Document{id='4cb56bc7-c1e9-4d31-9cb0-adb7198c8d77', metadata={filename=springai.txt, filetype=text/plain, distance=0.25564077}, content='The World is Big and Salvation Lurks Around the Corner hei hei hei', media=[]}, Document{id='ab765642-df47-4826-b8a1-63459baed4f3', metadata={filename=springai.txt, filetype=text/plain, distance=0.4470464}, content='PromptChatMemoryAdvisor：检索内存并将其添加到提示的系统文本中', media=[]}, Document{id='39f10d5e-0bc0-48f1-a537-4a841be56733', metadata={filename=springai.txt, filetype=text/plain, distance=0.46441138}, content='MessageChatMemoryAdvisor：检索内存并将其作为消息集合添加到提示符中', media=[]}, Document{id='de312838-8dd9-404e-a7db-8f198bf90727', metadata={filename=springai.txt, filetype=text/plain, distance=0.53578264}, content='You walk forward facing the past and you turn back toward the future', media=[]}]}, toolContext={}]
+2024-12-20 13:53:32.640 [http-nio-8079-exec-4] DEBUG com.shuangqi.aiagent7.advisors.MySimplelogAdvisor - AFTER: AdvisedResponse[response=ChatResponse [metadata={ id: , usage: { promptTokens: 0, generationTokens: 0, totalTokens: 0 }, rateLimit: org.springframework.ai.chat.metadata.EmptyRateLimit@7b2f7168 }, generations=[Generation[assistantMessage=AssistantMessage [messageType=ASSISTANT, toolCalls=[], textContent={  }  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+ , metadata={messageType=ASSISTANT}], chatGenerationMetadata=ChatGenerationMetadata{finishReason=null,contentFilterMetadata=null}]]], adviseContext={chat_memory_response_size=100, chat_memory_conversation_id=678, qa_retrieved_documents=[Document{id='4cb56bc7-c1e9-4d31-9cb0-adb7198c8d77', metadata={filename=springai.txt, filetype=text/plain, distance=0.25564077}, content='The World is Big and Salvation Lurks Around the Corner hei hei hei', media=[]}, Document{id='ab765642-df47-4826-b8a1-63459baed4f3', metadata={filename=springai.txt, filetype=text/plain, distance=0.4470464}, content='PromptChatMemoryAdvisor：检索内存并将其添加到提示的系统文本中', media=[]}, Document{id='39f10d5e-0bc0-48f1-a537-4a841be56733', metadata={filename=springai.txt, filetype=text/plain, distance=0.46441138}, content='MessageChatMemoryAdvisor：检索内存并将其作为消息集合添加到提示符中', media=[]}, Document{id='de312838-8dd9-404e-a7db-8f198bf90727', metadata={filename=springai.txt, filetype=text/plain, distance=0.53578264}, content='You walk forward facing the past and you turn back toward the future', media=[]}]}]
+2024-12-20 13:53:36.343 [http-nio-8079-exec-5] DEBUG com.shuangqi.aiagent7.advisors.MySimplelogAdvisor - BEFORE: AdvisedRequest[chatModel=org.springframework.ai.ollama.OllamaChatModel@3c9ad0e9, userText=结合文档，The World is Big and 后是什么
+
+Context information is below, surrounded by ---------------------
+
+---------------------
+{question_answer_context}
+---------------------
+
+Given the context and provided history information and not prior knowledge,
+reply to the user comment. If the answer is not in the context, inform
+the user that you can't answer the question.
+, systemText=你叫小明。
 请你对我提供的信息进行专业且深入的分析，无论是文本内容、数据还是概念等方面。
 用清晰、准确、有条理的语言进行回应，给出全面的解释、合理的建议或精准的判断。
 帮助我更好地理解相关事物并做出明智的决策或获得更深入的认知。
-, chatOptions=org.springframework.ai.ollama.api.OllamaOptions@35e6c540, media=[], functionNames=[], functionCallbacks=[], messages=[], userParams={}, systemParams={}, advisors=[org.springframework.ai.chat.client.DefaultChatClient$DefaultChatClientRequestSpec$1@4ed502c1, org.springframework.ai.chat.client.DefaultChatClient$DefaultChatClientRequestSpec$2@fdb245e, org.springframework.ai.chat.client.advisor.SafeGuardAdvisor@7d8ccf9f, com.shuangqi.aiagent7.advisors.ReReadingAdvisor@56891412, com.shuangqi.aiagent7.advisors.MySimplelogAdvisor@30acc708, org.springframework.ai.chat.client.DefaultChatClient$DefaultChatClientRequestSpec$1@6603ec97, org.springframework.ai.chat.client.DefaultChatClient$DefaultChatClientRequestSpec$2@7d6827ff], advisorParams={}, adviseContext={}, toolContext={}]
-2024-12-19 18:00:11.507 [http-nio-8079-exec-2] DEBUG com.shuangqi.aiagent7.advisors.ReReadingAdvisor - re2_input_query:你是谁
-2024-12-19 18:00:15.095 [http-nio-8079-exec-2] DEBUG com.shuangqi.aiagent7.advisors.MySimplelogAdvisor - AFTER: AdvisedResponse[response=ChatResponse [metadata={ id: , usage: { promptTokens: 90, generationTokens: 71, totalTokens: 161 }, rateLimit: org.springframework.ai.chat.metadata.EmptyRateLimit@21a16d0 }, generations=[Generation[assistantMessage=AssistantMessage [messageType=ASSISTANT, toolCalls=[], textContent={"code":200,"data":"小明，你好！我是你的助手，一个使用人工智能技术来回答问题、提供信息和建议的人工智能程序。我可以帮助你理解相关事物并做出明智的决策或获得更深入的认知。如果你有任何问题或需要了解的信息，请随时告诉我，我会尽力为你提供支持。"}, metadata={messageType=ASSISTANT}], chatGenerationMetadata=ChatGenerationMetadata{finishReason=stop,contentFilterMetadata=null}]]], adviseContext={}]
+, chatOptions=org.springframework.ai.ollama.api.OllamaOptions@35e6c540, media=[], functionNames=[], functionCallbacks=[], messages=[], userParams={question_answer_context=The World is Big and Salvation Lurks Around the Corner hei hei hei
+PromptChatMemoryAdvisor：检索内存并将其添加到提示的系统文本中
+MessageChatMemoryAdvisor：检索内存并将其作为消息集合添加到提示符中
+You walk forward facing the past and you turn back toward the future}, systemParams={}, advisors=[org.springframework.ai.chat.client.DefaultChatClient$DefaultChatClientRequestSpec$1@f73f39d, org.springframework.ai.chat.client.DefaultChatClient$DefaultChatClientRequestSpec$2@58edad7a, org.springframework.ai.chat.client.advisor.QuestionAnswerAdvisor@1682fae0, org.springframework.ai.chat.client.advisor.SafeGuardAdvisor@7cf56d41, com.shuangqi.aiagent7.advisors.MySimplelogAdvisor@6c8a8659, org.springframework.ai.chat.client.DefaultChatClient$DefaultChatClientRequestSpec$1@5020b307, org.springframework.ai.chat.client.DefaultChatClient$DefaultChatClientRequestSpec$2@7c49011e], advisorParams={chat_memory_response_size=100, chat_memory_conversation_id=678}, adviseContext={chat_memory_response_size=100, chat_memory_conversation_id=678, qa_retrieved_documents=[Document{id='4cb56bc7-c1e9-4d31-9cb0-adb7198c8d77', metadata={filename=springai.txt, filetype=text/plain, distance=0.25564077}, content='The World is Big and Salvation Lurks Around the Corner hei hei hei', media=[]}, Document{id='ab765642-df47-4826-b8a1-63459baed4f3', metadata={filename=springai.txt, filetype=text/plain, distance=0.4470464}, content='PromptChatMemoryAdvisor：检索内存并将其添加到提示的系统文本中', media=[]}, Document{id='39f10d5e-0bc0-48f1-a537-4a841be56733', metadata={filename=springai.txt, filetype=text/plain, distance=0.46441138}, content='MessageChatMemoryAdvisor：检索内存并将其作为消息集合添加到提示符中', media=[]}, Document{id='de312838-8dd9-404e-a7db-8f198bf90727', metadata={filename=springai.txt, filetype=text/plain, distance=0.53578264}, content='You walk forward facing the past and you turn back toward the future', media=[]}]}, toolContext={}]
+2024-12-20 13:53:42.498 [http-nio-8079-exec-5] DEBUG com.shuangqi.aiagent7.advisors.MySimplelogAdvisor - AFTER: AdvisedResponse[response=ChatResponse [metadata={ id: , usage: { promptTokens: 208, generationTokens: 63, totalTokens: 271 }, rateLimit: org.springframework.ai.chat.metadata.EmptyRateLimit@15998d26 }, generations=[Generation[assistantMessage=AssistantMessage [messageType=ASSISTANT, toolCalls=[], textContent={
+  "answer": "The World is Big and Salvation Lurks Around the Corner hei hei hei",
+  "explanation": "根据提供的上下文信息，'The World is Big and' 后面紧跟着 'Salvation Lurks Around the Corner hei hei hei'。"
+}, metadata={messageType=ASSISTANT}], chatGenerationMetadata=ChatGenerationMetadata{finishReason=stop,contentFilterMetadata=null}]]], adviseContext={chat_memory_response_size=100, chat_memory_conversation_id=678, qa_retrieved_documents=[Document{id='4cb56bc7-c1e9-4d31-9cb0-adb7198c8d77', metadata={filename=springai.txt, filetype=text/plain, distance=0.25564077}, content='The World is Big and Salvation Lurks Around the Corner hei hei hei', media=[]}, Document{id='ab765642-df47-4826-b8a1-63459baed4f3', metadata={filename=springai.txt, filetype=text/plain, distance=0.4470464}, content='PromptChatMemoryAdvisor：检索内存并将其添加到提示的系统文本中', media=[]}, Document{id='39f10d5e-0bc0-48f1-a537-4a841be56733', metadata={filename=springai.txt, filetype=text/plain, distance=0.46441138}, content='MessageChatMemoryAdvisor：检索内存并将其作为消息集合添加到提示符中', media=[]}, Document{id='de312838-8dd9-404e-a7db-8f198bf90727', metadata={filename=springai.txt, filetype=text/plain, distance=0.53578264}, content='You walk forward facing the past and you turn back toward the future', media=[]}]}]
+2024-12-20 13:59:07.750 [main] DEBUG com.shuangqi.aiagent7.Aiagent7Application - Running with Spring Boot v3.4.1-SNAPSHOT, Spring v6.2.1
+2024-12-20 13:59:21.834 [http-nio-8079-exec-1] DEBUG com.shuangqi.aiagent7.advisors.MySimplelogAdvisor - BEFORE: AdvisedRequest[chatModel=org.springframework.ai.ollama.OllamaChatModel@f73f39d, userText=结合文档，The World is Big and 后是什么
+
+Context information is below, surrounded by ---------------------
+
+---------------------
+{question_answer_context}
+---------------------
+
+Given the context and provided history information and not prior knowledge,
+reply to the user comment. If the answer is not in the context, inform
+the user that you can't answer the question.
+, systemText=你叫小明。
+请你对我提供的信息进行专业且深入的分析，无论是文本内容、数据还是概念等方面。
+用清晰、准确、有条理的语言进行回应，给出全面的解释、合理的建议或精准的判断。
+帮助我更好地理解相关事物并做出明智的决策或获得更深入的认知。
+, chatOptions=org.springframework.ai.ollama.api.OllamaOptions@35e6c540, media=[], functionNames=[], functionCallbacks=[], messages=[], userParams={question_answer_context=The World is Big and Salvation Lurks Around the Corner hei hei hei
+PromptChatMemoryAdvisor：检索内存并将其添加到提示的系统文本中
+MessageChatMemoryAdvisor：检索内存并将其作为消息集合添加到提示符中
+You walk forward facing the past and you turn back toward the future}, systemParams={}, advisors=[org.springframework.ai.chat.client.DefaultChatClient$DefaultChatClientRequestSpec$1@58edad7a, org.springframework.ai.chat.client.DefaultChatClient$DefaultChatClientRequestSpec$2@1682fae0, org.springframework.ai.chat.client.advisor.QuestionAnswerAdvisor@7cf56d41, org.springframework.ai.chat.client.advisor.SafeGuardAdvisor@6c8a8659, com.shuangqi.aiagent7.advisors.MySimplelogAdvisor@593970cf, org.springframework.ai.chat.client.DefaultChatClient$DefaultChatClientRequestSpec$1@58edd4f2, org.springframework.ai.chat.client.DefaultChatClient$DefaultChatClientRequestSpec$2@f2535cb], advisorParams={chat_memory_response_size=100, chat_memory_conversation_id=678}, adviseContext={chat_memory_response_size=100, chat_memory_conversation_id=678, qa_retrieved_documents=[Document{id='4cb56bc7-c1e9-4d31-9cb0-adb7198c8d77', metadata={filename=springai.txt, filetype=text/plain, distance=0.25564077}, content='The World is Big and Salvation Lurks Around the Corner hei hei hei', media=[]}, Document{id='ab765642-df47-4826-b8a1-63459baed4f3', metadata={filename=springai.txt, filetype=text/plain, distance=0.4470464}, content='PromptChatMemoryAdvisor：检索内存并将其添加到提示的系统文本中', media=[]}, Document{id='39f10d5e-0bc0-48f1-a537-4a841be56733', metadata={filename=springai.txt, filetype=text/plain, distance=0.46441138}, content='MessageChatMemoryAdvisor：检索内存并将其作为消息集合添加到提示符中', media=[]}, Document{id='de312838-8dd9-404e-a7db-8f198bf90727', metadata={filename=springai.txt, filetype=text/plain, distance=0.53578264}, content='You walk forward facing the past and you turn back toward the future', media=[]}]}, toolContext={}]
+2024-12-20 13:59:28.951 [http-nio-8079-exec-1] DEBUG com.shuangqi.aiagent7.advisors.MySimplelogAdvisor - AFTER: AdvisedResponse[response=ChatResponse [metadata={ id: , usage: { promptTokens: 0, generationTokens: 0, totalTokens: 0 }, rateLimit: org.springframework.ai.chat.metadata.EmptyRateLimit@65ed6185 }, generations=[Generation[assistantMessage=AssistantMessage [messageType=ASSISTANT, toolCalls=[], textContent={
+  "answer": "The World is Big and Salvation Lurks Around the Corner hei hei hei",
+  "source": "Context"
+}
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+ , metadata={messageType=ASSISTANT}], chatGenerationMetadata=ChatGenerationMetadata{finishReason=null,contentFilterMetadata=null}]]], adviseContext={chat_memory_response_size=100, chat_memory_conversation_id=678, qa_retrieved_documents=[Document{id='4cb56bc7-c1e9-4d31-9cb0-adb7198c8d77', metadata={filename=springai.txt, filetype=text/plain, distance=0.25564077}, content='The World is Big and Salvation Lurks Around the Corner hei hei hei', media=[]}, Document{id='ab765642-df47-4826-b8a1-63459baed4f3', metadata={filename=springai.txt, filetype=text/plain, distance=0.4470464}, content='PromptChatMemoryAdvisor：检索内存并将其添加到提示的系统文本中', media=[]}, Document{id='39f10d5e-0bc0-48f1-a537-4a841be56733', metadata={filename=springai.txt, filetype=text/plain, distance=0.46441138}, content='MessageChatMemoryAdvisor：检索内存并将其作为消息集合添加到提示符中', media=[]}, Document{id='de312838-8dd9-404e-a7db-8f198bf90727', metadata={filename=springai.txt, filetype=text/plain, distance=0.53578264}, content='You walk forward facing the past and you turn back toward the future', media=[]}]}]
+2024-12-20 13:59:35.964 [http-nio-8079-exec-3] DEBUG com.shuangqi.aiagent7.advisors.MySimplelogAdvisor - BEFORE: AdvisedRequest[chatModel=org.springframework.ai.ollama.OllamaChatModel@f73f39d, userText=结合文档，The World is Big and 后是什么
+
+Context information is below, surrounded by ---------------------
+
+---------------------
+{question_answer_context}
+---------------------
+
+Given the context and provided history information and not prior knowledge,
+reply to the user comment. If the answer is not in the context, inform
+the user that you can't answer the question.
+, systemText=你叫小明。
+请你对我提供的信息进行专业且深入的分析，无论是文本内容、数据还是概念等方面。
+用清晰、准确、有条理的语言进行回应，给出全面的解释、合理的建议或精准的判断。
+帮助我更好地理解相关事物并做出明智的决策或获得更深入的认知。
+, chatOptions=org.springframework.ai.ollama.api.OllamaOptions@35e6c540, media=[], functionNames=[], functionCallbacks=[], messages=[], userParams={question_answer_context=The World is Big and Salvation Lurks Around the Corner hei hei hei
+PromptChatMemoryAdvisor：检索内存并将其添加到提示的系统文本中
+MessageChatMemoryAdvisor：检索内存并将其作为消息集合添加到提示符中
+You walk forward facing the past and you turn back toward the future}, systemParams={}, advisors=[org.springframework.ai.chat.client.DefaultChatClient$DefaultChatClientRequestSpec$1@58edad7a, org.springframework.ai.chat.client.DefaultChatClient$DefaultChatClientRequestSpec$2@1682fae0, org.springframework.ai.chat.client.advisor.QuestionAnswerAdvisor@7cf56d41, org.springframework.ai.chat.client.advisor.SafeGuardAdvisor@6c8a8659, com.shuangqi.aiagent7.advisors.MySimplelogAdvisor@593970cf, org.springframework.ai.chat.client.DefaultChatClient$DefaultChatClientRequestSpec$1@2773bd4a, org.springframework.ai.chat.client.DefaultChatClient$DefaultChatClientRequestSpec$2@234c3d7c], advisorParams={chat_memory_response_size=100, chat_memory_conversation_id=678}, adviseContext={chat_memory_response_size=100, chat_memory_conversation_id=678, qa_retrieved_documents=[Document{id='4cb56bc7-c1e9-4d31-9cb0-adb7198c8d77', metadata={filename=springai.txt, filetype=text/plain, distance=0.25564077}, content='The World is Big and Salvation Lurks Around the Corner hei hei hei', media=[]}, Document{id='ab765642-df47-4826-b8a1-63459baed4f3', metadata={filename=springai.txt, filetype=text/plain, distance=0.4470464}, content='PromptChatMemoryAdvisor：检索内存并将其添加到提示的系统文本中', media=[]}, Document{id='39f10d5e-0bc0-48f1-a537-4a841be56733', metadata={filename=springai.txt, filetype=text/plain, distance=0.46441138}, content='MessageChatMemoryAdvisor：检索内存并将其作为消息集合添加到提示符中', media=[]}, Document{id='de312838-8dd9-404e-a7db-8f198bf90727', metadata={filename=springai.txt, filetype=text/plain, distance=0.53578264}, content='You walk forward facing the past and you turn back toward the future', media=[]}]}, toolContext={}]
+2024-12-20 13:59:42.439 [http-nio-8079-exec-3] DEBUG com.shuangqi.aiagent7.advisors.MySimplelogAdvisor - AFTER: AdvisedResponse[response=ChatResponse [metadata={ id: , usage: { promptTokens: 0, generationTokens: 0, totalTokens: 0 }, rateLimit: org.springframework.ai.chat.metadata.EmptyRateLimit@6d418982 }, generations=[Generation[assistantMessage=AssistantMessage [messageType=ASSISTANT, toolCalls=[], textContent={ "结果": "The World is Big and Salvation Lurks Around the Corner hei hei hei"  }
+
+  		
+ 		
+
+  		
+
+  		
+
+  		
+
+  		
+
+  , metadata={messageType=ASSISTANT}], chatGenerationMetadata=ChatGenerationMetadata{finishReason=null,contentFilterMetadata=null}]]], adviseContext={chat_memory_response_size=100, chat_memory_conversation_id=678, qa_retrieved_documents=[Document{id='4cb56bc7-c1e9-4d31-9cb0-adb7198c8d77', metadata={filename=springai.txt, filetype=text/plain, distance=0.25564077}, content='The World is Big and Salvation Lurks Around the Corner hei hei hei', media=[]}, Document{id='ab765642-df47-4826-b8a1-63459baed4f3', metadata={filename=springai.txt, filetype=text/plain, distance=0.4470464}, content='PromptChatMemoryAdvisor：检索内存并将其添加到提示的系统文本中', media=[]}, Document{id='39f10d5e-0bc0-48f1-a537-4a841be56733', metadata={filename=springai.txt, filetype=text/plain, distance=0.46441138}, content='MessageChatMemoryAdvisor：检索内存并将其作为消息集合添加到提示符中', media=[]}, Document{id='de312838-8dd9-404e-a7db-8f198bf90727', metadata={filename=springai.txt, filetype=text/plain, distance=0.53578264}, content='You walk forward facing the past and you turn back toward the future', media=[]}]}]
+2024-12-20 14:00:16.313 [main] DEBUG com.shuangqi.aiagent7.Aiagent7Application - Running with Spring Boot v3.4.1-SNAPSHOT, Spring v6.2.1
+2024-12-20 14:06:58.976 [http-nio-8079-exec-1] DEBUG com.shuangqi.aiagent7.advisors.MySimplelogAdvisor - BEFORE: AdvisedRequest[chatModel=org.springframework.ai.ollama.OllamaChatModel@1d7f7484, userText=结合文档，The World is Big and 后是什么
+
+Context information is below, surrounded by ---------------------
+
+---------------------
+{question_answer_context}
+---------------------
+
+Given the context and provided history information and not prior knowledge,
+reply to the user comment. If the answer is not in the context, inform
+the user that you can't answer the question.
+, systemText=你叫小明。
+请你对我提供的信息进行专业且深入的分析，无论是文本内容、数据还是概念等方面。
+用清晰、准确、有条理的语言进行回应，给出全面的解释、合理的建议或精准的判断。
+帮助我更好地理解相关事物并做出明智的决策或获得更深入的认知。
+, chatOptions=org.springframework.ai.ollama.api.OllamaOptions@35e6c540, media=[], functionNames=[], functionCallbacks=[], messages=[], userParams={question_answer_context=The World is Big and Salvation Lurks Around the Corner hei hei hei
+PromptChatMemoryAdvisor：检索内存并将其添加到提示的系统文本中
+MessageChatMemoryAdvisor：检索内存并将其作为消息集合添加到提示符中
+You walk forward facing the past and you turn back toward the future}, systemParams={}, advisors=[org.springframework.ai.chat.client.DefaultChatClient$DefaultChatClientRequestSpec$1@8f920dd, org.springframework.ai.chat.client.DefaultChatClient$DefaultChatClientRequestSpec$2@74a168d9, org.springframework.ai.chat.client.advisor.QuestionAnswerAdvisor@49d8b2db, org.springframework.ai.chat.client.advisor.SafeGuardAdvisor@2fe52430, com.shuangqi.aiagent7.advisors.MySimplelogAdvisor@6e5b16d9, org.springframework.ai.chat.client.DefaultChatClient$DefaultChatClientRequestSpec$1@11c35c6b, org.springframework.ai.chat.client.DefaultChatClient$DefaultChatClientRequestSpec$2@1d817ae2], advisorParams={chat_memory_response_size=100, chat_memory_conversation_id=678}, adviseContext={chat_memory_response_size=100, chat_memory_conversation_id=678, qa_retrieved_documents=[Document{id='4cb56bc7-c1e9-4d31-9cb0-adb7198c8d77', metadata={filename=springai.txt, filetype=text/plain, distance=0.25564077}, content='The World is Big and Salvation Lurks Around the Corner hei hei hei', media=[]}, Document{id='ab765642-df47-4826-b8a1-63459baed4f3', metadata={filename=springai.txt, filetype=text/plain, distance=0.4470464}, content='PromptChatMemoryAdvisor：检索内存并将其添加到提示的系统文本中', media=[]}, Document{id='39f10d5e-0bc0-48f1-a537-4a841be56733', metadata={filename=springai.txt, filetype=text/plain, distance=0.46441138}, content='MessageChatMemoryAdvisor：检索内存并将其作为消息集合添加到提示符中', media=[]}, Document{id='de312838-8dd9-404e-a7db-8f198bf90727', metadata={filename=springai.txt, filetype=text/plain, distance=0.53578264}, content='You walk forward facing the past and you turn back toward the future', media=[]}]}, toolContext={}]
+2024-12-20 14:07:06.048 [http-nio-8079-exec-1] DEBUG com.shuangqi.aiagent7.advisors.MySimplelogAdvisor - AFTER: AdvisedResponse[response=ChatResponse [metadata={ id: , usage: { promptTokens: 0, generationTokens: 0, totalTokens: 0 }, rateLimit: org.springframework.ai.chat.metadata.EmptyRateLimit@73cdea98 }, generations=[Generation[assistantMessage=AssistantMessage [messageType=ASSISTANT, toolCalls=[], textContent={ "answer": "The World is Big and Salvation Lurks Around the Corner hei hei hei", "cannot_answer": false } 
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+, metadata={messageType=ASSISTANT}], chatGenerationMetadata=ChatGenerationMetadata{finishReason=null,contentFilterMetadata=null}]]], adviseContext={chat_memory_response_size=100, chat_memory_conversation_id=678, qa_retrieved_documents=[Document{id='4cb56bc7-c1e9-4d31-9cb0-adb7198c8d77', metadata={filename=springai.txt, filetype=text/plain, distance=0.25564077}, content='The World is Big and Salvation Lurks Around the Corner hei hei hei', media=[]}, Document{id='ab765642-df47-4826-b8a1-63459baed4f3', metadata={filename=springai.txt, filetype=text/plain, distance=0.4470464}, content='PromptChatMemoryAdvisor：检索内存并将其添加到提示的系统文本中', media=[]}, Document{id='39f10d5e-0bc0-48f1-a537-4a841be56733', metadata={filename=springai.txt, filetype=text/plain, distance=0.46441138}, content='MessageChatMemoryAdvisor：检索内存并将其作为消息集合添加到提示符中', media=[]}, Document{id='de312838-8dd9-404e-a7db-8f198bf90727', metadata={filename=springai.txt, filetype=text/plain, distance=0.53578264}, content='You walk forward facing the past and you turn back toward the future', media=[]}]}]
+2024-12-20 14:07:12.819 [http-nio-8079-exec-3] DEBUG com.shuangqi.aiagent7.advisors.MySimplelogAdvisor - BEFORE: AdvisedRequest[chatModel=org.springframework.ai.ollama.OllamaChatModel@1d7f7484, userText=结合文档，The World is Big and 后是什么
+
+Context information is below, surrounded by ---------------------
+
+---------------------
+{question_answer_context}
+---------------------
+
+Given the context and provided history information and not prior knowledge,
+reply to the user comment. If the answer is not in the context, inform
+the user that you can't answer the question.
+, systemText=你叫小明。
+请你对我提供的信息进行专业且深入的分析，无论是文本内容、数据还是概念等方面。
+用清晰、准确、有条理的语言进行回应，给出全面的解释、合理的建议或精准的判断。
+帮助我更好地理解相关事物并做出明智的决策或获得更深入的认知。
+, chatOptions=org.springframework.ai.ollama.api.OllamaOptions@35e6c540, media=[], functionNames=[], functionCallbacks=[], messages=[], userParams={question_answer_context=The World is Big and Salvation Lurks Around the Corner hei hei hei
+PromptChatMemoryAdvisor：检索内存并将其添加到提示的系统文本中
+MessageChatMemoryAdvisor：检索内存并将其作为消息集合添加到提示符中
+You walk forward facing the past and you turn back toward the future}, systemParams={}, advisors=[org.springframework.ai.chat.client.DefaultChatClient$DefaultChatClientRequestSpec$1@8f920dd, org.springframework.ai.chat.client.DefaultChatClient$DefaultChatClientRequestSpec$2@74a168d9, org.springframework.ai.chat.client.advisor.QuestionAnswerAdvisor@49d8b2db, org.springframework.ai.chat.client.advisor.SafeGuardAdvisor@2fe52430, com.shuangqi.aiagent7.advisors.MySimplelogAdvisor@6e5b16d9, org.springframework.ai.chat.client.DefaultChatClient$DefaultChatClientRequestSpec$1@6243feed, org.springframework.ai.chat.client.DefaultChatClient$DefaultChatClientRequestSpec$2@667c767d], advisorParams={chat_memory_response_size=100, chat_memory_conversation_id=678}, adviseContext={chat_memory_response_size=100, chat_memory_conversation_id=678, qa_retrieved_documents=[Document{id='4cb56bc7-c1e9-4d31-9cb0-adb7198c8d77', metadata={filename=springai.txt, filetype=text/plain, distance=0.25564077}, content='The World is Big and Salvation Lurks Around the Corner hei hei hei', media=[]}, Document{id='ab765642-df47-4826-b8a1-63459baed4f3', metadata={filename=springai.txt, filetype=text/plain, distance=0.4470464}, content='PromptChatMemoryAdvisor：检索内存并将其添加到提示的系统文本中', media=[]}, Document{id='39f10d5e-0bc0-48f1-a537-4a841be56733', metadata={filename=springai.txt, filetype=text/plain, distance=0.46441138}, content='MessageChatMemoryAdvisor：检索内存并将其作为消息集合添加到提示符中', media=[]}, Document{id='de312838-8dd9-404e-a7db-8f198bf90727', metadata={filename=springai.txt, filetype=text/plain, distance=0.53578264}, content='You walk forward facing the past and you turn back toward the future', media=[]}]}, toolContext={}]
+2024-12-20 14:07:19.781 [http-nio-8079-exec-3] DEBUG com.shuangqi.aiagent7.advisors.MySimplelogAdvisor - AFTER: AdvisedResponse[response=ChatResponse [metadata={ id: , usage: { promptTokens: 0, generationTokens: 0, totalTokens: 0 }, rateLimit: org.springframework.ai.chat.metadata.EmptyRateLimit@6fdee9c1 }, generations=[Generation[assistantMessage=AssistantMessage [messageType=ASSISTANT, toolCalls=[], textContent={ "answer": "The World is Big and Salvation Lurks Around the Corner hei hei hei" }
+  
+  		
+  		
+
+  		
+
+  		
+
+  		
+
+  		
+
+, metadata={messageType=ASSISTANT}], chatGenerationMetadata=ChatGenerationMetadata{finishReason=null,contentFilterMetadata=null}]]], adviseContext={chat_memory_response_size=100, chat_memory_conversation_id=678, qa_retrieved_documents=[Document{id='4cb56bc7-c1e9-4d31-9cb0-adb7198c8d77', metadata={filename=springai.txt, filetype=text/plain, distance=0.25564077}, content='The World is Big and Salvation Lurks Around the Corner hei hei hei', media=[]}, Document{id='ab765642-df47-4826-b8a1-63459baed4f3', metadata={filename=springai.txt, filetype=text/plain, distance=0.4470464}, content='PromptChatMemoryAdvisor：检索内存并将其添加到提示的系统文本中', media=[]}, Document{id='39f10d5e-0bc0-48f1-a537-4a841be56733', metadata={filename=springai.txt, filetype=text/plain, distance=0.46441138}, content='MessageChatMemoryAdvisor：检索内存并将其作为消息集合添加到提示符中', media=[]}, Document{id='de312838-8dd9-404e-a7db-8f198bf90727', metadata={filename=springai.txt, filetype=text/plain, distance=0.53578264}, content='You walk forward facing the past and you turn back toward the future', media=[]}]}]
+2024-12-20 14:29:17.251 [main] DEBUG com.shuangqi.aiagent7.Aiagent7Application - Running with Spring Boot v3.4.1-SNAPSHOT, Spring v6.2.1
+2024-12-20 14:30:18.691 [http-nio-8079-exec-2] DEBUG com.shuangqi.aiagent7.advisors.MySimplelogAdvisor - BEFORE: AdvisedRequest[chatModel=org.springframework.ai.ollama.OllamaChatModel@6a97b159, userText=结合文档，The World is Big and 后是什么
+
+Context information is below, surrounded by ---------------------
+
+---------------------
+{question_answer_context}
+---------------------
+
+Given the context and provided history information and not prior knowledge,
+reply to the user comment. If the answer is not in the context, inform
+the user that you can't answer the question.
+, systemText=你叫小明。
+请你对我提供的信息进行专业且深入的分析，无论是文本内容、数据还是概念等方面。
+用清晰、准确、有条理的语言进行回应，给出全面的解释、合理的建议或精准的判断。
+帮助我更好地理解相关事物并做出明智的决策或获得更深入的认知。
+, chatOptions=org.springframework.ai.ollama.api.OllamaOptions@35e6c540, media=[], functionNames=[], functionCallbacks=[], messages=[], userParams={question_answer_context=The World is Big and Salvation Lurks Around the Corner hei hei hei
+PromptChatMemoryAdvisor：检索内存并将其添加到提示的系统文本中
+MessageChatMemoryAdvisor：检索内存并将其作为消息集合添加到提示符中
+You walk forward facing the past and you turn back toward the future}, systemParams={}, advisors=[org.springframework.ai.chat.client.DefaultChatClient$DefaultChatClientRequestSpec$1@649555ed, org.springframework.ai.chat.client.DefaultChatClient$DefaultChatClientRequestSpec$2@26f144bb, org.springframework.ai.chat.client.advisor.QuestionAnswerAdvisor@4116003f, org.springframework.ai.chat.client.advisor.SafeGuardAdvisor@165c7c3d, com.shuangqi.aiagent7.advisors.MySimplelogAdvisor@58a86926, org.springframework.ai.chat.client.DefaultChatClient$DefaultChatClientRequestSpec$1@74502a14, org.springframework.ai.chat.client.DefaultChatClient$DefaultChatClientRequestSpec$2@536cb59], advisorParams={chat_memory_response_size=100, chat_memory_conversation_id=678}, adviseContext={chat_memory_response_size=100, chat_memory_conversation_id=678, qa_retrieved_documents=[Document{id='4cb56bc7-c1e9-4d31-9cb0-adb7198c8d77', metadata={filename=springai.txt, filetype=text/plain, distance=0.25564077}, content='The World is Big and Salvation Lurks Around the Corner hei hei hei', media=[]}, Document{id='ab765642-df47-4826-b8a1-63459baed4f3', metadata={filename=springai.txt, filetype=text/plain, distance=0.4470464}, content='PromptChatMemoryAdvisor：检索内存并将其添加到提示的系统文本中', media=[]}, Document{id='39f10d5e-0bc0-48f1-a537-4a841be56733', metadata={filename=springai.txt, filetype=text/plain, distance=0.46441138}, content='MessageChatMemoryAdvisor：检索内存并将其作为消息集合添加到提示符中', media=[]}, Document{id='de312838-8dd9-404e-a7db-8f198bf90727', metadata={filename=springai.txt, filetype=text/plain, distance=0.53578264}, content='You walk forward facing the past and you turn back toward the future', media=[]}]}, toolContext={}]
+2024-12-20 14:30:24.364 [http-nio-8079-exec-2] DEBUG com.shuangqi.aiagent7.advisors.MySimplelogAdvisor - AFTER: AdvisedResponse[response=ChatResponse [metadata={ id: , usage: { promptTokens: 0, generationTokens: 0, totalTokens: 0 }, rateLimit: org.springframework.ai.chat.metadata.EmptyRateLimit@d32c49f }, generations=[Generation[assistantMessage=AssistantMessage [messageType=ASSISTANT, toolCalls=[], textContent={  }  
+
+
+
+
+
+   
+   
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+  
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+ , metadata={messageType=ASSISTANT}], chatGenerationMetadata=ChatGenerationMetadata{finishReason=null,contentFilterMetadata=null}]]], adviseContext={chat_memory_response_size=100, chat_memory_conversation_id=678, qa_retrieved_documents=[Document{id='4cb56bc7-c1e9-4d31-9cb0-adb7198c8d77', metadata={filename=springai.txt, filetype=text/plain, distance=0.25564077}, content='The World is Big and Salvation Lurks Around the Corner hei hei hei', media=[]}, Document{id='ab765642-df47-4826-b8a1-63459baed4f3', metadata={filename=springai.txt, filetype=text/plain, distance=0.4470464}, content='PromptChatMemoryAdvisor：检索内存并将其添加到提示的系统文本中', media=[]}, Document{id='39f10d5e-0bc0-48f1-a537-4a841be56733', metadata={filename=springai.txt, filetype=text/plain, distance=0.46441138}, content='MessageChatMemoryAdvisor：检索内存并将其作为消息集合添加到提示符中', media=[]}, Document{id='de312838-8dd9-404e-a7db-8f198bf90727', metadata={filename=springai.txt, filetype=text/plain, distance=0.53578264}, content='You walk forward facing the past and you turn back toward the future', media=[]}]}]
+2024-12-20 14:30:30.012 [http-nio-8079-exec-3] DEBUG com.shuangqi.aiagent7.advisors.MySimplelogAdvisor - BEFORE: AdvisedRequest[chatModel=org.springframework.ai.ollama.OllamaChatModel@6a97b159, userText=结合文档，The World is Big and 后是什么
+
+Context information is below, surrounded by ---------------------
+
+---------------------
+{question_answer_context}
+---------------------
+
+Given the context and provided history information and not prior knowledge,
+reply to the user comment. If the answer is not in the context, inform
+the user that you can't answer the question.
+, systemText=你叫小明。
+请你对我提供的信息进行专业且深入的分析，无论是文本内容、数据还是概念等方面。
+用清晰、准确、有条理的语言进行回应，给出全面的解释、合理的建议或精准的判断。
+帮助我更好地理解相关事物并做出明智的决策或获得更深入的认知。
+, chatOptions=org.springframework.ai.ollama.api.OllamaOptions@35e6c540, media=[], functionNames=[], functionCallbacks=[], messages=[], userParams={question_answer_context=The World is Big and Salvation Lurks Around the Corner hei hei hei
+PromptChatMemoryAdvisor：检索内存并将其添加到提示的系统文本中
+MessageChatMemoryAdvisor：检索内存并将其作为消息集合添加到提示符中
+You walk forward facing the past and you turn back toward the future}, systemParams={}, advisors=[org.springframework.ai.chat.client.DefaultChatClient$DefaultChatClientRequestSpec$1@649555ed, org.springframework.ai.chat.client.DefaultChatClient$DefaultChatClientRequestSpec$2@26f144bb, org.springframework.ai.chat.client.advisor.QuestionAnswerAdvisor@4116003f, org.springframework.ai.chat.client.advisor.SafeGuardAdvisor@165c7c3d, com.shuangqi.aiagent7.advisors.MySimplelogAdvisor@58a86926, org.springframework.ai.chat.client.DefaultChatClient$DefaultChatClientRequestSpec$1@6cade645, org.springframework.ai.chat.client.DefaultChatClient$DefaultChatClientRequestSpec$2@68926f08], advisorParams={chat_memory_response_size=100, chat_memory_conversation_id=678}, adviseContext={chat_memory_response_size=100, chat_memory_conversation_id=678, qa_retrieved_documents=[Document{id='4cb56bc7-c1e9-4d31-9cb0-adb7198c8d77', metadata={filename=springai.txt, filetype=text/plain, distance=0.25564077}, content='The World is Big and Salvation Lurks Around the Corner hei hei hei', media=[]}, Document{id='ab765642-df47-4826-b8a1-63459baed4f3', metadata={filename=springai.txt, filetype=text/plain, distance=0.4470464}, content='PromptChatMemoryAdvisor：检索内存并将其添加到提示的系统文本中', media=[]}, Document{id='39f10d5e-0bc0-48f1-a537-4a841be56733', metadata={filename=springai.txt, filetype=text/plain, distance=0.46441138}, content='MessageChatMemoryAdvisor：检索内存并将其作为消息集合添加到提示符中', media=[]}, Document{id='de312838-8dd9-404e-a7db-8f198bf90727', metadata={filename=springai.txt, filetype=text/plain, distance=0.53578264}, content='You walk forward facing the past and you turn back toward the future', media=[]}]}, toolContext={}]
+2024-12-20 14:30:38.514 [http-nio-8079-exec-3] DEBUG com.shuangqi.aiagent7.advisors.MySimplelogAdvisor - AFTER: AdvisedResponse[response=ChatResponse [metadata={ id: , usage: { promptTokens: 0, generationTokens: 0, totalTokens: 0 }, rateLimit: org.springframework.ai.chat.metadata.EmptyRateLimit@1f6b6470 }, generations=[Generation[assistantMessage=AssistantMessage [messageType=ASSISTANT, toolCalls=[], textContent={
+  "answer": "The World is Big and Salvation Lurks Around the Corner hei hei hei",
+  "sources": ["Context"]
+}
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+, metadata={messageType=ASSISTANT}], chatGenerationMetadata=ChatGenerationMetadata{finishReason=null,contentFilterMetadata=null}]]], adviseContext={chat_memory_response_size=100, chat_memory_conversation_id=678, qa_retrieved_documents=[Document{id='4cb56bc7-c1e9-4d31-9cb0-adb7198c8d77', metadata={filename=springai.txt, filetype=text/plain, distance=0.25564077}, content='The World is Big and Salvation Lurks Around the Corner hei hei hei', media=[]}, Document{id='ab765642-df47-4826-b8a1-63459baed4f3', metadata={filename=springai.txt, filetype=text/plain, distance=0.4470464}, content='PromptChatMemoryAdvisor：检索内存并将其添加到提示的系统文本中', media=[]}, Document{id='39f10d5e-0bc0-48f1-a537-4a841be56733', metadata={filename=springai.txt, filetype=text/plain, distance=0.46441138}, content='MessageChatMemoryAdvisor：检索内存并将其作为消息集合添加到提示符中', media=[]}, Document{id='de312838-8dd9-404e-a7db-8f198bf90727', metadata={filename=springai.txt, filetype=text/plain, distance=0.53578264}, content='You walk forward facing the past and you turn back toward the future', media=[]}]}]
+2024-12-20 14:30:51.967 [http-nio-8079-exec-4] DEBUG com.shuangqi.aiagent7.advisors.MySimplelogAdvisor - BEFORE: AdvisedRequest[chatModel=org.springframework.ai.ollama.OllamaChatModel@6a97b159, userText=结合文档，The World is Big and 后是什么
+
+Context information is below, surrounded by ---------------------
+
+---------------------
+{question_answer_context}
+---------------------
+
+Given the context and provided history information and not prior knowledge,
+reply to the user comment. If the answer is not in the context, inform
+the user that you can't answer the question.
+, systemText=你叫小明。
+请你对我提供的信息进行专业且深入的分析，无论是文本内容、数据还是概念等方面。
+用清晰、准确、有条理的语言进行回应，给出全面的解释、合理的建议或精准的判断。
+帮助我更好地理解相关事物并做出明智的决策或获得更深入的认知。
+, chatOptions=org.springframework.ai.ollama.api.OllamaOptions@35e6c540, media=[], functionNames=[], functionCallbacks=[], messages=[], userParams={question_answer_context=The World is Big and Salvation Lurks Around the Corner hei hei hei
+PromptChatMemoryAdvisor：检索内存并将其添加到提示的系统文本中
+MessageChatMemoryAdvisor：检索内存并将其作为消息集合添加到提示符中
+You walk forward facing the past and you turn back toward the future}, systemParams={}, advisors=[org.springframework.ai.chat.client.DefaultChatClient$DefaultChatClientRequestSpec$1@649555ed, org.springframework.ai.chat.client.DefaultChatClient$DefaultChatClientRequestSpec$2@26f144bb, org.springframework.ai.chat.client.advisor.QuestionAnswerAdvisor@4116003f, org.springframework.ai.chat.client.advisor.SafeGuardAdvisor@165c7c3d, com.shuangqi.aiagent7.advisors.MySimplelogAdvisor@58a86926, org.springframework.ai.chat.client.DefaultChatClient$DefaultChatClientRequestSpec$1@646f5515, org.springframework.ai.chat.client.DefaultChatClient$DefaultChatClientRequestSpec$2@10965623], advisorParams={chat_memory_response_size=100, chat_memory_conversation_id=678}, adviseContext={chat_memory_response_size=100, chat_memory_conversation_id=678, qa_retrieved_documents=[Document{id='4cb56bc7-c1e9-4d31-9cb0-adb7198c8d77', metadata={filename=springai.txt, filetype=text/plain, distance=0.25564077}, content='The World is Big and Salvation Lurks Around the Corner hei hei hei', media=[]}, Document{id='ab765642-df47-4826-b8a1-63459baed4f3', metadata={filename=springai.txt, filetype=text/plain, distance=0.4470464}, content='PromptChatMemoryAdvisor：检索内存并将其添加到提示的系统文本中', media=[]}, Document{id='39f10d5e-0bc0-48f1-a537-4a841be56733', metadata={filename=springai.txt, filetype=text/plain, distance=0.46441138}, content='MessageChatMemoryAdvisor：检索内存并将其作为消息集合添加到提示符中', media=[]}, Document{id='de312838-8dd9-404e-a7db-8f198bf90727', metadata={filename=springai.txt, filetype=text/plain, distance=0.53578264}, content='You walk forward facing the past and you turn back toward the future', media=[]}]}, toolContext={}]
+2024-12-20 14:30:59.529 [http-nio-8079-exec-4] DEBUG com.shuangqi.aiagent7.advisors.MySimplelogAdvisor - AFTER: AdvisedResponse[response=ChatResponse [metadata={ id: , usage: { promptTokens: 0, generationTokens: 0, totalTokens: 0 }, rateLimit: org.springframework.ai.chat.metadata.EmptyRateLimit@79409325 }, generations=[Generation[assistantMessage=AssistantMessage [messageType=ASSISTANT, toolCalls=[], textContent={ "answer": "The World is Big and Salvation Lurks Around the Corner hei hei hei" } 
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+   
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   
+
+
+
+
+
+   
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  , metadata={messageType=ASSISTANT}], chatGenerationMetadata=ChatGenerationMetadata{finishReason=null,contentFilterMetadata=null}]]], adviseContext={chat_memory_response_size=100, chat_memory_conversation_id=678, qa_retrieved_documents=[Document{id='4cb56bc7-c1e9-4d31-9cb0-adb7198c8d77', metadata={filename=springai.txt, filetype=text/plain, distance=0.25564077}, content='The World is Big and Salvation Lurks Around the Corner hei hei hei', media=[]}, Document{id='ab765642-df47-4826-b8a1-63459baed4f3', metadata={filename=springai.txt, filetype=text/plain, distance=0.4470464}, content='PromptChatMemoryAdvisor：检索内存并将其添加到提示的系统文本中', media=[]}, Document{id='39f10d5e-0bc0-48f1-a537-4a841be56733', metadata={filename=springai.txt, filetype=text/plain, distance=0.46441138}, content='MessageChatMemoryAdvisor：检索内存并将其作为消息集合添加到提示符中', media=[]}, Document{id='de312838-8dd9-404e-a7db-8f198bf90727', metadata={filename=springai.txt, filetype=text/plain, distance=0.53578264}, content='You walk forward facing the past and you turn back toward the future', media=[]}]}]
+2024-12-20 14:49:55.029 [main] DEBUG com.shuangqi.aiagent7.Aiagent7Application - Running with Spring Boot v3.4.1-SNAPSHOT, Spring v6.2.1
+2024-12-20 14:55:12.742 [main] DEBUG com.shuangqi.aiagent7.Aiagent7Application - Running with Spring Boot v3.4.1-SNAPSHOT, Spring v6.2.1
+2024-12-20 14:55:19.825 [http-nio-8079-exec-2] DEBUG com.shuangqi.aiagent7.service.ChatRagService - ragSearch: [Document{id='4cb56bc7-c1e9-4d31-9cb0-adb7198c8d77', metadata={filename=springai.txt, filetype=text/plain, distance=0.25564077}, content='The World is Big and Salvation Lurks Around the Corner hei hei hei', media=[]}]
+2024-12-20 14:55:46.014 [http-nio-8079-exec-3] DEBUG com.shuangqi.aiagent7.advisors.MySimplelogAdvisor - BEFORE: AdvisedRequest[chatModel=org.springframework.ai.ollama.OllamaChatModel@6055c28c, userText=结合文档，The World is Big and 后是什么
+
+Context information is below, surrounded by ---------------------
+
+---------------------
+{question_answer_context}
+---------------------
+
+Given the context and provided history information and not prior knowledge,
+reply to the user comment. If the answer is not in the context, inform
+the user that you can't answer the question.
+, systemText=你叫小明。
+请你对我提供的信息进行专业且深入的分析，无论是文本内容、数据还是概念等方面。
+用清晰、准确、有条理的语言进行回应，给出全面的解释、合理的建议或精准的判断。
+帮助我更好地理解相关事物并做出明智的决策或获得更深入的认知。
+
+回复内容如下
+{documents}
+, chatOptions=org.springframework.ai.ollama.api.OllamaOptions@35e6c540, media=[], functionNames=[], functionCallbacks=[], messages=[], userParams={question_answer_context=The World is Big and Salvation Lurks Around the Corner hei hei hei
+PromptChatMemoryAdvisor：检索内存并将其添加到提示的系统文本中
+MessageChatMemoryAdvisor：检索内存并将其作为消息集合添加到提示符中
+You walk forward facing the past and you turn back toward the future}, systemParams={}, advisors=[org.springframework.ai.chat.client.DefaultChatClient$DefaultChatClientRequestSpec$1@2be8caa1, org.springframework.ai.chat.client.DefaultChatClient$DefaultChatClientRequestSpec$2@7727578, org.springframework.ai.chat.client.advisor.QuestionAnswerAdvisor@6162f53f, org.springframework.ai.chat.client.advisor.SafeGuardAdvisor@2fed1a3d, com.shuangqi.aiagent7.advisors.MySimplelogAdvisor@42bd70a3, org.springframework.ai.chat.client.DefaultChatClient$DefaultChatClientRequestSpec$1@56701439, org.springframework.ai.chat.client.DefaultChatClient$DefaultChatClientRequestSpec$2@20cdd8c5], advisorParams={chat_memory_response_size=100, chat_memory_conversation_id=678}, adviseContext={chat_memory_response_size=100, chat_memory_conversation_id=678, qa_retrieved_documents=[Document{id='4cb56bc7-c1e9-4d31-9cb0-adb7198c8d77', metadata={filename=springai.txt, filetype=text/plain, distance=0.25564077}, content='The World is Big and Salvation Lurks Around the Corner hei hei hei', media=[]}, Document{id='ab765642-df47-4826-b8a1-63459baed4f3', metadata={filename=springai.txt, filetype=text/plain, distance=0.4470464}, content='PromptChatMemoryAdvisor：检索内存并将其添加到提示的系统文本中', media=[]}, Document{id='39f10d5e-0bc0-48f1-a537-4a841be56733', metadata={filename=springai.txt, filetype=text/plain, distance=0.46441138}, content='MessageChatMemoryAdvisor：检索内存并将其作为消息集合添加到提示符中', media=[]}, Document{id='de312838-8dd9-404e-a7db-8f198bf90727', metadata={filename=springai.txt, filetype=text/plain, distance=0.53578264}, content='You walk forward facing the past and you turn back toward the future', media=[]}]}, toolContext={}]
+2024-12-20 14:55:55.632 [http-nio-8079-exec-3] DEBUG com.shuangqi.aiagent7.advisors.MySimplelogAdvisor - AFTER: AdvisedResponse[response=ChatResponse [metadata={ id: , usage: { promptTokens: 0, generationTokens: 0, totalTokens: 0 }, rateLimit: org.springframework.ai.chat.metadata.EmptyRateLimit@3dfcfca }, generations=[Generation[assistantMessage=AssistantMessage [messageType=ASSISTANT, toolCalls=[], textContent={ "The World is Big and Salvation Lurks Around the Corner hei hei hei"   
+   
+    :
+   2 }  
+   
+    
+   
+    
+   
+    
+   
+    
+   
+    
+   
+    
+   
+    
+   
+  , metadata={messageType=ASSISTANT}], chatGenerationMetadata=ChatGenerationMetadata{finishReason=null,contentFilterMetadata=null}]]], adviseContext={chat_memory_response_size=100, chat_memory_conversation_id=678, qa_retrieved_documents=[Document{id='4cb56bc7-c1e9-4d31-9cb0-adb7198c8d77', metadata={filename=springai.txt, filetype=text/plain, distance=0.25564077}, content='The World is Big and Salvation Lurks Around the Corner hei hei hei', media=[]}, Document{id='ab765642-df47-4826-b8a1-63459baed4f3', metadata={filename=springai.txt, filetype=text/plain, distance=0.4470464}, content='PromptChatMemoryAdvisor：检索内存并将其添加到提示的系统文本中', media=[]}, Document{id='39f10d5e-0bc0-48f1-a537-4a841be56733', metadata={filename=springai.txt, filetype=text/plain, distance=0.46441138}, content='MessageChatMemoryAdvisor：检索内存并将其作为消息集合添加到提示符中', media=[]}, Document{id='de312838-8dd9-404e-a7db-8f198bf90727', metadata={filename=springai.txt, filetype=text/plain, distance=0.53578264}, content='You walk forward facing the past and you turn back toward the future', media=[]}]}]
+2024-12-20 14:56:25.933 [main] DEBUG com.shuangqi.aiagent7.Aiagent7Application - Running with Spring Boot v3.4.1-SNAPSHOT, Spring v6.2.1
+2024-12-20 14:56:38.184 [main] DEBUG com.shuangqi.aiagent7.Aiagent7Application - Running with Spring Boot v3.4.1-SNAPSHOT, Spring v6.2.1
+2024-12-20 14:56:44.713 [http-nio-8079-exec-2] DEBUG com.shuangqi.aiagent7.advisors.MySimplelogAdvisor - BEFORE: AdvisedRequest[chatModel=org.springframework.ai.ollama.OllamaChatModel@81230e6, userText=结合文档，The World is Big and 后是什么
+
+Context information is below, surrounded by ---------------------
+
+---------------------
+{question_answer_context}
+---------------------
+
+Given the context and provided history information and not prior knowledge,
+reply to the user comment. If the answer is not in the context, inform
+the user that you can't answer the question.
+, systemText=你叫小明。
+请你对我提供的信息进行专业且深入的分析，无论是文本内容、数据还是概念等方面。
+用清晰、准确、有条理的语言进行回应，给出全面的解释、合理的建议或精准的判断。
+帮助我更好地理解相关事物并做出明智的决策或获得更深入的认知。
+
+回复格式如下
+{desc:documents}
+, chatOptions=org.springframework.ai.ollama.api.OllamaOptions@35e6c540, media=[], functionNames=[], functionCallbacks=[], messages=[], userParams={question_answer_context=The World is Big and Salvation Lurks Around the Corner hei hei hei
+PromptChatMemoryAdvisor：检索内存并将其添加到提示的系统文本中
+MessageChatMemoryAdvisor：检索内存并将其作为消息集合添加到提示符中
+You walk forward facing the past and you turn back toward the future}, systemParams={}, advisors=[org.springframework.ai.chat.client.DefaultChatClient$DefaultChatClientRequestSpec$1@581b7f45, org.springframework.ai.chat.client.DefaultChatClient$DefaultChatClientRequestSpec$2@4cf80562, org.springframework.ai.chat.client.advisor.QuestionAnswerAdvisor@11e21efa, org.springframework.ai.chat.client.advisor.SafeGuardAdvisor@8ee8920, com.shuangqi.aiagent7.advisors.MySimplelogAdvisor@b8c2e2f, org.springframework.ai.chat.client.DefaultChatClient$DefaultChatClientRequestSpec$1@7d3e929, org.springframework.ai.chat.client.DefaultChatClient$DefaultChatClientRequestSpec$2@6c722e7], advisorParams={chat_memory_response_size=100, chat_memory_conversation_id=678}, adviseContext={chat_memory_response_size=100, chat_memory_conversation_id=678, qa_retrieved_documents=[Document{id='4cb56bc7-c1e9-4d31-9cb0-adb7198c8d77', metadata={filename=springai.txt, filetype=text/plain, distance=0.25564077}, content='The World is Big and Salvation Lurks Around the Corner hei hei hei', media=[]}, Document{id='ab765642-df47-4826-b8a1-63459baed4f3', metadata={filename=springai.txt, filetype=text/plain, distance=0.4470464}, content='PromptChatMemoryAdvisor：检索内存并将其添加到提示的系统文本中', media=[]}, Document{id='39f10d5e-0bc0-48f1-a537-4a841be56733', metadata={filename=springai.txt, filetype=text/plain, distance=0.46441138}, content='MessageChatMemoryAdvisor：检索内存并将其作为消息集合添加到提示符中', media=[]}, Document{id='de312838-8dd9-404e-a7db-8f198bf90727', metadata={filename=springai.txt, filetype=text/plain, distance=0.53578264}, content='You walk forward facing the past and you turn back toward the future', media=[]}]}, toolContext={}]
+2024-12-20 14:56:50.593 [http-nio-8079-exec-2] DEBUG com.shuangqi.aiagent7.advisors.MySimplelogAdvisor - AFTER: AdvisedResponse[response=ChatResponse [metadata={ id: , usage: { promptTokens: 217, generationTokens: 36, totalTokens: 253 }, rateLimit: org.springframework.ai.chat.metadata.EmptyRateLimit@5b0d746f }, generations=[Generation[assistantMessage=AssistantMessage [messageType=ASSISTANT, toolCalls=[], textContent={  
+  "desc": "根据提供的信息，《The World is Big and》后面的文字是“Salvation Lurks Around the Corner hei hei hei”。"
+}, metadata={messageType=ASSISTANT}], chatGenerationMetadata=ChatGenerationMetadata{finishReason=stop,contentFilterMetadata=null}]]], adviseContext={chat_memory_response_size=100, chat_memory_conversation_id=678, qa_retrieved_documents=[Document{id='4cb56bc7-c1e9-4d31-9cb0-adb7198c8d77', metadata={filename=springai.txt, filetype=text/plain, distance=0.25564077}, content='The World is Big and Salvation Lurks Around the Corner hei hei hei', media=[]}, Document{id='ab765642-df47-4826-b8a1-63459baed4f3', metadata={filename=springai.txt, filetype=text/plain, distance=0.4470464}, content='PromptChatMemoryAdvisor：检索内存并将其添加到提示的系统文本中', media=[]}, Document{id='39f10d5e-0bc0-48f1-a537-4a841be56733', metadata={filename=springai.txt, filetype=text/plain, distance=0.46441138}, content='MessageChatMemoryAdvisor：检索内存并将其作为消息集合添加到提示符中', media=[]}, Document{id='de312838-8dd9-404e-a7db-8f198bf90727', metadata={filename=springai.txt, filetype=text/plain, distance=0.53578264}, content='You walk forward facing the past and you turn back toward the future', media=[]}]}]

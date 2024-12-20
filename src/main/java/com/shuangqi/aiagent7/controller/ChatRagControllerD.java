@@ -21,6 +21,12 @@ public class ChatRagControllerD {
         return chatRagService.chat(q);
     }
 
+
+    @GetMapping("/search")
+    public String search(@RequestParam String q) {
+        return chatRagService.ragSearch(q);
+    }
+
     @GetMapping("/stream")
     public Flux<String> stream(@RequestParam String p, @RequestParam String q) {
         return chatRagService.stream(q);
