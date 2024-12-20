@@ -1,27 +1,32 @@
 package com.shuangqi.aiagent7.config;
 
+import com.knuddels.jtokkit.api.EncodingType;
+import com.shuangqi.aiagent7.advisors.MySimplelogAdvisor;
+import com.shuangqi.aiagent7.common.Constant;
 import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor;
+import org.springframework.ai.embedding.BatchingStrategy;
+import org.springframework.ai.embedding.TokenCountBatchingStrategy;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
 @Configuration
 class AiConfig {
 
     @Bean
     ChatClient chatClient(ChatClient.Builder builder) {
-        return builder.defaultSystem("""
-                        你叫小明。
-                        请你对我提供的信息进行专业且深入的分析，无论是文本内容、数据还是概念等方面。
-                        用清晰、准确、有条理的语言进行回应，给出全面的解释、合理的建议或精准的判断。
-                        帮助我更好地理解相关事物并做出明智的决策或获得更深入的认知。
-                        """)
+        return builder.defaultSystem(Constant.AIDEFAULTSYSTEMPROMPT)
                 .defaultAdvisors(
-                        new SimpleLoggerAdvisor()
+                        new MySimplelogAdvisor()
                 )
                 .build();
     }
-
+    @Bean
+    public BatchingStrategy customTokenCountBatchingStrategy() {
+        return new TokenCountBatchingStrategy(
+                EncodingType.CL100K_BASE,  // 指定用于分词的编码类型。使用此编码类型来准确估计令牌计数
+                2048,                      // 设置最大输入令牌计数。此值应小于或等于嵌入模型的最大上下文窗口大小。
+                0.1                        // 设置预留百分比。从最大输入令牌计数中要预留的令牌的百分比。这会为处理过程中可能增加的令牌计数创建缓冲区。
+        );
+    }
     /**
      *    带参数的默认系统文本
      *    Map<String, String> completion(@RequestParam(value = "message", defaultValue = "Tell me a joke") String message, String voice) {
