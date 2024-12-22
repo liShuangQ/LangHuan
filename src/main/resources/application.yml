@@ -1,5 +1,5 @@
 server:
-  port: 8079
+  port: 9077
   servlet:
     encoding:
       charset: UTF-8
@@ -60,7 +60,7 @@ spring:
           mirostat-eta: 0.1 # 影响算法对生成文本反馈的响应速度，默认值为0.1
           penalize-newline: true # 是否对换行进行惩罚，默认值为true
           stop: # 设置停止序列，当遇到此模式时，语言模型将停止生成文本并返回
-          functions: # 在单个提示请求中启用函数调用的函数列表，函数名称必须存在于函数回调注册表中
+          functions:  # 在单个提示请求中启用函数调用的函数列表，函数名称必须存在于函数回调注册表中
           proxy-tool-calls: false # 如果为true，Spring AI将不会内部处理函数调用，而是将其代理给客户端，默认值为false
       embedding:
         model: mxbai-embed-large:latest #嵌入模型(ollama pull mxbai-embed-large)  备选ollama pull mofanke/dmeta-embedding-zh
