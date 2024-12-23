@@ -28,7 +28,7 @@ spring:
       chat:
         enabled: true # 是否启用Ollama聊天模型，默认值为true
         options:
-          model: qwen2.5:7b # 要使用的支持模型的名称，默认值为mistral
+          model: qwen2.5:3b # 要使用的支持模型的名称，默认值为mistral
           format: json # 返回响应的格式，目前唯一接受的值为json
           keep_alive: 5m # 控制请求后模型在内存中保持加载的时长，默认值为5m
           numa: false # 是否使用NUMA，默认值为false
