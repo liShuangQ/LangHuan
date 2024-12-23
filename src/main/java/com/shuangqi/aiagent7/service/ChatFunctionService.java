@@ -2,16 +2,16 @@ package com.shuangqi.aiagent7.service;
 
 import com.shuangqi.aiagent7.advisors.MySimplelogAdvisor;
 import com.shuangqi.aiagent7.common.Constant;
-import com.shuangqi.aiagent7.functions.DeviceController;
+import com.shuangqi.aiagent7.functions.DeviceDemoMethod;
+import com.shuangqi.aiagent7.functions.MockWeatherService;
+import com.shuangqi.aiagent7.functions.SearchLocationNameFunction;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.SafeGuardAdvisor;
-import org.springframework.ai.chat.model.ChatResponse;
+import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.model.ToolContext;
-import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.model.function.FunctionCallback;
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.Flux;
 
 import java.util.Map;
 
@@ -22,7 +22,11 @@ public class ChatFunctionService {
     private final ChatClient chatClient;
 
     public ChatFunctionService(ChatClient.Builder chatClientBuilder) {
-        this.chatClient = chatClientBuilder.defaultSystem("回答问题")
+        this.chatClient = chatClientBuilder.defaultSystem("""
+                        回答我的问题。
+                        返回如下格式:
+                        {desc: document}
+                        """)
                 .defaultAdvisors(
                         new SafeGuardAdvisor(Constant.AIDEFAULTSAFEGUARDADVISOR),
                         new MySimplelogAdvisor()
@@ -31,46 +35,76 @@ public class ChatFunctionService {
 
     }
 
-
-    public String chat(String q) {
-
+    public String setDeviceStatusFunction(String q) {
         return chatClient.prompt()
-                .user("Turn on the living room lights")
+                .user(q)
+                // 直接创建，无需bean
+//                .functions(FunctionCallback.builder()
+//                        .description("设置设备的状态")
+//                        .function("DeviceDemoFunction", new DeviceDemoFunction())
+//                        .inputType(DeviceDemoFunction.Request.class)
+//                        .build()
+//                )
+                // 使用bean，当多个函数的时候，ai自己选择最合适的
+                .functions("deviceDemoFunction", "documentAnalyzerFunction")
+                .toolContext(Map.of("location", "home"))
+                .call()
+                .content();
+    }
+
+    public String setDeviceStatusMethod(String q) {
+        return chatClient.prompt("返回成功还是失败信息")
+                .user(q)
                 .functions(FunctionCallback.builder()
                         .description("Control device state")
                         .method("setDeviceState", String.class, boolean.class, ToolContext.class)
-                        .targetObject(new DeviceController())
+                        .targetObject(new DeviceDemoMethod())
                         .build())
                 .toolContext(Map.of("location", "home"))
                 .call()
                 .content();
-
-//        return chatClient.prompt()
-//                .user("What's the weather like in San Francisco, Tokyo, and Paris?")
-//                .functions(FunctionCallback.builder()
-//                        .description("Get the weather in location")
-//                        .function("MockWeatherService", new MockWeatherService())
-//                        .inputType(MockWeatherService.Request.class)
-//                        .build())
-//                .toolContext(Map.of("id", "1"))
-//                .call()
-//                .content();
-
     }
 
 
-    public Flux<String> stream(String q) {
+    public String searchLocationNameFunction() {
         return chatClient.prompt()
-                .user(q)
-                .stream()
+                .user("辽宁有几个叫黄晓明的人？")
+                .functions(FunctionCallback.builder()
+                        .description("地市中有多少个姓名相同的人")
+                        .function("SearchLocationNameFunction", new SearchLocationNameFunction())
+                        .inputType(SearchLocationNameFunction.Request.class)
+                        .build())
+//                .functions("deviceFunction")
+                .toolContext(Map.of("id", "1"))
+                .call()
                 .content();
+
     }
 
-    public ChatResponse chatWithPrompt(String p, String q) {
-        return chatClient.prompt(new Prompt(p))
-                .user(q)
+
+    public String mockWeatherService() {
+        return chatClient.prompt()
+                .user("What's the weather like in San Francisco, Tokyo, and Paris?")
+                .functions(FunctionCallback.builder()
+                        .description("Get the weather in location")
+                        .function("MockWeatherService", new MockWeatherService())
+                        .inputType(MockWeatherService.Request.class)
+                        .build())
+                .toolContext(Map.of("id", "1"))
                 .call()
-                .chatResponse();
+                .content();
+
+    }
+
+
+    public String readFile(String prompt) {
+
+        return this.chatClient.prompt()
+                .messages(new UserMessage(prompt))
+                // spring ai会从已注册为bean的function中查找函数，将它添加到请求中。如果成功触发就会调用函数
+                .functions("documentAnalyzerFunction")
+                .call()
+                .content();
     }
 
 

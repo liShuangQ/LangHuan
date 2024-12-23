@@ -1,6 +1,7 @@
 package com.shuangqi.aiagent7.controller;
 
 import com.shuangqi.aiagent7.service.ChatFunctionService;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -16,15 +17,31 @@ public class ChatFunctionControllerD {
         this.chatFunctionService = chatFunctionService;
     }
 
-    @GetMapping("/string")
-    public String string(@RequestParam String q) {
-        return chatFunctionService.chat(q);
+    @GetMapping("/setDeviceStatusFunction")
+    public String setDeviceStatusFunction(@RequestParam String q) {
+        return chatFunctionService.setDeviceStatusFunction(q);
+    }
+
+    @GetMapping("/setDeviceStatusMethod")
+    public String setDeviceStatusMethod(@RequestParam String q) {
+        return chatFunctionService.setDeviceStatusMethod(q);
+    }
+
+    @GetMapping("/searchLocationNameFunction")
+    public String searchLocationNameFunction() {
+        return chatFunctionService.searchLocationNameFunction();
     }
 
 
-    @GetMapping("/stream")
-    public Flux<String> stream(@RequestParam String p, @RequestParam String q) {
-        return chatFunctionService.stream(q);
+    @GetMapping("/mockWeatherService")
+    public String mockWeatherService() {
+        return chatFunctionService.mockWeatherService();
+    }
+
+
+    @GetMapping(value = "/readFile", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public String readFile(@RequestParam String p) {
+        return chatFunctionService.readFile(p);
     }
 
 

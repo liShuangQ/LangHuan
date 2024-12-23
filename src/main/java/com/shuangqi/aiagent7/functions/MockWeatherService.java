@@ -7,15 +7,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.model.ToolContext;
+import org.springframework.context.annotation.Description;
 
 import java.util.Map;
 import java.util.function.BiFunction;
 
 @Slf4j
+@Description("Get the weather in location")
 public class MockWeatherService implements BiFunction<MockWeatherService.Request, ToolContext, MockWeatherService.Response> {
     @Override
     public Response apply(Request request, ToolContext context) {
-
+        System.out.println("123123");
         log.debug("request.location: {}", request.location());
         log.debug("context.getContext: {}", context.getContext());
         double temperature = 0;
