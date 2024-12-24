@@ -1,7 +1,7 @@
 package com.shuangqi.aiagent7.controller;
 
 import com.shuangqi.aiagent7.common.Result;
-import com.shuangqi.aiagent7.service.ChatRagService;
+import com.shuangqi.aiagent7.serviceai.ChatRagService;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;

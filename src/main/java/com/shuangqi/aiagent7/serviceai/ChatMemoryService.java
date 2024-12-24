@@ -1,4 +1,4 @@
-package com.shuangqi.aiagent7.service;
+package com.shuangqi.aiagent7.serviceai;
 
 import com.shuangqi.aiagent7.advisors.MySimplelogAdvisor;
 import com.shuangqi.aiagent7.common.Constant;
