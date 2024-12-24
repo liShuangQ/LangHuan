@@ -1,7 +1,7 @@
 package com.shuangqi.aiagent7.service;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.shuangqi.aiagent7.model.domain.TPermission;
 import com.shuangqi.aiagent7.model.domain.TRolePermission;
@@ -45,7 +45,7 @@ public class UserService extends ServiceImpl<TUserMapper, TUser> {
      * @return 权限列表
      */
     public List<TPermission> getPermissionByUsername(String username) {
-        TUser user = super.getOne(Wrappers.<TUser>lambdaQuery().eq(TUser::getUsername, username), true);
+        TUser user = super.getOne(new LambdaQueryWrapper<TUser>().eq(TUser::getUsername, username), true);
         return this.getPermissionByUser(user);
     }
 
@@ -73,7 +73,7 @@ public class UserService extends ServiceImpl<TUserMapper, TUser> {
         List<TPermission> permissions = new ArrayList<>();
         if (null != user) {
             // 获取用户的角色列表
-            List<TUserRole> userRoles = userRoleService.list(Wrappers.<TUserRole>lambdaQuery().eq(TUserRole::getUserId, user.getId()));
+            List<TUserRole> userRoles = userRoleService.list(new LambdaQueryWrapper<TUserRole>().eq(TUserRole::getUserId, user.getId()));
             if (CollectionUtils.isNotEmpty(userRoles)) {
                 // 提取角色ID列表
                 List<Integer> roleIds = new ArrayList<>();
@@ -81,7 +81,7 @@ public class UserService extends ServiceImpl<TUserMapper, TUser> {
                     roleIds.add(userRole.getRoleId());
                 });
                 // 获取角色对应的权限列表
-                List<TRolePermission> rolePermissions = rolePermissionService.list(Wrappers.<TRolePermission>lambdaQuery().in(TRolePermission::getRoleId, roleIds));
+                List<TRolePermission> rolePermissions = rolePermissionService.list(new LambdaQueryWrapper<TRolePermission>().in(TRolePermission::getRoleId, roleIds));
                 if (CollectionUtils.isNotEmpty(rolePermissions)) {
                     // 提取权限ID列表
                     List<Integer> permissionIds = new ArrayList<>();
@@ -89,7 +89,7 @@ public class UserService extends ServiceImpl<TUserMapper, TUser> {
                         permissionIds.add(rolePermission.getPermissionId());
                     });
                     // 根据权限ID列表查询权限信息
-                    permissions = permissionService.list(Wrappers.<TPermission>lambdaQuery().in(TPermission::getId, permissionIds));
+                    permissions = permissionService.list(new LambdaQueryWrapper<TPermission>().in(TPermission::getId, permissionIds));
                 }
             }
         }

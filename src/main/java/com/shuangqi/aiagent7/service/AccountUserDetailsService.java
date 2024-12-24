@@ -42,10 +42,17 @@ public class AccountUserDetailsService implements UserDetailsService {
     public List<GrantedAuthority> getUserAuthority(String username) {
         // 角色(比如ROLE_admin)，菜单操作权限(比如sys:user:list)
         // 角色必须以ROLE_开头，security在判断角色时会自动截取ROLE_
-        List<TPermission> permissions = userService.getPermissionByUsername(username);
         // 比如ROLE_admin,ROLE_normal,sys:user:list,...
+
+        // 使用；
+        //@PreAuthorize配合@EnableGlobalMethodSecurity(prePostEnabled = true)使用
+        //@PreAuthorize("hasAuthority('/user/list')")
+        //@PreAuthorize("hasAnyRole('admin', 'normal')")
+        //@PreAuthorize("hasRole('/user/manager1')") //具有xx权限才支持这个接口
+        List<TPermission> permissions = userService.getPermissionByUsername(username);
         String authority = "";
         if (CollectionUtils.isNotEmpty(permissions)) {
+            // 当前 url 为权限，权限前加 ROLE_ 开头
             List<String> urls = permissions.stream().map(TPermission::getUrl).collect(Collectors.toList());
             authority = StrUtil.join(",", urls);
         }

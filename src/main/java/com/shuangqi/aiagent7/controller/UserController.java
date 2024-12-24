@@ -76,7 +76,10 @@ public class UserController {
     }
 
     //@PreAuthorize配合@EnableGlobalMethodSecurity(prePostEnabled = true)使用
-    //@PreAuthorize("hasAuthority('/user/logout')")
+    //@PreAuthorize("hasAuthority('/user/list')")
+    //@PreAuthorize("hasAnyRole('admin', 'normal')")
+    //@PreAuthorize("hasRole('/user/manager1')") //具有xx权限才支持这个接口
+
     @GetMapping("/logout")
     public Result logout(HttpServletRequest request, HttpServletResponse response) {
         // 退出登录

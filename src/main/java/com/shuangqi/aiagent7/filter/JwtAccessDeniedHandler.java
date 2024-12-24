@@ -51,5 +51,6 @@ public class JwtAccessDeniedHandler implements AccessDeniedHandler {
         outputStream.flush();
         // 关闭输出流
         outputStream.close();
+
     }
 }
