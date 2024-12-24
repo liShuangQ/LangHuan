@@ -45,10 +45,10 @@ public class AccountUserDetailsService implements UserDetailsService {
         // 比如ROLE_admin,ROLE_normal,sys:user:list,...
 
         // 使用；
-        //@PreAuthorize配合@EnableGlobalMethodSecurity(prePostEnabled = true)使用
-        //@PreAuthorize("hasAuthority('/user/list')")
-        //@PreAuthorize("hasAnyRole('admin', 'normal')")
-        //@PreAuthorize("hasRole('/user/manager1')") //具有xx权限才支持这个接口
+        // @PreAuthorize配合@EnableGlobalMethodSecurity(prePostEnabled = true)使用
+        // @PreAuthorize("hasAuthority('/user/list')")
+        // @PreAuthorize("hasAnyRole('admin', 'normal')")
+        // @PreAuthorize("hasRole('/user/manager1')") //具有xx权限才支持这个接口
         List<TPermission> permissions = userService.getPermissionByUsername(username);
         String authority = "";
         if (CollectionUtils.isNotEmpty(permissions)) {
