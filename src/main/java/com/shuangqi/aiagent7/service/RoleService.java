@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 * @createDate 2024-12-24 10:01:31
 */
 @Service
-public class TRoleService extends ServiceImpl<TRoleMapper, TRole>{
+public class RoleService extends ServiceImpl<TRoleMapper, TRole>{
 
 }
 

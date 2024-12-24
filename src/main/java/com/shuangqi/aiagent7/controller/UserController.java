@@ -4,9 +4,8 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.shuangqi.aiagent7.common.Result;
 import com.shuangqi.aiagent7.model.domain.TUser;
 import com.shuangqi.aiagent7.model.dto.UserLoginDTO;
-import com.shuangqi.aiagent7.service.TUserService;
+import com.shuangqi.aiagent7.service.UserService;
 import com.shuangqi.aiagent7.utils.JwtUtil;
-import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.core.Authentication;
@@ -23,9 +22,9 @@ import java.util.Map;
 public class UserController {
     private JwtUtil jwtUtil;
 
-    private final TUserService userService;
+    private final UserService userService;
 
-    public UserController(JwtUtil jwtUtil, TUserService userService) {
+    public UserController(JwtUtil jwtUtil, UserService userService) {
         this.jwtUtil = jwtUtil;
         this.userService = userService;
     }

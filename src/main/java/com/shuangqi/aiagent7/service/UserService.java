@@ -19,13 +19,13 @@ import java.util.List;
  * @createDate 2024-12-24 10:01:31
  */
 @Service
-public class TUserService extends ServiceImpl<TUserMapper, TUser> {
+public class UserService extends ServiceImpl<TUserMapper, TUser> {
     private final TUserMapper mapper;
-    private final TUserRoleService userRoleService;
-    private final TRolePermissionService rolePermissionService;
-    private final TPermissionService permissionService;
+    private final UserRoleService userRoleService;
+    private final RolePermissionService rolePermissionService;
+    private final PermissionService permissionService;
 
-    public TUserService(TUserMapper mapper, TUserRoleService userRoleService, TRolePermissionService rolePermissionService, TPermissionService permissionService) {
+    public UserService(TUserMapper mapper, UserRoleService userRoleService, RolePermissionService rolePermissionService, PermissionService permissionService) {
         this.mapper = mapper;
         this.userRoleService = userRoleService;
         this.rolePermissionService = rolePermissionService;

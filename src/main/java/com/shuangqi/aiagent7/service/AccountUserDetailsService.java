@@ -18,9 +18,9 @@ import java.util.stream.Collectors;
 
 @Service
 public class AccountUserDetailsService implements UserDetailsService {
-    private final TUserService userService;
+    private final UserService userService;
 
-    public AccountUserDetailsService(TUserService userService) {
+    public AccountUserDetailsService(UserService userService) {
         this.userService = userService;
     }
 
