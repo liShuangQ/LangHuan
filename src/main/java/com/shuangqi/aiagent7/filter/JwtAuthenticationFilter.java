@@ -6,13 +6,11 @@ import com.shuangqi.aiagent7.common.ResponseCodeEnum;
 import com.shuangqi.aiagent7.service.AccountUserDetailsService;
 import com.shuangqi.aiagent7.utils.JwtUtil;
 import io.jsonwebtoken.Claims;
-import jakarta.annotation.Resource;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -25,11 +23,14 @@ import java.io.IOException;
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    @Resource
     private JwtUtil jwtUtil;
 
-    @Autowired
-    private AccountUserDetailsService accountUserDetailsService;
+    private final AccountUserDetailsService accountUserDetailsService;
+
+    public JwtAuthenticationFilter(JwtUtil jwtUtil, AccountUserDetailsService accountUserDetailsService) {
+        this.jwtUtil = jwtUtil;
+        this.accountUserDetailsService = accountUserDetailsService;
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException, ServletException {

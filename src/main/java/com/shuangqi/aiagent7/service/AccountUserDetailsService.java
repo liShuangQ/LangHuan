@@ -6,7 +6,6 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.shuangqi.aiagent7.model.domain.TPermission;
 import com.shuangqi.aiagent7.model.domain.TUser;
 import com.shuangqi.aiagent7.model.pojo.AccountUser;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -19,8 +18,11 @@ import java.util.stream.Collectors;
 
 @Service
 public class AccountUserDetailsService implements UserDetailsService {
-    @Autowired
-    private TUserService userService;
+    private final TUserService userService;
+
+    public AccountUserDetailsService(TUserService userService) {
+        this.userService = userService;
+    }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {

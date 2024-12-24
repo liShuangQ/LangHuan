@@ -2,7 +2,6 @@ package com.shuangqi.aiagent7.config;
 
 import com.shuangqi.aiagent7.filter.*;
 import com.shuangqi.aiagent7.service.AccountUserDetailsService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -22,20 +21,23 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
     private static final String[] URL_WHITELIST = {"/user/login", "/favicon.ico"};
 
-    @Autowired
-    private AccountUserDetailsService accountUserDetailsService;
-    @Autowired
-    private JwtAuthenticationFilter jwtAuthenticationFilter;
-    @Autowired
-    private JwtLogoutSuccessHandler jwtLogoutSuccessHandler;
-    @Autowired
-    private JwtAccessDeniedHandler jwtAccessDeniedHandler;
-    @Autowired
-    private LoginSuccessHandler loginSuccessHandler;
-    @Autowired
-    private LoginFailureHandler loginFailureHandler;
-    @Autowired
-    private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+    private final AccountUserDetailsService accountUserDetailsService;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final JwtLogoutSuccessHandler jwtLogoutSuccessHandler;
+    private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
+    private final LoginSuccessHandler loginSuccessHandler;
+    private final LoginFailureHandler loginFailureHandler;
+    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+
+    public SecurityConfig(AccountUserDetailsService accountUserDetailsService, JwtAuthenticationFilter jwtAuthenticationFilter, JwtLogoutSuccessHandler jwtLogoutSuccessHandler, JwtAccessDeniedHandler jwtAccessDeniedHandler, LoginSuccessHandler loginSuccessHandler, LoginFailureHandler loginFailureHandler, JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint) {
+        this.accountUserDetailsService = accountUserDetailsService;
+        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+        this.jwtLogoutSuccessHandler = jwtLogoutSuccessHandler;
+        this.jwtAccessDeniedHandler = jwtAccessDeniedHandler;
+        this.loginSuccessHandler = loginSuccessHandler;
+        this.loginFailureHandler = loginFailureHandler;
+        this.jwtAuthenticationEntryPoint = jwtAuthenticationEntryPoint;
+    }
 
     /**
      @Bean public PasswordEncoder passwordEncoder() {

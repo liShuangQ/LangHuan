@@ -9,9 +9,7 @@ import com.shuangqi.aiagent7.utils.JwtUtil;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.validation.annotation.Validated;
@@ -23,11 +21,14 @@ import java.util.Map;
 @RestController
 @RequestMapping(path = "/user", produces = "application/json;charset=utf-8")
 public class UserController {
-    @Resource
     private JwtUtil jwtUtil;
 
-    @Autowired
-    private TUserService userService;
+    private final TUserService userService;
+
+    public UserController(JwtUtil jwtUtil, TUserService userService) {
+        this.jwtUtil = jwtUtil;
+        this.userService = userService;
+    }
 
     @PostMapping("/login")
     public Result login(@RequestBody @Validated UserLoginDTO userLoginDTO, HttpServletResponse response) {

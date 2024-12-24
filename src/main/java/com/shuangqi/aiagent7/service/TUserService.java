@@ -8,11 +8,6 @@ import com.shuangqi.aiagent7.model.domain.TRolePermission;
 import com.shuangqi.aiagent7.model.domain.TUser;
 import com.shuangqi.aiagent7.model.domain.TUserRole;
 import com.shuangqi.aiagent7.model.mapper.TUserMapper;
-import com.shuangqi.aiagent7.service.TPermissionService;
-import com.shuangqi.aiagent7.service.TRolePermissionService;
-import com.shuangqi.aiagent7.service.TUserRoleService;
-import jakarta.annotation.Resource;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -25,14 +20,17 @@ import java.util.List;
  */
 @Service
 public class TUserService extends ServiceImpl<TUserMapper, TUser> {
-    @Resource
-    private TUserMapper mapper;
-    @Autowired
-    private TUserRoleService userRoleService;
-    @Autowired
-    private TRolePermissionService rolePermissionService;
-    @Autowired
-    private TPermissionService permissionService;
+    private final TUserMapper mapper;
+    private final TUserRoleService userRoleService;
+    private final TRolePermissionService rolePermissionService;
+    private final TPermissionService permissionService;
+
+    public TUserService(TUserMapper mapper, TUserRoleService userRoleService, TRolePermissionService rolePermissionService, TPermissionService permissionService) {
+        this.mapper = mapper;
+        this.userRoleService = userRoleService;
+        this.rolePermissionService = rolePermissionService;
+        this.permissionService = permissionService;
+    }
 
     public List<TPermission> getPermissionByUsername(String username) {
         TUser user = super.getOne(Wrappers.<TUser>lambdaQuery().eq(TUser::getUsername, username), true);
