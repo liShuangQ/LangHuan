@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -29,6 +30,19 @@ public class UserController {
         this.userService = userService;
     }
 
+    @PostMapping("/register")
+    public Result register(@RequestBody TUser user) {
+        TUser user1 = userService.getOne(new LambdaQueryWrapper<TUser>().eq(TUser::getUsername, user.getUsername()));
+        if (user1 != null) {
+            return Result.error("用户名已存在");
+        }
+        user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword())); // 密码加密
+        user.setEnabled(1); // 默认启用
+        userService.save(user);
+        user.setPassword(null);
+        return Result.success(user);
+    }
+
     @PostMapping("/login")
     public Result login(@RequestBody @Validated UserLoginDTO userLoginDTO, HttpServletResponse response) {
         String username = userLoginDTO.getUsername();
@@ -37,10 +51,20 @@ public class UserController {
         if (user == null) {
             return Result.error("用户名不存在");
         }
-
-        if (!user.getPassword().equals(password)) {
-            return Result.error("用户名或密码错误");
+        // HACK: 兼容初始创建的两个用户, 极大隐患
+        if (user.getId().equals(1) || user.getId().equals(2)) {
+            if (!user.getPassword().equals(password)) {
+                return Result.error("用户名或密码错误");
+            }
+        } else {
+            if (!new BCryptPasswordEncoder().matches(password, user.getPassword())) {
+                return Result.error("用户名或密码错误");
+            }
         }
+
+//        if (!user.getPassword().equals(password)) {
+//            return Result.error("用户名或密码错误");
+//        }
 
         String token = jwtUtil.generateToken(username);
         response.setHeader(JwtUtil.HEADER, token);

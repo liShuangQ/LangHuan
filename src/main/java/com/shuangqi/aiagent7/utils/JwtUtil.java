@@ -19,16 +19,22 @@ import java.util.Map;
 @Component
 @Slf4j
 public class JwtUtil {
-    private static final String SECRET = "dGhpcyBpcyBhIGJhc2U2NCBrZXkgd2l0aCBmb3IgZnJvbSBzZWN1cmUgcmluZw=="; // 请确保这个字符串足够长
-    private static final long EXPIRE = 60 * 24;
+    // JWT密钥，用于签名和验证token，需要足够长以确保安全性
+    private static final String SECRET = "dGhpcyBpcyBhIGJhc2U2NCBrZXkgd2l0aCBmb3IgZnJvbSBzZWN1cmUgcmluZw==";
+    // Token过期时间，单位为分钟
+    private static final long EXPIRE = 60 * 24 * 24;
+    // HTTP请求头中的token字段名
     public static final String HEADER = "Authorization";
 
     /**
      * 生成jwt token
+     *
+     * @param username 用户名，用于标识用户
+     * @return 生成的JWT token字符串
      */
     public String generateToken(String username) {
         SecretKey signingKey = Keys.hmacShaKeyFor(SECRET.getBytes(StandardCharsets.UTF_8));
-        //过期时间
+        // 过期时间
         LocalDateTime tokenExpirationTime = LocalDateTime.now().plusMinutes(EXPIRE);
         return Jwts.builder()
                 .signWith(signingKey, Jwts.SIG.HS512)
@@ -40,6 +46,12 @@ public class JwtUtil {
                 .compact();
     }
 
+    /**
+     * 通过token获取claims信息
+     *
+     * @param token JWT token字符串
+     * @return Claims对象，包含token中的所有信息
+     */
     public Claims getClaimsByToken(String token) {
         SecretKey signingKey = Keys.hmacShaKeyFor(SECRET.getBytes(StandardCharsets.UTF_8));
         return Jwts.parser()
@@ -52,17 +64,19 @@ public class JwtUtil {
     /**
      * 检查token是否过期
      *
-     * @return true：过期
+     * @param expiration Token的过期时间
+     * @return true：过期；false：未过期
      */
     public boolean isTokenExpired(Date expiration) {
         return expiration.before(new Date());
     }
 
     /**
-     * 获得token中的自定义信息,一般是获取token的username，无需secret解密也能获得
-     * @param token
-     * @param filed
-     * @return
+     * 获得token中的自定义信息，一般是获取token的username，无需secret解密也能获得
+     *
+     * @param token JWT token字符串
+     * @param filed 要获取的自定义信息的字段名
+     * @return 字段值，如果解析出错返回null
      */
     public String getClaimFiled(String token, String filed){
         try{

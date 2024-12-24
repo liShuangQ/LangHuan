@@ -25,4 +25,3 @@ logging:
           chat:
             client:
               advisor: DEBUG
-

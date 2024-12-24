@@ -15,12 +15,15 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+// 配置类，启用Web安全性并激活方法级别的安全性
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
-    private static final String[] URL_WHITELIST = {"/user/login", "/favicon.ico"};
+    // 白名单URL，不需要身份验证即可访问
+    private static final String[] URL_WHITELIST = {"/favicon.ico", "/user/login", "/user/register"};
 
+    // 依赖注入：用户详细服务、JWT认证过滤器、JWT登出成功处理器、JWT访问拒绝处理器、登录成功处理器、登录失败处理器、JWT认证入口点
     private final AccountUserDetailsService accountUserDetailsService;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final JwtLogoutSuccessHandler jwtLogoutSuccessHandler;
@@ -29,6 +32,7 @@ public class SecurityConfig {
     private final LoginFailureHandler loginFailureHandler;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
+    // 构造函数进行依赖注入
     public SecurityConfig(AccountUserDetailsService accountUserDetailsService, JwtAuthenticationFilter jwtAuthenticationFilter, JwtLogoutSuccessHandler jwtLogoutSuccessHandler, JwtAccessDeniedHandler jwtAccessDeniedHandler, LoginSuccessHandler loginSuccessHandler, LoginFailureHandler loginFailureHandler, JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint) {
         this.accountUserDetailsService = accountUserDetailsService;
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
@@ -39,13 +43,14 @@ public class SecurityConfig {
         this.jwtAuthenticationEntryPoint = jwtAuthenticationEntryPoint;
     }
 
-    /**
-     @Bean public PasswordEncoder passwordEncoder() {
-     return new BCryptPasswordEncoder();
-     }
-     **/
+    // [已注释]
+    // @Bean public PasswordEncoder passwordEncoder() {
+    // return new BCryptPasswordEncoder();
+    // }
 
     /**
+     * 配置身份验证提供者
+     *
      * @return 身份校验机制、身份验证提供程序
      */
     @Bean
@@ -60,6 +65,7 @@ public class SecurityConfig {
     }
 
     /**
+     * 配置AuthenticationManager，用于处理身份验证请求
      * 基于用户名和密码或使用用户名和密码进行身份验证
      *
      * @param config
@@ -71,6 +77,13 @@ public class SecurityConfig {
         return config.getAuthenticationManager();
     }
 
+    /**
+     * 配置SecurityFilterChain，定制化安全过滤链
+     *
+     * @param http
+     * @return
+     * @throws Exception
+     */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
