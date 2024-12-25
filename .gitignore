@@ -6,6 +6,7 @@ target/
 /logs/
 /aiagent7-service/logs/
 
+
 ### STS ###
 .apt_generated
 .classpath
