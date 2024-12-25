@@ -1,0 +1,2 @@
+2024-12-25 11:23:04.229 [main] DEBUG com.shuangqi.aiagent7.Aiagent7Application - Running with Spring Boot v3.4.1-SNAPSHOT, Spring v6.2.1
+2024-12-25 11:23:05.296 [main] DEBUG c.shuangqi.aiagent7.filter.JwtAuthenticationFilter - Filter 'jwtAuthenticationFilter' configured for use
