@@ -3,6 +3,7 @@ package com.shuangqi.aiagent7.utils;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.shuangqi.aiagent7.common.Constant;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -19,12 +20,9 @@ import java.util.Map;
 @Component
 @Slf4j
 public class JwtUtil {
-    // JWT密钥，用于签名和验证token，需要足够长以确保安全性
-    private static final String SECRET = "dGhpcyBpcyBhIGJhc2U2NCBrZXkgd2l0aCBmb3IgZnJvbSBzZWN1cmUgcmluZw==";
-    // Token过期时间，单位为分钟
-    private static final long EXPIRE = 60 * 24 * 24;
-    // HTTP请求头中的token字段名
-    public static final String HEADER = "Authorization";
+    private static final String SECRET = Constant.SECRET;
+    private static final long EXPIRE = Constant.EXPIRE;
+    public static final String HEADER = Constant.HEADER;
 
     /**
      * 生成jwt token
@@ -78,11 +76,11 @@ public class JwtUtil {
      * @param filed 要获取的自定义信息的字段名
      * @return 字段值，如果解析出错返回null
      */
-    public String getClaimFiled(String token, String filed){
-        try{
+    public String getClaimFiled(String token, String filed) {
+        try {
             DecodedJWT jwt = JWT.decode(token);
             return jwt.getClaim(filed).asString();
-        } catch (JWTDecodeException e){
+        } catch (JWTDecodeException e) {
             log.error("JwtUtil getClaimFiled error: ", e);
             return null;
         }

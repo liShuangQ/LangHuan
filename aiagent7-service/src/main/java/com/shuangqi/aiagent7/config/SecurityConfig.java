@@ -1,5 +1,6 @@
 package com.shuangqi.aiagent7.config;
 
+import com.shuangqi.aiagent7.common.Constant;
 import com.shuangqi.aiagent7.filter.*;
 import com.shuangqi.aiagent7.service.AccountUserDetailsService;
 import org.springframework.context.annotation.Bean;
@@ -11,9 +12,15 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.Arrays;
 
 // 配置类，启用Web安全性并激活方法级别的安全性
 @Configuration
@@ -21,7 +28,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
     // 白名单URL，不需要身份验证即可访问
-    private static final String[] URL_WHITELIST = {"/favicon.ico", "/user/login", "/user/register"};
+    private static final String[] URL_WHITELIST = Constant.URL_WHITELIST;
 
     // 依赖注入：用户详细服务、JWT认证过滤器、JWT登出成功处理器、JWT访问拒绝处理器、登录成功处理器、登录失败处理器、JWT认证入口点
     private final AccountUserDetailsService accountUserDetailsService;
@@ -47,6 +54,23 @@ public class SecurityConfig {
     // @Bean public PasswordEncoder passwordEncoder() {
     // return new BCryptPasswordEncoder();
     // }
+
+    /**
+     * 跨域配置
+     */
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(Arrays.asList("*")); // 允许的源，可以根据需要修改
+        configuration.setAllowedMethods(Arrays.asList("*")); // 允许的 HTTP 方法
+        configuration.setAllowedHeaders(Arrays.asList("*")); // 允许的请求头
+        configuration.setAllowCredentials(false); // 是否允许发送 Cookie
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration); // 配置所有路径
+
+        return source;
+    }
 
     /**
      * 配置身份验证提供者
@@ -86,9 +110,10 @@ public class SecurityConfig {
      */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
+        http    // 配置CORS
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 // 禁用csrf(防止跨站请求伪造攻击)
-                .csrf(csrf -> csrf.disable())
+                .csrf(AbstractHttpConfigurer::disable)
                 // 登录操作
                 .formLogin(form -> form.successHandler(loginSuccessHandler).failureHandler(loginFailureHandler))
                 // 登出操作
@@ -102,6 +127,9 @@ public class SecurityConfig {
                 // 添加jwt过滤器
                 .authenticationProvider(authenticationProvider()).addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
+
         return http.build();
     }
+
+
 }

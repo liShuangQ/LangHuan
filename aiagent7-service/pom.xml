@@ -9,7 +9,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.shuangqi</groupId>
-    <artifactId>aiagent7</artifactId>
+    <artifactId>aiagent7-service</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>aiagent7</name>
     <description>aiagent7</description>
