@@ -30,6 +30,11 @@ public class UserController {
         return Result.success(userService.register(user));
     }
 
+    @PostMapping("/change")
+    public Result change(@RequestBody TUser user) {
+        return Result.success(userService.change(user));
+    }
+
     @PostMapping("/login")
     public Result login(@RequestBody @Validated UserLoginDTO userLoginDTO, HttpServletResponse response) {
         return Result.success(userService.login(userLoginDTO, response));

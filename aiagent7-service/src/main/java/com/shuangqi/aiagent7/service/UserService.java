@@ -1,6 +1,5 @@
 package com.shuangqi.aiagent7.service;
 
-import cn.hutool.core.date.DateUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
@@ -107,11 +106,14 @@ public class UserService extends ServiceImpl<TUserMapper, TUser> {
         }
         user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword())); // 密码加密
         user.setCreationTime(new Date());
-        boolean updated = super.update(user, new LambdaUpdateWrapper<TUser>().eq(TUser::getUsername, user.getUsername()));
-        if (!updated) {
-            super.save(user);
-        }
+        super.save(user);
         user.setPassword(null);
+        return user;
+    }
+
+    public TUser change(TUser user) {
+        user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
+        super.update(user, new LambdaUpdateWrapper<TUser>().eq(TUser::getUsername, user.getUsername()));
         return user;
     }
 
