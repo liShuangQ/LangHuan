@@ -68,8 +68,8 @@ export default defineStore("user", {
                     this.setUserInfo(res)
                 }
             }).catch(err => {
+                menu().setMenu(menuData as PagesMenu[])
                 console.log(err)
-
             })
 
 

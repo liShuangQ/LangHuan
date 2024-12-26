@@ -18,7 +18,3 @@
 - pnpm run serve (开发)
 - pnpm run build（生产）
 - pnpm run lint （eslint格式化）
-
-## env说明
-- TOKEN_KEY： 存储token的key
-- AFTER_MENU：是否开启从用户获取获取菜单信息 'false' | 'true' （非 'true'，均从本地文件获取）
