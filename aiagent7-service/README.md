@@ -6,6 +6,7 @@
 
 ## 部署
 
+- 推荐使用 jdk21
 - 下载 ollama [https://ollama.com/](ollama)
 - 下载模型和嵌入模型
 

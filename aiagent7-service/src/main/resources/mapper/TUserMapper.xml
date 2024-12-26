@@ -12,12 +12,13 @@
             <result property="phone" column="phone" jdbcType="VARCHAR"/>
             <result property="gender" column="gender" jdbcType="SMALLINT"/>
             <result property="enabled" column="enabled" jdbcType="SMALLINT"/>
+            <result property="creationTime" column="creation_time" jdbcType="SMALLINT"/>
             <result property="lastLoginTime" column="last_login_time" jdbcType="TIMESTAMP"/>
     </resultMap>
 
     <sql id="Base_Column_List">
         id,name,username,
         password,phone,gender,
-        enabled,last_login_time
+        enabled,creation_time,last_login_time
     </sql>
 </mapper>

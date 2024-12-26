@@ -10,7 +10,6 @@ public class BaseException extends RuntimeException {
 
     public BaseException(ResponseCodeEnum responseCode, String message) {
         super(message);
-
         setResponseCode(responseCode);
     }
 

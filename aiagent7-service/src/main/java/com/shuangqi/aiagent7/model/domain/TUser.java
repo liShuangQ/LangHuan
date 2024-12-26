@@ -51,6 +51,10 @@ public class TUser implements Serializable {
     private Integer enabled;
 
     /**
+     * 创建时间
+     */
+    private Date creationTime;
+    /**
      * 上一次登录时间
      */
     private Date lastLoginTime;
@@ -77,6 +81,7 @@ public class TUser implements Serializable {
             && (this.getPhone() == null ? other.getPhone() == null : this.getPhone().equals(other.getPhone()))
             && (this.getGender() == null ? other.getGender() == null : this.getGender().equals(other.getGender()))
             && (this.getEnabled() == null ? other.getEnabled() == null : this.getEnabled().equals(other.getEnabled()))
+            && (this.getCreationTime() == null ? other.getCreationTime() == null : this.getCreationTime().equals(other.getCreationTime()))
             && (this.getLastLoginTime() == null ? other.getLastLoginTime() == null : this.getLastLoginTime().equals(other.getLastLoginTime()));
     }
 
@@ -91,6 +96,7 @@ public class TUser implements Serializable {
         result = prime * result + ((getPhone() == null) ? 0 : getPhone().hashCode());
         result = prime * result + ((getGender() == null) ? 0 : getGender().hashCode());
         result = prime * result + ((getEnabled() == null) ? 0 : getEnabled().hashCode());
+        result = prime * result + ((getCreationTime() == null) ? 0 : getCreationTime().hashCode());
         result = prime * result + ((getLastLoginTime() == null) ? 0 : getLastLoginTime().hashCode());
         return result;
     }
@@ -108,6 +114,7 @@ public class TUser implements Serializable {
         sb.append(", phone=").append(phone);
         sb.append(", gender=").append(gender);
         sb.append(", enabled=").append(enabled);
+        sb.append(", creationTime=").append(creationTime);
         sb.append(", lastLoginTime=").append(lastLoginTime);
         sb.append(", serialVersionUID=").append(serialVersionUID);
         sb.append("]");

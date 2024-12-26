@@ -58,16 +58,18 @@ CREATE TABLE t_user
     phone           VARCHAR(11)  NOT NULL,
     gender          SMALLINT     NOT NULL,
     enabled         SMALLINT     NOT NULL,
+    creation_time  TIMESTAMP    NULL     DEFAULT NULL,
     last_login_time TIMESTAMP    NULL     DEFAULT NULL
 );
 
 COMMENT ON TABLE t_user IS '用户表';
 COMMENT ON COLUMN t_user.name IS '姓名';
-COMMENT ON COLUMN t_user.username IS '用户名';
+COMMENT ON COLUMN t_user.username IS '用户名(不可修改)';
 COMMENT ON COLUMN t_user.password IS '密码';
 COMMENT ON COLUMN t_user.phone IS '手机号';
 COMMENT ON COLUMN t_user.gender IS '性别';
 COMMENT ON COLUMN t_user.enabled IS '是否启用（0-未启用；1-启用中）';
+COMMENT ON COLUMN t_user.creation_time IS '创建时间';
 COMMENT ON COLUMN t_user.last_login_time IS '上一次登录时间';
 
 
