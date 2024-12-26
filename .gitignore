@@ -8,6 +8,7 @@ target/
 /node_modules/
 aiagent7-web/node_modules
 aiagent7-web/node_modules/*
+.DS_Store
 
 ### STS ###
 .apt_generated
