@@ -16,6 +16,69 @@ spring:
     driver-class-name: org.postgresql.Driver
   application:
     name: aiAgent
+  # 基础属性配置
+  ai:
+    ollama:
+      base-url: http://localhost:11434 # Ollama API服务器运行的基础URL，默认值为localhost:11434
+      # 初始化属性配置
+      init:
+        pull-model-strategy: never # 启动时是否拉取模型以及如何拉取，默认值为never
+        timeout: 5m # 等待模型拉取的时长，默认值为5m
+        max-retries: 2 # 模型拉取操作的最大重试次数
+        chat:
+          include: true # 是否在初始化任务中包含此类型的模型，默认值为true
+          additional-models: [ ] # 除了通过默认属性配置的模型之外，要初始化的其他模型，默认值为[]
+      # 聊天属性配置
+      chat:
+        enabled: true # 是否启用Ollama聊天模型，默认值为true
+        options:
+          model: qwen2.5:3b # 要使用的支持模型的名称，默认值为mistral
+          format: json # 返回响应的格式，目前唯一接受的值为json
+          keep_alive: 5m # 控制请求后模型在内存中保持加载的时长，默认值为5m
+          numa: false # 是否使用NUMA，默认值为false
+          num-ctx: 2048 # 用于生成下一个标记的上下文窗口大小，默认值为2048
+          num-batch: 512 # 提示处理的最大批处理大小，默认值为512
+          num-gpu: -1 # 要发送到GPU的层数，在macOS上默认值为1（启用metal支持），0表示禁用，1表示应动态设置NumGPU，默认值为-1
+          main-gpu: # 当使用多个GPU时，此选项控制哪个GPU用于小张量，默认值未指定
+          low-vram: false # 是否使用低显存模式，默认值为false
+          f16-kv: true # 是否使用16位键值存储，默认值为true
+          logits-all: # 是否返回所有标记的对数概率，默认值未指定
+          vocab-only: # 是否仅加载词汇表而不加载权重，默认值未指定
+          use-mmap:  # 是否使用内存映射，默认值为null，表示根据模型大小和系统内存情况自动决定
+          use-mlock: false # 是否将模型锁定在内存中，默认值为false
+          num-thread: 0 # 计算期间使用的线程数，默认值为0，表示让运行时决定，建议设置为系统物理CPU核心数
+          num-keep: # 未明确说明，默认值未指定
+          seed: -1 # 用于生成的随机数种子，默认值为-1
+          num-predict: -1 # 生成文本时预测的最大标记数，默认值为-1（无限生成）
+          top-k: 40 # 减少生成无意义内容的概率，默认值为40
+          top-p: 0.9 # 与top-k一起使用，默认值为0.9
+          tfs-z: 1.0 # 用于减少不太可能的标记对输出的影响，默认值为1.0
+          typical-p: 1.0 # 默认值为1.0
+          repeat-last-n: 64 # 设置模型回溯以防止重复的距离，默认值为64
+          temperature: 0.8 # 模型的温度，默认值为0.8
+          repeat-penalty: 1.1 # 设置对重复的惩罚强度，默认值为1.1
+          presence-penalty: 0.0 # 默认值为0.0
+          frequency-penalty: 0.0 # 默认值为0.0
+          mirostat: # 是否启用Mirostat采样以控制困惑度，默认值未指定
+          mirostat-tau: 5.0 # 控制输出的连贯性和多样性之间的平衡，默认值为5.0
+          mirostat-eta: 0.1 # 影响算法对生成文本反馈的响应速度，默认值为0.1
+          penalize-newline: true # 是否对换行进行惩罚，默认值为true
+          stop: # 设置停止序列，当遇到此模式时，语言模型将停止生成文本并返回
+          functions:  # 在单个提示请求中启用函数调用的函数列表，函数名称必须存在于函数回调注册表中
+          proxy-tool-calls: false # 如果为true，Spring AI将不会内部处理函数调用，而是将其代理给客户端，默认值为false
+      embedding:
+        model: mxbai-embed-large:latest #嵌入模型(ollama pull mxbai-embed-large)  备选ollama pull mofanke/dmeta-embedding-zh
+    pgvector:
+      index-type: HNSW # 最近邻搜索索引类型，可选值为NONE（精确最近邻搜索）、IVFFlat（将向量划分为列表，然后搜索与查询向量最接近的子集，构建速度较快且内存使用较少，但查询性能较低）、HNSW（创建多层图，构建速度较慢且内存使用较多，但查询性能较好，无需训练步骤）
+      distance-type: COSINE_DISTANCE # 搜索距离类型，默认为COSINE_DISTANCE，如果向量已归一化长度为1，可使用EUCLIDEAN_DISTANCE或NEGATIVE_INNER_PRODUCT以获得最佳性能
+      dimensions: # 嵌入维度，如果未显式指定，PgVectorStore将从提供的EmbeddingModel中获取维度，在创建表时设置嵌入列的维度，若更改维度则需重新创建vector_store表
+      remove-existing-vector-store-table: false # 是否在启动时删除现有的vector_store表
+      initialize-schema: false # 是否初始化所需的模式
+      schema-name: public # 向量存储模式名称
+      table-name: vector_store # 向量存储表名称
+      schema-validation: false # 启用模式和表名验证，确保它们是有效且存在的对象
+      batching-strategy: TOKEN_COUNT # 计算嵌入时批处理文档的策略，可选值为TOKEN_COUNT或FIXED_SIZE
+      max-document-batch-size: 10000 # 单个批次中处理的最大文档数量
 
 logging:
   level:
