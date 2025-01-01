@@ -8,7 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 import reactor.core.publisher.Flux;
 
 @RestController
-@RequestMapping("/rag")
+@RequestMapping("/chatRag")
 public class ChatRagControllerD {
     private final ChatRagService chatRagService;
 

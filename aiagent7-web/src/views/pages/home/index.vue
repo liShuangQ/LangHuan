@@ -4,20 +4,7 @@ export default {
 };
 </script>
 <script lang="ts" setup>
-import {ref, computed, onMounted, nextTick} from 'vue';
 import {http} from "@/plugins/axios";
-
-interface Message {
-    id: number;
-    text: string;
-    isUser: boolean;
-}
-
-interface Chat {
-    id: number;
-    messages: Message[];
-    active: boolean;
-}
 
 const chats = ref<Chat[]>([
     {
@@ -27,72 +14,69 @@ const chats = ref<Chat[]>([
     }
 ]);
 
-const inputText = ref<string>('');
+const inputMessageText = ref<string>('');
+const inputPromptText = ref<string>('');
 const currentChatId = ref<number>(1);
-const ragEnabled = ref<boolean>(false);
 const isTyping = ref<boolean>(false);
 
-// Load RAG state from localStorage
-onMounted(() => {
-    const savedState = localStorage.getItem('ragEnabled');
-    if (savedState !== null) {
-        ragEnabled.value = savedState === 'true';
+// 添加滚动到最新的消息
+const toDownPage = () => {
+    nextTick(() => {
+        const chatWindow = document.querySelector('.flex-1.overflow-y-auto.p-4.space-y-4');
+        if (chatWindow) {
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+    });
+};
+// 发送信息
+const sendMessage = (recommend = null) => {
+    if (recommend) {
+        inputMessageText.value = recommend;
     }
-});
-
-const sendMessage = () => {
     const chat = chats.value.find(c => c.id === currentChatId.value);
-    if (inputText.value.trim() && chat) {
+    if (inputMessageText.value.trim() && chat) {
         chat.messages.push({
             id: Date.now(),
-            text: inputText.value,
+            text: inputMessageText.value,
             isUser: true
         });
-        const inputTextCopy = inputText.value;
-        inputText.value = '';
+        toDownPage()
+        const inputTextCopy = inputMessageText.value;
+        inputMessageText.value = '';
         isTyping.value = true;
         http.request<any>({
-            url: '/chatMemory/chat',
+            url: '/chat/chat',
             method: 'get',
             q_spinning: false,
             params: {
                 id: chat.id,
+                p: inputPromptText.value,
                 q: inputTextCopy
             }
         }).then((res: any) => {
+            // HACK 跟随 interface Message  更改
             chat.messages.push({
                 id: Date.now(),
                 text: res.desc,
+                recommend: res.recommend,
                 isUser: false
             });
             isTyping.value = false;
-            // 滚动到最新的消息
-            nextTick(() => {
-                const chatWindow = document.querySelector('.flex-1.overflow-y-auto.p-4.space-y-4');
-                if (chatWindow) {
-                    chatWindow.scrollTop = chatWindow.scrollHeight;
-                }
-            });
+            toDownPage()
         });
 
-        // 添加滚动到最新的消息
-        nextTick(() => {
-            const chatWindow = document.querySelector('.flex-1.overflow-y-auto.p-4.space-y-4');
-            if (chatWindow) {
-                chatWindow.scrollTop = chatWindow.scrollHeight;
-            }
-        });
+        toDownPage()
     }
 };
-
+// 清空对话记忆
 const clearMemory = (isList = false, id = 0) => {
     const chat = chats.value.find(c => c.id === currentChatId.value);
     if (chat) {
         const useId = isList ? id : chat.id
         http.request<any>({
-            url: '/chatMemory/clear',
+            url: '/chat/clear',
             method: 'get',
-            q_spinning: false,
+            q_spinning: true,
             params: {
                 id: useId,
             }
@@ -105,12 +89,21 @@ const clearMemory = (isList = false, id = 0) => {
                     text: '已成功清空上下文',
                     isUser: false
                 });
+                toDownPage()
             }
         })
     }
 
 };
-
+// 清空聊天记录
+const clearMessage = () => {
+    const chat = chats.value.find(c => c.id === currentChatId.value);
+    if (chat) {
+        chat.messages = [];
+    }
+    ElMessage.success('已成功清空聊天记录');
+}
+// 开始一个新的对话
 const startNewChat = () => {
     const newChatId = (chats.value[chats.value.length - 1]?.id ?? 0) + 1;
     chats.value.push({
@@ -120,25 +113,24 @@ const startNewChat = () => {
     });
     currentChatId.value = newChatId;
 };
-
+// 设置对话窗口
 const switchChat = (chatId: number) => {
     currentChatId.value = chatId;
 };
-
-const toggleRAG = () => {
-    ragEnabled.value = !ragEnabled.value;
-    localStorage.setItem('ragEnabled', ragEnabled.value.toString());
-};
-
+// 找到当前的窗口
 const currentChat = (): Chat | any => {
     return chats.value.find(c => c.id === currentChatId.value) || {messages: []};
+};
+// 获取当前时间
+const getCurrentTime = () => {
+    return Date.now();
 };
 </script>
 
 <template>
-    <div class="w-full h-full max-w-6xl flex gap-4 relative">
+    <div class="w-full h-full bg-white flex gap-4 relative">
 
-        <!-- Chat List -->
+        <!-- 对话窗口列表 -->
         <div
             :class="[
               'w-64 bg-white rounded-lg shadow-lg p-4 transition-transform duration-300',
@@ -171,7 +163,7 @@ const currentChat = (): Chat | any => {
             </ul>
         </div>
 
-        <!-- Chat Window -->
+        <!-- 对话窗口 -->
         <div v-if="chats.length > 0" class="flex-1 bg-white rounded-lg shadow-lg flex flex-col h-full">
             <div class="flex-1 overflow-y-auto p-4 space-y-4">
                 <div
@@ -183,13 +175,27 @@ const currentChat = (): Chat | any => {
                          class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white">
                         AI
                     </div>
-                    <div
-                        :class="[
-                    'max-w-[80%] p-3 rounded-lg transition-all duration-200',
+                    <div class="max-w-[80%]">
+                        <!--                        对话回复-->
+                        <div class="text-[12px] " v-format-time>{{ getCurrentTime() }}</div>
+                        <div
+                            :class="[
+                    'max-full p-3 rounded-lg transition-all duration-200',
                     message.isUser ? 'bg-blue-500 text-white' : 'bg-gray-200'
                   ]"
-                    >
-                        {{ message.text }}
+                        >
+                            {{ message.text }}
+                        </div>
+                        <!--                        推荐列表-->
+                        <div v-if="(message?.recommend??[]).length > 0"
+                             class="w-full flex justify-start items-center mt-1">
+                            <div class="bg-blue-100 w-max mr-2 px-1.5 py-0.5 text-[14px] rounded-md cursor-pointer"
+                                 v-for="item in message.recommend" :key="item"
+                                 @click="sendMessage(item)"
+                            >
+                                {{ item }}
+                            </div>
+                        </div>
                     </div>
                     <div v-if="message.isUser"
                          class="w-8 h-8 rounded-full bg-gray-500 flex items-center justify-center text-white">
@@ -197,7 +203,7 @@ const currentChat = (): Chat | any => {
                     </div>
                 </div>
 
-                <!-- Typing Indicator -->
+                <!-- ai的等待效果 -->
                 <div v-if="isTyping" class="flex items-start gap-3">
                     <div class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white">
                         AI
@@ -212,20 +218,9 @@ const currentChat = (): Chat | any => {
                 </div>
             </div>
 
-            <!-- Input and RAG Toggle -->
+            <!-- 功能区域 -->
             <div class="p-4 border-t border-gray-200 space-y-3">
                 <div class="flex justify-end">
-                    <el-button
-                        @click="toggleRAG"
-                        :class="[
-                    '!px-4 !py-2 transition-colors duration-200',
-                    ragEnabled ? '!bg-green-500 hover:!bg-green-600' : '!bg-gray-300 hover:!bg-gray-400'
-                  ]"
-                    >
-                  <span class="font-medium text-white">
-                    {{ ragEnabled ? '禁用RAG' : '启用RAG' }}
-                  </span>
-                    </el-button>
                     <el-button
                         @click="clearMemory(false)"
                         :class="['!bg-blue-500 hover:!bg-green-600']"
@@ -234,16 +229,33 @@ const currentChat = (): Chat | any => {
                     清除记忆
                   </span>
                     </el-button>
+
+                    <el-button
+                        @click="clearMessage()"
+                        :class="['!bg-blue-500 hover:!bg-green-600']"
+                    >
+                  <span class="font-medium text-white">
+                    清除聊天记录
+                  </span>
+                    </el-button>
                 </div>
+
+                <!--                提示词-->
                 <el-input
-                    v-model="inputText"
+                    v-model="inputPromptText"
+                    placeholder="Type your prompt..."
+                    class="w-full"
+                ></el-input>
+                <!--                用户消息-->
+                <el-input
+                    v-model="inputMessageText"
                     placeholder="Type your message..."
-                    @keyup.enter="sendMessage"
+                    @keyup.enter="sendMessage()"
                     class="w-full"
                 >
                     <template #append>
                         <el-button
-                            @click="sendMessage"
+                            @click="sendMessage()"
                             class="!px-6 !py-3 !bg-blue-500 !text-white hover:!bg-blue-600 active:!bg-blue-700 transition-colors duration-200 flex items-center justify-center gap-2"
                             style="height: 100%"
                         >
