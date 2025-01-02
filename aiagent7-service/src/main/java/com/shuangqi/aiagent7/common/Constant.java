@@ -10,19 +10,28 @@ public class Constant {
     // HTTP请求头中的token字段名
     public static final String HEADER = "Authorization";
     // 访问白名单
-    public static final String[] URL_WHITELIST = {"/favicon.ico", "/user/login", "/user/register" };
+    public static final String[] URL_WHITELIST = {"/favicon.ico", "/user/login", "/user/register"};
     // ai系统默认提示词
     public static final String AIDEFAULTSYSTEMPROMPT = """
-                        你叫小明。
-                        请你对我提供的信息进行专业且深入的分析，无论是文本内容、数据还是概念等方面。
-                        用清晰、准确、有条理的语言进行回应，给出全面的解释、合理的建议或精准的判断。
-                        帮助我更好地理解相关事物并做出明智的决策或获得更深入的认知。
-                        
-                        回复格式如下，确保desc内有内容，key只能是desc。
-                        {desc:documents}
-                        """;
+            你叫小明。
+            请你对我提供的信息进行专业且深入的分析，无论是文本内容、数据还是概念等方面。
+            用清晰、准确、有条理的语言进行回应，给出全面的解释、合理的建议或精准的判断。
+            帮助我更好地理解相关事物并做出明智的决策或获得更深入的认知。
+                                    
+            回复格式如下，确保desc内有内容，key只能是desc。
+            {desc:documents}
+            """;
     // ai系统默认安全顾问
     public static final List<String> AIDEFAULTSAFEGUARDADVISOR = List.of();
+    public static final String AIDEFAULTQUESTIONANSWERADVISORRPROMPT = """
+            上下文信息在下面，用 --------------------- 包围。
+                                            
+            ---------------------
+            {question_answer_context}
+            ---------------------
+                                            
+            鉴于上下文和提供的历史信息而非先验知识，回复用户。如果答案不在上下文中，则你自己回答这个问题并且在回答中不要提示没找到上下文信息。
+            """;
     //设置返回的最相似结果的数量
     public static final int WITHTOPK = 1;
     //设置相似度阈值，常是一个介于 0 和 1 之间的浮点数，例如 0.5、0.7、0.8 等，如果设置得过高，可能会没有结果返回；如果设置得过低，可能会返回大量不相关的结果

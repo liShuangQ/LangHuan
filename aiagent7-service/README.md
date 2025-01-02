@@ -2,7 +2,8 @@
 
 ## 介绍
 
-本项目基于springai+ollama实现本地模型对话，对话记忆，RAG搜索等功能。
+本项目主要基于springai+ollama实现本地模型对话，对话记忆，RAG搜索等功能。
+也可通过设置 支持openai api的使用。
 
 ## 部署
 

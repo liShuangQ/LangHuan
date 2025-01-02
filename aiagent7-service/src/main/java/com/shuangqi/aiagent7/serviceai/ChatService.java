@@ -12,9 +12,6 @@ import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.Flux;
-
-import java.util.function.BiFunction;
 
 import static org.springframework.ai.chat.client.advisor.AbstractChatMemoryAdvisor.CHAT_MEMORY_CONVERSATION_ID_KEY;
 import static org.springframework.ai.chat.client.advisor.AbstractChatMemoryAdvisor.CHAT_MEMORY_RETRIEVE_SIZE_KEY;
@@ -36,7 +33,6 @@ public class ChatService {
 
         String defaultSystem = """
                 用户会向你提出一个问题，你的任务是提供一个细致且准确的答案。
-                如果在RAG或者外部获取方式中没有搜索到，请你自己回答这个问题。
                 并附带两个简短的相关问题推荐，以JSON格式返回。
                 确保你的回答遵循以下结构：
                 {
@@ -49,7 +45,8 @@ public class ChatService {
                 """;
         this.chatClient = chatClientBuilder.defaultSystem(defaultSystem)
                 .defaultAdvisors(
-                        new QuestionAnswerAdvisor(vectorStore, SearchRequest.defaults()),
+                        new QuestionAnswerAdvisor(vectorStore,
+                                SearchRequest.defaults().withTopK(Constant.WITHTOPK).withSimilarityThreshold(Constant.WITHSIMILARITYTHRESHOLD), Constant.AIDEFAULTQUESTIONANSWERADVISORRPROMPT),
                         new MessageChatMemoryAdvisor(inMemoryChatMemory),
                         new SafeGuardAdvisor(Constant.AIDEFAULTSAFEGUARDADVISOR),
                         new MySimplelogAdvisor()

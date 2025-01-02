@@ -29,12 +29,11 @@ public class ChatRagService {
 
 
     public ChatRagService(ChatClient.Builder chatClientBuilder, VectorStore vectorStore, RagVectorUtils ragVectorUtils) {
-
         this.vectorStore = vectorStore;
         this.chatClient = chatClientBuilder.defaultSystem(Constant.AIDEFAULTSYSTEMPROMPT)
                 .defaultAdvisors(
                         // 此 advisor 使用向量存储来提供问答功能，实现 RAG（检索增强生成）模式。
-                        new QuestionAnswerAdvisor(this.vectorStore, SearchRequest.defaults()),
+                        new QuestionAnswerAdvisor(this.vectorStore, SearchRequest.defaults().withTopK(Constant.WITHTOPK).withSimilarityThreshold(Constant.WITHSIMILARITYTHRESHOLD)),
                         new SafeGuardAdvisor(Constant.AIDEFAULTSAFEGUARDADVISOR),
                         new MySimplelogAdvisor()
                 )
