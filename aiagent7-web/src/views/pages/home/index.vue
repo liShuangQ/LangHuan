@@ -8,6 +8,7 @@ import {http} from "@/plugins/axios";
 import axios, {CancelToken} from "axios";
 import {CancelTokenSource} from "axios/index";
 import {ElMessage} from "element-plus";
+import {store} from "@/utils";
 
 const chats = ref<Chat[]>([
     {
@@ -22,7 +23,6 @@ const inputPromptText = ref<string>('');
 const currentChatId = ref<number>(1);
 const isTyping = ref<boolean>(false);
 let axiosCancel: CancelTokenSource | null = null;
-
 // 添加滚动到最新的消息
 const toDownPage = () => {
     nextTick(() => {
@@ -72,25 +72,6 @@ const sendMessage = (recommend = null) => {
                 p: inputPromptText.value,
                 q: inputTextCopy
             }
-        }).then((res) => {
-            res.data = JSON.parse(res.data)
-            if (res.code === 200) {
-                addMessage(chat,
-                    {
-                        text: res.data.desc,
-                        recommend: res.data.recommend,
-                        isUser: false
-                    }
-                )
-            } else {
-                addMessage(chat,
-                    {
-                        text: "回答出现错误，请换种方式提问。",
-                        recommend: [],
-                        isUser: false
-                    }
-                )
-            }
         }).catch(error => {
             if (error.code === "ERR_CANCELED") {
                 addMessage(chat,
@@ -105,6 +86,46 @@ const sendMessage = (recommend = null) => {
 
     }
 };
+// 流式的实验
+const sendMessageFlux = async (recommend = null) => {
+    if (isTyping.value) {
+        ElMessage.error('请等待回复完成。')
+        return
+    }
+    if (recommend) {
+        inputMessageText.value = recommend;
+    }
+    const chat = chats.value.find(c => c.id === currentChatId.value);
+    if (inputMessageText.value.trim() && chat) {
+        addMessage(chat, {
+            text: inputMessageText.value,
+            isUser: true
+        })
+        const inputTextCopy = inputMessageText.value;
+        inputMessageText.value = '';
+
+        const url = `${process.env.BASE_URL}/chat/chatFlux?id=${chat.id.toString()}&p=${inputPromptText.value}&q=${inputTextCopy}`;
+        let headers = {}
+        headers[process.env.TOKEN_KEY as string] = store.token()
+        const res: any = await fetch(url, {
+            method: 'GET',
+            headers,
+        });
+        const reader = res.body.getReader();
+        const decoder = new TextDecoder();
+        // eslint-disable-next-line no-constant-condition
+        while (1) {
+            // 读取数据流的第一块数据，done表示数据流是否完成，value表示当前的数
+            const {done, value} = await reader.read();
+            if (done) {
+                break
+            }
+            const text = decoder.decode(value);
+            console.log(text)
+        }
+    }
+};
+// 停止当前对话
 const messageStop = () => {
     if (axiosCancel) {
         axiosCancel.cancel();
@@ -220,14 +241,15 @@ const getCurrentTime = () => {
                     <div class="max-w-[80%]">
                         <!--                        对话回复-->
                         <div class="text-[12px] " v-format-time>{{ getCurrentTime() }}</div>
+
+                        <!--                            {{ message.text }}-->
                         <div
+                            v-html="message.text"
                             :class="[
                     'max-full p-3 rounded-lg transition-all duration-200',
                     message.isUser ? 'bg-blue-500 text-white' : 'bg-gray-200'
                   ]"
-                        >
-                            {{ message.text }}
-                        </div>
+                        ></div>
                         <!--                        推荐列表-->
                         <div v-if="(message?.recommend??[]).length > 0"
                              class="w-full flex justify-start items-center mt-1">

@@ -10,7 +10,7 @@ public class Constant {
     // HTTP请求头中的token字段名
     public static final String HEADER = "Authorization";
     // 访问白名单
-    public static final String[] URL_WHITELIST = {"/favicon.ico", "/user/login", "/user/register"};
+    public static final String[] URL_WHITELIST = {"/favicon.ico", "/user/login", "/user/register", "/chat/chatFlux"};
     // ai系统默认提示词
     public static final String AIDEFAULTSYSTEMPROMPT = """
             你叫小明。
@@ -26,12 +26,10 @@ public class Constant {
     // ai系统默认问答顾问提示词
     public static final String AIDEFAULTQUESTIONANSWERADVISORRPROMPT = """
             上下文信息在下面，用 --------------------- 包围。
-                                            
             ---------------------
             {question_answer_context}
             ---------------------
-                                            
-            鉴于上下文和提供的历史信息而非先验知识，回复用户。如果答案不在上下文中，则你自己回答这个问题并且在回答中不要提示没找到上下文信息。
+            鉴于上下文和提供的历史信息而非先验知识，回复用户。如果问题和上下文无关或者答案不在上下文中，则你自己回答这个问题并且在回答中不要提示没找到上下文信息。
             """;
     //设置返回的最相似结果的数量
     public static final int WITHTOPK = 1;
