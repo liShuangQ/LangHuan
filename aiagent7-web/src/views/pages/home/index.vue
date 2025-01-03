@@ -72,6 +72,25 @@ const sendMessage = (recommend = null) => {
                 p: inputPromptText.value,
                 q: inputTextCopy
             }
+        }).then((res) => {
+            res.data = JSON.parse(res.data)
+            if (res.code === 200) {
+                addMessage(chat,
+                    {
+                        text: res.data.desc,
+                        recommend: res.data.recommend,
+                        isUser: false
+                    }
+                )
+            } else {
+                addMessage(chat,
+                    {
+                        text: "回答出现错误，请换种方式提问。",
+                        recommend: [],
+                        isUser: false
+                    }
+                )
+            }
         }).catch(error => {
             if (error.code === "ERR_CANCELED") {
                 addMessage(chat,
