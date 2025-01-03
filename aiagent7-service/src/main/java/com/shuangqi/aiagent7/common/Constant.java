@@ -10,7 +10,7 @@ public class Constant {
     // HTTP请求头中的token字段名
     public static final String HEADER = "Authorization";
     // 访问白名单
-    public static final String[] URL_WHITELIST = {"/favicon.ico", "/user/login", "/user/register", "/chat/chatFlux"};
+    public static final String[] URL_WHITELIST = {"/favicon.ico", "/user/login", "/user/register"};
     // ai系统默认提示词
     public static final String AIDEFAULTSYSTEMPROMPT = """
             你叫小明。

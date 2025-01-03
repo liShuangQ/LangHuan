@@ -24,6 +24,7 @@ public class ChatController {
         return Result.success(chatService.chat(id, p, q));
     }
 
+//    NOTE:Flux<String>会和Security的拦截器冲突，所以要设置白名单  "/chat/chatFlux"
     @GetMapping("/chatFlux")
     public Flux<String>chatFlux(@RequestParam(name = "id", required = true) String id,
                              @RequestParam(name = "p", required = true, defaultValue = "请回答我的问题") String p,
