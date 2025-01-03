@@ -5,6 +5,9 @@ export default {
 </script>
 <script lang="ts" setup>
 import {http} from "@/plugins/axios";
+import axios, {CancelToken} from "axios";
+import {CancelTokenSource} from "axios/index";
+import {ElMessage} from "element-plus";
 
 const chats = ref<Chat[]>([
     {
@@ -18,6 +21,7 @@ const inputMessageText = ref<string>('');
 const inputPromptText = ref<string>('');
 const currentChatId = ref<number>(1);
 const isTyping = ref<boolean>(false);
+let axiosCancel: CancelTokenSource | null = null;
 
 // 添加滚动到最新的消息
 const toDownPage = () => {
@@ -28,46 +32,84 @@ const toDownPage = () => {
         }
     });
 };
+// 添加信息
+// HACK 跟随 interface Message  更改
+const addMessage = (chat: Chat, messageData: Message) => {
+    chat.messages.push({
+        id: Date.now(),
+        text: messageData.text,
+        recommend: messageData?.recommend ?? [],
+        isUser: messageData.isUser
+    });
+    isTyping.value = messageData.isUser
+    toDownPage()
+}
 // 发送信息
 const sendMessage = (recommend = null) => {
+    if (isTyping.value) {
+        ElMessage.error('请等待回复完成。')
+        return
+    }
     if (recommend) {
         inputMessageText.value = recommend;
     }
     const chat = chats.value.find(c => c.id === currentChatId.value);
     if (inputMessageText.value.trim() && chat) {
-        chat.messages.push({
-            id: Date.now(),
+        addMessage(chat, {
             text: inputMessageText.value,
             isUser: true
-        });
-        toDownPage()
+        })
         const inputTextCopy = inputMessageText.value;
         inputMessageText.value = '';
-        isTyping.value = true;
+        axiosCancel = axios.CancelToken.source();
         http.request<any>({
             url: '/chat/chat',
             method: 'get',
             q_spinning: false,
+            cancelToken: axiosCancel.token,
             params: {
                 id: chat.id,
                 p: inputPromptText.value,
                 q: inputTextCopy
             }
-        }).then((res: any) => {
-            // HACK 跟随 interface Message  更改
-            chat.messages.push({
-                id: Date.now(),
-                text: res.desc,
-                recommend: res.recommend,
-                isUser: false
-            });
-            isTyping.value = false;
-            toDownPage()
-        });
+        }).then((res) => {
+            res.data = JSON.parse(res.data)
+            if (res.code === 200) {
+                addMessage(chat,
+                    {
+                        text: res.data.desc,
+                        recommend: res.data.recommend,
+                        isUser: false
+                    }
+                )
+            } else {
+                addMessage(chat,
+                    {
+                        text: "回答出现错误，请换种方式提问。",
+                        recommend: [],
+                        isUser: false
+                    }
+                )
+            }
+        }).catch(error => {
+            if (error.code === "ERR_CANCELED") {
+                addMessage(chat,
+                    {
+                        text: "请求已取消。",
+                        recommend: [],
+                        isUser: false
+                    }
+                )
+            }
+        })
 
-        toDownPage()
     }
 };
+const messageStop = () => {
+    if (axiosCancel) {
+        axiosCancel.cancel();
+    }
+}
 // 清空对话记忆
 const clearMemory = (isList = false, id = 0) => {
     const chat = chats.value.find(c => c.id === currentChatId.value);
@@ -101,7 +143,7 @@ const clearMessage = () => {
     if (chat) {
         chat.messages = [];
     }
-    ElMessage.success('已成功清空聊天记录');
+    ElMessage.success('已成功清空聊天记录。');
 }
 // 开始一个新的对话
 const startNewChat = () => {
@@ -255,13 +297,20 @@ const getCurrentTime = () => {
                 >
                     <template #append>
                         <el-button
+                            v-show="!isTyping"
                             @click="sendMessage()"
                             class="!px-6 !py-3 !bg-blue-500 !text-white hover:!bg-blue-600 active:!bg-blue-700 transition-colors duration-200 flex items-center justify-center gap-2"
                             style="height: 100%"
                         >
-                            <span class="font-medium">Send</span>
-                            <el-icon class="text-lg">
-                            </el-icon>
+                            <span class="font-medium">发送</span>
+                        </el-button>
+                        <el-button
+                            v-show="isTyping"
+                            @click="messageStop()"
+                            class="!px-6 !py-3 !bg-blue-500 !text-white hover:!bg-blue-600 active:!bg-blue-700 transition-colors duration-200 flex items-center justify-center gap-2"
+                            style="height: 100%"
+                        >
+                            <span class="font-medium">停止</span>
                         </el-button>
                     </template>
                 </el-input>

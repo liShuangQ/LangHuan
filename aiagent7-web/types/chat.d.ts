@@ -1,5 +1,5 @@
 interface Message {
-    id: number;
+    id?: number;
     text: string;
     recommend?: Array<String>,
     isUser: boolean;

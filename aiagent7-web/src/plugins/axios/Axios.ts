@@ -131,7 +131,10 @@ export default class Axios {
             },
             (error) => {
                 this.loadingInstance && this.loadingInstance.close()
-                ElMessage.error('请求失败，请联系管理员。')
+                console.log(error)
+                if (!(error.code === "ERR_CANCELED")) {
+                    ElMessage.error('请求失败，请联系管理员。')
+                }
                 // 超出 2xx 范围的状态码都会触发该函数。
                 // switch (error.response.status) {
                 // case 'Throttling':

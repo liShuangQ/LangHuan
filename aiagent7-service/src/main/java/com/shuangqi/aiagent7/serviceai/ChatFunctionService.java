@@ -2,25 +2,16 @@ package com.shuangqi.aiagent7.serviceai;
 
 import com.shuangqi.aiagent7.advisors.MySimplelogAdvisor;
 import com.shuangqi.aiagent7.common.Constant;
-import com.shuangqi.aiagent7.config.AiFunctionConfig;
 import com.shuangqi.aiagent7.functions.DeviceDemoMethod;
-import com.shuangqi.aiagent7.functions.MockWeatherService;
-import com.shuangqi.aiagent7.functions.SearchLocationNameFunction;
-import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.SafeGuardAdvisor;
 import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.model.ToolContext;
 import org.springframework.ai.model.function.FunctionCallback;
-import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ConfigurationClassPostProcessor;
-import org.springframework.core.type.AnnotationMetadata;
-import org.springframework.core.type.StandardAnnotationMetadata;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
 import java.util.Map;
 
 @Slf4j
@@ -74,37 +65,6 @@ public class ChatFunctionService {
     }
 
 
-    public String searchLocationNameFunction() {
-        return this.chatClient.prompt()
-                .user("辽宁有几个叫黄晓明的人？")
-                .functions(FunctionCallback.builder()
-                        .description("地市中有多少个姓名相同的人")
-                        .function("SearchLocationNameFunction", new SearchLocationNameFunction())
-                        .inputType(SearchLocationNameFunction.Request.class)
-                        .build())
-//                .functions("deviceFunction")
-                .toolContext(Map.of("id", "1"))
-                .call()
-                .content();
-
-    }
-
-
-    public String mockWeatherService() {
-        return this.chatClient.prompt()
-                .user("What's the weather like in San Francisco, Tokyo, and Paris?")
-                .functions(FunctionCallback.builder()
-                        .description("Get the weather in location")
-                        .function("MockWeatherService", new MockWeatherService())
-                        .inputType(MockWeatherService.Request.class)
-                        .build())
-                .toolContext(Map.of("id", "1"))
-                .call()
-                .content();
-
-    }
-
-
     public String readFile(String prompt) {
 
         return this.chatClient.prompt()
@@ -114,7 +74,6 @@ public class ChatFunctionService {
                 .call()
                 .content();
     }
-
 
 
 }

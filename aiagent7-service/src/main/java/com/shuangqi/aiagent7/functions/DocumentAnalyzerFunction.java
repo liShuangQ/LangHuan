@@ -23,10 +23,14 @@ public class DocumentAnalyzerFunction implements BiFunction<DocumentAnalyzerFunc
     @SneakyThrows
 
     public Response apply(Request request, ToolContext context) {
+        log.debug("DocumentAnalyzerFunction request.path: {}", request.path);
         // ai解析用户的提问得到path参数，使用tika读取本地文件获取内容。把读取到的内容再返回给ai作为上下文去回答用户的问题。
-        TikaDocumentReader tikaDocumentReader = new TikaDocumentReader(new FileSystemResource(request.path));
-        System.out.println(tikaDocumentReader.read().get(0).getContent());
-        return new Response(tikaDocumentReader.read().get(0).getContent());
+        try {
+            TikaDocumentReader tikaDocumentReader = new TikaDocumentReader(new FileSystemResource(request.path));
+            return new Response(tikaDocumentReader.read().get(0).getContent());
+        } catch (Exception e) {
+            return new Response("解析文件失败");
+        }
     }
 
     /**

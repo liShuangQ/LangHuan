@@ -1,6 +1,7 @@
 package com.shuangqi.aiagent7.serviceai;
 
 import com.shuangqi.aiagent7.advisors.MySimplelogAdvisor;
+import com.shuangqi.aiagent7.common.BusinessException;
 import com.shuangqi.aiagent7.common.Constant;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
@@ -12,6 +13,9 @@ import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
+
+import java.util.Arrays;
+import java.util.function.BiFunction;
 
 import static org.springframework.ai.chat.client.advisor.AbstractChatMemoryAdvisor.CHAT_MEMORY_CONVERSATION_ID_KEY;
 import static org.springframework.ai.chat.client.advisor.AbstractChatMemoryAdvisor.CHAT_MEMORY_RETRIEVE_SIZE_KEY;
@@ -51,7 +55,11 @@ public class ChatService {
                         new SafeGuardAdvisor(Constant.AIDEFAULTSAFEGUARDADVISOR),
                         new MySimplelogAdvisor()
                 )
-//                .defaultFunctions(applicationContext.getBeanNamesForType(BiFunction.class))
+                .defaultFunctions(
+                        Arrays.stream(applicationContext.getBeanNamesForType(BiFunction.class))
+                                .filter(name -> name.startsWith("chat_"))
+                                .toArray(String[]::new)
+                )
                 .build();
     }
 
@@ -60,13 +68,18 @@ public class ChatService {
     }
 
     public String chat(String id, String p, String q) {
-        return this.getRoleChatClient().prompt(p)
-                .user(q)
-                .advisors(
-                        a -> a
-                                .param(CHAT_MEMORY_CONVERSATION_ID_KEY, id)
-                                .param(CHAT_MEMORY_RETRIEVE_SIZE_KEY, chatMemoryRetrieveSizeKey)
-                ).call().chatResponse().getResult().getOutput().getContent();
+        try {
+            return this.getRoleChatClient().prompt(p)
+                    .user(q)
+                    .advisors(
+                            a -> a
+                                    .param(CHAT_MEMORY_CONVERSATION_ID_KEY, id)
+                                    .param(CHAT_MEMORY_RETRIEVE_SIZE_KEY, chatMemoryRetrieveSizeKey)
+                    ).call().chatResponse().getResult().getOutput().getContent();
+        }catch (Exception e){
+            log.error("advisor-error: {}", e.getMessage());
+            throw new BusinessException("抱歉，我暂时无法回答这个问题。");
+        }
     }
 
 

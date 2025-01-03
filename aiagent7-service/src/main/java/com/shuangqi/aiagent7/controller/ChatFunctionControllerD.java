@@ -26,17 +26,6 @@ public class ChatFunctionControllerD {
         return chatFunctionService.setDeviceStatusMethod(q);
     }
 
-    @GetMapping("/searchLocationNameFunction")
-    public String searchLocationNameFunction() {
-        return chatFunctionService.searchLocationNameFunction();
-    }
-
-
-    @GetMapping("/mockWeatherService")
-    public String mockWeatherService() {
-        return chatFunctionService.mockWeatherService();
-    }
-
 
     @GetMapping(value = "/readFile", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public String readFile(@RequestParam String p) {

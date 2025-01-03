@@ -23,6 +23,7 @@ public class Constant {
             """;
     // ai系统默认安全顾问
     public static final List<String> AIDEFAULTSAFEGUARDADVISOR = List.of();
+    // ai系统默认问答顾问提示词
     public static final String AIDEFAULTQUESTIONANSWERADVISORRPROMPT = """
             上下文信息在下面，用 --------------------- 包围。
                                             
