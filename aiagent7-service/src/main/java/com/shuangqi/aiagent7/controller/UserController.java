@@ -13,6 +13,10 @@ import org.springframework.security.web.authentication.logout.SecurityContextLog
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.stream.Collectors;
+
 @RestController
 @RequestMapping(path = "/user")
 public class UserController {
@@ -67,6 +71,30 @@ public class UserController {
         }
         return Result.success("删除成功");
     }
+
+    @PostMapping("/getUserRoles")
+    public Result getUserRoles(@RequestParam(name = "id", required = false) Integer id) {
+        return Result.success(userService.getUserRoles(id));
+    }
+
+    @PostMapping("/relevancyRoles")
+    public Result relevancyRoles(
+            @RequestParam(name = "id", required = true) Integer id,
+            @RequestParam(name = "roleIds", required = true) String roleIds
+    ) {
+        try {
+            if (roleIds.isEmpty()) {
+                userService.relevancyRoles(id, new ArrayList<>());
+            } else {
+                String[] strings = roleIds.split(",");
+                userService.relevancyRoles(id, Arrays.stream(strings).map(Integer::parseInt).collect(Collectors.toList()));
+            }
+        } catch (Exception e) {
+            return Result.error("角色id格式错误");
+        }
+        return Result.success("操作成功");
+    }
+
 
     //@PreAuthorize配合@EnableGlobalMethodSecurity(prePostEnabled = true)使用
     //@PreAuthorize("hasAuthority('/user/list')")

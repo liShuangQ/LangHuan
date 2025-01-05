@@ -7,8 +7,13 @@ import com.shuangqi.aiagent7.model.domain.TRole;
 import com.shuangqi.aiagent7.model.domain.TRolePermission;
 import com.shuangqi.aiagent7.model.domain.TUserRole;
 import com.shuangqi.aiagent7.model.mapper.TRoleMapper;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author lishuangqi
@@ -19,10 +24,12 @@ import org.springframework.transaction.annotation.Transactional;
 public class RoleService extends ServiceImpl<TRoleMapper, TRole> {
     private final RolePermissionService rolePermissionService;
     private final UserRoleService userRoleService;
+    private final JdbcTemplate dao;
 
-    public RoleService(RolePermissionService rolePermissionService, UserRoleService userRoleService) {
+    public RoleService(RolePermissionService rolePermissionService, UserRoleService userRoleService, JdbcTemplate dao) {
         this.rolePermissionService = rolePermissionService;
         this.userRoleService = userRoleService;
+        this.dao = dao;
     }
 
     public Boolean add(TRole role) {
@@ -49,6 +56,43 @@ public class RoleService extends ServiceImpl<TRoleMapper, TRole> {
                         .like(!name.isEmpty(), TRole::getName, name)
                         .like(!remark.isEmpty(), TRole::getRemark, remark)
         );
+    }
+
+    public List<Map<String, Object>> getRolePermission(Integer roleId) {
+        StringBuilder sql = new StringBuilder();
+        if (roleId != null) {
+            sql.append("""
+                    select
+                        p.id as permission_id,
+                        p.name as permission_name
+                    from t_role_permission rp
+                             left join t_role r on rp.role_id = r.id
+                             left join t_permission p on rp.permission_id = p.id
+                    where 1 = 1
+                    and r.id = ?
+                    """);
+            return dao.queryForList(sql.toString(), List.of(roleId).toArray());
+        } else {
+            sql.append("""
+                        select  p.id as permission_id,
+                                p.name as permission_name
+                        from t_permission p
+                    """);
+            return dao.queryForList(sql.toString());
+        }
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public void relevancyPermissions(Integer roleId, List<Integer> permissionIds) {
+        rolePermissionService.remove(new LambdaQueryWrapper<TRolePermission>().eq(TRolePermission::getRoleId, roleId));
+        List<TRolePermission> rolePermissions = new ArrayList<>();
+        permissionIds.forEach(permissionId -> {
+            TRolePermission rolePermission = new TRolePermission();
+            rolePermission.setRoleId(roleId);
+            rolePermission.setPermissionId(permissionId);
+            rolePermissions.add(rolePermission);
+        });
+        rolePermissionService.saveBatch(rolePermissions);
     }
 }
 

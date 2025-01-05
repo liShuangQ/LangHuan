@@ -132,8 +132,6 @@ export default class Axios {
             (response: AxiosResponse<any, any>) => {
                 this.loadingInstance && this.loadingInstance.close();
 
-                console.log(response.data,'12312312312');
-
                 if ([500, 555].includes(response.data.code)) {
                     ElMessage.error(response.data?.message ?? "请求失败。");
                 }

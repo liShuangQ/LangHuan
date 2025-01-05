@@ -15,6 +15,7 @@ import com.shuangqi.aiagent7.model.mapper.TUserMapper;
 import com.shuangqi.aiagent7.utils.JwtUtil;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -40,14 +41,16 @@ public class UserService extends ServiceImpl<TUserMapper, TUser> {
     // 权限服务，用于执行权限相关的数据库操作
     private final PermissionService permissionService;
     private final JwtUtil jwtUtil;
+    private final JdbcTemplate dao;
 
     // 构造方法，注入必要的服务和映射器
-    public UserService(TUserMapper mapper, UserRoleService userRoleService, RolePermissionService rolePermissionService, PermissionService permissionService, JwtUtil jwtUtil) {
+    public UserService(TUserMapper mapper, UserRoleService userRoleService, RolePermissionService rolePermissionService, PermissionService permissionService, JwtUtil jwtUtil, JdbcTemplate dao) {
         this.mapper = mapper;
         this.userRoleService = userRoleService;
         this.rolePermissionService = rolePermissionService;
         this.permissionService = permissionService;
         this.jwtUtil = jwtUtil;
+        this.dao = dao;
     }
 
     /**
@@ -180,5 +183,41 @@ public class UserService extends ServiceImpl<TUserMapper, TUser> {
             record.setPassword(null);
         }
         return userPage;
+    }
+
+    public List<Map<String, Object>> getUserRoles(Integer userId) {
+        StringBuilder sql = new StringBuilder();
+        if (userId != null) {
+            sql.append("""
+                    select
+                        r.id as role_id,
+                        r.name as role_name
+                    from t_user_role ur
+                             left join t_user u on ur.user_id = u.id
+                             left join t_role r on ur.role_id = r.id
+                    where 1 = 1
+                    and u.id = ?
+                    """);
+            return dao.queryForList(sql.toString(), List.of(userId).toArray());
+        } else {
+            sql.append("""
+                        select r.id as role_id, r.name as role_name
+                        from t_role r;
+                    """);
+            return dao.queryForList(sql.toString());
+        }
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public void relevancyRoles(Integer userId, List<Integer> roleIds) {
+        userRoleService.remove(new LambdaQueryWrapper<TUserRole>().eq(TUserRole::getUserId, userId));
+        List<TUserRole> userRoles = new ArrayList<>();
+        roleIds.forEach(roleId -> {
+            TUserRole userRole = new TUserRole();
+            userRole.setUserId(userId);
+            userRole.setRoleId(roleId);
+            userRoles.add(userRole);
+        });
+        userRoleService.saveBatch(userRoles);
     }
 }

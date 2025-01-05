@@ -19,8 +19,8 @@
             <ElementTableC ref="tableComRef" :paginationConfig="paginationConfig" :tableColumnConfig="tableColumnConfig"
                 :tableConfig="tableConfig" :tableData="tableData" @handle="tableHandle">
                 <template #content-buttonSlot="props">
-                    <el-button type="text" @click="addAndChangeFormShowFun('change', props.row)">修改</el-button>
-                    <el-button type="text" @click="addAndChangeFormShowFun('delete', props.row)">删除</el-button>
+                    <el-button link type="primary" @click="addAndChangeFormShowFun('change', props.row)">修改</el-button>
+                    <el-button link type="primary" @click="addAndChangeFormShowFun('delete', props.row)">删除</el-button>
                     <!--                    <div m="4">-->
                     <!--                        <p m="t-0 b-2">State: state</p>-->
                     <!--                        <p m="t-0 b-2">City: city</p>-->
@@ -43,6 +43,7 @@
                 </div>
             </template>
         </el-dialog>
+
     </div>
 
 </template>
@@ -147,20 +148,38 @@ const addAndChangeFormShowFun = (t: string, d: any = null) => {
         })
     }
     if (t === 'delete') {
-        http.request<any>({
-            url: "/permission/delete",
-            method: 'post',
-            q_spinning: true,
-            q_contentType: 'form',
-            data: {
-                id: d.id
-            },
-        }).then(res => {
-            if (res.code === 200) {
-                ElMessage.success('操作成功')
-                getUserPageList()
+        ElMessageBox.confirm(
+            '确认删除?',
+            '通知',
+            {
+                confirmButtonText: '确定',
+                cancelButtonText: '返回',
+                type: 'warning',
             }
-        })
+        )
+            .then(() => {
+                http.request<any>({
+                    url: "/permission/delete",
+                    method: 'post',
+                    q_spinning: true,
+                    q_contentType: 'form',
+                    data: {
+                        id: d.id
+                    },
+                }).then(res => {
+                    if (res.code === 200) {
+                        ElMessage.success('操作成功')
+                        getUserPageList()
+                    }
+                })
+            })
+            .catch(() => {
+                ElMessage({
+                    type: 'info',
+                    message: '取消删除',
+                })
+            })
+
     }
     if (t === 'save') {
         let url = ''

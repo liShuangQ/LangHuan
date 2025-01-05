@@ -19,12 +19,9 @@
             <ElementTableC ref="tableComRef" :paginationConfig="paginationConfig" :tableColumnConfig="tableColumnConfig"
                 :tableConfig="tableConfig" :tableData="tableData" @handle="tableHandle">
                 <template #content-buttonSlot="props">
-                    <el-button type="text" @click="addAndChangeFormShowFun('change', props.row)">修改</el-button>
-                    <el-button type="text" @click="addAndChangeFormShowFun('delete', props.row)">删除</el-button>
-                    <!--                    <div m="4">-->
-                    <!--                        <p m="t-0 b-2">State: state</p>-->
-                    <!--                        <p m="t-0 b-2">City: city</p>-->
-                    <!--                    </div>-->
+                    <el-button link type="primary" @click="addAndChangeFormShowFun('change', props.row)">修改</el-button>
+                    <el-button link type="primary" @click="addAndChangeFormShowFun('delete', props.row)">删除</el-button>
+                    <el-button link type="primary" @click="addAndChangeFormShowFun('role', props.row)">关联角色</el-button>
                 </template>
             </ElementTableC>
         </div>
@@ -43,6 +40,26 @@
                 </div>
             </template>
         </el-dialog>
+
+
+        <el-dialog v-model="relevancyVisible" :title="addAndChangeFormDialogTit" width="800">
+            <el-checkbox v-model="checkAll" :indeterminate="isIndeterminate" @change="handleCheckAllChange">
+                Check all
+            </el-checkbox>
+            <el-checkbox-group v-model="checkedRoles" @change="handleCheckedCitiesChange">
+                <el-checkbox v-for="item in roles" :key="item.role_id" :label="item.role_id" :value="item.role_id">
+                    {{ item.role_name }}
+                </el-checkbox>
+            </el-checkbox-group>
+            <template #footer>
+                <div class="dialog-footer">
+                    <el-button @click="relevancyShowFun('close')">取消</el-button>
+                    <el-button type="primary" @click="relevancyShowFun('save')">
+                        确定
+                    </el-button>
+                </div>
+            </template>
+        </el-dialog>
     </div>
 
 </template>
@@ -55,9 +72,7 @@ export default {
 import { http } from "@/plugins/axios";
 import { TableDefineExpose } from "@/components/globalComponents/ElementTableC/table-component";
 import {
-    FormConfig,
     FormDefineExpose,
-    FormItemConfig,
 } from "@/components/globalComponents/ElementFormC/form-component";
 import { formConfig, formItemConfig } from "./formConfig";
 import {
@@ -66,12 +81,12 @@ import {
     tableConfig,
     tableData,
 } from "./tableConfig";
-import { ElMessageBox } from "element-plus";
 import {
     addAndChangeFormConfig,
     addAndChangeFormItemConfig
 } from "./addAndChangeformConfig";
 import dayjs from "dayjs";
+import { CheckboxValueType, ElMessageBox } from "element-plus";
 
 const formComRef = ref<FormDefineExpose>();
 const tableComRef = ref<TableDefineExpose>();
@@ -115,7 +130,13 @@ nextTick(() => {
 const addAndChangeFormComRef = ref<FormDefineExpose>();
 let addAndChangeFormVisible = ref(false)
 let addAndChangeFormDialogTit = ref("")
-const addAndChangeFormShowFun = (t: string, d: any = null) => {
+let relevancyVisible = ref(false)
+const checkAll = ref(false)
+const isIndeterminate = ref(true)
+const checkedRoles = ref<string[]>([])
+const roles = ref<{ role_name: string, role_id: string }[]>([])
+let nowUser: any = null;
+const addAndChangeFormShowFun = async (t: string, d: any = null) => {
     if (t === 'add') {
         addAndChangeFormDialogTit.value = '新增用户信息'
         addAndChangeFormVisible.value = true
@@ -153,19 +174,69 @@ const addAndChangeFormShowFun = (t: string, d: any = null) => {
         })
     }
     if (t === 'delete') {
-        http.request<any>({
-            url: "/user/delete",
-            method: 'post',
-            q_spinning: true,
-            q_contentType: 'form',
-            data: {
-                id: d.id
-            },
-        }).then(res => {
-            if (res.code === 200) {
-                ElMessage.success('操作成功')
-                getUserPageList()
+        ElMessageBox.confirm(
+            '确认删除?',
+            '通知',
+            {
+                confirmButtonText: '确定',
+                cancelButtonText: '返回',
+                type: 'warning',
             }
+        )
+            .then(() => {
+                http.request<any>({
+                    url: "/user/delete",
+                    method: 'post',
+                    q_spinning: true,
+                    q_contentType: 'form',
+                    data: {
+                        id: d.id
+                    },
+                }).then(res => {
+                    if (res.code === 200) {
+                        ElMessage.success('操作成功')
+                        getUserPageList()
+                    }
+                })
+            })
+            .catch(() => {
+                ElMessage({
+                    type: 'info',
+                    message: '取消删除',
+                })
+            })
+    }
+    if (t === 'role') {
+        nowUser = d
+        relevancyVisible.value = true
+        checkedRoles.value = []
+        roles.value = []
+        await nextTick(async () => {
+            await http.request<any>({
+                url: '/user/getUserRoles',
+                method: 'post',
+                q_spinning: true,
+                q_contentType: 'form',
+                data: {},
+            }).then(res => {
+                if (res.code === 200) {
+                    roles.value = res.data
+                }
+            })
+            await http.request<any>({
+                url: '/user/getUserRoles',
+                method: 'post',
+                q_spinning: true,
+                q_contentType: 'form',
+                data: {
+                    id: d.id
+                },
+            }).then(res => {
+                if (res.code === 200) {
+                    checkedRoles.value = res.data.map((e: any) => e.role_id)
+                }
+            })
+            handleCheckedCitiesChange(checkedRoles.value)
         })
     }
     if (t === 'save') {
@@ -191,8 +262,6 @@ const addAndChangeFormShowFun = (t: string, d: any = null) => {
                         ElMessage.success('操作成功')
                         addAndChangeFormVisible.value = false
                         getUserPageList()
-                    } else {
-                        ElMessage.error(res.message)
                     }
                 })
             })
@@ -208,6 +277,39 @@ const addAndChangeFormShowFun = (t: string, d: any = null) => {
     if (t === 'close') {
         addAndChangeFormDialogTit.value = ''
         addAndChangeFormVisible.value = false
+    }
+}
+
+const handleCheckAllChange = (val: boolean | CheckboxValueType) => {
+    checkedRoles.value = val ? roles.value.map(e => e.role_id) : []
+    isIndeterminate.value = false
+}
+const handleCheckedCitiesChange = (value: string[] | CheckboxValueType[]) => {
+    const checkedCount = value.length
+    checkAll.value = checkedCount === roles.value.length
+    isIndeterminate.value = checkedCount > 0 && checkedCount < roles.value.length
+}
+const relevancyShowFun = (t: string, d: any = null) => {
+    if (t === 'save') {
+        http.request<any>({
+            url: '/user/relevancyRoles',
+            method: 'post',
+            q_spinning: true,
+            q_contentType: 'form',
+            data: {
+                id: nowUser.id,
+                roleIds: checkedRoles.value.join(',')
+            },
+        }).then(res => {
+            if (res.code === 200) {
+                relevancyVisible.value = false
+                ElMessage.success("操作成功")
+            }
+        })
+
+    }
+    if (t === 'close') {
+        relevancyVisible.value = false
     }
 }
 </script>
