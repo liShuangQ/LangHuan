@@ -38,17 +38,19 @@ public class UserService extends ServiceImpl<TUserMapper, TUser> {
     private final UserRoleService userRoleService;
     // 角色权限服务，用于处理角色和权限之间的关系
     private final RolePermissionService rolePermissionService;
+    private final RoleService roleService;
     // 权限服务，用于执行权限相关的数据库操作
     private final PermissionService permissionService;
     private final JwtUtil jwtUtil;
     private final JdbcTemplate dao;
 
     // 构造方法，注入必要的服务和映射器
-    public UserService(TUserMapper mapper, UserRoleService userRoleService, RolePermissionService rolePermissionService, PermissionService permissionService, JwtUtil jwtUtil, JdbcTemplate dao) {
+    public UserService(TUserMapper mapper, UserRoleService userRoleService, RolePermissionService rolePermissionService, PermissionService permissionService, RoleService roleService, JwtUtil jwtUtil, JdbcTemplate dao) {
         this.mapper = mapper;
         this.userRoleService = userRoleService;
         this.rolePermissionService = rolePermissionService;
         this.permissionService = permissionService;
+        this.roleService = roleService;
         this.jwtUtil = jwtUtil;
         this.dao = dao;
     }
@@ -150,11 +152,20 @@ public class UserService extends ServiceImpl<TUserMapper, TUser> {
         return map;
     }
 
-    public TUser getUserInfoByToken() {
+    public Map<String, Object> getUserInfoByToken() {
+        Map<String, Object> map = new HashMap<>();
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         TUser user = super.getOne(new LambdaQueryWrapper<TUser>().eq(TUser::getUsername, auth.getName()));
         user.setPassword(null);
-        return user;
+        map.put("user", user);
+        map.put("permission", auth.getAuthorities());
+        map.put("role", dao.queryForList("""
+                select r.* from t_user u
+                left join t_user_role ur on u.id = ur.user_id
+                left join t_role r on ur.role_id = r.id
+                where u.id = ?
+                """, List.of(user.getId()).toArray()));
+        return map;
     }
 
     //数据库事务 出现异常回滚
