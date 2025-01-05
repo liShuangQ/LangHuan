@@ -137,7 +137,7 @@ const checkAll = ref(false)
 const isIndeterminate = ref(true)
 const checkedPermissions = ref<string[]>([])
 const permissions = ref<{ permission_name: string, permission_id: string }[]>([])
-let nowUser: any = null;
+let nowRole: any = null;
 const addAndChangeFormShowFun = async (t: string, d: any = null) => {
     if (t === 'add') {
         addAndChangeFormDialogTit.value = '新增角色信息'
@@ -210,7 +210,7 @@ const addAndChangeFormShowFun = async (t: string, d: any = null) => {
 
     }
     if (t === 'permission') {
-        nowUser = d
+        nowRole = d
         relevancyVisible.value = true
         checkedPermissions.value = []
         permissions.value = []
@@ -302,7 +302,7 @@ const relevancyShowFun = (t: string, d: any = null) => {
             q_spinning: true,
             q_contentType: 'form',
             data: {
-                id: nowUser.id,
+                id: nowRole.id,
                 permissionIds: checkedPermissions.value.join(',')
             },
         }).then(res => {
