@@ -4,16 +4,12 @@ CREATE TABLE t_permission
     id        SERIAL PRIMARY KEY,
     name      VARCHAR(255) NOT NULL,
     url       VARCHAR(255) NOT NULL,
-    method    SMALLINT     NOT NULL DEFAULT 0,
-    service   VARCHAR(255) NOT NULL DEFAULT '',
     parent_id INT          NOT NULL DEFAULT 0
 );
 
 COMMENT ON TABLE t_permission IS '系统权限表';
 COMMENT ON COLUMN t_permission.name IS '名称';
-COMMENT ON COLUMN t_permission.url IS '接口路径';
-COMMENT ON COLUMN t_permission.method IS '请求方式（0-get；1-post）';
-COMMENT ON COLUMN t_permission.service IS '服务名';
+COMMENT ON COLUMN t_permission.url IS '权限标识';
 COMMENT ON COLUMN t_permission.parent_id IS '父级权限id';
 
 DROP TABLE IF EXISTS t_role;

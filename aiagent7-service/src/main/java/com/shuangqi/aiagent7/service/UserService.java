@@ -19,6 +19,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -151,6 +152,20 @@ public class UserService extends ServiceImpl<TUserMapper, TUser> {
         TUser user = super.getOne(new LambdaQueryWrapper<TUser>().eq(TUser::getUsername, auth.getName()));
         user.setPassword(null);
         return user;
+    }
+
+    //数据库事务 出现异常回滚
+    @Transactional(rollbackFor = Exception.class)
+    public Boolean delete(Integer userId) {
+        TUser user = super.getById(userId);
+        if (user == null) {
+            throw new BusinessException("用户不存在");
+        }
+        if (user.getId().equals(1)) {
+            throw new BusinessException("超级管理员不能删除");
+        }
+        userRoleService.remove(new LambdaQueryWrapper<TUserRole>().eq(TUserRole::getUserId, userId));
+        return super.removeById(userId);
     }
 
     public Page<TUser> getUserPageList(String name, String username, Integer gender, Integer enabled, int currentPage, int pageSize) {

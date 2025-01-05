@@ -29,6 +29,16 @@ const menu: PagesMenu[] = [
                 path: "/pages/systemManagement/user",
                 faPath: ["user"],
             },
+            {
+                title: "角色管理",
+                path: "/pages/systemManagement/role",
+                faPath: ["user"],
+            },
+            {
+                title: "权限管理",
+                path: "/pages/systemManagement/permission",
+                faPath: ["user"],
+            },
         ],
     },
     {

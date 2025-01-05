@@ -30,16 +30,6 @@ public class TPermission implements Serializable {
     private String url;
 
     /**
-     * 请求方式（0-get；1-post）
-     */
-    private Integer method;
-
-    /**
-     * 服务名
-     */
-    private String service;
-
-    /**
      * 父级权限id
      */
     private Integer parentId;
@@ -62,8 +52,6 @@ public class TPermission implements Serializable {
         return (this.getId() == null ? other.getId() == null : this.getId().equals(other.getId()))
             && (this.getName() == null ? other.getName() == null : this.getName().equals(other.getName()))
             && (this.getUrl() == null ? other.getUrl() == null : this.getUrl().equals(other.getUrl()))
-            && (this.getMethod() == null ? other.getMethod() == null : this.getMethod().equals(other.getMethod()))
-            && (this.getService() == null ? other.getService() == null : this.getService().equals(other.getService()))
             && (this.getParentId() == null ? other.getParentId() == null : this.getParentId().equals(other.getParentId()));
     }
 
@@ -74,8 +62,6 @@ public class TPermission implements Serializable {
         result = prime * result + ((getId() == null) ? 0 : getId().hashCode());
         result = prime * result + ((getName() == null) ? 0 : getName().hashCode());
         result = prime * result + ((getUrl() == null) ? 0 : getUrl().hashCode());
-        result = prime * result + ((getMethod() == null) ? 0 : getMethod().hashCode());
-        result = prime * result + ((getService() == null) ? 0 : getService().hashCode());
         result = prime * result + ((getParentId() == null) ? 0 : getParentId().hashCode());
         return result;
     }
@@ -89,8 +75,6 @@ public class TPermission implements Serializable {
         sb.append(", id=").append(id);
         sb.append(", name=").append(name);
         sb.append(", url=").append(url);
-        sb.append(", method=").append(method);
-        sb.append(", service=").append(service);
         sb.append(", parentId=").append(parentId);
         sb.append(", serialVersionUID=").append(serialVersionUID);
         sb.append("]");

@@ -2,7 +2,7 @@
 
     <div class="box-border p-3 bg-white">
         <div class="mb-2">
-            <el-button type="primary" @click="addAndChangeFormShowFun('add')">注册</el-button>
+            <el-button type="primary" @click="addAndChangeFormShowFun('add')">新增</el-button>
         </div>
         <div class="ml-1">
             <ElementFormC ref="formComRef" :formConfig="formConfig" :formItemConfig="formItemConfig"
@@ -66,12 +66,10 @@ import {
     tableConfig,
     tableData,
 } from "./tableConfig";
-import { ElMessageBox } from "element-plus";
 import {
     addAndChangeFormConfig,
     addAndChangeFormItemConfig
 } from "./addAndChangeformConfig";
-import dayjs from "dayjs";
 
 const formComRef = ref<FormDefineExpose>();
 const tableComRef = ref<TableDefineExpose>();
@@ -89,7 +87,7 @@ const tableHandle = (t: string, d: any, key: string) => {
 
 const getUserPageList = () => {
     http.request<any>({
-        url: '/user/getUserPageList',
+        url: '/permission/getPageList',
         method: 'post',
         q_spinning: true,
         data: {
@@ -98,10 +96,6 @@ const getUserPageList = () => {
             pageSize: 10,
         },
     }).then(res => {
-        res.data.records.forEach((e: any) => {
-            e.formatCreationTime = dayjs(e.creationTime).format('YYYY-MM-DD HH:mm:ss')
-            e.formatLastLoginTime = dayjs(e.lastLoginTime).format('YYYY-MM-DD HH:mm:ss')
-        })
         tableData.value = res.data.records;
         paginationConfig.value.total = res.data.total;
     }).catch(err => {
@@ -117,7 +111,7 @@ let addAndChangeFormVisible = ref(false)
 let addAndChangeFormDialogTit = ref("")
 const addAndChangeFormShowFun = (t: string, d: any = null) => {
     if (t === 'add') {
-        addAndChangeFormDialogTit.value = '新增用户信息'
+        addAndChangeFormDialogTit.value = '新增角色信息'
         addAndChangeFormVisible.value = true
         nextTick(() => {
             addAndChangeFormComRef.value!.resetForm()
@@ -130,7 +124,7 @@ const addAndChangeFormShowFun = (t: string, d: any = null) => {
         })
     }
     if (t === 'change') {
-        addAndChangeFormDialogTit.value = '修改用户信息'
+        addAndChangeFormDialogTit.value = '修改角色信息'
         addAndChangeFormVisible.value = true
         nextTick(() => {
             addAndChangeFormComRef.value!.resetForm()
@@ -154,7 +148,7 @@ const addAndChangeFormShowFun = (t: string, d: any = null) => {
     }
     if (t === 'delete') {
         http.request<any>({
-            url: "/user/delete",
+            url: "/permission/delete",
             method: 'post',
             q_spinning: true,
             q_contentType: 'form',
@@ -170,11 +164,11 @@ const addAndChangeFormShowFun = (t: string, d: any = null) => {
     }
     if (t === 'save') {
         let url = ''
-        if (addAndChangeFormDialogTit.value === '新增用户信息') {
-            url = '/user/register'
+        if (addAndChangeFormDialogTit.value === '新增角色信息') {
+            url = '/permission/add'
         }
-        if (addAndChangeFormDialogTit.value === '修改用户信息') {
-            url = '/user/change'
+        if (addAndChangeFormDialogTit.value === '修改角色信息') {
+            url = '/permission/change'
         }
         addAndChangeFormComRef
             .value!.submitForm()

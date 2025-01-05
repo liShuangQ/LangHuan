@@ -1,26 +1,24 @@
-import axios, {AxiosInstance, AxiosRequestConfig, AxiosResponse} from "axios";
-import {ElLoading, ElMessage} from "element-plus";
-import qs from 'qs'
-import {store} from "@/utils";
-
+import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
+import { ElLoading, ElMessage } from "element-plus";
+import qs from "qs";
+import { store } from "@/utils";
 
 export interface MyAxiosRequestConfig extends AxiosRequestConfig {
     /**
      * 是否节流
      */
-    q_throttle?: boolean
+    q_throttle?: boolean;
     /**
      * 是否蒙层
      */
-    q_spinning?: boolean
+    q_spinning?: boolean;
     /**
      * 影响请求头中的 Content-Type
      * form: application/x-www-form-urlencoded
      * json: application/json
      */
-    q_contentType?: 'form' | 'json'
+    q_contentType?: "form" | "json";
 }
-
 
 export default class Axios {
     private instance: AxiosInstance;
@@ -31,24 +29,30 @@ export default class Axios {
     constructor(config: MyAxiosRequestConfig) {
         this.instance = axios.create(config);
         this.interceptors();
-        this.lastTime = 0
-        this.throttleTime = 2000
-        this.loadingInstance = null
+        this.lastTime = 0;
+        this.throttleTime = 2000;
+        this.loadingInstance = null;
     }
 
-    public request<T, D = ResponseResult<T>>(config: MyAxiosRequestConfig): Promise<D> {
+    public request<T, D = ResponseResult<T>>(
+        config: MyAxiosRequestConfig
+    ): Promise<D> {
         return new Promise(async (res, rej): Promise<void> => {
             try {
-                config['method'] = config?.method ?? 'post'
-                config['q_contentType'] = config?.q_contentType ?? 'form'
-                if (config.q_contentType === 'form') {
-                    config.data = qs.stringify(config.data)
+                config["method"] = config?.method ?? "post";
+                config["q_contentType"] = config?.q_contentType ?? "form";
+                if (config.q_contentType === "form") {
+                    config.data = qs.stringify(config.data);
                     // config.headers && (config.headers['Content-Type'] = 'application/x-www-form-urlencoded')
-                    config.headers && (config.headers['Content-Type'] = 'multipart/form-data ')
+                    config.headers &&
+                        (config.headers["Content-Type"] =
+                            "multipart/form-data ");
                 } else {
-                    config.headers && (config.headers['Content-Type'] = 'application/json')
+                    config.headers &&
+                        (config.headers["Content-Type"] = "application/json");
                 }
-                const response: AxiosResponse<D, any> = await this.instance.request<D>(config);
+                const response: AxiosResponse<D, any> =
+                    await this.instance.request<D>(config);
                 //处理直接返回数据
                 res(response.data);
             } catch (error) {
@@ -58,31 +62,31 @@ export default class Axios {
     }
 
     public jsonp(url: string, data: any): Promise<any> {
-        if (!url)
-            throw new Error('url is necessary')
-        const callback: string = 'CALLBACK' + Math.random().toString().substr(9, 18)
-        const JSONP: HTMLScriptElement = document.createElement('script')
-        JSONP.setAttribute('type', 'text/javascript')
-        const headEle: HTMLHeadElement = document.getElementsByTagName('head')[0]
-        let ret: string = '';
+        if (!url) throw new Error("url is necessary");
+        const callback: string =
+            "CALLBACK" + Math.random().toString().substr(9, 18);
+        const JSONP: HTMLScriptElement = document.createElement("script");
+        JSONP.setAttribute("type", "text/javascript");
+        const headEle: HTMLHeadElement =
+            document.getElementsByTagName("head")[0];
+        let ret: string = "";
         if (data) {
-            if (typeof data === 'string')
-                ret = '&' + data;
-            else if (typeof data === 'object') {
+            if (typeof data === "string") ret = "&" + data;
+            else if (typeof data === "object") {
                 for (let key in data)
-                    ret += '&' + key + '=' + encodeURIComponent(data[key]);
+                    ret += "&" + key + "=" + encodeURIComponent(data[key]);
             }
-            ret += '&_time=' + Date.now();
+            ret += "&_time=" + Date.now();
         }
         JSONP.src = `${url}?callback=${callback}${ret}`;
         return new Promise((resolve): void => {
             (window as any)[callback] = (r: any): void => {
-                resolve(r)
-                headEle.removeChild(JSONP)
-                delete (window as any)[callback]
-            }
-            headEle.appendChild(JSONP)
-        })
+                resolve(r);
+                headEle.removeChild(JSONP);
+                delete (window as any)[callback];
+            };
+            headEle.appendChild(JSONP);
+        });
     }
 
     private interceptors(): void {
@@ -96,20 +100,25 @@ export default class Axios {
         this.instance.interceptors.request.use(
             (config: MyAxiosRequestConfig): any => {
                 if (config.q_throttle) {
-                    const nowTime: number = new Date().getTime()
+                    const nowTime: number = new Date().getTime();
 
                     if (nowTime - this.lastTime < this.throttleTime) {
-                        return Promise.reject({response: {status: 'Throttling'}})
+                        return Promise.reject({
+                            response: { status: "Throttling" },
+                        });
                     }
-                    this.lastTime = nowTime
+                    this.lastTime = nowTime;
                 }
-                config.q_spinning && (this.loadingInstance = ElLoading.service({
-                    lock: true,
-                    text: 'Loading',
-                    background: 'rgba(0, 0, 0, 0.7)',
-                }))
-                config.headers && (config.headers[process.env.TOKEN_KEY as string] = store.token())
-                return config
+                config.q_spinning &&
+                    (this.loadingInstance = ElLoading.service({
+                        lock: true,
+                        text: "Loading",
+                        background: "rgba(0, 0, 0, 0.7)",
+                    }));
+                config.headers &&
+                    (config.headers[process.env.TOKEN_KEY as string] =
+                        store.token());
+                return config;
             },
             (error) => {
                 // 对请求错误做些什么
@@ -121,19 +130,21 @@ export default class Axios {
     private interceptorsResponse(): void {
         this.instance.interceptors.response.use(
             (response: AxiosResponse<any, any>) => {
-                this.loadingInstance && this.loadingInstance.close()
+                this.loadingInstance && this.loadingInstance.close();
 
-                if (response.data.code === 555) {
-                    ElMessage.error(response.data?.message ?? '请求失败。')
+                console.log(response.data,'12312312312');
+
+                if ([500, 555].includes(response.data.code)) {
+                    ElMessage.error(response.data?.message ?? "请求失败。");
                 }
                 // 2xx 范围内的状态码都会触发该函数。
                 return response;
             },
             (error) => {
-                this.loadingInstance && this.loadingInstance.close()
-                console.log(error)
+                this.loadingInstance && this.loadingInstance.close();
+                console.log(error);
                 if (!(error.code === "ERR_CANCELED")) {
-                    ElMessage.error('请求失败，请联系管理员。')
+                    ElMessage.error("请求失败，请联系管理员。");
                 }
                 // 超出 2xx 范围的状态码都会触发该函数。
                 // switch (error.response.status) {

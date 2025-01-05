@@ -59,6 +59,14 @@ public class UserController {
         return Result.success(userService.getUserPageList(name, username, gender, enabled, currentPage, pageSize));
     }
 
+    @PostMapping("/delete")
+    public Result delete(@RequestParam(name = "id", required = true) Integer id) {
+        Boolean delete = userService.delete(id);
+        if (!delete) {
+            return Result.error("删除失败");
+        }
+        return Result.success("删除成功");
+    }
 
     //@PreAuthorize配合@EnableGlobalMethodSecurity(prePostEnabled = true)使用
     //@PreAuthorize("hasAuthority('/user/list')")

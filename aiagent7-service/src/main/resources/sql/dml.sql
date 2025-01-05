@@ -14,17 +14,17 @@ INSERT INTO t_user_role
 VALUES (2, 2, 2);
 
 INSERT INTO t_permission
-VALUES (1, '用户管理', '/user/manager', 0, 'manager', 0);
+VALUES (1, '用户管理', '/user/manager', 0);
 INSERT INTO t_permission
-VALUES (2, '用户列表查询', '/user/list', 1, 'list', 1);
+VALUES (2, '用户列表查询', '/user/list', 1);
 INSERT INTO t_permission
-VALUES (3, '删除用户', '/user/delete', 0, 'delete', 1);
+VALUES (3, '删除用户', '/user/delete', 1);
 INSERT INTO t_permission
-VALUES (4, '更新用户', '/user/update', 1, 'update', 1);
+VALUES (4, '更新用户', '/user/update', 1);
 INSERT INTO t_permission
-VALUES (5, '新增用户', '/user/save', 1, 'save', 1);
+VALUES (5, '新增用户', '/user/save', 1);
 INSERT INTO t_permission
-VALUES (6, '用户详情', '/user/getById', 0, 'getById', 1);
+VALUES (6, '用户详情', '/user/getById', 1);
 
 INSERT INTO t_role_permission
 VALUES (1, 1, 1);

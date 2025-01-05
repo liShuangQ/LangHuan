@@ -6,37 +6,23 @@ import {
 
 export let tableColumnConfig = ref<TableColumnConfig[]>([
     {
-        label: '姓名',
+        label: 'ID',
+        prop: 'id',
+        width: '120',
+    },
+    {
+        label: '名字',
         prop: 'name',
-    },
-    {
-        label: '用户名',
-        prop: 'username',
         width: 'auto',
     },
     {
-        label: '手机号',
-        prop: 'phone',
+        label: '权限标识',
+        prop: 'url',
         width: 'auto',
     },
     {
-        label: '性别',
-        prop: 'gender',
-        width: 'auto',
-    },
-    {
-        label: '是否启用', //（0-未启用；1-启用中）
-        prop: 'enabled',
-        width: 'auto',
-    },
-    {
-        label: '创建时间',
-        prop: 'formatCreationTime',
-        width: 'auto',
-    },
-    {
-        label: '上一次登录时间',
-        prop: 'formatLastLoginTime',
+        label: '父级ID',
+        prop: 'parentId',
         width: 'auto',
     },
     {

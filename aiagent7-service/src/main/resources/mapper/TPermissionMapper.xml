@@ -8,13 +8,10 @@
             <id property="id" column="id" jdbcType="INTEGER"/>
             <result property="name" column="name" jdbcType="VARCHAR"/>
             <result property="url" column="url" jdbcType="VARCHAR"/>
-            <result property="method" column="method" jdbcType="SMALLINT"/>
-            <result property="service" column="service" jdbcType="VARCHAR"/>
             <result property="parentId" column="parent_id" jdbcType="INTEGER"/>
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,name,url,
-        method,service,parent_id
+        id,name,url,parent_id
     </sql>
 </mapper>
