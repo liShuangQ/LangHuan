@@ -4,11 +4,12 @@ export default {
 };
 </script>
 <script lang="ts" setup>
-import {http} from "@/plugins/axios";
-import axios, {CancelToken} from "axios";
-import {CancelTokenSource} from "axios/index";
-import {ElMessage} from "element-plus";
-import {store} from "@/utils";
+import { http } from "@/plugins/axios";
+import axios, { CancelToken } from "axios";
+import { CancelTokenSource } from "axios/index";
+import { ElMessage } from "element-plus";
+import { store } from "@/utils";
+import { log } from "console";
 
 const chats = ref<Chat[]>([
     {
@@ -105,6 +106,22 @@ const sendMessage = (recommend = null) => {
 
     }
 };
+// 优化替换提示词到输入框
+const optimizePromptWords = () => {
+    http.request<any>({
+        url: '/chat/getPrompt',
+        method: 'get',
+        q_spinning: true,
+        params: {
+            q: inputMessageText.value
+        }
+    }).then((res) => {
+        if (res.code === 200) {
+            res.data = JSON.parse(res.data)
+            inputMessageText.value = res.data.desc
+        }
+    })
+}
 // 流式的实验
 const sendMessageFlux = async (recommend = null) => {
     if (isTyping.value) {
@@ -124,8 +141,8 @@ const sendMessageFlux = async (recommend = null) => {
         inputMessageText.value = '';
 
         const url = `${process.env.BASE_URL}/chat/chatFlux?id=${chat.id.toString()}&p=${inputPromptText.value}&q=${inputTextCopy}`;
-        let headers = {}
-        headers[process.env.TOKEN_KEY as string] = store.token()
+        const headers: Record<string, string> = {};
+        headers[process.env.TOKEN_KEY as string] = store.token();
         const res: any = await fetch(url, {
             method: 'GET',
             headers,
@@ -135,7 +152,7 @@ const sendMessageFlux = async (recommend = null) => {
         // eslint-disable-next-line no-constant-condition
         while (1) {
             // 读取数据流的第一块数据，done表示数据流是否完成，value表示当前的数
-            const {done, value} = await reader.read();
+            const { done, value } = await reader.read();
             if (done) {
                 break
             }
@@ -201,7 +218,7 @@ const switchChat = (chatId: number) => {
 };
 // 找到当前的窗口
 const currentChat = (): Chat | any => {
-    return chats.value.find(c => c.id === currentChatId.value) || {messages: []};
+    return chats.value.find(c => c.id === currentChatId.value) || { messages: [] };
 };
 // 获取当前时间
 const getCurrentTime = () => {
@@ -213,34 +230,26 @@ const getCurrentTime = () => {
     <div class="w-full h-full bg-white flex gap-4 relative">
 
         <!-- 对话窗口列表 -->
-        <div
-            :class="[
-              'w-64 bg-white rounded-lg shadow-lg p-4 transition-transform duration-300',
-              'fixed md:static h-full] z-40 overflow-y-auto',
-            ]"
-        >
+        <div :class="[
+            'w-64 bg-white rounded-lg shadow-lg p-4 transition-transform duration-300',
+            'fixed md:static h-full] z-40 overflow-y-auto',
+        ]">
             <div class="flex justify-between items-center mb-4">
                 <h2 class="text-lg font-semibold">Chats</h2>
-                <el-button
-                    @click="startNewChat"
-                    class="!px-3 !py-2 !bg-blue-500 !text-white hover:!bg-blue-600 active:!bg-blue-700 transition-colors duration-200"
-                >
+                <el-button @click="startNewChat"
+                    class="!px-3 !py-2 !bg-blue-500 !text-white hover:!bg-blue-600 active:!bg-blue-700 transition-colors duration-200">
                     New Chat
                 </el-button>
             </div>
             <ul class="space-y-2 ">
-                <li
-                    v-for="chat in chats"
-                    :key="chat.id"
-                    :class="[
-                  'p-2 rounded-lg transition-colors duration-200 flex justify-between items-center',
-                  chat.id === currentChatId ? 'bg-blue-100' : 'hover:bg-gray-100'
-                ]"
-                >
+                <li v-for="chat in chats" :key="chat.id" :class="[
+                    'p-2 rounded-lg transition-colors duration-200 flex justify-between items-center',
+                    chat.id === currentChatId ? 'bg-blue-100' : 'hover:bg-gray-100'
+                ]">
                     <span class="cursor-pointer" @click="switchChat(chat.id)">
                         Chat #{{ chat.id }}
                     </span>
-                    <span class="text-blue-500 cursor-pointer" @click="clearMemory(true,chat.id)">清除</span>
+                    <span class="text-blue-500 cursor-pointer" @click="clearMemory(true, chat.id)">清除</span>
                 </li>
             </ul>
         </div>
@@ -248,13 +257,10 @@ const getCurrentTime = () => {
         <!-- 对话窗口 -->
         <div v-if="chats.length > 0" class="flex-1 bg-white rounded-lg shadow-lg flex flex-col h-full">
             <div class="flex-1 overflow-y-auto p-4 space-y-4">
-                <div
-                    v-for="message in currentChat().messages"
-                    :key="message.id"
-                    :class="['flex items-start gap-3', message.isUser ? 'justify-end' : 'justify-start']"
-                >
+                <div v-for="message in currentChat().messages" :key="message.id"
+                    :class="['flex items-start gap-3', message.isUser ? 'justify-end' : 'justify-start']">
                     <div v-if="!message.isUser"
-                         class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white">
+                        class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white">
                         AI
                     </div>
                     <div class="max-w-[80%]">
@@ -262,26 +268,21 @@ const getCurrentTime = () => {
                         <div class="text-[12px] " v-format-time>{{ getCurrentTime() }}</div>
 
                         <!--                            {{ message.text }}-->
-                        <div
-                            v-html="message.text"
-                            :class="[
-                    'max-full p-3 rounded-lg transition-all duration-200',
-                    message.isUser ? 'bg-blue-500 text-white' : 'bg-gray-200'
-                  ]"
-                        ></div>
+                        <div v-html="message.text" :class="[
+                            'max-full p-3 rounded-lg transition-all duration-200',
+                            message.isUser ? 'bg-blue-500 text-white' : 'bg-gray-200'
+                        ]"></div>
                         <!--                        推荐列表-->
-                        <div v-if="(message?.recommend??[]).length > 0"
-                             class="w-full flex justify-start items-center mt-1">
+                        <div v-if="(message?.recommend ?? []).length > 0"
+                            class="w-full flex justify-start items-center mt-1">
                             <div class="bg-blue-100 w-max mr-2 px-1.5 py-0.5 text-[14px] rounded-md cursor-pointer"
-                                 v-for="item in message.recommend" :key="item"
-                                 @click="sendMessage(item)"
-                            >
+                                v-for="item in message.recommend" :key="item" @click="sendMessage(item)">
                                 {{ item }}
                             </div>
                         </div>
                     </div>
                     <div v-if="message.isUser"
-                         class="w-8 h-8 rounded-full bg-gray-500 flex items-center justify-center text-white">
+                        class="w-8 h-8 rounded-full bg-gray-500 flex items-center justify-center text-white">
                         Me
                     </div>
                 </div>
@@ -304,53 +305,39 @@ const getCurrentTime = () => {
             <!-- 功能区域 -->
             <div class="p-4 border-t border-gray-200 space-y-3">
                 <div class="flex justify-end">
-                    <el-button
-                        @click="clearMemory(false)"
-                        :class="['!bg-blue-500 hover:!bg-green-600']"
-                    >
-                  <span class="font-medium text-white">
-                    清除记忆
-                  </span>
+                    <el-button @click="clearMemory(false)" :class="['!bg-blue-500 hover:!bg-green-600']">
+                        <span class="font-medium text-white">
+                            清除记忆
+                        </span>
                     </el-button>
 
-                    <el-button
-                        @click="clearMessage()"
-                        :class="['!bg-blue-500 hover:!bg-green-600']"
-                    >
-                  <span class="font-medium text-white">
-                    清除聊天记录
-                  </span>
+                    <el-button @click="clearMessage()" :class="['!bg-blue-500 hover:!bg-green-600']">
+                        <span class="font-medium text-white">
+                            清除聊天记录
+                        </span>
+                    </el-button>
+
+                    <el-button @click="optimizePromptWords()" :class="['!bg-blue-500 hover:!bg-green-600']">
+                        <span class="font-medium text-white">
+                            优化提示词
+                        </span>
                     </el-button>
                 </div>
 
                 <!--                提示词-->
-                <el-input
-                    v-model="inputPromptText"
-                    placeholder="Type your prompt..."
-                    class="w-full"
-                ></el-input>
+                <el-input v-model="inputPromptText" placeholder="Type your prompt..." class="w-full"></el-input>
                 <!--                用户消息-->
-                <el-input
-                    v-model="inputMessageText"
-                    placeholder="Type your message..."
-                    @keyup.enter="sendMessage()"
-                    class="w-full"
-                >
+                <el-input v-model="inputMessageText" type="textarea" autosize placeholder="Type your message..." @keyup.enter="sendMessage()"
+                    class="w-full">
                     <template #append>
-                        <el-button
-                            v-show="!isTyping"
-                            @click="sendMessage()"
+                        <el-button v-show="!isTyping" @click="sendMessage()"
                             class="!px-6 !py-3 !bg-blue-500 !text-white hover:!bg-blue-600 active:!bg-blue-700 transition-colors duration-200 flex items-center justify-center gap-2"
-                            style="height: 100%"
-                        >
+                            style="height: 100%">
                             <span class="font-medium">发送</span>
                         </el-button>
-                        <el-button
-                            v-show="isTyping"
-                            @click="messageStop()"
+                        <el-button v-show="isTyping" @click="messageStop()"
                             class="!px-6 !py-3 !bg-blue-500 !text-white hover:!bg-blue-600 active:!bg-blue-700 transition-colors duration-200 flex items-center justify-center gap-2"
-                            style="height: 100%"
-                        >
+                            style="height: 100%">
                             <span class="font-medium">停止</span>
                         </el-button>
                     </template>

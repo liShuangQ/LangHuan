@@ -37,8 +37,6 @@ export default defineStore("user", {
                         token
                     });
                     await router.push({path: '/'});
-                }else{
-                    ElMessage.error(res.message)
                 }
             }).catch(err => {
                 ElMessage.error(err)

@@ -70,7 +70,7 @@ spring:
         model: mxbai-embed-large:latest #嵌入模型(ollama pull mxbai-embed-large)  备选ollama pull mofanke/dmeta-embedding-zh
     openai:
       base-url: https://api.deepseek.com
-      api-key: 123123123123
+      api-key: sk-84c44d0c915e4d1ca9731632e7b5db56
       embedding:
         options:
           model: mxbai-embed-large:latest #使用ollama的嵌入模型
