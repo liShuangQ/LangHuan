@@ -78,7 +78,7 @@ const sendMessage = (recommend = null) => {
                 addMessage(chat,
                     {
                         text: res.data.desc,
-                        recommend: res.data.recommend,
+                        recommend: JSON.parse(res.data.recommend)?.desc ?? [],
                         isUser: false
                     }
                 )
