@@ -1,5 +1,6 @@
-package com.shuangqi.aiagent7.utils;
+package com.shuangqi.aiagent7.utils.rag;
 
+import com.shuangqi.aiagent7.common.Constant;
 import org.springframework.ai.document.Document;
 
 import java.util.ArrayList;
@@ -10,16 +11,23 @@ import java.util.regex.Pattern;
 
 public class MyTokenTextSplitter {
 
-    private static final Pattern DEFAULT_SPLIT_PATTERN = Pattern.compile("[.。!?！？;；]+\\s*");
+    private Pattern splitPattern;
+
+    public MyTokenTextSplitter() {
+        this.splitPattern = Constant.DEFAULT_RAG_SPLIT_PATTERN;
+    }
+
+    public MyTokenTextSplitter(Pattern splitPattern) {
+        this.splitPattern = splitPattern;
+    }
 
     public List<Document> apply(String text) {
-        return apply(text, DEFAULT_SPLIT_PATTERN, new HashMap<>());
+        return apply(text, this.splitPattern, new HashMap<>());
     }
 
     public List<Document> apply(String text, Map<String, Object> metadata) {
-        return apply(text, DEFAULT_SPLIT_PATTERN, metadata);
+        return apply(text, this.splitPattern, metadata);
     }
-
 
     /**
      * 根据指定的分割模式将文本分割成多个文档

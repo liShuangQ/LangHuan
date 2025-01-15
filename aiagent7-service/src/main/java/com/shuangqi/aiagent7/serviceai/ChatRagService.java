@@ -2,7 +2,7 @@ package com.shuangqi.aiagent7.serviceai;
 
 import com.shuangqi.aiagent7.advisors.MySimplelogAdvisor;
 import com.shuangqi.aiagent7.common.Constant;
-import com.shuangqi.aiagent7.utils.RagVectorUtils;
+import com.shuangqi.aiagent7.utils.rag.RagVectorUtils;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;

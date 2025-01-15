@@ -4,7 +4,7 @@ import cn.hutool.core.util.StrUtil;
 import com.shuangqi.aiagent7.common.BaseException;
 import com.shuangqi.aiagent7.common.ResponseCodeEnum;
 import com.shuangqi.aiagent7.service.AccountUserDetailsService;
-import com.shuangqi.aiagent7.utils.JwtUtil;
+import com.shuangqi.aiagent7.utils.other.JwtUtil;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

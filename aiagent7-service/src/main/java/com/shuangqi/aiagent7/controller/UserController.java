@@ -4,7 +4,7 @@ import com.shuangqi.aiagent7.common.Result;
 import com.shuangqi.aiagent7.model.domain.TUser;
 import com.shuangqi.aiagent7.model.dto.UserLoginDTO;
 import com.shuangqi.aiagent7.service.UserService;
-import com.shuangqi.aiagent7.utils.JwtUtil;
+import com.shuangqi.aiagent7.utils.other.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.core.Authentication;

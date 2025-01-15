@@ -1,4 +1,4 @@
-package com.shuangqi.aiagent7.utils;
+package com.shuangqi.aiagent7.utils.other;
 
 import java.util.*;
 import java.util.function.Function;

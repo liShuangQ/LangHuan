@@ -1,4 +1,4 @@
-package com.shuangqi.aiagent7.utils;
+package com.shuangqi.aiagent7.utils.other;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.exceptions.JWTDecodeException;

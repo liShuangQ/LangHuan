@@ -12,7 +12,7 @@ import com.shuangqi.aiagent7.model.domain.TUser;
 import com.shuangqi.aiagent7.model.domain.TUserRole;
 import com.shuangqi.aiagent7.model.dto.UserLoginDTO;
 import com.shuangqi.aiagent7.model.mapper.TUserMapper;
-import com.shuangqi.aiagent7.utils.JwtUtil;
+import com.shuangqi.aiagent7.utils.other.JwtUtil;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;

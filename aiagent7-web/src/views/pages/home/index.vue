@@ -9,9 +9,8 @@ import axios, { CancelToken } from "axios";
 import { CancelTokenSource } from "axios/index";
 import { ElMessage } from "element-plus";
 import { store } from "@/utils";
-import { log } from "console";
 
-const chats = ref<Chat[]>([
+let chats = ref<Chat[]>([
     {
         id: 1,
         messages: [],
@@ -19,10 +18,10 @@ const chats = ref<Chat[]>([
     }
 ]);
 
-const inputMessageText = ref<string>('');
-const inputPromptText = ref<string>('');
-const currentChatId = ref<number>(1);
-const isTyping = ref<boolean>(false);
+let inputMessageText = ref<string>('');
+let inputPromptText = ref<string>('');
+let currentChatId = ref<number>(1);
+let isTyping = ref<boolean>(false);
 let axiosCancel: CancelTokenSource | null = null;
 // 添加滚动到最新的消息
 const toDownPage = () => {
@@ -224,6 +223,8 @@ const currentChat = (): Chat | any => {
 const getCurrentTime = () => {
     return Date.now();
 };
+
+let aiOptionVisible = ref<boolean>(false)
 </script>
 
 <template>
@@ -302,9 +303,14 @@ const getCurrentTime = () => {
                 </div>
             </div>
 
-            <!-- 功能区域 -->
             <div class="p-4 border-t border-gray-200 space-y-3">
+                <!-- 上功能区 -->
                 <div class="flex justify-end">
+                    <el-button @click="aiOptionVisible = true" :class="['!bg-blue-500 hover:!bg-green-600']">
+                        <span class="font-medium text-white">
+                            设置
+                        </span>
+                    </el-button>
                     <el-button @click="clearMemory(false)" :class="['!bg-blue-500 hover:!bg-green-600']">
                         <span class="font-medium text-white">
                             清除记忆
@@ -317,37 +323,69 @@ const getCurrentTime = () => {
                         </span>
                     </el-button>
 
+                </div>
+
+                <!-- 消息内容 -->
+                <div class=" flex justify-between items-center ">
+                    <el-input v-model="inputMessageText" type="textarea" autosize placeholder="Type your message..."
+                        @keyup.enter="sendMessage()"></el-input>
+                </div>
+                <!-- 下功能区 -->
+                <div class=" flex justify-end">
                     <el-button @click="optimizePromptWords()" :class="['!bg-blue-500 hover:!bg-green-600']">
                         <span class="font-medium text-white">
                             优化提示词
                         </span>
                     </el-button>
+                    <el-button v-show="!isTyping" @click="sendMessage()" :class="['!bg-blue-500 hover:!bg-green-600']">
+                        <span class="font-medium text-white">
+                            发送
+                        </span>
+                    </el-button>
+                    <el-button v-show="isTyping" @click="messageStop()" :class="['!bg-blue-500 hover:!bg-green-600']">
+                        <span class="font-medium text-white">
+                            停止
+                        </span>
+                    </el-button>
                 </div>
-
-                <!--                提示词-->
-                <el-input v-model="inputPromptText" placeholder="Type your prompt..." class="w-full"></el-input>
-                <!--                用户消息-->
-                <el-input v-model="inputMessageText" type="textarea" autosize placeholder="Type your message..." @keyup.enter="sendMessage()"
-                    class="w-full">
-                    <template #append>
-                        <el-button v-show="!isTyping" @click="sendMessage()"
-                            class="!px-6 !py-3 !bg-blue-500 !text-white hover:!bg-blue-600 active:!bg-blue-700 transition-colors duration-200 flex items-center justify-center gap-2"
-                            style="height: 100%">
-                            <span class="font-medium">发送</span>
-                        </el-button>
-                        <el-button v-show="isTyping" @click="messageStop()"
-                            class="!px-6 !py-3 !bg-blue-500 !text-white hover:!bg-blue-600 active:!bg-blue-700 transition-colors duration-200 flex items-center justify-center gap-2"
-                            style="height: 100%">
-                            <span class="font-medium">停止</span>
-                        </el-button>
-                    </template>
-                </el-input>
             </div>
         </div>
         <div v-else class="flex-1 bg-white rounded-lg shadow-lg flex flex-col h-full items-center justify-center">
             请开启新的对话
         </div>
+
+
+        <!-- 设置区域 -->
+        <el-dialog v-model="aiOptionVisible" title="设置" width="700">
+            <div>
+                <div class=" flex justify-between items-center ">
+                    <div class="text-sm font-medium text-gray-700 mb-1 w-[60px]">提示词</div>
+                    <el-input v-model="inputPromptText" type="textarea" placeholder="Type your prompt..."></el-input>
+                </div>
+            </div>
+            <template #footer>
+                <div class="dialog-footer">
+                    <el-button type="primary" @click="aiOptionVisible = false">
+                        关闭
+                    </el-button>
+                </div>
+            </template>
+        </el-dialog>
     </div>
+    上下文信息在下面，用 --------------------- 包围。
+    ---------------------
+    {question_answer_context}
+    ---------------------
+    鉴于上下文和提供的历史信息而非先验知识，回复用户。如果问题和上下文无关或者答案不在上下文中，则你自己回答这个问题并且在回答中不要提示没找到上下文信息。
+    用户会向你提出一个问题，你的任务是提供一个细致且准确的答案，并附带两个简短的相关问题推荐，以JSON格式返回。
+    确保你的回答遵循以下json结构：
+    {
+    "desc": "这里是回答的内容，请用合适的美观的html格式的字符串的形式回复，当字符串中存在双引号的时候使用单引号替代。",
+    "recommend": [
+    "推荐问题1",
+    "推荐问题2"
+    ],
+    }
 </template>
 
 <style>

@@ -2,7 +2,7 @@ package com.shuangqi.aiagent7.filter;
 
 import cn.hutool.json.JSONUtil;
 import com.shuangqi.aiagent7.common.Result;
-import com.shuangqi.aiagent7.utils.JwtUtil;
+import com.shuangqi.aiagent7.utils.other.JwtUtil;
 import jakarta.annotation.Resource;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletOutputStream;
