@@ -26,12 +26,10 @@ public class AiFunctionConfig {
         return new DocumentAnalyzerFunction();
     }
 
-    @Bean
-    @Description("""
-            根据接口地址和请求参数得到结果。
-            """)
-    public BiFunction<HttpRequestFunction.Request, ToolContext, HttpRequestFunction.Response> chat_httpRequestFunction() {
-        return new HttpRequestFunction();
-    }
+//    @Bean
+//    @Description("根据接口地址和请求参数得到结果")
+//    public BiFunction<HttpRequestFunction.Request, ToolContext, HttpRequestFunction.Response> chat_httpRequestFunction() {
+//        return new HttpRequestFunction();
+//    }
 
 }

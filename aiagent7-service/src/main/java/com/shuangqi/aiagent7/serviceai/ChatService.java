@@ -38,16 +38,9 @@ public class ChatService {
 
         String defaultSystem = """
                 用户会向你提出一个问题，你的任务是提供一个细致且准确的答案。
-                并附带两个简短的相关问题推荐，以JSON格式返回。
-                确保你的回答遵循以下结构：
-                {
-                    "desc": "这里是回答的内容，请用合适的美观的html格式的字符串的形式回复，当字符串中存在双引号的时候使用单引号替代。",
-                    "recommend": [
-                      "推荐问题1",
-                      "推荐问题2"
-                    ]
-                }
+                回答的内容，请用合适的美观的html格式的字符串的形式回复，当字符串中存在双引号的时候使用单引号替代。
                 """;
+
         this.chatClient = chatClientBuilder.defaultSystem(defaultSystem)
                 .defaultAdvisors(
                         new QuestionAnswerAdvisor(vectorStore,
@@ -57,11 +50,11 @@ public class ChatService {
                         new SafeGuardAdvisor(Constant.AIDEFAULTSAFEGUARDADVISOR),
                         new MySimplelogAdvisor()
                 )
-                .defaultFunctions(
-                        Arrays.stream(applicationContext.getBeanNamesForType(BiFunction.class))
-                                .filter(name -> name.startsWith("chat_"))
-                                .toArray(String[]::new)
-                )
+//                .defaultFunctions(
+//                        Arrays.stream(applicationContext.getBeanNamesForType(BiFunction.class))
+//                                .filter(name -> name.startsWith("chat_"))
+//                                .toArray(String[]::new)
+//                )
                 .build();
     }
 

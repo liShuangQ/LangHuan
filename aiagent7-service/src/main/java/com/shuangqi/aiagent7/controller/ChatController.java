@@ -1,5 +1,6 @@
 package com.shuangqi.aiagent7.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.shuangqi.aiagent7.common.Result;
 import com.shuangqi.aiagent7.serviceai.ChatPromptService;
 import com.shuangqi.aiagent7.serviceai.ChatService;
@@ -24,7 +25,11 @@ public class ChatController {
     public Result chat(@RequestParam(name = "id", required = true) String id,
                        @RequestParam(name = "p", required = true, defaultValue = "请回答我的问题") String p,
                        @RequestParam(name = "q", required = true) String q) {
-        return Result.success(chatService.chat(id, p, q));
+        String desc = chatService.chat(id, p, q);
+        JSONObject json = new JSONObject();
+        json.put("desc", desc);
+//        json.put("recommend", "");
+        return Result.success(json.toString());
     }
 
     @GetMapping("/getPrompt")
