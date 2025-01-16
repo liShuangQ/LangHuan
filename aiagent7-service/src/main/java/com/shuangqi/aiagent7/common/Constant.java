@@ -12,7 +12,7 @@ public class Constant {
     public static final String HEADER = "Authorization";
     // 访问白名单
     public static final String[] URL_WHITELIST = {"/favicon.ico", "/user/login", "/user/register"};
-    // ai的rag拆分规则
+    // ai的rag默认拆分规则
     public static final Pattern DEFAULT_RAG_SPLIT_PATTERN = Pattern.compile("[;；]+\\s*");
     // ai系统默认提示词
     public static final String AIDEFAULTSYSTEMPROMPT = """
@@ -24,9 +24,9 @@ public class Constant {
     public static final List<String> AIDEFAULTSAFEGUARDADVISOR = List.of();
     // ai系统默认问答顾问提示词
     public static final String AIDEFAULTQUESTIONANSWERADVISORRPROMPT = """
-            上下文信息在下面，用 --------------------- 包围。
-            鉴于上下文和提供的历史信息而非先验知识，回复用户。
-            如果问题和上下文无关或者答案不在上下文中，则你自己回答这个问题并且在回答中不要提示没找到上下文信息。
+            上下文信息rag，在下面用 --------------------- 包围。
+            鉴于上下文信息rag和提供的历史信息而非先验知识，回复用户，并且不要体现这个信息是在上下文信息rag中拿到的。
+            如果问题和上下文信息rag无关或者答案不在上下文信息rag中，则你自己回答这个问题。并且在回答中不要提示没找到信息，无需解释。
             ---------------------
             {question_answer_context}
             ---------------------
@@ -34,5 +34,5 @@ public class Constant {
     //设置返回的最相似结果的数量
     public static final int WITHTOPK = 1;
     //设置相似度阈值，常是一个介于 0 和 1 之间的浮点数，例如 0.5、0.7、0.8 等，如果设置得过高，可能会没有结果返回；如果设置得过低，可能会返回大量不相关的结果
-    public static final double WITHSIMILARITYTHRESHOLD = 0.5;
+    public static final double WITHSIMILARITYTHRESHOLD = 0.8;
 }

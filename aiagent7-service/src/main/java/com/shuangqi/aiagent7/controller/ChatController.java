@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.shuangqi.aiagent7.common.Result;
 import com.shuangqi.aiagent7.serviceai.ChatGeneralAssistanceService;
 import com.shuangqi.aiagent7.serviceai.ChatService;
-import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
