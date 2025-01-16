@@ -77,7 +77,7 @@ const sendMessage = (recommend = null) => {
             if (res.code === 200) {
                 addMessage(chat,
                     {
-                        text: res.data.desc,
+                        text: JSON.parse(res.data.chat)?.desc ?? "json格式错误",
                         recommend: JSON.parse(res.data.recommend)?.desc ?? [],
                         isUser: false
                     }
@@ -236,10 +236,10 @@ let aiOptionVisible = ref<boolean>(false)
             'fixed md:static h-full] z-40 overflow-y-auto',
         ]">
             <div class="flex justify-between items-center mb-4">
-                <h2 class="text-lg font-semibold">Chats</h2>
+                <h2 class="text-lg font-semibold">对话列表</h2>
                 <el-button @click="startNewChat"
                     class="!px-3 !py-2 !bg-blue-500 !text-white hover:!bg-blue-600 active:!bg-blue-700 transition-colors duration-200">
-                    New Chat
+                    新建对话
                 </el-button>
             </div>
             <ul class="space-y-2 ">
@@ -248,11 +248,20 @@ let aiOptionVisible = ref<boolean>(false)
                     chat.id === currentChatId ? 'bg-blue-100' : 'hover:bg-gray-100'
                 ]">
                     <span class="cursor-pointer" @click="switchChat(chat.id)">
-                        Chat #{{ chat.id }}
+                        对话 #{{ chat.id }}
                     </span>
                     <span class="text-blue-500 cursor-pointer" @click="clearMemory(true, chat.id)">清除</span>
                 </li>
             </ul>
+            <div class="mt-4 absolute bottom-4 left-2 bg-white w-60">
+                <el-button
+                    @click="aiOptionVisible = true"
+                    class="w-full !bg-blue-500 hover:!bg-green-600">
+                    <span class="font-medium text-white">
+                        设置
+                    </span>
+                </el-button>
+            </div>
         </div>
 
         <!-- 对话窗口 -->
@@ -306,11 +315,6 @@ let aiOptionVisible = ref<boolean>(false)
             <div class="p-4 border-t border-gray-200 space-y-3">
                 <!-- 上功能区 -->
                 <div class="flex justify-end">
-                    <el-button @click="aiOptionVisible = true" :class="['!bg-blue-500 hover:!bg-green-600']">
-                        <span class="font-medium text-white">
-                            设置
-                        </span>
-                    </el-button>
                     <el-button @click="clearMemory(false)" :class="['!bg-blue-500 hover:!bg-green-600']">
                         <span class="font-medium text-white">
                             清除记忆
@@ -327,7 +331,8 @@ let aiOptionVisible = ref<boolean>(false)
 
                 <!-- 消息内容 -->
                 <div class=" flex justify-between items-center ">
-                    <el-input v-model="inputMessageText" type="textarea" autosize placeholder="Type your message..."
+                    <div class="text-sm font-medium text-gray-700 mr-2 w-16 ">消息内容</div>
+                    <el-input v-model="inputMessageText" type="textarea" autosize placeholder="输入消息内容..."
                         @keyup.enter="sendMessage()"></el-input>
                 </div>
                 <!-- 下功能区 -->

@@ -35,7 +35,11 @@ public class ChatService {
 
         String defaultSystem = """
                 用户会向你提出一个问题，你的任务是提供一个细致且准确的答案。
-                回答的内容，请用合适的美观的html格式的字符串的形式回复，当字符串中存在双引号的时候使用单引号替代。
+                 以JSON格式返回。
+                 确保你的回答遵循以下结构：
+                 {
+                    "desc": "用合适的美观的html格式的字符串的形式回复，当字符串中存在双引号的时候使用单引号替代。"
+                 }
                 """;
 
         this.chatClient = chatClientBuilder.defaultSystem(defaultSystem)

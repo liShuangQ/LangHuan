@@ -26,7 +26,7 @@ public class ChatController {
                        @RequestParam(name = "q", required = true) String q) {
 
         JSONObject json = new JSONObject();
-        json.put("desc", chatService.chat(id, p, q));
+        json.put("chat", chatService.chat(id, p, q));
         json.put("recommend", chatGeneralAssistanceService.otherQuestionsRecommended(q));
         return Result.success(json.toString());
     }
