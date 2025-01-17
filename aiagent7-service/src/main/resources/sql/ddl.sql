@@ -54,7 +54,7 @@ CREATE TABLE t_user
     phone           VARCHAR(11)  NOT NULL,
     gender          SMALLINT     NOT NULL,
     enabled         SMALLINT     NOT NULL,
-    creation_time  TIMESTAMP    NULL     DEFAULT NULL,
+    creation_time   TIMESTAMP    NULL     DEFAULT NULL,
     last_login_time TIMESTAMP    NULL     DEFAULT NULL
 );
 
@@ -67,6 +67,51 @@ COMMENT ON COLUMN t_user.gender IS '性别';
 COMMENT ON COLUMN t_user.enabled IS '是否启用（0-未启用；1-启用中）';
 COMMENT ON COLUMN t_user.creation_time IS '创建时间';
 COMMENT ON COLUMN t_user.last_login_time IS '上一次登录时间';
+
+DROP TABLE IF EXISTS t_rag_file_group;
+CREATE TABLE t_rag_file_group
+(
+    id         SERIAL PRIMARY KEY,                 -- 自增主键
+    group_name VARCHAR(255) NOT NULL,              -- 文件组名称
+    group_desc VARCHAR(255) NOT NULL,              -- 文件组描述
+    created_by VARCHAR(100) NOT NULL,              -- 创建用户（可以是用户名或用户ID）
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP -- 创建时间，默认为当前时间
+);
+
+DROP TABLE IF EXISTS t_rag_file;
+CREATE TABLE t_rag_file
+(
+    id            SERIAL PRIMARY KEY,                 -- 自增主键
+    file_name     VARCHAR(255) NOT NULL,              -- 文件名
+    file_type     VARCHAR(50)  NOT NULL,              -- 文件类型（例如：pdf, docx, jpg 等）
+    file_desc     VARCHAR(255) NOT NULL,              -- 文件描述
+    file_group_id VARCHAR(50)  NOT NULL,              -- 关联文件组id
+    uploaded_by   VARCHAR(100) NOT NULL,              -- 上传用户（可以是用户名或用户ID）
+    uploaded_at   TIMESTAMP DEFAULT CURRENT_TIMESTAMP -- 上传时间，默认为当前时间
+);
+
+DROP TABLE IF EXISTS t_tool_group;
+CREATE TABLE t_tool_group
+(
+    id         SERIAL PRIMARY KEY,                 -- 自增主键
+    group_name VARCHAR(255) NOT NULL,              -- 工具组名称
+    group_desc VARCHAR(255) NOT NULL,              -- 工具组描述
+    created_by VARCHAR(100) NOT NULL,              -- 创建用户（可以是用户名或用户ID）
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP -- 创建时间，默认为当前时间
+);
+
+DROP TABLE IF EXISTS t_tool;
+CREATE TABLE t_tool
+(
+    id            SERIAL PRIMARY KEY,                 -- 自增主键
+    tool_name     VARCHAR(255) NOT NULL,              -- 工具名
+    tool_type     VARCHAR(50)  NOT NULL,              -- 工具类型（例如：文件，操作 等）
+    tool_desc     VARCHAR(255) NOT NULL,              -- 工具描述
+    tool_group_id VARCHAR(50)  NOT NULL,              -- 关联组id
+    tool_by       VARCHAR(100) NOT NULL,              -- 上传用户（可以是用户名或用户ID）
+    tool_at       TIMESTAMP DEFAULT CURRENT_TIMESTAMP -- 上传时间，默认为当前时间
+);
+
 
 
 CREATE EXTENSION IF NOT EXISTS vector;

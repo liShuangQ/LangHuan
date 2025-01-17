@@ -9,6 +9,7 @@ import axios, { CancelToken } from "axios";
 import { CancelTokenSource } from "axios/index";
 import { ElMessage } from "element-plus";
 import { store } from "@/utils";
+import { isFunction } from "lodash";
 
 let chats = ref<Chat[]>([
     {
@@ -23,6 +24,14 @@ let inputPromptText = ref<string>('');
 let currentChatId = ref<number>(1);
 let isTyping = ref<boolean>(false);
 let axiosCancel: CancelTokenSource | null = null;
+let ragEnabled = ref<boolean>(false)
+let toolEnabled = ref<boolean>(false)
+let ragGroup = ref<string>('')
+let ragGroupOption = ref<{ label: string, value: string }[]>([])
+let toolGroup = ref<string>('')
+let toolGroupOption = ref<{ label: string, value: string }[]>([])
+let aiOptionVisible = ref<boolean>(false)
+
 // 添加滚动到最新的消息
 const toDownPage = () => {
     nextTick(() => {
@@ -70,10 +79,12 @@ const sendMessage = (recommend = null) => {
             params: {
                 id: chat.id,
                 p: inputPromptText.value,
-                q: inputTextCopy
+                q: inputTextCopy,
+                isRag: ragEnabled.value,
+                ragType: ragGroup.value,
+                isFunction: toolEnabled.value
             }
         }).then((res) => {
-            res.data = JSON.parse(res.data)
             if (res.code === 200) {
                 addMessage(chat,
                     {
@@ -121,45 +132,6 @@ const optimizePromptWords = () => {
         }
     })
 }
-// 流式的实验
-const sendMessageFlux = async (recommend = null) => {
-    if (isTyping.value) {
-        ElMessage.error('请等待回复完成。')
-        return
-    }
-    if (recommend) {
-        inputMessageText.value = recommend;
-    }
-    const chat = chats.value.find(c => c.id === currentChatId.value);
-    if (inputMessageText.value.trim() && chat) {
-        addMessage(chat, {
-            text: inputMessageText.value,
-            isUser: true
-        })
-        const inputTextCopy = inputMessageText.value;
-        inputMessageText.value = '';
-
-        const url = `${process.env.BASE_URL}/chat/chatFlux?id=${chat.id.toString()}&p=${inputPromptText.value}&q=${inputTextCopy}`;
-        const headers: Record<string, string> = {};
-        headers[process.env.TOKEN_KEY as string] = store.token();
-        const res: any = await fetch(url, {
-            method: 'GET',
-            headers,
-        });
-        const reader = res.body.getReader();
-        const decoder = new TextDecoder();
-        // eslint-disable-next-line no-constant-condition
-        while (1) {
-            // 读取数据流的第一块数据，done表示数据流是否完成，value表示当前的数
-            const { done, value } = await reader.read();
-            if (done) {
-                break
-            }
-            const text = decoder.decode(value);
-            console.log(text)
-        }
-    }
-};
 // 停止当前对话
 const messageStop = () => {
     if (axiosCancel) {
@@ -224,7 +196,11 @@ const getCurrentTime = () => {
     return Date.now();
 };
 
-let aiOptionVisible = ref<boolean>(false)
+// rag按钮变化
+const ragEnabledChange = (e: any) => {
+    ragGroup.value = ''
+}
+
 </script>
 
 <template>
@@ -253,10 +229,9 @@ let aiOptionVisible = ref<boolean>(false)
                     <span class="text-blue-500 cursor-pointer" @click="clearMemory(true, chat.id)">清除</span>
                 </li>
             </ul>
+            <!--                            {{ message.text }}-->
             <div class="mt-4 absolute bottom-4 left-2 bg-white w-60">
-                <el-button
-                    @click="aiOptionVisible = true"
-                    class="w-full !bg-blue-500 hover:!bg-green-600">
+                <el-button @click="aiOptionVisible = true" class="w-full !bg-blue-500 hover:!bg-green-600">
                     <span class="font-medium text-white">
                         设置
                     </span>
@@ -277,7 +252,6 @@ let aiOptionVisible = ref<boolean>(false)
                         <!--                        对话回复-->
                         <div class="text-[12px] " v-format-time>{{ getCurrentTime() }}</div>
 
-                        <!--                            {{ message.text }}-->
                         <div v-html="message.text" :class="[
                             'max-full p-3 rounded-lg transition-all duration-200',
                             message.isUser ? 'bg-blue-500 text-white' : 'bg-gray-200'
@@ -314,7 +288,19 @@ let aiOptionVisible = ref<boolean>(false)
 
             <div class="p-4 border-t border-gray-200 space-y-3">
                 <!-- 上功能区 -->
-                <div class="flex justify-end">
+                <div class="flex justify-end items-center">
+                    <el-switch v-model="toolEnabled" inactive-text="工具" :active-value="true" :inactive-value="false"
+                        active-color="#3b82f6" inactive-color="#dc2626" class="mr-2" />
+                    <el-select v-if="toolEnabled" v-model="toolGroup" placeholder="选择工具组" class="mr-2">
+                        <el-option v-for="item in toolGroupOption" :key="item.value" :label="item.label"
+                            :value="item.value" />
+                    </el-select>
+                    <el-switch v-model="ragEnabled" inactive-text="RAG" :active-value="true" :inactive-value="false"
+                        active-color="#3b82f6" inactive-color="#dc2626" class="mr-2" @change="ragEnabledChange" />
+                    <el-select v-if="ragEnabled" v-model="ragGroup" placeholder="选择文件组" class="mr-2">
+                        <el-option v-for="item in ragGroupOption" :key="item.value" :label="item.label"
+                            :value="item.value" />
+                    </el-select>
                     <el-button @click="clearMemory(false)" :class="['!bg-blue-500 hover:!bg-green-600']">
                         <span class="font-medium text-white">
                             清除记忆

@@ -1,4 +1,4 @@
-package com.shuangqi.aiagent7.controller;
+package com.shuangqi.aiagent7.controllerai;
 
 import com.shuangqi.aiagent7.common.Result;
 import com.shuangqi.aiagent7.serviceai.ChatRagService;

@@ -16,12 +16,11 @@ import java.util.Map;
 @Slf4j
 @Component
 public class RagVectorUtils {
-
     @SneakyThrows
     public String addRagVector(MultipartFile file, VectorStore vectorStore) {
         log.debug("向量库添加文件：" + file.getOriginalFilename());
         try {
-            if (addTikaRagVector(file, vectorStore)) {
+            if (addTikaRagVector(file, vectorStore, "all")) {
                 return "文件：" + file.getOriginalFilename() + " 已添加到向量库";
             }
         } catch (Exception e) {
@@ -31,11 +30,29 @@ public class RagVectorUtils {
     }
 
     @SneakyThrows
-    public Boolean addTikaRagVector(MultipartFile file, VectorStore vectorStore) {
+    public String addRagVector(MultipartFile file, VectorStore vectorStore, String parentFileId) {
+        log.debug("向量库添加文件：" + file.getOriginalFilename());
+        try {
+            if (addTikaRagVector(file, vectorStore, parentFileId)) {
+                return "文件：" + file.getOriginalFilename() + " 已添加到向量库";
+            }
+        } catch (Exception e) {
+            log.error("文件：" + file.getOriginalFilename() + " 添加到向量库失败", e);
+        }
+        return "文件：" + file.getOriginalFilename() + " 添加到向量库失败";
+    }
+
+    @SneakyThrows
+    public Boolean addTikaRagVector(MultipartFile file, VectorStore vectorStore, String parentFileId) {
         TikaDocumentReader tikaDocumentReader = new TikaDocumentReader(new InputStreamResource(file.getInputStream()));
         List<Document> documents = tikaDocumentReader.read();
         String documentText = joinDocumentContents(documents);
-        List<Document> splitDocuments = splitDocumentText(documentText, file);
+        List<Document> splitDocuments = splitDocumentText(documentText, Map.of(
+                        "filename", file.getOriginalFilename(),
+                        "filetype", file.getContentType(),
+                        "parentFileId", parentFileId
+                )
+        );
         vectorStore.add(splitDocuments);
         return true;
     }
@@ -48,10 +65,8 @@ public class RagVectorUtils {
         return String.join("\n", documentLines);
     }
 
-    private List<Document> splitDocumentText(String documentText, MultipartFile file) {
+    private List<Document> splitDocumentText(String documentText, Map<String, Object> map) {
         return new MyTokenTextSplitter()
-                .apply(documentText, Map.of(
-                        "filename", file.getOriginalFilename(),
-                        "filetype", file.getContentType()));
+                .apply(documentText, map);
     }
 }

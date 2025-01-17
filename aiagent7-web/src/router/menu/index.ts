@@ -14,6 +14,42 @@ const menu: PagesMenu[] = [
         icon: "HomeFilled",
     },
     {
+        path: "rag",
+        faPath: [],
+        title: "RAG管理",
+        icon: "Menu",
+        children: [
+            {
+                title: "文件组管理",
+                path: "/pages/rag/fileGroup",
+                faPath: ["rag"],
+            },
+            {
+                title: "文件管理",
+                path: "/pages/rag/file",
+                faPath: ["rag"],
+            },
+        ],
+    },
+    {
+        path: "tool",
+        faPath: [],
+        title: "Tool管理",
+        icon: "Menu",
+        children: [
+            {
+                title: "工具组管理",
+                path: "/pages/tool/functionGroup",
+                faPath: ["tool"],
+            },
+            {
+                title: "工具管理",
+                path: "/pages/tool/function",
+                faPath: ["tool"],
+            },
+        ],
+    },
+    {
         path: "user",
         faPath: [],
         title: "系统管理",
