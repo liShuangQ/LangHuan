@@ -72,7 +72,7 @@ const sendMessage = (recommend = null) => {
         inputMessageText.value = '';
         axiosCancel = axios.CancelToken.source();
         http.request<any>({
-            url: chatServiceType + '/chat',
+            url: chatServiceType.value + '/chat',
             method: 'get',
             q_spinning: false,
             cancelToken: axiosCancel.token,
@@ -119,7 +119,7 @@ const sendMessage = (recommend = null) => {
 // 优化替换提示词到输入框
 const optimizePromptWords = () => {
     http.request<any>({
-        url: chatServiceType + '/getPrompt',
+        url: chatServiceType.value + '/getPrompt',
         method: 'get',
         q_spinning: true,
         params: {
@@ -144,7 +144,7 @@ const clearMemory = (isList = false, id = 0) => {
     if (chat) {
         const useId = isList ? id : chat.id
         http.request<any>({
-            url: chatServiceType + '/clear',
+            url: chatServiceType.value + '/clear',
             method: 'get',
             q_spinning: true,
             params: {
