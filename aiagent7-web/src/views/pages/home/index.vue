@@ -173,6 +173,15 @@ const clearMessage = () => {
     }
     ElMessage.success('已成功清空聊天记录。');
 }
+// 添加初始的对话消息
+const addStartMessage = () => {
+    const chat = chats.value.find(c => c.id === currentChatId.value);
+    chat && addMessage(chat, {
+        text: '很高兴见到你！我可以帮你写代码、读文件、写作各种创意内容，请把你的任务交给我吧~',
+        recommend: ['你是谁？','你能做些什么？'],
+        isUser: false
+    })
+}
 // 开始一个新的对话
 const startNewChat = () => {
     const newChatId = (chats.value[chats.value.length - 1]?.id ?? 0) + 1;
@@ -182,6 +191,7 @@ const startNewChat = () => {
         active: false
     });
     currentChatId.value = newChatId;
+    addStartMessage()
 };
 // 设置对话窗口
 const switchChat = (chatId: number) => {
@@ -195,12 +205,14 @@ const currentChat = (): Chat | any => {
 const getCurrentTime = () => {
     return Date.now();
 };
-
 // rag按钮变化
 const ragEnabledChange = (e: any) => {
     ragGroup.value = ''
 }
-
+// 初始化执行
+nextTick(() => {
+    addStartMessage()
+})
 
 </script>
 
@@ -303,18 +315,6 @@ const ragEnabledChange = (e: any) => {
                     </div>
                     <!-- 右 -->
                     <div class="flex justify-end items-center">
-                        <el-switch v-model="toolEnabled" inactive-text="工具" :active-value="true" :inactive-value="false"
-                            active-color="#3b82f6" inactive-color="#dc2626" class="mr-2" />
-                        <el-select v-if="toolEnabled" v-model="toolGroup" placeholder="选择工具组" class="mr-2">
-                            <el-option v-for="item in toolGroupOption" :key="item.value" :label="item.label"
-                                :value="item.value" />
-                        </el-select>
-                        <el-switch v-model="ragEnabled" inactive-text="RAG" :active-value="true" :inactive-value="false"
-                            active-color="#3b82f6" inactive-color="#dc2626" class="mr-2" @change="ragEnabledChange" />
-                        <el-select v-if="ragEnabled" v-model="ragGroup" placeholder="选择文件组" class="mr-2">
-                            <el-option v-for="item in ragGroupOption" :key="item.value" :label="item.label"
-                                :value="item.value" />
-                        </el-select>
                         <el-button @click="clearMemory(false)" :class="['!bg-blue-500 hover:!bg-green-600']">
                             <span class="font-medium text-white">
                                 清除记忆
@@ -339,6 +339,18 @@ const ragEnabledChange = (e: any) => {
                 </div>
                 <!-- 下功能区 -->
                 <div class=" flex justify-end">
+                    <el-switch v-model="toolEnabled" inactive-text="工具" :active-value="true" :inactive-value="false"
+                        active-color="#3b82f6" inactive-color="#dc2626" class="mr-2" />
+                    <el-select v-if="toolEnabled" v-model="toolGroup" placeholder="选择工具组" class="mr-2">
+                        <el-option v-for="item in toolGroupOption" :key="item.value" :label="item.label"
+                            :value="item.value" />
+                    </el-select>
+                    <el-switch v-model="ragEnabled" inactive-text="RAG" :active-value="true" :inactive-value="false"
+                        active-color="#3b82f6" inactive-color="#dc2626" class="mr-2" @change="ragEnabledChange" />
+                    <el-select v-if="ragEnabled" v-model="ragGroup" placeholder="选择文件组" class="mr-2">
+                        <el-option v-for="item in ragGroupOption" :key="item.value" :label="item.label"
+                            :value="item.value" />
+                    </el-select>
                     <el-button @click="optimizePromptWords()" :class="['!bg-blue-500 hover:!bg-green-600']">
                         <span class="font-medium text-white">
                             优化提示词
