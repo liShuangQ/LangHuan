@@ -10,7 +10,7 @@ import { CancelTokenSource } from "axios/index";
 import { ElMessage } from "element-plus";
 import { store } from "@/utils";
 import { isFunction } from "lodash";
-
+import { chatServiceTypeOption } from "./config"
 let chats = ref<Chat[]>([
     {
         id: 1,
@@ -18,7 +18,8 @@ let chats = ref<Chat[]>([
         active: true
     }
 ]);
-
+let { ctx: that } = getCurrentInstance() as any
+let chatServiceType = ref<string>('/chat');
 let inputMessageText = ref<string>('');
 let inputPromptText = ref<string>('');
 let currentChatId = ref<number>(1);
@@ -51,6 +52,7 @@ const addMessage = (chat: Chat, messageData: Message) => {
         isUser: messageData.isUser
     });
     isTyping.value = messageData.isUser
+    that.$forceUpdate()
     toDownPage()
 }
 // 发送信息
@@ -72,7 +74,7 @@ const sendMessage = (recommend = null) => {
         inputMessageText.value = '';
         axiosCancel = axios.CancelToken.source();
         http.request<any>({
-            url: '/chat/chat',
+            url: chatServiceType + '/chat',
             method: 'get',
             q_spinning: false,
             cancelToken: axiosCancel.token,
@@ -119,7 +121,7 @@ const sendMessage = (recommend = null) => {
 // 优化替换提示词到输入框
 const optimizePromptWords = () => {
     http.request<any>({
-        url: '/chat/getPrompt',
+        url: chatServiceType + '/getPrompt',
         method: 'get',
         q_spinning: true,
         params: {
@@ -144,7 +146,7 @@ const clearMemory = (isList = false, id = 0) => {
     if (chat) {
         const useId = isList ? id : chat.id
         http.request<any>({
-            url: '/chat/clear',
+            url: chatServiceType + '/clear',
             method: 'get',
             q_spinning: true,
             params: {
@@ -201,6 +203,7 @@ const ragEnabledChange = (e: any) => {
     ragGroup.value = ''
 }
 
+
 </script>
 
 <template>
@@ -209,7 +212,7 @@ const ragEnabledChange = (e: any) => {
         <!-- 对话窗口列表 -->
         <div :class="[
             'w-64 bg-white rounded-lg shadow-lg p-4 transition-transform duration-300',
-            'fixed md:static h-full] z-40 overflow-y-auto',
+            'fixed md:static h-full] z-40',
         ]">
             <div class="flex justify-between items-center mb-4">
                 <h2 class="text-lg font-semibold">对话列表</h2>
@@ -218,7 +221,7 @@ const ragEnabledChange = (e: any) => {
                     新建对话
                 </el-button>
             </div>
-            <ul class="space-y-2 ">
+            <ul class="space-y-2 overflow-y-auto" style="height: calc(100% - 32px - 64px);">
                 <li v-for="chat in chats" :key="chat.id" :class="[
                     'p-2 rounded-lg transition-colors duration-200 flex justify-between items-center',
                     chat.id === currentChatId ? 'bg-blue-100' : 'hover:bg-gray-100'
@@ -272,7 +275,7 @@ const ragEnabledChange = (e: any) => {
                 </div>
 
                 <!-- ai的等待效果 -->
-                <div v-if="isTyping" class="flex items-start gap-3">
+                <div v-show="isTyping" class="flex items-start gap-3">
                     <div class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white">
                         AI
                     </div>
@@ -288,32 +291,43 @@ const ragEnabledChange = (e: any) => {
 
             <div class="p-4 border-t border-gray-200 space-y-3">
                 <!-- 上功能区 -->
-                <div class="flex justify-end items-center">
-                    <el-switch v-model="toolEnabled" inactive-text="工具" :active-value="true" :inactive-value="false"
-                        active-color="#3b82f6" inactive-color="#dc2626" class="mr-2" />
-                    <el-select v-if="toolEnabled" v-model="toolGroup" placeholder="选择工具组" class="mr-2">
-                        <el-option v-for="item in toolGroupOption" :key="item.value" :label="item.label"
-                            :value="item.value" />
-                    </el-select>
-                    <el-switch v-model="ragEnabled" inactive-text="RAG" :active-value="true" :inactive-value="false"
-                        active-color="#3b82f6" inactive-color="#dc2626" class="mr-2" @change="ragEnabledChange" />
-                    <el-select v-if="ragEnabled" v-model="ragGroup" placeholder="选择文件组" class="mr-2">
-                        <el-option v-for="item in ragGroupOption" :key="item.value" :label="item.label"
-                            :value="item.value" />
-                    </el-select>
-                    <el-button @click="clearMemory(false)" :class="['!bg-blue-500 hover:!bg-green-600']">
-                        <span class="font-medium text-white">
-                            清除记忆
-                        </span>
-                    </el-button>
+                <div class="flex items-center justify-between">
+                    <!-- 左 -->
+                    <div class="flex justify-end items-center">
+                        <el-select v-model="chatServiceType" placeholder="选择对话类" class="mr-2">
+                            <el-option v-for="item in chatServiceTypeOption" :key="item.value" :label="item.label"
+                                :value="item.value" />
+                        </el-select>
+                    </div>
+                    <!-- 右 -->
+                    <div class="flex justify-end items-center">
+                        <el-switch v-model="toolEnabled" inactive-text="工具" :active-value="true" :inactive-value="false"
+                            active-color="#3b82f6" inactive-color="#dc2626" class="mr-2" />
+                        <el-select v-if="toolEnabled" v-model="toolGroup" placeholder="选择工具组" class="mr-2">
+                            <el-option v-for="item in toolGroupOption" :key="item.value" :label="item.label"
+                                :value="item.value" />
+                        </el-select>
+                        <el-switch v-model="ragEnabled" inactive-text="RAG" :active-value="true" :inactive-value="false"
+                            active-color="#3b82f6" inactive-color="#dc2626" class="mr-2" @change="ragEnabledChange" />
+                        <el-select v-if="ragEnabled" v-model="ragGroup" placeholder="选择文件组" class="mr-2">
+                            <el-option v-for="item in ragGroupOption" :key="item.value" :label="item.label"
+                                :value="item.value" />
+                        </el-select>
+                        <el-button @click="clearMemory(false)" :class="['!bg-blue-500 hover:!bg-green-600']">
+                            <span class="font-medium text-white">
+                                清除记忆
+                            </span>
+                        </el-button>
 
-                    <el-button @click="clearMessage()" :class="['!bg-blue-500 hover:!bg-green-600']">
-                        <span class="font-medium text-white">
-                            清除聊天记录
-                        </span>
-                    </el-button>
+                        <el-button @click="clearMessage()" :class="['!bg-blue-500 hover:!bg-green-600']">
+                            <span class="font-medium text-white">
+                                清除聊天记录
+                            </span>
+                        </el-button>
 
+                    </div>
                 </div>
+
 
                 <!-- 消息内容 -->
                 <div class=" flex justify-between items-center ">
