@@ -8,8 +8,6 @@ import { http } from "@/plugins/axios";
 import axios, { CancelToken } from "axios";
 import { CancelTokenSource } from "axios/index";
 import { ElMessage } from "element-plus";
-import { store } from "@/utils";
-import { isFunction } from "lodash";
 import { chatServiceTypeOption } from "./config"
 let chats = ref<Chat[]>([
     {
@@ -244,6 +242,10 @@ const ragEnabledChange = (e: any) => {
 
         <!-- 对话窗口 -->
         <div v-if="chats.length > 0" class="flex-1 bg-white rounded-lg shadow-lg flex flex-col h-full">
+            <div class="p-4 pb-3 border-b-2  border-gray-300">
+                对话 #{{ currentChatId }}
+            </div>
+
             <div class="flex-1 overflow-y-auto p-4 space-y-4">
                 <div v-for="message in currentChat().messages" :key="message.id"
                     :class="['flex items-start gap-3', message.isUser ? 'justify-end' : 'justify-start']">
