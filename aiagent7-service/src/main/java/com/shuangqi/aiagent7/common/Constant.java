@@ -32,7 +32,7 @@ public class Constant {
             ---------------------
             """;
     //设置返回的最相似结果的数量
-    public static final int WITHTOPK = 1;
+    public static final int WITHTOPK = 2;
     //设置相似度阈值，常是一个介于 0 和 1 之间的浮点数，例如 0.5、0.7、0.8 等，如果设置得过高，可能会没有结果返回；如果设置得过低，可能会返回大量不相关的结果
-    public static final double WITHSIMILARITYTHRESHOLD = 0.8;
+    public static final double WITHSIMILARITYTHRESHOLD = 0.7;
 }

@@ -1,5 +1,6 @@
 package com.shuangqi.aiagent7.serviceai;
 
+import com.alibaba.fastjson.JSONObject;
 import com.shuangqi.aiagent7.advisors.MySimplelogAdvisor;
 import com.shuangqi.aiagent7.common.BusinessException;
 import com.shuangqi.aiagent7.common.Constant;
@@ -11,6 +12,7 @@ import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
 import org.springframework.ai.chat.client.advisor.QuestionAnswerAdvisor;
 import org.springframework.ai.chat.client.advisor.SafeGuardAdvisor;
 import org.springframework.ai.chat.memory.InMemoryChatMemory;
+import org.springframework.ai.document.Document;
 import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.context.ApplicationContext;
@@ -18,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.function.BiFunction;
 
@@ -65,14 +68,17 @@ public class ChatService {
                 .toArray(String[]::new) : new String[0];
         try {
             if (isRag) {
+                QuestionAnswerAdvisor questionAnswerAdvisor = groupId.isEmpty()
+                        ? new QuestionAnswerAdvisor(vectorStore,
+                        SearchRequest.defaults().withTopK(Constant.WITHTOPK)
+                                .withSimilarityThreshold(Constant.WITHSIMILARITYTHRESHOLD), Constant.AIDEFAULTQUESTIONANSWERADVISORRPROMPT)
+                        : new QuestionAnswerAdvisor(vectorStore,
+                        SearchRequest.defaults().withTopK(Constant.WITHTOPK)
+                                .withFilterExpression("groupId == " + groupId)
+                                .withSimilarityThreshold(Constant.WITHSIMILARITYTHRESHOLD), Constant.AIDEFAULTQUESTIONANSWERADVISORRPROMPT);
                 return this.chatClient.prompt(p)
                         .user(q)
-                        .advisors(
-                                new QuestionAnswerAdvisor(vectorStore,
-                                        SearchRequest.defaults().withTopK(Constant.WITHTOPK)
-                                                .withFilterExpression(groupId.isEmpty() ? "" : "groupId == " + groupId)
-                                                .withSimilarityThreshold(Constant.WITHSIMILARITYTHRESHOLD), Constant.AIDEFAULTQUESTIONANSWERADVISORRPROMPT)
-                        )
+                        .advisors(questionAnswerAdvisor)
                         .advisors(
                                 a -> a
                                         .param(CHAT_MEMORY_CONVERSATION_ID_KEY, id)
@@ -98,7 +104,7 @@ public class ChatService {
         }
     }
 
-    public String clear(String id) {
+    public String clearChatMemory(String id) {
         log.info("advisor-clear: {}", "用户id-" + id);
         this.inMemoryChatMemory.clear(id);
         return "清除成功";
@@ -107,6 +113,35 @@ public class ChatService {
 
     @SneakyThrows
     public String addRagVector(MultipartFile file, String parentFileId) {
-        return ragVectorUtils.addRagVector(file, vectorStore, parentFileId);
+        return ragVectorUtils.addRagFileVector(file, vectorStore, parentFileId);
     }
+
+    public String ragSearch(String q, String groupId) {
+        List<Document> searchDocuments = null;
+        if (groupId.isEmpty()) {
+            searchDocuments = vectorStore.similaritySearch(
+                    SearchRequest.defaults()
+                            .withQuery(q)
+                            .withTopK(5) // 单独设置多一些
+                            .withSimilarityThreshold(0.5));
+        } else {
+            searchDocuments = vectorStore.similaritySearch(
+                    SearchRequest.defaults()
+                            .withQuery(q)
+                            .withTopK(5)
+                            .withSimilarityThreshold(0.5)
+                            .withFilterExpression("groupId == " + groupId));//设置过滤条件
+        }
+        log.debug("ragSearch: " + searchDocuments);
+        StringBuilder contents = new StringBuilder();
+        int i = 0;
+        for (Document document : searchDocuments) {
+            i += 1;
+            contents.append("<p>").append(i).append(":").append("&nbsp;").append(document.getContent()).append("</p>");
+        }
+        JSONObject json = new JSONObject();
+        json.put("desc", contents.toString());
+        return json.toString();
+    }
+
 }

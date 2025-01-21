@@ -9,15 +9,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-public class MyTokenTextSplitter {
+public class PatternTokenTextSplitter {
 
-    private Pattern splitPattern;
+    private final Pattern splitPattern;
 
-    public MyTokenTextSplitter() {
+    public PatternTokenTextSplitter() {
         this.splitPattern = Constant.DEFAULT_RAG_SPLIT_PATTERN;
     }
 
-    public MyTokenTextSplitter(Pattern splitPattern) {
+    public PatternTokenTextSplitter(Pattern splitPattern) {
         this.splitPattern = splitPattern;
     }
 
@@ -59,7 +59,7 @@ public class MyTokenTextSplitter {
     }
 
 //    public static void main(String[] args) {
-//        MyTokenTextSplitter splitter = new MyTokenTextSplitter();
+//        PatternTokenTextSplitter splitter = new PatternTokenTextSplitter();
 //        String text = "Hello world！你好，世界。How are you doing today？今天你过得好吗？ I hope you're well.";
 //        List<Document> documents = splitter.apply(text);
 //        for (Document doc : documents) {

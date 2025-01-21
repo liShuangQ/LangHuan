@@ -16,7 +16,6 @@ let chats = ref<Chat[]>([
         active: true
     }
 ]);
-let { ctx: that } = getCurrentInstance() as any
 let chatServiceType = ref<string>('/chat');
 let inputMessageText = ref<string>('');
 let inputPromptText = ref<string>('');
@@ -32,7 +31,7 @@ let toolGroupOption = ref<{ label: string, value: string }[]>([])
 let aiOptionVisible = ref<boolean>(false)
 
 // 添加滚动到最新的消息
-const toDownPage = () => {
+const toDownPage = (): void => {
     nextTick(() => {
         const chatWindow = document.querySelector('.flex-1.overflow-y-auto.p-4.space-y-4');
         if (chatWindow) {
@@ -40,21 +39,20 @@ const toDownPage = () => {
         }
     });
 };
-// 添加信息
-// HACK 跟随 interface Message  更改
-const addMessage = (chat: Chat, messageData: Message) => {
+// 添加信息 HACK 跟随 interface Message  更改
+const addMessage = (chat: Chat, messageData: Message): void => {
     chat.messages.push({
         id: Date.now(),
         text: messageData.text,
         recommend: messageData?.recommend ?? [],
         isUser: messageData.isUser
     });
+
     isTyping.value = messageData.isUser
-    that.$forceUpdate()
     toDownPage()
 }
 // 发送信息
-const sendMessage = (recommend = null) => {
+const sendMessage = (recommend = null): void => {
     if (isTyping.value) {
         ElMessage.error('请等待回复完成。')
         return
@@ -88,8 +86,8 @@ const sendMessage = (recommend = null) => {
             if (res.code === 200) {
                 addMessage(chat,
                     {
-                        text: JSON.parse(res.data.chat)?.desc ?? "json格式错误",
-                        recommend: JSON.parse(res.data.recommend)?.desc ?? [],
+                        text: res.data.chat && (JSON.parse(res.data.chat)?.desc ?? "json格式错误"),
+                        recommend: res.data.recommend && (JSON.parse(res.data.recommend)?.desc ?? []),
                         isUser: false
                     }
                 )
@@ -111,13 +109,22 @@ const sendMessage = (recommend = null) => {
                         isUser: false
                     }
                 )
+            } else {
+                console.warn(error, 'error');
+                addMessage(chat,
+                    {
+                        text: "未知错误。",
+                        recommend: [],
+                        isUser: false
+                    }
+                )
             }
         })
 
     }
 };
 // 优化替换提示词到输入框
-const optimizePromptWords = () => {
+const optimizePromptWords = (): void => {
     http.request<any>({
         url: chatServiceType.value + '/getPrompt',
         method: 'get',
@@ -133,18 +140,18 @@ const optimizePromptWords = () => {
     })
 }
 // 停止当前对话
-const messageStop = () => {
+const messageStop = (): void => {
     if (axiosCancel) {
         axiosCancel.cancel();
     }
 }
 // 清空对话记忆
-const clearMemory = (isList = false, id = 0) => {
+const clearChatMemory = (isList = false, id = 0): void => {
     const chat = chats.value.find(c => c.id === currentChatId.value);
     if (chat) {
         const useId = isList ? id : chat.id
         http.request<any>({
-            url: chatServiceType.value + '/clear',
+            url: chatServiceType.value + '/clearChatMemory',
             method: 'get',
             q_spinning: true,
             params: {
@@ -166,7 +173,7 @@ const clearMemory = (isList = false, id = 0) => {
 
 };
 // 清空聊天记录
-const clearMessage = () => {
+const clearMessage = (): void => {
     const chat = chats.value.find(c => c.id === currentChatId.value);
     if (chat) {
         chat.messages = [];
@@ -174,16 +181,16 @@ const clearMessage = () => {
     ElMessage.success('已成功清空聊天记录。');
 }
 // 添加初始的对话消息
-const addStartMessage = () => {
+const addStartMessage = (): void => {
     const chat = chats.value.find(c => c.id === currentChatId.value);
     chat && addMessage(chat, {
         text: '很高兴见到你！我可以帮你写代码、读文件、写作各种创意内容，请把你的任务交给我吧~',
-        recommend: ['你是谁？','你能做些什么？'],
+        recommend: ['你是谁？', '你能做些什么？'],
         isUser: false
     })
 }
 // 开始一个新的对话
-const startNewChat = () => {
+const startNewChat = (): void => {
     const newChatId = (chats.value[chats.value.length - 1]?.id ?? 0) + 1;
     chats.value.push({
         id: newChatId,
@@ -194,7 +201,7 @@ const startNewChat = () => {
     addStartMessage()
 };
 // 设置对话窗口
-const switchChat = (chatId: number) => {
+const switchChat = (chatId: number): void => {
     currentChatId.value = chatId;
 };
 // 找到当前的窗口
@@ -202,12 +209,19 @@ const currentChat = (): Chat | any => {
     return chats.value.find(c => c.id === currentChatId.value) || { messages: [] };
 };
 // 获取当前时间
-const getCurrentTime = () => {
+const getCurrentTime = (): number => {
     return Date.now();
 };
 // rag按钮变化
-const ragEnabledChange = (e: any) => {
+const ragEnabledChange = (e: any): void => {
     ragGroup.value = ''
+}
+// 当前选择智能体的改变
+const chatServiceTypeChange = (e: any): void => {
+    if (e === '/onlyRag') {
+        ragEnabled.value = true
+    }
+
 }
 // 初始化执行
 nextTick(() => {
@@ -239,7 +253,7 @@ nextTick(() => {
                     <span class="cursor-pointer" @click="switchChat(chat.id)">
                         对话 #{{ chat.id }}
                     </span>
-                    <span class="text-blue-500 cursor-pointer" @click="clearMemory(true, chat.id)">清除</span>
+                    <span class="text-blue-500 cursor-pointer" @click="clearChatMemory(true, chat.id)">清除</span>
                 </li>
             </ul>
             <!--                            {{ message.text }}-->
@@ -308,14 +322,15 @@ nextTick(() => {
                 <div class="flex items-center justify-between">
                     <!-- 左 -->
                     <div class="flex justify-end items-center">
-                        <el-select v-model="chatServiceType" placeholder="选择对话类" class="mr-2">
+                        <el-select v-model="chatServiceType" placeholder="选择对话类" class="mr-2"
+                            @change="chatServiceTypeChange">
                             <el-option v-for="item in chatServiceTypeOption" :key="item.value" :label="item.label"
                                 :value="item.value" />
                         </el-select>
                     </div>
                     <!-- 右 -->
                     <div class="flex justify-end items-center">
-                        <el-button @click="clearMemory(false)" :class="['!bg-blue-500 hover:!bg-green-600']">
+                        <el-button @click="clearChatMemory(false)" :class="['!bg-blue-500 hover:!bg-green-600']">
                             <span class="font-medium text-white">
                                 清除记忆
                             </span>

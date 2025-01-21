@@ -88,7 +88,11 @@ public class ChatRagService {
 
     @SneakyThrows
     public String addRagVector(MultipartFile file) {
-        return ragVectorUtils.addRagVector(file, vectorStore);
+        return ragVectorUtils.addRagFileVector(file, vectorStore);
+    }
+    @SneakyThrows
+    public String addRagVector(MultipartFile file, String parentFileId) {
+        return ragVectorUtils.addRagFileVector(file, vectorStore, parentFileId);
     }
 
 }
