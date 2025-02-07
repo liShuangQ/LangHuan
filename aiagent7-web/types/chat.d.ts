@@ -3,6 +3,7 @@ interface Message {
     text: string;
     recommend?: Array<String>,
     isUser: boolean;
+    topInfo: string;
 }
 
 interface Chat {

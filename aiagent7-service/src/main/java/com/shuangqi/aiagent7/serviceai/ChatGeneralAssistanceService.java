@@ -27,7 +27,7 @@ public class ChatGeneralAssistanceService {
                                 以JSON格式返回。
                                 确保你的回答遵循以下结构：
                                 {
-                                    "desc": "[问题一，问题二]"
+                                    "desc": "['问题一'，'问题二']"
                                 }
                         """)
                 .user(q)

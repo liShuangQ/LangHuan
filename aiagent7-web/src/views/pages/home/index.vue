@@ -29,7 +29,8 @@ let ragGroupOption = ref<{ label: string, value: string }[]>([])
 let toolGroup = ref<string>('')
 let toolGroupOption = ref<{ label: string, value: string }[]>([])
 let aiOptionVisible = ref<boolean>(false)
-
+let chatModelOption = ref<{ label: string, value: string }[]>([])
+let chatModelName = ref<string>('')
 // 添加滚动到最新的消息
 const toDownPage = (): void => {
     nextTick(() => {
@@ -45,7 +46,8 @@ const addMessage = (chat: Chat, messageData: Message): void => {
         id: Date.now(),
         text: messageData.text,
         recommend: messageData?.recommend ?? [],
-        isUser: messageData.isUser
+        isUser: messageData.isUser,
+        topInfo:getChatTopInfo()
     });
 
     isTyping.value = messageData.isUser
@@ -64,7 +66,8 @@ const sendMessage = (recommend = null): void => {
     if (inputMessageText.value.trim() && chat) {
         addMessage(chat, {
             text: inputMessageText.value,
-            isUser: true
+            isUser: true,
+            topInfo:getChatTopInfo()
         })
         const inputTextCopy = inputMessageText.value;
         inputMessageText.value = '';
@@ -80,23 +83,37 @@ const sendMessage = (recommend = null): void => {
                 q: inputTextCopy,
                 isRag: ragEnabled.value,
                 ragType: ragGroup.value,
-                isFunction: toolEnabled.value
+                isFunction: toolEnabled.value,
+                modelName: chatModelName.value
             }
         }).then((res) => {
             if (res.code === 200) {
-                addMessage(chat,
-                    {
-                        text: res.data.chat && (JSON.parse(res.data.chat)?.desc ?? "json格式错误"),
-                        recommend: res.data.recommend && (JSON.parse(res.data.recommend)?.desc ?? []),
-                        isUser: false
-                    }
-                )
+                try {
+                    addMessage(chat,
+                        {
+                            text: res.data.chat && (JSON.parse(res.data.chat)?.desc ?? "json格式错误"),
+                            recommend: res.data.recommend && (JSON.parse(res.data.recommend)?.desc ?? []),
+                            isUser: false,
+                            topInfo:getChatTopInfo()
+                        }
+                    )
+                } catch (error) {
+                    addMessage(chat,
+                        {
+                            text: res.data.chat,
+                            recommend: res.data.recommend && (JSON.parse(res.data.recommend)?.desc ?? []),
+                            isUser: false,
+                            topInfo:getChatTopInfo()
+                        }
+                    )
+                }
             } else {
                 addMessage(chat,
                     {
                         text: "回答出现错误，请换种方式提问。",
                         recommend: [],
-                        isUser: false
+                        isUser: false,
+                        topInfo:getChatTopInfo()
                     }
                 )
             }
@@ -106,7 +123,8 @@ const sendMessage = (recommend = null): void => {
                     {
                         text: "请求已取消。",
                         recommend: [],
-                        isUser: false
+                        isUser: false,
+                        topInfo:getChatTopInfo()
                     }
                 )
             } else {
@@ -115,7 +133,8 @@ const sendMessage = (recommend = null): void => {
                     {
                         text: "未知错误。",
                         recommend: [],
-                        isUser: false
+                        isUser: false,
+                        topInfo:getChatTopInfo()
                     }
                 )
             }
@@ -136,6 +155,25 @@ const optimizePromptWords = (): void => {
         if (res.code === 200) {
             res.data = JSON.parse(res.data)
             inputMessageText.value = res.data.desc
+        }
+    })
+}
+// 获取支持的模型列表
+const getModelList = (): Promise<any> => {
+    return http.request<any>({
+        url: '/chatModel/getModelList',
+        method: 'post',
+        q_spinning: true,
+        data: {},
+    }).then((res) => {
+        if (res.code === 200) {
+            chatModelOption.value = res.data.map((e: string) => {
+                return {
+                    label: e,
+                    value: e
+                }
+            })
+            chatModelName.value = res.data[0]
         }
     })
 }
@@ -164,7 +202,8 @@ const clearChatMemory = (isList = false, id = 0): void => {
                 chat.messages.push({
                     id: Date.now(),
                     text: '已成功清空上下文',
-                    isUser: false
+                    isUser: false,
+                    topInfo:getChatTopInfo()
                 });
                 toDownPage()
             }
@@ -186,7 +225,8 @@ const addStartMessage = (): void => {
     chat && addMessage(chat, {
         text: '很高兴见到你！我可以帮你写代码、读文件、写作各种创意内容，请把你的任务交给我吧~',
         recommend: ['你是谁？', '你能做些什么？'],
-        isUser: false
+        isUser: false,
+        topInfo:getChatTopInfo()
     })
 }
 // 开始一个新的对话
@@ -208,9 +248,20 @@ const switchChat = (chatId: number): void => {
 const currentChat = (): Chat | any => {
     return chats.value.find(c => c.id === currentChatId.value) || { messages: [] };
 };
-// 获取当前时间
-const getCurrentTime = (): number => {
-    return Date.now();
+// 对话框上面的信息
+const getChatTopInfo = (): string => {
+    const getCurrentDateTime = (): string => {
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        const seconds = String(now.getSeconds()).padStart(2, '0');
+        return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+    };
+
+    return `${toRaw(chatModelName.value)}:${getCurrentDateTime()}`
 };
 // rag按钮变化
 const ragEnabledChange = (e: any): void => {
@@ -224,7 +275,8 @@ const chatServiceTypeChange = (e: any): void => {
 
 }
 // 初始化执行
-nextTick(() => {
+nextTick(async () => {
+    await getModelList()
     addStartMessage()
 })
 
@@ -281,7 +333,7 @@ nextTick(() => {
                     </div>
                     <div class="max-w-[80%]">
                         <!--                        对话回复-->
-                        <div class="text-[12px] " v-format-time>{{ getCurrentTime() }}</div>
+                        <div class="text-[12px] ">{{ message.topInfo }}</div>
 
                         <div v-html="message.text" :class="[
                             'max-full p-3 rounded-lg transition-all duration-200',
@@ -322,6 +374,10 @@ nextTick(() => {
                 <div class="flex items-center justify-between">
                     <!-- 左 -->
                     <div class="flex justify-end items-center">
+                        <el-select v-model="chatModelName" placeholder="选择模型" class="mr-2">
+                            <el-option v-for="item in chatModelOption" :key="item.value" :label="item.label"
+                                :value="item.value" />
+                        </el-select>
                         <el-select v-model="chatServiceType" placeholder="选择对话类" class="mr-2"
                             @change="chatServiceTypeChange">
                             <el-option v-for="item in chatServiceTypeOption" :key="item.value" :label="item.label"

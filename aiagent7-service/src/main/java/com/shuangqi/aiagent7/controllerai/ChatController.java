@@ -3,10 +3,13 @@ package com.shuangqi.aiagent7.controllerai;
 import com.shuangqi.aiagent7.common.Result;
 import com.shuangqi.aiagent7.serviceai.ChatGeneralAssistanceService;
 import com.shuangqi.aiagent7.serviceai.ChatService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -14,6 +17,8 @@ import java.util.Map;
 public class ChatController {
     private final ChatService chatService;
     private final ChatGeneralAssistanceService chatGeneralAssistanceService;
+    @Value("${spring.ai.openai.chat.options.model}")
+    private String defaultModelName;
 
     public ChatController(ChatService chatService, ChatGeneralAssistanceService chatGeneralAssistanceService) {
         this.chatService = chatService;
@@ -27,10 +32,14 @@ public class ChatController {
                        @RequestParam(name = "q", required = true) String q,
                        @RequestParam(name = "isRag", required = true) Boolean isRag,
                        @RequestParam(name = "ragType", required = true, defaultValue = "") String ragType,
-                       @RequestParam(name = "isFunction", required = true) Boolean isFunction
+                       @RequestParam(name = "isFunction", required = true) Boolean isFunction,
+                       @RequestParam(name = "modelName", required = true, defaultValue = "") String modelName
     ) {
+        if (modelName.isEmpty()) {
+            modelName = defaultModelName;
+        }
         return Result.success(Map.of(
-                "chat", chatService.chat(id, p, q, isRag, ragType, isFunction),
+                "chat", chatService.chat(id, p, q, isRag, ragType, isFunction, modelName),
                 "recommend", chatGeneralAssistanceService.otherQuestionsRecommended(q)
         ));
     }
@@ -58,5 +67,11 @@ public class ChatController {
                 "chat", chatService.ragSearch(q, ragType)
 //                "recommend", chatGeneralAssistanceService.otherQuestionsRecommended(q)
         ));
+    }
+
+
+    @PostMapping("/chatModel/getModelList")
+    public Result getModelList() {
+        return Result.success(List.of("qwen2.5:3b", "deepseek-r1:1.5b"));
     }
 }

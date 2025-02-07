@@ -2,8 +2,7 @@
 
 ## 介绍
 
-本项目主要基于springai+ollama实现本地模型对话，对话记忆，RAG搜索，工具调用等功能。
-也可通过设置 支持openai api的使用。
+本项目主要基于springai+oneapi+ollama实现本地模型对话，对话记忆，RAG搜索，工具调用等功能。
 
 ## 部署
 
@@ -11,29 +10,10 @@
 
 - 推荐使用 jdk21
 - postgres数据库 （下方介绍使用docker的方式。也可自己准备，需要RAG则需要pgvector插件）
+- oneapi
+- ollama
 
-### 模型选择
-
-`openai api兼容和ollama 只能选择一个`
-
-#### openai api兼容
-
-- 在pom.xml中删除或注释ollama相关依赖，并且确认openai相关依赖是打开状态，下载maven依赖
-
-```text
-        <!--        ollama 打开-->
-<!--                <dependency>-->
-<!--                    <groupId>org.springframework.ai</groupId>-->
-<!--                    <artifactId>spring-ai-ollama-spring-boot-starter</artifactId>-->
-<!--                </dependency>-->
-        <!--        openaiapi 打开-->
-        <dependency>
-            <groupId>org.springframework.ai</groupId>
-            <artifactId>spring-ai-openai-spring-boot-starter</artifactId>
-        </dependency>
-```
-
-- 在application.yml中修改spring.ai.openai配置
+### 部署
 
 #### ollama
 
@@ -47,24 +27,9 @@ API、多平台兼容等特性。
 ollama run qwen2.5:3b (例子，使用其它模型在 https://ollama.com/library 中查询下载后修改application.yml中模型配置)
 ```
 
-- 在pom.xml中删除或注释opanai相关依赖，并且确认ollama相关依赖是打开状态，下载maven依赖
-
-```text
-        <!--        ollama 打开-->
-                <dependency>
-                    <groupId>org.springframework.ai</groupId>
-                    <artifactId>spring-ai-ollama-spring-boot-starter</artifactId>
-                </dependency>
-        <!--        openaiapi 打开-->
-<!--        <dependency>-->
-        <!--            <groupId>org.springframework.ai</groupId>-->
-        <!--            <artifactId>spring-ai-openai-spring-boot-starter</artifactId>-->
-        <!--        </dependency>-->
-```
-
 - 在application.yml中修改spring.ai.ollama配置
 
-#### one api（可选，选择则上面可全部选择使用openai api兼容）
+#### one api
 
 是一个开源的接口管理与分发系统，支持如 OpenAI、Google PaLM 2、百度文心一言等多种大模型平台。通过统一接口访问不同大模型服务，可用于二次分发管理
 key，仅单可执行文件，已打包好 Docker 镜像，能一键部署，开箱即用。
@@ -80,6 +45,7 @@ docker run --name one-api -d --restart always -p 3000:3000 -e SQL_DSN="root:1234
 
 # 默认管理员账号密码：root 123456
 ```
+安装后，在oneapi中配置ollama的模型渠道，具体配置方式见官网。
 
 #### 嵌入模型和向量数据库（RAG使用）
 

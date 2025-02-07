@@ -12,7 +12,9 @@ import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
 import org.springframework.ai.chat.client.advisor.QuestionAnswerAdvisor;
 import org.springframework.ai.chat.client.advisor.SafeGuardAdvisor;
 import org.springframework.ai.chat.memory.InMemoryChatMemory;
+import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.document.Document;
+import org.springframework.ai.openai.OpenAiChatOptions;
 import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.context.ApplicationContext;
@@ -43,12 +45,13 @@ public class ChatService {
         this.inMemoryChatMemory = new InMemoryChatMemory();
         this.vectorStore = vectorStore;
         this.applicationContext = applicationContext;
+//        用合适的美观的html格式的字符串的形式回复，当字符串中存在双引号的时候使用单引号替代。
         this.chatClient = chatClientBuilder.defaultSystem("""
                         用户会向你提出一个问题，你的任务是提供一个细致且准确的答案。
                          以JSON格式返回。
                          确保你的回答遵循以下结构：
                          {
-                            "desc": "用合适的美观的html格式的字符串的形式回复，当字符串中存在双引号的时候使用单引号替代。"
+                            "desc": "回复内容"
                          }
                         """)
                 .defaultAdvisors(
@@ -62,7 +65,7 @@ public class ChatService {
                 .build();
     }
 
-    public String chat(String id, String p, String q, Boolean isRag, String groupId, Boolean isFunction) {
+    public String chat(String id, String p, String q, Boolean isRag, String groupId, Boolean isFunction, String modelName) {
         String[] funcs = isFunction ? Arrays.stream(applicationContext.getBeanNamesForType(BiFunction.class))
                 .filter(name -> name.startsWith("chat_"))
                 .toArray(String[]::new) : new String[0];
@@ -76,7 +79,14 @@ public class ChatService {
                         SearchRequest.defaults().withTopK(Constant.WITHTOPK)
                                 .withFilterExpression("groupId == " + groupId)
                                 .withSimilarityThreshold(Constant.WITHSIMILARITYTHRESHOLD), Constant.AIDEFAULTQUESTIONANSWERADVISORRPROMPT);
-                return this.chatClient.prompt(p)
+                return this.chatClient.prompt(
+                                new Prompt(
+                                        p,
+                                        OpenAiChatOptions.builder()
+                                                .withModel(modelName)
+                                                .build()
+                                )
+                        )
                         .user(q)
                         .advisors(questionAnswerAdvisor)
                         .advisors(
@@ -87,7 +97,14 @@ public class ChatService {
                         .functions(funcs)
                         .call().chatResponse().getResult().getOutput().getContent();
             } else {
-                return this.chatClient.prompt(p)
+                return this.chatClient.prompt(
+                                new Prompt(
+                                        p,
+                                        OpenAiChatOptions.builder()
+                                                .withModel(modelName)
+                                                .build()
+                                )
+                        )
                         .user(q)
                         .advisors(
                                 a -> a

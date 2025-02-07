@@ -25,7 +25,10 @@ public class ChatClientControllerD {
     public String string(@RequestParam String q) {
         return chatClientService.chat(q);
     }
-
+    @GetMapping("/string1")
+    public String string1(@RequestParam String q) {
+        return chatClientService.chat1(q);
+    }
     @GetMapping("/stream")
     public Flux<String> stream(@RequestParam String q) {
         return chatClientService.stream(q);

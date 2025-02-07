@@ -1,7 +1,6 @@
 package com.shuangqi.aiagent7.serviceai;
 
 import com.shuangqi.aiagent7.advisors.MySimplelogAdvisor;
-import com.shuangqi.aiagent7.advisors.ReReadingAdvisor;
 import com.shuangqi.aiagent7.common.Constant;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.SafeGuardAdvisor;
@@ -9,6 +8,7 @@ import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.prompt.Prompt;
+import org.springframework.ai.openai.OpenAiChatOptions;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
@@ -33,7 +33,26 @@ public class ChatClientService {
     }
 
     public String chat(String q) {
-        return this.chatClient.prompt()
+        return this.chatClient.prompt(
+                        new Prompt(
+                                "回答我的问题",
+                                OpenAiChatOptions.builder()
+                                        .withModel("qwen2.5:3b")
+                                        .build()
+                        ))
+                .user(q)
+                .call()
+                .content();
+    }
+
+    public String chat1(String q) {
+        return this.chatClient.prompt(
+                        new Prompt(
+                                "回答我的问题",
+                                OpenAiChatOptions.builder()
+                                        .withModel("deepseek-r1:1.5b")
+                                        .build()
+                        ))
                 .user(q)
                 .call()
                 .content();
