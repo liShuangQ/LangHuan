@@ -18,7 +18,8 @@
                     <el-input v-model="settings.initialQuestions" type="textarea"></el-input>
                 </el-form-item>
                 <el-form-item label="AI角色提示词">
-                    <div v-for="(prompt, index) in settings.aiPrompts" :key="index" class="flex items-center space-x-2 w-full">
+                    <div v-for="(prompt, index) in settings.aiPrompts" :key="index"
+                        class="flex items-center space-x-2 w-full">
                         <el-select v-model="settings.aiModels[index]" placeholder="选择模型">
                             <el-option v-for="model in predefinedModels" :key="model" :label="model" :value="model" />
                         </el-select>
@@ -43,7 +44,7 @@
 </template>
 <script lang="ts">
 export default {
-    auto: true,
+    auto: true
 };
 </script>
 <script setup lang="ts">
