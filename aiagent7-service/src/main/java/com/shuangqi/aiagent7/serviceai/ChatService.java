@@ -37,7 +37,6 @@ public class ChatService {
     private final VectorStore vectorStore;
     private final ApplicationContext applicationContext;
     private final InMemoryChatMemory inMemoryChatMemory;
-    private final String chatMemoryRetrieveSizeKey = "7";
     private final RagVectorUtils ragVectorUtils;
 
     public ChatService(ChatClient.Builder chatClientBuilder, VectorStore vectorStore, ApplicationContext applicationContext, RagVectorUtils ragVectorUtils) {
@@ -47,12 +46,12 @@ public class ChatService {
         this.applicationContext = applicationContext;
 //        用合适的美观的html格式的字符串的形式回复，当字符串中存在双引号的时候使用单引号替代。
         this.chatClient = chatClientBuilder.defaultSystem("""
-                        用户会向你提出一个问题，你的任务是提供一个细致且准确的答案。
-                         以JSON格式返回。
-                         确保你的回答遵循以下结构：
-                         {
-                            "desc": "回复内容"
-                         }
+                        解答用户的问题。
+                        以JSON格式返回。
+                        确保你的回答遵循以下结构：
+                        {
+                           "desc": "{回复内容}"
+                        }
                         """)
                 .defaultAdvisors(
                         new MessageChatMemoryAdvisor(inMemoryChatMemory),
@@ -65,7 +64,7 @@ public class ChatService {
                 .build();
     }
 
-    public String chat(String id, String p, String q, Boolean isRag, String groupId, Boolean isFunction, String modelName) {
+    public String chat(String id, String p, String q, Boolean isRag, String groupId, Boolean isFunction, String modelName, int chatMemoryRetrieveSize) {
         String[] funcs = isFunction ? Arrays.stream(applicationContext.getBeanNamesForType(BiFunction.class))
                 .filter(name -> name.startsWith("chat_"))
                 .toArray(String[]::new) : new String[0];
@@ -92,7 +91,7 @@ public class ChatService {
                         .advisors(
                                 a -> a
                                         .param(CHAT_MEMORY_CONVERSATION_ID_KEY, id)
-                                        .param(CHAT_MEMORY_RETRIEVE_SIZE_KEY, chatMemoryRetrieveSizeKey)
+                                        .param(CHAT_MEMORY_RETRIEVE_SIZE_KEY, chatMemoryRetrieveSize)
                         )
                         .functions(funcs)
                         .call().chatResponse().getResult().getOutput().getContent();
@@ -109,7 +108,7 @@ public class ChatService {
                         .advisors(
                                 a -> a
                                         .param(CHAT_MEMORY_CONVERSATION_ID_KEY, id)
-                                        .param(CHAT_MEMORY_RETRIEVE_SIZE_KEY, chatMemoryRetrieveSizeKey)
+                                        .param(CHAT_MEMORY_RETRIEVE_SIZE_KEY, chatMemoryRetrieveSize)
                         )
                         .functions(funcs)
                         .call().chatResponse().getResult().getOutput().getContent();

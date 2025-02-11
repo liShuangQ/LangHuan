@@ -1,15 +1,21 @@
 package com.shuangqi.aiagent7.controllerai;
 
+import com.alibaba.fastjson2.JSONObject;
 import com.shuangqi.aiagent7.common.Result;
 import com.shuangqi.aiagent7.serviceai.ChatGeneralAssistanceService;
 import com.shuangqi.aiagent7.serviceai.ChatService;
+import com.shuangqi.aiagent7.serviceai.StanfordChatService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.util.Map;
 
 @RestController
@@ -17,12 +23,18 @@ import java.util.Map;
 public class ChatController {
     private final ChatService chatService;
     private final ChatGeneralAssistanceService chatGeneralAssistanceService;
+    private final StanfordChatService stanfordChatService;
     @Value("${spring.ai.openai.chat.options.model}")
     private String defaultModelName;
+    @Value("${spring.ai.openai.base-url}")
+    private String oneApiUrl;
+    @Value("${spring.ai.openai.api-key}")
+    private String oneApiKey;
 
-    public ChatController(ChatService chatService, ChatGeneralAssistanceService chatGeneralAssistanceService) {
+    public ChatController(ChatService chatService, ChatGeneralAssistanceService chatGeneralAssistanceService, StanfordChatService stanfordChatService) {
         this.chatService = chatService;
         this.chatGeneralAssistanceService = chatGeneralAssistanceService;
+        this.stanfordChatService = stanfordChatService;
     }
 
     //    NOTE:Flux<String>会和Security的拦截器冲突，所以要设置白名单  "/chat/chatFlux"
@@ -33,13 +45,14 @@ public class ChatController {
                        @RequestParam(name = "isRag", required = true) Boolean isRag,
                        @RequestParam(name = "ragType", required = true, defaultValue = "") String ragType,
                        @RequestParam(name = "isFunction", required = true) Boolean isFunction,
-                       @RequestParam(name = "modelName", required = true, defaultValue = "") String modelName
+                       @RequestParam(name = "modelName", required = true, defaultValue = "") String modelName,
+                       @RequestParam(name = "chatMemoryRetrieveSize", required = true, defaultValue = "7") int chatMemoryRetrieveSize
     ) {
         if (modelName.isEmpty()) {
             modelName = defaultModelName;
         }
         return Result.success(Map.of(
-                "chat", chatService.chat(id, p, q, isRag, ragType, isFunction, modelName),
+                "chat", chatService.chat(id, p, q, isRag, ragType, isFunction, modelName, chatMemoryRetrieveSize),
                 "recommend", chatGeneralAssistanceService.otherQuestionsRecommended(q)
         ));
     }
@@ -71,7 +84,29 @@ public class ChatController {
 
 
     @PostMapping("/chatModel/getModelList")
-    public Result getModelList() {
-        return Result.success(List.of("qwen2.5:3b", "deepseek-r1:1.5b"));
+    public Result getModelList() throws IOException {
+        HttpResponse<String> response = null;
+        try {
+            HttpClient client = HttpClient.newHttpClient();
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(oneApiUrl + "/v1/models"))
+                    .header("Authorization", oneApiKey)
+                    .build();
+
+            response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (Exception e) {
+            return Result.error("获取模型列表失败");
+        }
+        return Result.success(JSONObject.parseObject(response.body()));
+    }
+
+    @PostMapping("/chat/stanford")
+    public Result stanford(
+            @RequestParam(name = "id", required = true) String id,
+            @RequestParam(name = "p", required = true, defaultValue = ".") String p,
+            @RequestParam(name = "q", required = true) String q,
+            @RequestParam(name = "modelName", required = true, defaultValue = "") String modelName
+    ) {
+        return Result.success(stanfordChatService.chat(id, p, q, modelName));
     }
 }

@@ -47,7 +47,7 @@ const addMessage = (chat: Chat, messageData: Message): void => {
         text: messageData.text,
         recommend: messageData?.recommend ?? [],
         isUser: messageData.isUser,
-        topInfo:getChatTopInfo()
+        topInfo: getChatTopInfo()
     });
 
     isTyping.value = messageData.isUser
@@ -67,7 +67,7 @@ const sendMessage = (recommend = null): void => {
         addMessage(chat, {
             text: inputMessageText.value,
             isUser: true,
-            topInfo:getChatTopInfo()
+            topInfo: getChatTopInfo()
         })
         const inputTextCopy = inputMessageText.value;
         inputMessageText.value = '';
@@ -84,7 +84,8 @@ const sendMessage = (recommend = null): void => {
                 isRag: ragEnabled.value,
                 ragType: ragGroup.value,
                 isFunction: toolEnabled.value,
-                modelName: chatModelName.value
+                modelName: chatModelName.value,
+                chatMemoryRetrieveSize: 7,
             }
         }).then((res) => {
             if (res.code === 200) {
@@ -94,7 +95,7 @@ const sendMessage = (recommend = null): void => {
                             text: res.data.chat && (JSON.parse(res.data.chat)?.desc ?? "json格式错误"),
                             recommend: res.data.recommend && (JSON.parse(res.data.recommend)?.desc ?? []),
                             isUser: false,
-                            topInfo:getChatTopInfo()
+                            topInfo: getChatTopInfo()
                         }
                     )
                 } catch (error) {
@@ -103,7 +104,7 @@ const sendMessage = (recommend = null): void => {
                             text: res.data.chat,
                             recommend: res.data.recommend && (JSON.parse(res.data.recommend)?.desc ?? []),
                             isUser: false,
-                            topInfo:getChatTopInfo()
+                            topInfo: getChatTopInfo()
                         }
                     )
                 }
@@ -113,7 +114,7 @@ const sendMessage = (recommend = null): void => {
                         text: "回答出现错误，请换种方式提问。",
                         recommend: [],
                         isUser: false,
-                        topInfo:getChatTopInfo()
+                        topInfo: getChatTopInfo()
                     }
                 )
             }
@@ -124,7 +125,7 @@ const sendMessage = (recommend = null): void => {
                         text: "请求已取消。",
                         recommend: [],
                         isUser: false,
-                        topInfo:getChatTopInfo()
+                        topInfo: getChatTopInfo()
                     }
                 )
             } else {
@@ -134,7 +135,7 @@ const sendMessage = (recommend = null): void => {
                         text: "未知错误。",
                         recommend: [],
                         isUser: false,
-                        topInfo:getChatTopInfo()
+                        topInfo: getChatTopInfo()
                     }
                 )
             }
@@ -167,13 +168,15 @@ const getModelList = (): Promise<any> => {
         data: {},
     }).then((res) => {
         if (res.code === 200) {
-            chatModelOption.value = res.data.map((e: string) => {
+            chatModelOption.value = res.data.data.filter((e: any) => {
+                return e.id.indexOf('embed') === -1
+            }).map((e: any) => {
                 return {
-                    label: e,
-                    value: e
+                    label: e.id,
+                    value: e.id
                 }
             })
-            chatModelName.value = res.data[0]
+            chatModelName.value = chatModelOption.value[0].value
         }
     })
 }
@@ -203,7 +206,7 @@ const clearChatMemory = (isList = false, id = 0): void => {
                     id: Date.now(),
                     text: '已成功清空上下文',
                     isUser: false,
-                    topInfo:getChatTopInfo()
+                    topInfo: getChatTopInfo()
                 });
                 toDownPage()
             }
@@ -226,7 +229,7 @@ const addStartMessage = (): void => {
         text: '很高兴见到你！我可以帮你写代码、读文件、写作各种创意内容，请把你的任务交给我吧~',
         recommend: ['你是谁？', '你能做些什么？'],
         isUser: false,
-        topInfo:getChatTopInfo()
+        topInfo: getChatTopInfo()
     })
 }
 // 开始一个新的对话
@@ -261,7 +264,7 @@ const getChatTopInfo = (): string => {
         return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
     };
 
-    return `${toRaw(chatModelName.value)}:${getCurrentDateTime()}`
+    return `${toRaw(chatModelName.value)}：      ${getCurrentDateTime()}`
 };
 // rag按钮变化
 const ragEnabledChange = (e: any): void => {
@@ -374,11 +377,11 @@ nextTick(async () => {
                 <div class="flex items-center justify-between">
                     <!-- 左 -->
                     <div class="flex justify-end items-center">
-                        <el-select v-model="chatModelName" placeholder="选择模型" class="mr-2">
+                        <el-select v-model="chatModelName" :disabled="isTyping" placeholder="选择模型" class="mr-2">
                             <el-option v-for="item in chatModelOption" :key="item.value" :label="item.label"
                                 :value="item.value" />
                         </el-select>
-                        <el-select v-model="chatServiceType" placeholder="选择对话类" class="mr-2"
+                        <el-select v-model="chatServiceType" :disabled="isTyping" placeholder="选择对话类" class="mr-2"
                             @change="chatServiceTypeChange">
                             <el-option v-for="item in chatServiceTypeOption" :key="item.value" :label="item.label"
                                 :value="item.value" />
@@ -386,13 +389,13 @@ nextTick(async () => {
                     </div>
                     <!-- 右 -->
                     <div class="flex justify-end items-center">
-                        <el-button @click="clearChatMemory(false)" :class="['!bg-blue-500 hover:!bg-green-600']">
+                        <el-button @click="clearChatMemory(false)" :disabled="isTyping" type="primary">
                             <span class="font-medium text-white">
                                 清除记忆
                             </span>
                         </el-button>
 
-                        <el-button @click="clearMessage()" :class="['!bg-blue-500 hover:!bg-green-600']">
+                        <el-button @click="clearMessage()" :disabled="isTyping" type="primary">
                             <span class="font-medium text-white">
                                 清除聊天记录
                             </span>
@@ -410,29 +413,29 @@ nextTick(async () => {
                 </div>
                 <!-- 下功能区 -->
                 <div class=" flex justify-end">
-                    <el-switch v-model="toolEnabled" inactive-text="工具" :active-value="true" :inactive-value="false"
+                    <el-switch v-model="toolEnabled" inactive-text="工具" :disabled="isTyping" :active-value="true" :inactive-value="false"
                         active-color="#3b82f6" inactive-color="#dc2626" class="mr-2" />
-                    <el-select v-if="toolEnabled" v-model="toolGroup" placeholder="选择工具组" class="mr-2">
+                    <el-select v-if="toolEnabled" v-model="toolGroup" :disabled="isTyping" placeholder="选择工具组" class="mr-2">
                         <el-option v-for="item in toolGroupOption" :key="item.value" :label="item.label"
                             :value="item.value" />
                     </el-select>
-                    <el-switch v-model="ragEnabled" inactive-text="RAG" :active-value="true" :inactive-value="false"
+                    <el-switch v-model="ragEnabled" inactive-text="RAG" :disabled="isTyping" :active-value="true" :inactive-value="false"
                         active-color="#3b82f6" inactive-color="#dc2626" class="mr-2" @change="ragEnabledChange" />
-                    <el-select v-if="ragEnabled" v-model="ragGroup" placeholder="选择文件组" class="mr-2">
+                    <el-select v-if="ragEnabled" v-model="ragGroup" :disabled="isTyping" placeholder="选择文件组" class="mr-2">
                         <el-option v-for="item in ragGroupOption" :key="item.value" :label="item.label"
                             :value="item.value" />
                     </el-select>
-                    <el-button @click="optimizePromptWords()" :class="['!bg-blue-500 hover:!bg-green-600']">
+                    <el-button @click="optimizePromptWords()" :disabled="isTyping" type="primary">
                         <span class="font-medium text-white">
                             优化提示词
                         </span>
                     </el-button>
-                    <el-button v-show="!isTyping" @click="sendMessage()" :class="['!bg-blue-500 hover:!bg-green-600']">
+                    <el-button v-show="!isTyping" @click="sendMessage()" type="primary">
                         <span class="font-medium text-white">
                             发送
                         </span>
                     </el-button>
-                    <el-button v-show="isTyping" @click="messageStop()" :class="['!bg-blue-500 hover:!bg-green-600']">
+                    <el-button v-show="isTyping" @click="messageStop()" type="primary">
                         <span class="font-medium text-white">
                             停止
                         </span>

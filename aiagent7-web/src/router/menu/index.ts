@@ -14,6 +14,19 @@ const menu: PagesMenu[] = [
         icon: "HomeFilled",
     },
     {
+        path: "/pages/aiUtopia",
+        faPath: [],
+        title: "斯坦福小镇",
+        icon: "Menu",
+        children: [
+            {
+                title: "多角色对话",
+                path: "/pages/aiUtopia/game",
+                faPath: ["aiUtopia"],
+            },
+        ],
+    },
+    {
         path: "rag",
         faPath: [],
         title: "RAG管理",
