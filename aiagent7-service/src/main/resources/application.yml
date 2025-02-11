@@ -26,9 +26,9 @@ spring:
       api-key: sk-jO5jliT3P2va54ibAb498cA06dBe453aB08eCcA228C1271a
       embedding:
         options:
-          model: mxbai-embed-large:latest #直接使用ollama的嵌入模型
-        base-url: http://127.0.0.1:11434
-        api-key:
+          model: mxbai-embed-large:latest
+        base-url: http://localhost:3000
+        api-key: sk-jO5jliT3P2va54ibAb498cA06dBe453aB08eCcA228C1271a
       chat:
         options:
           model: qwen2.5:3b
