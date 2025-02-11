@@ -21,7 +21,7 @@ const menu: PagesMenu[] = [
         children: [
             {
                 title: "多角色对话",
-                path: "/pages/aiUtopia/game",
+                path: "/pages/aiUtopia/aiChat",
                 faPath: ["aiUtopia"],
             },
         ],
