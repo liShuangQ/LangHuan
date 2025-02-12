@@ -27,13 +27,17 @@ public class StanfordChatService {
 
     public StanfordChatService(ChatClient.Builder chatClientBuilder, ChatClient chatClient, VectorStore vectorStore, ApplicationContext applicationContext) {
         this.inMemoryChatMemory = new InMemoryChatMemory();
-//        用合适的美观的html格式的字符串的形式回复，当字符串中存在双引号的时候使用单引号替代。
+//                       你是一个高级对话管理系统的一部分，负责协调多个具有独特个性的AI角色之间的互动。
+//                       你的目标是确保每一次对话都是连贯的、有意义的，并能够反映各角色的个性特征。
+//                       所有角色都应遵循基本的礼貌原则，尊重彼此的观点，并致力于构建一个积极、富有建设性的对话环境。
         this.chatClient = chatClientBuilder.defaultSystem("""
-                       你是一个高级对话管理系统的一部分，负责协调多个具有独特个性的AI角色之间的互动。
-                       你的目标是确保每一次对话都是连贯的、有意义的，并能够反映各角色的个性特征。
-                       所有角色都应遵循基本的礼貌原则，尊重彼此的观点，并致力于构建一个积极、富有建设性的对话环境。
-                       你需要只是针对当前角色的角度去说话。每次的回复不用太多，大约100 200字即可。
-                        """)
+                        在接下来的对话中，你将作为一个独特的个体—参与交流。
+                        你将与其他几位同样有着鲜明个性的角色一起，就各种话题展开深入讨论。
+                        请基于你的背景和性格，积极贡献你的见解，同时也要认真倾听并回应他人的观点。
+                        无论讨论的主题是什么，请确保你的发言既真实反映你的角色特质，又能促进一场有意义的对话。
+                        你需要只是针对当前角色的角度去说话。在回答开头说明当前的角色，不需要说当前背景和个性。
+                        每次的回复不用太多，不要重复回答说上面说的观点，每次回答大约100 200字即可。
+                         """)
                 .defaultAdvisors(
                         new MessageChatMemoryAdvisor(inMemoryChatMemory),
                         new SafeGuardAdvisor(Constant.AIDEFAULTSAFEGUARDADVISOR),
@@ -41,7 +45,6 @@ public class StanfordChatService {
                 )
                 .build();
     }
-
 
     public String chat(String id, String p, String q, String modelName) {
         try {

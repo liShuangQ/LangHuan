@@ -50,7 +50,6 @@ public class RagVectorUtils {
      * @param vectorStore 存储文档向量的向量存储
      * @param parentFileId 父文件ID，用于关联文档块与其原始文件
      * @return 总是返回true，表示操作完成
-     * @throws IOException 如果文件读取过程中发生错误
      */
     @SneakyThrows
     public Boolean addTikaRagVector(MultipartFile file, VectorStore vectorStore, String parentFileId) {
