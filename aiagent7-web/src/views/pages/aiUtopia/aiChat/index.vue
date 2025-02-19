@@ -16,20 +16,27 @@
                         placeholder="会把AI角色提示词和初始提问的'***'替换为当前填写内容"></el-input>
                 </el-form-item>
                 <el-form-item label="AI角色提示词">
-                    <div v-for="(prompt, index) in settings.aiPrompts" :key="index"
-                        class="flex items-center space-x-2 w-full">
-                        <el-select v-model="settings.aiModels[index]" placeholder="选择模型">
-                            <el-option v-for="model in predefinedModels" :key="model" :label="model" :value="model" />
-                        </el-select>
-                        <el-input v-model="settings.aiPrompts[index]" type="textarea" placeholder="AI角色提示词"></el-input>
+                    <div style="height: 40vh;width: 100%;overflow: auto;">
+                        <div v-for="(prompt, index) in settings.aiPrompts" :key="index"
+                            class="flex items-center space-x-2 w-full">
+                            <el-select v-model="settings.aiModels[index]" placeholder="选择模型">
+                                <el-option v-for="model in predefinedModels" :key="model" :label="model"
+                                    :value="model" />
+                            </el-select>
+                            <el-input v-model="settings.aiPrompts[index]" type="textarea"
+                                placeholder="AI角色提示词"></el-input>
+                        </div>
                     </div>
-                    <el-button type="primary" @click="addAIPrompt">添加AI角色</el-button>
+                    <el-button style="margin-left: 80%;" type="primary" @click="addAIPrompt">添加AI角色</el-button>
                 </el-form-item>
 
                 <el-form-item label="初始提问">
                     <el-input v-model="settings.initialQuestions" type="textarea"></el-input>
                 </el-form-item>
             </el-form>
+
+            <el-button style="margin-left: 90%;" type="primary" @click="startConversation">开始对话</el-button>
+
         </el-dialog>
         <div class="dialog-content" style="height: 70vh;">
             <div v-for="(message, index) in messages" :key="index" class="message"
@@ -40,7 +47,6 @@
         </div>
         <div class="dialog-footer">
             <el-button type="primary" @click="clearChatMemory()">清除记忆</el-button>
-            <el-button type="primary" @click="startConversation">开始对话</el-button>
         </div>
     </div>
 </template>
@@ -90,10 +96,10 @@ const settings = reactive({
 
     initialQuestions: '各位成员，今天我们齐聚一堂，目的是探讨“***”。每个人都有自己独特的视角和见解，这对我们的讨论来说是非常宝贵的。首先，请允许我提出一个问题以开启今天的对话：在您看来，“***”最有可能带来什么样的影响或变化？请根据您的性格特点和经验，分享您的思考。',
     aiPrompts: [
-        '作为一位INTJ，你的思维逻辑严密，擅长长远规划。请基于你的分析能力和对复杂系统的理解，就“***”提出你的见解和可能的解决方案。',
+        '作为INTJ，你的思维逻辑严密，擅长长远规划。请基于你的分析能力和对复杂系统的理解，就“***”提出你的见解和可能的解决方案。',
         '作为INTP，你喜欢探索理论和概念，并善于从不同角度思考问题。请运用你的创造性思维，探讨“***”，并分享你独特的视角。',
         '作为ENTP，你热衷于挑战现状和探索新想法。请就“***”发表你的看法，特别是关于创新解决方案和激发变革的方法。',
-        '作为INFJ，你深具同情心且理想主义，致力于帮助他人实现潜能。请分享你对“***”的观点，尤其是它如何影响个人成长和社会进步。',
+        '作为INFJ，你深具同情心且理想主义，致力于帮助他人实现潜能。请分享你对“***”的观点。',
         '作为INFP，你的价值观和个人信念指导着你的行动。请谈谈“***”对你个人的意义，以及它如何与你的理想相联系。',
         '作为ENFJ，你擅长激励和支持他人，致力于建立和谐的社区环境。请讨论“***”，强调其对人际关系和团队合作的影响。',
         '作为ENFP，你充满热情和创造力，总是寻找新的可能性。请分享你对“***”的看法，特别是它带来的机遇和个人成长的空间。',
@@ -114,7 +120,7 @@ const messages = ref<Message[]>([]);
 
 const addAIPrompt = () => {
     settings.aiPrompts.push('');
-    settings.aiModels.push(`模型${settings.aiModels.length + 1}`); // 添加默认模型名
+    settings.aiModels.push(''); // 添加默认模型名
 };
 // 清空对话记忆
 const clearChatMemory = (isList = false, id = 0): any => {
@@ -129,6 +135,7 @@ const clearChatMemory = (isList = false, id = 0): any => {
 
 };
 const startConversation = async () => {
+    showSettingsDialog.value = false
     await clearChatMemory()
     let userText = ''
     messages.value = [];
@@ -154,7 +161,8 @@ const startConversation = async () => {
             })
 
             userText = res.data
-            addMessage(`${aiModels[index]}(第${currentRound + 1}轮)`, userText, true);
+            // addMessage(`${aiModels[index]}${aiPrompts[index].slice(0, 6)}(第${currentRound + 1}轮):`, userText, true);
+            addMessage(`${aiModels[index]}${aiPrompts[index].slice(0, 6)}:`, userText, true);
         }
 
         currentRound++;
@@ -162,8 +170,8 @@ const startConversation = async () => {
     while (true) {
         if (currentRound >= rounds) {
             return
-        };
-        await simulateConversation();
+        }
+        await simulateConversation()
     }
 };
 </script>
