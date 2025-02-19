@@ -26,9 +26,15 @@ public class TRagFileGroup implements Serializable {
     private String groupName;
 
     /**
+     *
+     */
+    private String groupType;
+
+    /**
      * 
      */
     private String groupDesc;
+
 
     /**
      * 
@@ -57,6 +63,7 @@ public class TRagFileGroup implements Serializable {
         TRagFileGroup other = (TRagFileGroup) that;
         return (this.getId() == null ? other.getId() == null : this.getId().equals(other.getId()))
             && (this.getGroupName() == null ? other.getGroupName() == null : this.getGroupName().equals(other.getGroupName()))
+            && (this.getGroupType() == null ? other.getGroupType() == null : this.getGroupType().equals(other.getGroupType()))
             && (this.getGroupDesc() == null ? other.getGroupDesc() == null : this.getGroupDesc().equals(other.getGroupDesc()))
             && (this.getCreatedBy() == null ? other.getCreatedBy() == null : this.getCreatedBy().equals(other.getCreatedBy()))
             && (this.getCreatedAt() == null ? other.getCreatedAt() == null : this.getCreatedAt().equals(other.getCreatedAt()));
@@ -68,6 +75,7 @@ public class TRagFileGroup implements Serializable {
         int result = 1;
         result = prime * result + ((getId() == null) ? 0 : getId().hashCode());
         result = prime * result + ((getGroupName() == null) ? 0 : getGroupName().hashCode());
+        result = prime * result + ((getGroupType() == null) ? 0 : getGroupType().hashCode());
         result = prime * result + ((getGroupDesc() == null) ? 0 : getGroupDesc().hashCode());
         result = prime * result + ((getCreatedBy() == null) ? 0 : getCreatedBy().hashCode());
         result = prime * result + ((getCreatedAt() == null) ? 0 : getCreatedAt().hashCode());
@@ -82,6 +90,7 @@ public class TRagFileGroup implements Serializable {
         sb.append("Hash = ").append(hashCode());
         sb.append(", id=").append(id);
         sb.append(", groupName=").append(groupName);
+        sb.append(", groupType=").append(groupType);
         sb.append(", groupDesc=").append(groupDesc);
         sb.append(", createdBy=").append(createdBy);
         sb.append(", createdAt=").append(createdAt);

@@ -5,15 +5,16 @@
 <mapper namespace="com.shuangqi.aiagent7.model.mapper.TRagFileGroupMapper">
 
     <resultMap id="BaseResultMap" type="com.shuangqi.aiagent7.model.domain.TRagFileGroup">
-            <id property="id" column="id" jdbcType="INTEGER"/>
-            <result property="groupName" column="group_name" jdbcType="VARCHAR"/>
-            <result property="groupDesc" column="group_desc" jdbcType="VARCHAR"/>
-            <result property="createdBy" column="created_by" jdbcType="VARCHAR"/>
-            <result property="createdAt" column="created_at" jdbcType="TIMESTAMP"/>
+        <id property="id" column="id" jdbcType="INTEGER"/>
+        <result property="groupName" column="group_name" jdbcType="VARCHAR"/>
+        <result property="groupType" column="group_type" jdbcType="VARCHAR"/>
+        <result property="groupDesc" column="group_desc" jdbcType="VARCHAR"/>
+        <result property="createdBy" column="created_by" jdbcType="VARCHAR"/>
+        <result property="createdAt" column="created_at" jdbcType="TIMESTAMP"/>
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,group_name,group_desc,
+        id,group_name,group_type,group_desc,
         created_by,created_at
     </sql>
 </mapper>

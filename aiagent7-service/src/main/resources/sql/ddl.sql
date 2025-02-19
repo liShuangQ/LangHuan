@@ -73,6 +73,7 @@ CREATE TABLE t_rag_file_group
 (
     id         SERIAL PRIMARY KEY,                 -- 自增主键
     group_name VARCHAR(255) NOT NULL,              -- 文件组名称
+    group_type VARCHAR(255) NOT NULL,              -- 文件组类型
     group_desc VARCHAR(255) NOT NULL,              -- 文件组描述
     created_by VARCHAR(100) NOT NULL,              -- 创建用户（可以是用户名或用户ID）
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP -- 创建时间，默认为当前时间
