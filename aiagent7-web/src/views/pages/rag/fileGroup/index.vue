@@ -1,199 +1,307 @@
 <template>
-    <div style="width: 100%;overflow: hidden;box-sizing: border-box;padding: 16px;">
-        <el-button style="margin-bottom: 8px;" type="primary" @click="handleAdd">新增</el-button>
 
-        <el-form :model="queryForm" ref="queryFormRef" label-width="100px">
-            <el-row :gutter="20">
-                <el-col :span="8">
-                    <el-form-item label="文件组名称" prop="groupName">
-                        <el-input v-model="queryForm.groupName" placeholder="请输入文件组名称"></el-input>
-                    </el-form-item>
-                </el-col>
-                <el-col :span="8">
-                    <el-form-item label="文件组类型" prop="groupType">
-                        <el-input v-model="queryForm.groupType" placeholder="请输入文件组类型"></el-input>
-                    </el-form-item>
-                </el-col>
-                <el-col :span="8">
-                    <el-form-item>
-                        <el-button type="primary" @click="onQuery">查询</el-button>
-                        <el-button type="default" @click="resetQueryForm">重置</el-button>
-                    </el-form-item>
-                </el-col>
-            </el-row>
-        </el-form>
-        <el-table border :data="tableData" style="width: 100%;height: 70vh;">
-            <el-table-column prop="id" label="ID"></el-table-column>
-            <el-table-column prop="groupName" label="文件组名称"></el-table-column>
-            <el-table-column prop="groupType" label="文件组类型"></el-table-column>
-            <el-table-column prop="groupDesc" label="文件组描述"></el-table-column>
-            <el-table-column prop="createdBy" label="创建用户"></el-table-column>
-            <el-table-column prop="createdAt" label="创建时间"></el-table-column>
-            <el-table-column label="操作">
-                <template #default="scope">
-                    <el-button type="text" size="small" @click="handleEdit(scope.row)">编辑</el-button>
-                    <el-button type="text" size="small" @click="handleDelete(scope.row.id)">删除</el-button>
+    <div class="box-border p-3 bg-white">
+        <div class="mb-2">
+            <el-button type="primary" @click="addAndChangeFormShowFun('add')">新增</el-button>
+        </div>
+        <div class="ml-1">
+            <ElementFormC ref="formComRef" :formConfig="formConfig" :formItemConfig="formItemConfig"
+                @handle="formHandle">
+                <template #custom-button>
+                    <div class="float-right">
+                        <el-button type="primary" @click="getUserPageList">查询</el-button>
+                        <el-button @click="formComRef!.resetForm()">重置</el-button>
+                    </div>
                 </template>
-            </el-table-column>
-        </el-table>
+            </ElementFormC>
+        </div>
+        <div class="h-[600px] mt-2">
+            <ElementTableC ref="tableComRef" :paginationConfig="paginationConfig" :tableColumnConfig="tableColumnConfig"
+                :tableConfig="tableConfig" :tableData="tableData" @handle="tableHandle">
+                <template #content-buttonSlot="props">
+                    <el-button link type="primary" @click="addAndChangeFormShowFun('change', props.row)">修改</el-button>
+                    <el-button link type="primary" @click="addAndChangeFormShowFun('delete', props.row)">删除</el-button>
+                    <el-button v-if="pageConfig.relation" link type="primary"
+                        @click="addAndChangeFormShowFun('relation', props.row)">{{ pageConfig.relationBtnName
+                        }}</el-button>
+                </template>
+            </ElementTableC>
+        </div>
 
-        <el-pagination style="float: right;margin-top: 16px;" background layout="total, prev, pager, next" :total="total"
-            :page-size="pageSize" :current-page="currentPage" @current-change="handlePageChange"></el-pagination>
 
-        <el-dialog v-model="dialogVisible" title="文件组信息">
-            <el-form :model="form" ref="formRef" label-width="120px">
-                <el-form-item label="文件组名称" model="groupName">
-                    <el-input v-model="form.groupName" placeholder="请输入文件组名称"></el-input>
-                </el-form-item>
-                <el-form-item label="文件组类型" model="groupType">
-                    <el-input v-model="form.groupType" placeholder="请输入文件组类型"></el-input>
-                </el-form-item>
-                <el-form-item label="文件组描述" model="groupDesc">
-                    <el-input v-model="form.groupDesc" placeholder="请输入文件组描述"></el-input>
-                </el-form-item>
-            </el-form>
+        <el-dialog v-model="addAndChangeFormVisible" :title="addAndChangeFormDialogTit" width="800">
+            <ElementFormC ref="addAndChangeFormComRef" :formConfig="addAndChangeFormConfig"
+                :formItemConfig="addAndChangeFormItemConfig" @handle="addAndChangeFormHandle">
+            </ElementFormC>
             <template #footer>
-                <span class="dialog-footer">
-                    <el-button @click="dialogVisible = false">取消</el-button>
-                    <el-button type="primary" @click="submitForm">确定</el-button>
-                </span>
+                <div class="dialog-footer">
+                    <el-button @click="addAndChangeFormShowFun('close')">取消</el-button>
+                    <el-button type="primary" @click="addAndChangeFormShowFun('save')">
+                        确定
+                    </el-button>
+                </div>
+            </template>
+        </el-dialog>
+
+
+        <el-dialog v-model="relevancyVisible" :title="addAndChangeFormDialogTit" width="800">
+            <el-checkbox v-model="checkAll" :indeterminate="isIndeterminate" @change="handleCheckAllChange">
+                Check all
+            </el-checkbox>
+            <el-checkbox-group v-model="checkedRoles" @change="handleCheckedCitiesChange">
+                <el-checkbox v-for="item in relation" :key="item.relation_id" :label="item.relation_id"
+                    :value="item.relation_id">
+                    {{ item.relation_name }}
+                </el-checkbox>
+            </el-checkbox-group>
+            <template #footer>
+                <div class="dialog-footer">
+                    <el-button @click="relevancyShowFun('close')">取消</el-button>
+                    <el-button type="primary" @click="relevancyShowFun('save')">
+                        确定
+                    </el-button>
+                </div>
             </template>
         </el-dialog>
     </div>
+
 </template>
 <script lang="ts">
 export default {
     auto: true,
 };
 </script>
-<script lang="ts" setup>
-import { ref, reactive, onMounted } from 'vue';
-import { ElMessage, ElMessageBox } from 'element-plus';
-import { http } from '@/plugins/axios';
+<script setup lang="ts">
+import { http } from "@/plugins/axios";
+import { TableDefineExpose } from "@/components/globalComponents/ElementTableC/table-component";
+import {
+    FormDefineExpose,
+} from "@/components/globalComponents/ElementFormC/form-component";
+import { formConfig, formItemConfig } from "./formConfig";
+import {
+    paginationConfig,
+    tableColumnConfig,
+    tableConfig,
+    tableData,
+} from "./tableConfig";
+import {
+    addAndChangeFormConfig,
+    addAndChangeFormItemConfig
+} from "./addAndChangeformConfig";
+import dayjs from "dayjs";
+import { CheckboxValueType, ElMessageBox } from "element-plus";
+import pageConfig from "./pageConfig";
+const formComRef = ref<FormDefineExpose>();
+const tableComRef = ref<TableDefineExpose>();
 
-const queryForm = reactive({
-    groupName: '',
-    groupType: '',
-});
-
-const tableData = ref([]);
-const total = ref(0);
-const pageSize = ref(10);
-const currentPage = ref(1);
-
-const form = reactive({
-    id: null,
-    groupName: '',
-    groupType: '',
-    groupDesc: '',
-});
-
-const dialogVisible = ref(false);
-const isAdd = ref(true);
-
-const queryFormRef = ref();
-const formRef = ref();
-
-const onQuery = () => {
-    fetchData();
+const formHandle = (type: string, key: string, data: any, other: any) => {
+    console.log(type, key, data, other);
+};
+const addAndChangeFormHandle = (type: string, key: string, data: any, other: any) => {
+    console.log(type, key, data, other);
 };
 
-const resetQueryForm = () => {
-    queryFormRef.value.resetFields();
+const tableHandle = (t: string, d: any, key: string) => {
+    console.log("tableHandle:::", t, d, key);
 };
 
-const fetchData = () => {
+const getUserPageList = () => {
     http.request<any>({
-        url: '/rag/file-group/query',
+        url: pageConfig.searchUrl,
         method: 'post',
         q_spinning: true,
-        q_contentType: 'form',
         data: {
-            groupName: queryForm.groupName,
-            groupType: queryForm.groupType,
-            pageNum: currentPage.value,
-            pageSize: pageSize.value,
+            ...formComRef.value!.getFromValue(),
+            pageNum: 1,
+            pageSize: 10,
         },
-    }).then((res) => {
-        tableData.value = res.data.records;
-        total.value = res.data.total;
-    });
+    }).then(res => {
+        if (pageConfig.search_dayTransformation && pageConfig.search_dayTransformation.length >= 0) {
+            res.data.records.forEach((e: any) => {
+                pageConfig.search_dayTransformation.forEach((ee: string) => {
+                    e[ee] = dayjs(e[ee]).format('YYYY-MM-DD HH:mm:ss')
+                })
+            })
+        }
+        tableData.value = res.data[pageConfig.search_tableData_key];
+        paginationConfig.value.total = res.data[pageConfig.search_paginationConfig_key];
+    }).catch(err => {
+        console.log(err)
+    })
 };
+nextTick(() => {
+    getUserPageList()
+})
 
-const handleAdd = () => {
-    isAdd.value = true;
-    form.id = null;
-    form.groupName = '';
-    form.groupType = '';
-    form.groupDesc = '';
-    dialogVisible.value = true;
-};
+const addAndChangeFormComRef = ref<FormDefineExpose>();
+let addAndChangeFormVisible = ref(false)
+let addAndChangeFormDialogTit = ref("")
+let relevancyVisible = ref(false)
+const checkAll = ref(false)
+const isIndeterminate = ref(true)
+const checkedRoles = ref<string[]>([])
+const relation = ref<{ relation_name: string, relation_id: string }[]>([])
+let nowUser: any = null;
+const addAndChangeFormShowFun = async (t: string, d: any = null) => {
+    if (t === 'add') {
+        addAndChangeFormDialogTit.value = '新增'
+        addAndChangeFormVisible.value = true
+        nextTick(() => {
+            addAndChangeFormComRef.value!.resetForm()
+        })
+    }
+    if (t === 'change') {
+        addAndChangeFormDialogTit.value = '修改'
+        addAndChangeFormVisible.value = true
+        nextTick(() => {
+            addAndChangeFormComRef.value!.resetForm()
+            addAndChangeFormComRef.value!.setFormOption(Object.entries(d).map(([k, v]) => {
+                return {
+                    key: k,
+                    value: String(v)
+                }
+            }))
+        })
+    }
+    if (t === 'delete') {
+        ElMessageBox.confirm(
+            '确认删除?',
+            '通知',
+            {
+                confirmButtonText: '确定',
+                cancelButtonText: '返回',
+                type: 'warning',
+            }
+        )
+            .then(() => {
+                http.request<any>({
+                    url: pageConfig.deleteUrl,
+                    method: 'post',
+                    q_spinning: true,
+                    q_contentType: 'form',
+                    data: {
+                        id: d.id
+                    },
+                }).then(res => {
+                    if (res.code === 200) {
+                        ElMessage.success('操作成功')
+                        getUserPageList()
+                    }
+                })
+            })
+            .catch(() => {
+                ElMessage({
+                    type: 'info',
+                    message: '取消删除',
+                })
+            })
+    }
+    if (t === 'relation') {
+        nowUser = d
+        relevancyVisible.value = true
+        checkedRoles.value = []
+        relation.value = []
+        await nextTick(async () => {
+            await http.request<any>({
+                url: '/user/getUserRoles',
+                method: 'post',
+                q_spinning: true,
+                q_contentType: 'form',
+                data: {},
+            }).then(res => {
+                if (res.code === 200) {
+                    relation.value = res.data
+                }
+            })
+            await http.request<any>({
+                url: '/user/getUserRoles',
+                method: 'post',
+                q_spinning: true,
+                q_contentType: 'form',
+                data: {
+                    id: d.id
+                },
+            }).then(res => {
+                if (res.code === 200) {
+                    checkedRoles.value = res.data.map((e: any) => e.relation_id)
+                }
+            })
+            handleCheckedCitiesChange(checkedRoles.value)
+        })
+    }
+    if (t === 'save') {
+        let url = ''
+        if (addAndChangeFormDialogTit.value === '新增') {
+            url = pageConfig.addUrl
+        }
+        if (addAndChangeFormDialogTit.value === '修改') {
+            url = pageConfig.updataUrl
+        }
+        addAndChangeFormComRef
+            .value!.submitForm()
+            .then((res) => {
+                let sd: any = addAndChangeFormComRef.value!.getFromValue()
+                http.request<any>({
+                    url: url,
+                    method: 'post',
+                    q_spinning: true,
+                    q_contentType: 'json',
+                    data: sd,
+                }).then(res => {
+                    if (res.code === 200) {
+                        ElMessage.success('操作成功')
+                        addAndChangeFormVisible.value = false
+                        getUserPageList()
+                    }
+                })
+            })
+            .catch((rej: any) => {
+                console.log(rej, "失败");
+                Object.keys(rej).forEach((k) => {
+                    rej[k].forEach((e: any) => {
+                        ElMessage.warning(e.message);
+                    });
+                });
+            });
+    }
+    if (t === 'close') {
+        addAndChangeFormDialogTit.value = ''
+        addAndChangeFormVisible.value = false
+    }
+}
 
-const handleEdit = (row: any) => {
-    isAdd.value = false;
-    form.id = row.id;
-    form.groupName = row.groupName;
-    form.groupType = row.groupType;
-    form.groupDesc = row.groupDesc;
-    dialogVisible.value = true;
-};
-
-const handleDelete = (id: number) => {
-    ElMessageBox.confirm('此操作将永久删除该文件组, 是否继续?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning',
-    }).then(() => {
+const handleCheckAllChange = (val: boolean | CheckboxValueType) => {
+    checkedRoles.value = val ? relation.value.map(e => e.relation_id) : []
+    isIndeterminate.value = false
+}
+const handleCheckedCitiesChange = (value: string[] | CheckboxValueType[]) => {
+    const checkedCount = value.length
+    checkAll.value = checkedCount === relation.value.length
+    isIndeterminate.value = checkedCount > 0 && checkedCount < relation.value.length
+}
+const relevancyShowFun = (t: string, d: any = null) => {
+    if (t === 'save') {
         http.request<any>({
-            url: '/rag/file-group/delete',
+            url: '/user/relevancyRoles',
             method: 'post',
             q_spinning: true,
             q_contentType: 'form',
-            data: { id },
-        }).then((res) => {
-            ElMessage.success('删除成功');
-            fetchData();
-        });
-    });
-};
+            data: {
+                id: nowUser.id,
+                roleIds: checkedRoles.value.join(',')
+            },
+        }).then(res => {
+            if (res.code === 200) {
+                relevancyVisible.value = false
+                ElMessage.success("操作成功")
+            }
+        })
 
-const submitForm = () => {
-    formRef.value.validate((valid: any) => {
-        if (valid) {
-            const url = isAdd.value ? '/rag/file-group/add' : '/rag/file-group/update';
-            http.request<any>({
-                url,
-                method: 'post',
-                q_spinning: true,
-                q_contentType: 'json',
-                data: form,
-            }).then((res) => {
-                ElMessage.success(isAdd.value ? '添加成功' : '更新成功');
-                dialogVisible.value = false;
-                fetchData();
-            });
-        }
-    });
-};
-
-const handlePageChange = (page: number) => {
-    currentPage.value = page;
-    fetchData();
-};
-
-onMounted(() => {
-    fetchData();
-});
+    }
+    if (t === 'close') {
+        relevancyVisible.value = false
+    }
+}
 </script>
 
-<style scoped>
-.box-card {
-    width: 100%;
-}
-
-.card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-</style>
+<style scoped></style>

@@ -41,6 +41,7 @@ export interface FormConfig {
 interface BaseConfig {
     type?: string
     key: string,
+    show?: boolean,
     width?: string | number,
     label?: string,
     value?: any,

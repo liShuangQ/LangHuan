@@ -26,7 +26,7 @@
     >
         <!--        :gutter="20"-->
         <el-row v-for="(row, rowIndex) in formItemConfig" :key="rowIndex" :gutter="20">
-            <el-col v-for="item in row" :key="item.key" :span="item.col">
+            <el-col v-for="item in row" :key="item.key" :span="item.col" v-show="item?.show??true">
                 <el-form-item
                     v-if="item.type !== 'custom'"
                     :label="item.label"
@@ -45,7 +45,7 @@
                                 ? item.placeholder
                                 : '请输入' + item.label
                         "
-                        :placement="item.placement || 'bottom-start'"
+                        :placement="(item.placement || 'bottom-start') as any"
                         :style="{width:(item.width || '100%')}"
                         :size="item.size || formConfig.size || 'default'"
                         :value-key="item.valueKey || 'value'"
@@ -70,7 +70,7 @@
                         "
                         :style="{width:(item.width || '100%')}"
                         :size="item.size || formConfig.size || 'default'"
-                        @change="(value:string|number)=>emit('handle','change',item.key,value,'')"
+                        @change="(value:any)=>emit('handle','change',item.key,value,'')"
                     >
                         <template v-if="item.button || false">
                             <el-checkbox-button
@@ -179,9 +179,9 @@
                         :precision="item.precision"
                         :style="{width:(item.width || '100%')}"
                         :size="item.size || formConfig.size || 'default'"
-                        :step="item.step || 1"
+                        :step="(item.step || 1) as any"
                         :step-strictly="item.stepStrictly"
-                        @change="(value:string|number)=>emit('handle','change',item.key,value,'')"
+                        @change="(value:any)=>emit('handle','change',item.key,value,'')"
                     >
                     </el-input-number>
                     <!--                    radio-->
@@ -197,7 +197,7 @@
                         "
                         :style="{width:(item.width || '100%')}"
                         :size="item.size || formConfig.size || 'default'"
-                        @change="(value:string|number)=>emit('handle','change',item.key,value,'')"
+                        @change="(value:any)=>emit('handle','change',item.key,value,'')"
                     >
                         <template v-if="item.button || false">
                             <el-radio-button
@@ -322,15 +322,15 @@
                         :clearable="item.clearable"
                         :disabled="item.disabled"
                         :format-tooltip="(value:number)=>item.formatTooltip ? item.formatTooltip(value) : value "
-                        :marks="item.marks || null"
-                        :placement="item.placement || 'bottom-start'"
+                        :marks="(item.marks || null) as any"
+                        :placement="(item.placement || 'bottom-start') as any"
                         :range="item.range"
                         :show-input="item.showInput"
                         :show-stops="item.showStops"
                         :style="{width:(item.width || '100%')}"
                         :size="item.size || formConfig.size || 'default'"
-                        :step="item.step || 1"
-                        @change="(value:string|number)=>emit('handle','change',item.key,value,'')"
+                        :step="(item.step || 1) as any"
+                        @change="(value:any)=>emit('handle','change',item.key,value,'')"
                     >
                     </el-slider>
                     <!--                    switch-->
@@ -352,7 +352,7 @@
                             '--el-switch-on-color': item.onColor,
                             '--el-switch-off-color': item.offColor,
                         }"
-                        @change="(value:string|number)=>emit('handle','change',item.key,value,'')"
+                        @change="(value:any)=>emit('handle','change',item.key,value,'')"
                     >
                     </el-switch>
                     <!--                    timePicker-->
@@ -393,7 +393,7 @@
                         :style="{width:(item.width || '100%')}"
                         :size="item.size || formConfig.size || 'default'"
                         :start="item.start"
-                        :step="item.step"
+                        :step="item.step as any"
                         @change="(value:string|number)=>emit('handle','change',item.key,value,'')"
                     >
                     </el-time-select>
@@ -434,7 +434,7 @@ let emit = defineEmits<{
 }>();
 const formRef = ref<FormInstance>();
 const formItemConfig = ref<FormItemConfig[][]>(props.formItemConfig);
-const formModel = ref<Object>({});
+const formModel = ref<any>({});
 const formRule = ref<any>({});
 formItemConfig.value.forEach((row: FormItemConfig[]) => {
     row.forEach((item: FormItemConfig) => {
