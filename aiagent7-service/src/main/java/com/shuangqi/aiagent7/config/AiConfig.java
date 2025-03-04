@@ -66,7 +66,7 @@ class AiConfig {
 
      function(String name, String description, java.util.function.Function<I, O> function)
 
-     functions(String…​ functionNames)
+     functionTools(String…​ functionNames)
 
      user(String text), ,user(Resource text)user(Consumer<UserSpec> userSpecConsumer)
 

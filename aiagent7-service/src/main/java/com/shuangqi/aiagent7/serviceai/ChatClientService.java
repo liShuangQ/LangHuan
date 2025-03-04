@@ -35,10 +35,7 @@ public class ChatClientService {
     public String chat(String q) {
         return this.chatClient.prompt(
                         new Prompt(
-                                "回答我的问题",
-                                OpenAiChatOptions.builder()
-                                        .withModel("qwen2.5:3b")
-                                        .build()
+                                "回答我的问题"
                         ))
                 .user(q)
                 .call()
@@ -50,7 +47,7 @@ public class ChatClientService {
                         new Prompt(
                                 "回答我的问题",
                                 OpenAiChatOptions.builder()
-                                        .withModel("deepseek-r1:1.5b")
+                                        .model("deepseek-r1:1.5b")
                                         .build()
                         ))
                 .user(q)

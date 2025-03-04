@@ -33,7 +33,8 @@ public class ChatRagService {
         this.chatClient = chatClientBuilder.defaultSystem(Constant.AIDEFAULTSYSTEMPROMPT)
                 .defaultAdvisors(
                         // 此 advisor 使用向量存储来提供问答功能，实现 RAG（检索增强生成）模式。
-                        new QuestionAnswerAdvisor(this.vectorStore, SearchRequest.defaults().withTopK(Constant.WITHTOPK).withSimilarityThreshold(Constant.WITHSIMILARITYTHRESHOLD)),
+                        new QuestionAnswerAdvisor(this.vectorStore, SearchRequest.builder().topK(Constant.WITHTOPK)
+                                .similarityThreshold(Constant.WITHSIMILARITYTHRESHOLD).build()),
                         new SafeGuardAdvisor(Constant.AIDEFAULTSAFEGUARDADVISOR),
                         new MySimplelogAdvisor()
                 )
@@ -72,15 +73,14 @@ public class ChatRagService {
     public String ragSearch(String q) {
         //元数据筛选 您可以将通用的可移植元数据过滤器与 PgVector 存储结合使用。 例如，您可以使用文本表达式语言：
         List<Document> documents = vectorStore.similaritySearch(
-                SearchRequest.defaults()
-                        .withQuery(q) //置查询字符串
-                        .withTopK(Constant.WITHTOPK) //设置返回的最相似结果的数量
-                        .withSimilarityThreshold(Constant.WITHSIMILARITYTHRESHOLD) //设置相似度阈值，常是一个介于 0 和 1 之间的浮点数，例如 0.5、0.7、0.8 等，如果设置得过高，可能会没有结果返回；如果设置得过低，可能会返回大量不相关的结果
-                        .withFilterExpression("filetype == 'text/plain'"));//设置过滤条件
+                SearchRequest.builder().query(q).topK(Constant.WITHTOPK)
+                        .similarityThreshold(Constant.WITHSIMILARITYTHRESHOLD)
+                        .filterExpression("filetype == 'text/plain'").build()//设置过滤条件
+        );
         log.debug("ragSearch: " + documents);
         StringBuilder contents = new StringBuilder();
         for (Document document : documents) {
-            contents.append(document.getContent());
+            contents.append(document.getText());
             contents.append("-");
         }
         return contents.toString();
@@ -90,6 +90,7 @@ public class ChatRagService {
     public String addRagVector(MultipartFile file) {
         return ragVectorUtils.addRagFileVector(file, vectorStore);
     }
+
     @SneakyThrows
     public String addRagVector(MultipartFile file, String parentFileId) {
         return ragVectorUtils.addRagFileVector(file, vectorStore, parentFileId);

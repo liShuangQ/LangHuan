@@ -46,8 +46,8 @@ public class RagVectorUtils {
      * 向VectorStore中添加Tika解析的文档向量
      * 该方法首先使用Tika解析上传的文件，然后将解析的文档内容分割成小块，并将这些文档块添加到VectorStore中
      *
-     * @param file 要解析的文件
-     * @param vectorStore 存储文档向量的向量存储
+     * @param file         要解析的文件
+     * @param vectorStore  存储文档向量的向量存储
      * @param parentFileId 父文件ID，用于关联文档块与其原始文件
      * @return 总是返回true，表示操作完成
      */
@@ -85,7 +85,7 @@ public class RagVectorUtils {
     private String joinDocumentContents(List<Document> documents) {
         List<String> documentLines = new ArrayList<>();
         for (Document doc : documents) {
-            documentLines.add(doc.getContent());
+            documentLines.add(doc.getFormattedContent());
         }
         return String.join("\n", documentLines);
     }
@@ -95,7 +95,7 @@ public class RagVectorUtils {
      * 使用文本分割器将文档文本分割成多个文档块，并附加额外的信息
      *
      * @param documentText 要分割的文档文本
-     * @param map 包含额外信息的映射，如文件名、文件类型和父文件ID
+     * @param map          包含额外信息的映射，如文件名、文件类型和父文件ID
      * @return 分割后的文档块列表
      */
     private List<Document> splitDocumentText(String documentText, Map<String, Object> map) {

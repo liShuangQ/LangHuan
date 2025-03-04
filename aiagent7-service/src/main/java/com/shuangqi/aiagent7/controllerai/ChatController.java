@@ -16,6 +16,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -51,9 +52,15 @@ public class ChatController {
         if (modelName.isEmpty()) {
             modelName = defaultModelName;
         }
+
+        String chat = chatService.chat(id, p, q, isRag, ragType, isFunction, modelName, chatMemoryRetrieveSize);
+        if (chat.indexOf("***prompt***") <= 5) {
+            chat = chatGeneralAssistanceService.tools(chat);
+        }
         return Result.success(Map.of(
-                "chat", chatService.chat(id, p, q, isRag, ragType, isFunction, modelName, chatMemoryRetrieveSize),
-                "recommend", chatGeneralAssistanceService.otherQuestionsRecommended(q)
+                "chat", chat,
+//                "recommend", chatGeneralAssistanceService.otherQuestionsRecommended(q)
+                "recommend", List.of()
         ));
     }
 
@@ -86,18 +93,21 @@ public class ChatController {
     @PostMapping("/chatModel/getModelList")
     public Result getModelList() throws IOException {
         HttpResponse<String> response = null;
-        try {
-            HttpClient client = HttpClient.newHttpClient();
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(oneApiUrl + "/v1/models"))
-                    .header("Authorization", oneApiKey)
-                    .build();
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(oneApiUrl + "/v1/models"))
+                .header("Authorization", oneApiKey)
+                .build();
 
+        try {
             response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        } catch (Exception e) {
-            return Result.error("获取模型列表失败");
+            return Result.success(JSONObject.parseObject(response.body()));
+
+        }catch (Exception e){
+            return Result.success(Map.of("data", List.of(Map.of("id", defaultModelName))));
+
         }
-        return Result.success(JSONObject.parseObject(response.body()));
+
     }
 
     @PostMapping("/chat/stanford")

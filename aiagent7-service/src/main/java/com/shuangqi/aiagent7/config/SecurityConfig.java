@@ -10,6 +10,7 @@ import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -25,7 +26,7 @@ import java.util.Arrays;
 // 配置类，启用Web安全性并激活方法级别的安全性
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true)
+@EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
     // 白名单URL，不需要身份验证即可访问
     private static final String[] URL_WHITELIST = Constant.URL_WHITELIST;
@@ -62,7 +63,9 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Arrays.asList("*")); // 允许的源，可以根据需要修改
-        configuration.setAllowedMethods(Arrays.asList("*")); // 允许的 HTTP 方法
+//        configuration.setAllowedMethods(Arrays.asList("*")); // 允许的 HTTP 方法
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS")); // 允许的 HTTP 方法
+
         configuration.setAllowedHeaders(Arrays.asList("*")); // 允许的请求头
         configuration.setAllowCredentials(false); // 是否允许发送 Cookie
 

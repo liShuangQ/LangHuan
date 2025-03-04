@@ -53,7 +53,7 @@ public class StanfordChatService {
                             new Prompt(
                                     p,
                                     OpenAiChatOptions.builder()
-                                            .withModel(modelName)
+                                            .model(modelName)
                                             .build()
                             )
                     )
@@ -63,7 +63,7 @@ public class StanfordChatService {
                                     .param(CHAT_MEMORY_CONVERSATION_ID_KEY, id)
                                     .param(CHAT_MEMORY_RETRIEVE_SIZE_KEY, 200)
                     )
-                    .call().chatResponse().getResult().getOutput().getContent();
+                    .call().chatResponse().getResult().getOutput().getText();
         } catch (Exception e) {
             log.error("advisor-error: {}", e.getMessage());
             throw new BusinessException("抱歉，我暂时无法回答这个问题。");

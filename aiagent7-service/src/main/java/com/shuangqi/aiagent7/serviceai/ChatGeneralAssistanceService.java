@@ -17,6 +17,12 @@ public class ChatGeneralAssistanceService {
                 .build();
     }
 
+    public String tools(String p) {
+        return chatClient
+                .prompt(p)
+                .call()
+                .content();
+    }
 
     public String otherQuestionsRecommended(String q) {
         return chatClient
@@ -65,7 +71,7 @@ public class ChatGeneralAssistanceService {
                         输入格式：
                         自然语言描述：一段描述需要提取参数的自然语言文本。
                         JSON格式接口入参：一个JSON对象，包含需要匹配的key。
-                        
+                                                
                         输出格式：
                         直接输出一个与输入 JSON 格式接口入参相同的 JSON 对象，其中 key 对应的值为从自然语言中提取的参数值。时间参数需要转换为 年月日时分秒 格式。如果没有匹配到合适的参数，对应的 key 的值为空字符串。
                         """)
@@ -73,5 +79,6 @@ public class ChatGeneralAssistanceService {
                 .call()
                 .content();
     }
+
 
 }
