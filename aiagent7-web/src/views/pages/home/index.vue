@@ -102,7 +102,7 @@ const sendMessage = (recommend = null): void => {
                     addMessage(chat,
                         {
                             text: res.data.chat,
-                            recommend: res.data.recommend && (JSON.parse(res.data.recommend)?.desc ?? []),
+                            recommend: res.data.recommend,
                             isUser: false,
                             topInfo: getChatTopInfo()
                         }
