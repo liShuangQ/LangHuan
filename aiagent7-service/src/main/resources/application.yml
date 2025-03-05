@@ -9,6 +9,10 @@ server:
 mybatis:
   mapper-locations: classpath:mapper/*.xml
 spring:
+  task:
+    scheduling:
+      pool:
+        size: 10
   datasource:
     url: jdbc:postgresql://localhost:5432/postgres
     username: postgres
@@ -22,16 +26,17 @@ spring:
       client:
         enabled: true
     openai:
-      base-url: http://localhost:3000 #oneapi 转换
-      api-key: sk-jO5jliT3P2va54ibAb498cA06dBe453aB08eCcA228C1271a
+      chat:
+        options:
+          model: qwen2.5:3b
+          base-url: http://localhost:3000 #oneapi 转换
+          api-key: sk-jO5jliT3P2va54ibAb498cA06dBe453aB08eCcA228C1271a
+
       embedding:
         options:
           model: mxbai-embed-large:latest
         base-url: http://localhost:3000
         api-key: sk-jO5jliT3P2va54ibAb498cA06dBe453aB08eCcA228C1271a
-      chat:
-        options:
-          model: qwen2.5:3b
     vectorstore:
       pgvector:
         index-type: HNSW # 最近邻搜索索引类型，可选值为NONE（精确最近邻搜索）、IVFFlat（将向量划分为列表，然后搜索与查询向量最接近的子集，构建速度较快且内存使用较少，但查询性能较低）、HNSW（创建多层图，构建速度较慢且内存使用较多，但查询性能较好，无需训练步骤）
