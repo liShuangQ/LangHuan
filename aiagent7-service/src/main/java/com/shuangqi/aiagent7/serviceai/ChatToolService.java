@@ -18,11 +18,7 @@ public class ChatToolService {
     private final ChatClient chatClient;
 
     public ChatToolService(ChatClient.Builder chatClientBuilder) {
-        this.chatClient = chatClientBuilder.defaultSystem("""
-                        回答我的问题。
-                        返回如下格式:
-                        {desc: document}
-                        """)
+        this.chatClient = chatClientBuilder
                 .defaultAdvisors(
                         new SafeGuardAdvisor(Constant.AIDEFAULTSAFEGUARDADVISOR),
                         new MySimplelogAdvisor()

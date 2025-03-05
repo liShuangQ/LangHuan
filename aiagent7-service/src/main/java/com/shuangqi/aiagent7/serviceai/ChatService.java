@@ -6,6 +6,7 @@ import com.shuangqi.aiagent7.common.BusinessException;
 import com.shuangqi.aiagent7.common.Constant;
 import com.shuangqi.aiagent7.functionTools.DateTimeToolsD;
 import com.shuangqi.aiagent7.functionTools.FileReadTools;
+import com.shuangqi.aiagent7.service.TPromptsService;
 import com.shuangqi.aiagent7.utils.rag.RagVectorUtils;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -44,14 +45,7 @@ public class ChatService {
         this.inMemoryChatMemory = new InMemoryChatMemory();
         this.vectorStore = vectorStore;
 //        用合适的美观的html格式的字符串的形式回复，当字符串中存在双引号的时候使用单引号替代。
-        this.chatClient = chatClientBuilder.defaultSystem("""
-                        解答用户的问题。
-                        以JSON格式返回。
-                        确保你的回答遵循以下结构：
-                        {
-                           "desc": "{回复内容}"
-                        }
-                        """)
+        this.chatClient = chatClientBuilder
                 .defaultAdvisors(
                         new MessageChatMemoryAdvisor(inMemoryChatMemory),
                         new SafeGuardAdvisor(Constant.AIDEFAULTSAFEGUARDADVISOR),
@@ -83,6 +77,7 @@ public class ChatService {
                                 )
                         )
                         .user(q)
+                        .system(TPromptsService.getCachedTPromptsByMethodName("ChatService"))
                         .advisors(questionAnswerAdvisor)
                         .advisors(
                                 a -> a
@@ -102,6 +97,7 @@ public class ChatService {
                                 )
                         )
                         .user(q)
+                        .system(TPromptsService.getCachedTPromptsByMethodName("ChatService"))
                         .advisors(
                                 a -> a
                                         .param(CHAT_MEMORY_CONVERSATION_ID_KEY, id)

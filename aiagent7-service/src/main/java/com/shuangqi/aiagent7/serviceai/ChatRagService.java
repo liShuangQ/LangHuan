@@ -2,6 +2,7 @@ package com.shuangqi.aiagent7.serviceai;
 
 import com.shuangqi.aiagent7.advisors.MySimplelogAdvisor;
 import com.shuangqi.aiagent7.common.Constant;
+import com.shuangqi.aiagent7.service.TPromptsService;
 import com.shuangqi.aiagent7.utils.rag.RagVectorUtils;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -30,7 +31,7 @@ public class ChatRagService {
 
     public ChatRagService(ChatClient.Builder chatClientBuilder, VectorStore vectorStore, RagVectorUtils ragVectorUtils) {
         this.vectorStore = vectorStore;
-        this.chatClient = chatClientBuilder.defaultSystem(Constant.AIDEFAULTSYSTEMPROMPT)
+        this.chatClient = chatClientBuilder
                 .defaultAdvisors(
                         // 此 advisor 使用向量存储来提供问答功能，实现 RAG（检索增强生成）模式。
                         new QuestionAnswerAdvisor(this.vectorStore, SearchRequest.builder().topK(Constant.WITHTOPK)
@@ -48,6 +49,7 @@ public class ChatRagService {
                 .advisors(advisor -> advisor.param("chat_memory_conversation_id", "678")
                         .param("chat_memory_response_size", 100))
                 .user(q)
+                .system(TPromptsService.getCachedTPromptsByMethodName("AIDEFAULTSYSTEMPROMPT"))
                 .call()
                 .content();
     }
@@ -57,6 +59,7 @@ public class ChatRagService {
                 .advisors(advisor -> advisor.param("chat_memory_conversation_id", "678")
                         .param("chat_memory_response_size", 100))
                 .user(q)
+                .system(TPromptsService.getCachedTPromptsByMethodName("AIDEFAULTSYSTEMPROMPT"))
                 .stream()
                 .content();
     }
@@ -66,6 +69,7 @@ public class ChatRagService {
                 .advisors(advisor -> advisor.param("chat_memory_conversation_id", "678")
                         .param("chat_memory_response_size", 100))
                 .user(q)
+                .system(TPromptsService.getCachedTPromptsByMethodName("AIDEFAULTSYSTEMPROMPT"))
                 .call()
                 .chatResponse();
     }

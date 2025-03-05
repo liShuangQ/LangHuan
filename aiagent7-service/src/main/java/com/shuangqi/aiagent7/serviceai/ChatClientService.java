@@ -2,6 +2,7 @@ package com.shuangqi.aiagent7.serviceai;
 
 import com.shuangqi.aiagent7.advisors.MySimplelogAdvisor;
 import com.shuangqi.aiagent7.common.Constant;
+import com.shuangqi.aiagent7.service.TPromptsService;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.SafeGuardAdvisor;
 import org.springframework.ai.chat.messages.Message;
@@ -23,7 +24,7 @@ public class ChatClientService {
     private final ChatClient chatClient;
 
     public ChatClientService(ChatClient.Builder chatClientBuilder) {
-        this.chatClient = chatClientBuilder.defaultSystem(Constant.AIDEFAULTSYSTEMPROMPT)
+        this.chatClient = chatClientBuilder
                 .defaultAdvisors(
                         new SafeGuardAdvisor(Constant.AIDEFAULTSAFEGUARDADVISOR),
 //                        new ReReadingAdvisor(),  // re2能力
@@ -37,6 +38,7 @@ public class ChatClientService {
                         new Prompt(
                                 "回答我的问题"
                         ))
+                .system(TPromptsService.getCachedTPromptsByMethodName("AIDEFAULTSYSTEMPROMPT"))
                 .user(q)
                 .call()
                 .content();
@@ -51,6 +53,7 @@ public class ChatClientService {
                                         .build()
                         ))
                 .user(q)
+                .system(TPromptsService.getCachedTPromptsByMethodName("AIDEFAULTSYSTEMPROMPT"))
                 .call()
                 .content();
     }
@@ -58,6 +61,7 @@ public class ChatClientService {
     public Flux<String> stream(String q) {
         return chatClient.prompt()
                 .user(q)
+                .system(TPromptsService.getCachedTPromptsByMethodName("AIDEFAULTSYSTEMPROMPT"))
                 .stream()
                 .content();
     }
@@ -65,6 +69,7 @@ public class ChatClientService {
     public ChatResponse chatWithPrompt(String p, String q) {
         return chatClient.prompt(new Prompt(p))
                 .user(q)
+                .system(TPromptsService.getCachedTPromptsByMethodName("AIDEFAULTSYSTEMPROMPT"))
                 .call()
                 .chatResponse();
     }
@@ -79,6 +84,7 @@ public class ChatClientService {
         }
         return chatClient.prompt(new Prompt(promptList))
                 .user(q)
+                .system(TPromptsService.getCachedTPromptsByMethodName("AIDEFAULTSYSTEMPROMPT"))
                 .call()
                 .entity(ActorFilms.class);
     }
@@ -87,12 +93,13 @@ public class ChatClientService {
         q = q.isEmpty() ? "Generate the filmography of 5 movies for Tom Hanks and Bill Murray." : q;
         return chatClient.prompt(p)
                 .user(q)
+                .system(TPromptsService.getCachedTPromptsByMethodName("AIDEFAULTSYSTEMPROMPT"))
                 .call()
                 .entity(new ParameterizedTypeReference<List<ActorFilms>>() {
                 });
     }
 
     public Map<String, String> chatWithPromptMap(String p, String q) {
-        return Map.of("completion", this.chatClient.prompt(p).user(q).call().content());
+        return Map.of("completion", this.chatClient.prompt(p).user(q).system(TPromptsService.getCachedTPromptsByMethodName("AIDEFAULTSYSTEMPROMPT")).call().content());
     }
 }

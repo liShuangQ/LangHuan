@@ -2,23 +2,24 @@ package com.shuangqi.aiagent7.config;
 
 import com.knuddels.jtokkit.api.EncodingType;
 import com.shuangqi.aiagent7.advisors.MySimplelogAdvisor;
-import com.shuangqi.aiagent7.common.Constant;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.embedding.BatchingStrategy;
 import org.springframework.ai.embedding.TokenCountBatchingStrategy;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
 @Configuration
 class AiConfig {
 
     @Bean
     ChatClient chatClient(ChatClient.Builder builder) {
-        return builder.defaultSystem(Constant.AIDEFAULTSYSTEMPROMPT)
+        return builder
                 .defaultAdvisors(
                         new MySimplelogAdvisor()
                 )
                 .build();
     }
+
     @Bean
     public BatchingStrategy customTokenCountBatchingStrategy() {
         return new TokenCountBatchingStrategy(

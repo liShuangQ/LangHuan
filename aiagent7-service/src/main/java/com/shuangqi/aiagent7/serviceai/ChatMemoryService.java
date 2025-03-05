@@ -2,7 +2,7 @@ package com.shuangqi.aiagent7.serviceai;
 
 import com.shuangqi.aiagent7.advisors.MySimplelogAdvisor;
 import com.shuangqi.aiagent7.common.Constant;
-import com.shuangqi.aiagent7.model.pojo.MyChatMemory;
+import com.shuangqi.aiagent7.service.TPromptsService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
@@ -19,7 +19,7 @@ import static org.springframework.ai.chat.client.advisor.AbstractChatMemoryAdvis
 public class ChatMemoryService {
 
     private final ChatClient chatClient;
-//    private MyChatMemory myChatMemory;
+    //    private MyChatMemory myChatMemory;
     private InMemoryChatMemory inMemoryChatMemory;
 
     public ChatMemoryService(ChatClient.Builder chatClientBuilder) {
@@ -27,7 +27,7 @@ public class ChatMemoryService {
         InMemoryChatMemory inMemoryChatMemory = new InMemoryChatMemory();
 
         this.inMemoryChatMemory = inMemoryChatMemory;
-        this.chatClient = chatClientBuilder.defaultSystem(Constant.AIDEFAULTSYSTEMPROMPT)
+        this.chatClient = chatClientBuilder
                 .defaultAdvisors(
                         new MessageChatMemoryAdvisor(inMemoryChatMemory), // 检索内存并将其作为消息集合添加到提示符中。此方法维护会话历史记录的结构。请注意，并非所有 AI 模型都支持此方法。
                         // PromptChatMemoryAdvisor：检索内存并将其添加到提示的系统文本中
@@ -48,6 +48,7 @@ public class ChatMemoryService {
     public String chat(String id, String q) {
         return this.chatClient.prompt()
                 .user(q)
+                .system(TPromptsService.getCachedTPromptsByMethodName("AIDEFAULTSYSTEMPROMPT"))
                 .advisors(
                         a -> a.param(CHAT_MEMORY_CONVERSATION_ID_KEY, id)
                                 .param(CHAT_MEMORY_RETRIEVE_SIZE_KEY, 10)
@@ -64,6 +65,7 @@ public class ChatMemoryService {
     public Flux<String> chatStream(String id, String q) {
         return this.chatClient.prompt()
                 .user(q)
+                .system(TPromptsService.getCachedTPromptsByMethodName("AIDEFAULTSYSTEMPROMPT"))
                 .advisors(
                         a -> a
                                 .param(CHAT_MEMORY_CONVERSATION_ID_KEY, id)
@@ -82,6 +84,7 @@ public class ChatMemoryService {
     public String chatWithPrompt(String id, String p, String q) {
         return this.chatClient.prompt(p)
                 .user(q)
+                .system(TPromptsService.getCachedTPromptsByMethodName("AIDEFAULTSYSTEMPROMPT"))
                 .advisors(
                         a -> a
                                 .param(CHAT_MEMORY_CONVERSATION_ID_KEY, id)
@@ -100,6 +103,7 @@ public class ChatMemoryService {
     public Flux<String> chatWithPromptStream(String id, String p, String q) {
         return this.chatClient.prompt(p)
                 .user(q)
+                .system(TPromptsService.getCachedTPromptsByMethodName("AIDEFAULTSYSTEMPROMPT"))
                 .advisors(
                         a -> a
                                 .param(CHAT_MEMORY_CONVERSATION_ID_KEY, id)

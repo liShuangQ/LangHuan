@@ -68,6 +68,62 @@ COMMENT ON COLUMN t_user.enabled IS '是否启用（0-未启用；1-启用中）
 COMMENT ON COLUMN t_user.creation_time IS '创建时间';
 COMMENT ON COLUMN t_user.last_login_time IS '上一次登录时间';
 
+
+CREATE EXTENSION IF NOT EXISTS vector;
+CREATE EXTENSION IF NOT EXISTS hstore;
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
+CREATE TABLE IF NOT EXISTS vector_store
+(
+    id        uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
+    content   text,
+    metadata  json,
+    embedding vector(1536)
+);
+
+CREATE INDEX ON vector_store USING HNSW (embedding vector_cosine_ops);
+ALTER TABLE vector_store
+    ADD COLUMN embedding float[];
+ALTER TABLE vector_store
+    ALTER COLUMN embedding TYPE vector USING embedding::vector;
+
+-- 创建提示词表
+CREATE TABLE t_prompts (
+    -- 提示词的唯一标识符，使用自增序列
+                           id SERIAL PRIMARY KEY,
+    -- 提示词的内容，使用文本类型存储较长的提示信息
+                           content TEXT NOT NULL,
+    -- 提示词的分类，可根据业务需求进行分类，如业务类型、使用场景等
+                           category VARCHAR(255),
+    -- 提示词的创建时间，使用时间戳类型自动记录创建时刻
+                           created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    -- 提示词的更新时间，使用时间戳类型，初始值为创建时间，后续更新时会修改
+                           updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+-- 向 prompts 表中添加 method_name 字段，用于存储方法名
+ALTER TABLE t_prompts ADD COLUMN method_name VARCHAR(255);
+-- 向 prompts 表中添加 description 字段，用于存储方法描述
+ALTER TABLE t_prompts ADD COLUMN description TEXT;
+-- 创建更新触发器函数
+CREATE OR REPLACE FUNCTION update_updated_at_column()
+    RETURNS TRIGGER AS $$
+BEGIN
+    -- 当记录更新时，自动更新 updated_at 字段为当前时间
+    NEW.updated_at = now();
+    RETURN NEW;
+END;
+$$ language 'plpgsql';
+
+-- 为 prompts 表添加更新触发器
+CREATE TRIGGER update_prompts_updated_at
+    BEFORE UPDATE ON t_prompts
+    FOR EACH ROW EXECUTE PROCEDURE update_updated_at_column();
+
+
+
+
+
+
 DROP TABLE IF EXISTS t_rag_file_group;
 CREATE TABLE t_rag_file_group
 (
@@ -114,21 +170,3 @@ CREATE TABLE t_tool
 );
 
 
-
-CREATE EXTENSION IF NOT EXISTS vector;
-CREATE EXTENSION IF NOT EXISTS hstore;
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-
-CREATE TABLE IF NOT EXISTS vector_store
-(
-    id        uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
-    content   text,
-    metadata  json,
-    embedding vector(1536)
-);
-
-CREATE INDEX ON vector_store USING HNSW (embedding vector_cosine_ops);
-ALTER TABLE vector_store
-    ADD COLUMN embedding float[];
-ALTER TABLE vector_store
-    ALTER COLUMN embedding TYPE vector USING embedding::vector;
