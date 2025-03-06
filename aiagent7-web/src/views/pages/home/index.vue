@@ -468,11 +468,5 @@ nextTick(async () => {
 </template>
 
 <style>
-.el-input__wrapper {
-    border-radius: 0.5rem !important;
-}
 
-.el-button {
-    border-radius: 0.5rem !important;
-}
 </style>
