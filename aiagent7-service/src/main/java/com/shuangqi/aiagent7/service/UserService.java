@@ -15,6 +15,7 @@ import com.shuangqi.aiagent7.model.mapper.TUserMapper;
 import com.shuangqi.aiagent7.utils.other.JwtUtil;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -59,6 +60,8 @@ public class UserService extends ServiceImpl<TUserMapper, TUser> {
      * 根据用户名获取权限列表
      * 首先通过用户名查询用户信息，然后调用getPermissionByUser方法获取权限列表
      */
+    @Cacheable(value = "permission")
+    // 这里注意缓存配置，todo在操作用户后要清空缓存
     public List<TPermission> getPermissionByUsername(String username) {
         TUser user = super.getOne(new LambdaQueryWrapper<TUser>().eq(TUser::getUsername, username), true);
         return this.getPermissionByUser(user);
