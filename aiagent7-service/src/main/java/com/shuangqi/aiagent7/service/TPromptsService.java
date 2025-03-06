@@ -1,5 +1,8 @@
 package com.shuangqi.aiagent7.service;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.shuangqi.aiagent7.common.Constant;
 import com.shuangqi.aiagent7.model.domain.TPrompts;
@@ -25,9 +28,7 @@ public class TPromptsService extends ServiceImpl<TPromptsMapper, TPrompts> {
 
     @Scheduled(fixedRate = Constant.AIDEFAULTSYSTEMPROMPTRECTIME)
     public void cacheTPrompts() {
-
         List<TPrompts> prompts = super.list();
-
         Map<String, String> newCache = new ConcurrentHashMap<>();
         for (TPrompts prompt : prompts) {
             newCache.put(prompt.getMethodName(), prompt.getContent());
@@ -39,10 +40,6 @@ public class TPromptsService extends ServiceImpl<TPromptsMapper, TPrompts> {
         log.info("Cached t_prompts table data at " + new java.util.Date());
     }
 
-//    public static Map<String, String> getCachedPrompts() {
-//        return cachedPrompts;
-//    }
-
     public static String getCachedTPromptsByMethodName(String method_name) {
         String content = cachedPrompts.get(method_name);
         if (content == null || content.isEmpty()) {
@@ -50,6 +47,33 @@ public class TPromptsService extends ServiceImpl<TPromptsMapper, TPrompts> {
             return Constant.AINULLDEFAULTSYSTEMPROMPT;
         }
         return content;
+    }
+
+    // 新增
+    public boolean saveTPrompts(TPrompts tPrompts) {
+        return super.save(tPrompts);
+    }
+
+    // 删除
+    public boolean removeTPromptsById(Integer id) {
+        return super.removeById(id);
+    }
+
+    // 修改
+    public boolean updateTPrompts(TPrompts tPrompts) {
+        return super.updateById(tPrompts);
+    }
+
+
+    // 分页查询并支持模糊搜索
+    public IPage<TPrompts> getTPromptsByPage(int pageNum, int pageSize, String methodName, String category, String description) {
+
+        return super.page(new Page<>(pageNum, pageSize),
+                new LambdaQueryWrapper<TPrompts>()
+                        .like(!methodName.isEmpty(), TPrompts::getMethodName, methodName)
+                        .like(!category.isEmpty(), TPrompts::getCategory, category)
+                        .like(!description.isEmpty(), TPrompts::getDescription, description)
+        );
     }
 }
 

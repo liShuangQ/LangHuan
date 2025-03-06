@@ -28,10 +28,12 @@ spring:
     openai:
       chat:
         options:
-          model: qwen2.5:3b
-          base-url: http://localhost:3000 #oneapi 转换
-          api-key: sk-jO5jliT3P2va54ibAb498cA06dBe453aB08eCcA228C1271a
-
+          #          model: qwen2.5:3b
+          #      base-url: http://localhost:3000 #oneapi 转换
+          #      api-key: sk-jO5jliT3P2va54ibAb498cA06dBe453aB08eCcA228C1271a
+          model: deepseek-chat
+      base-url: https://api.deepseek.com
+      api-key: sk-db958248df464b26b317350f85f394da
       embedding:
         options:
           model: mxbai-embed-large:latest

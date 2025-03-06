@@ -7,15 +7,13 @@ import com.shuangqi.aiagent7.service.TRagFileService;
 import com.shuangqi.aiagent7.utils.rag.RagVectorUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
 @Slf4j
 @RestController
+@RequestMapping("/rag")
 public class RagController {
     private final TRagFileService ragFileService;
     private final TRagFileGroupService ragFileGroupService;
@@ -27,7 +25,7 @@ public class RagController {
         this.ragVectorUtils = ragVectorUtils;
     }
 
-    @PostMapping("/rag/file-group/add")
+    @PostMapping("/file-group/add")
     public Result addFileGroup(@Valid @RequestBody TRagFileGroup fileGroup) {
         log.info("Adding new file group: {}", fileGroup);
         if (fileGroup.getGroupName() == null || fileGroup.getGroupType() == null) {
@@ -38,14 +36,14 @@ public class RagController {
         return success ? Result.success(fileGroup) : Result.error("添加文件组失败");
     }
 
-    @PostMapping("/rag/file-group/delete")
+    @PostMapping("/file-group/delete")
     public Result deleteFileGroup(@RequestParam Long id) {
         log.info("Deleting file group with ID: {}", id);
         boolean success = ragFileGroupService.removeById(id);
         return success ? Result.success("删除成功") : Result.error("删除文件组失败");
     }
 
-    @PostMapping("/rag/file-group/update")
+    @PostMapping("/file-group/update")
     public Result updateFileGroup(@Valid @RequestBody TRagFileGroup fileGroup) {
         log.info("Updating file group: {}", fileGroup);
         if (fileGroup.getId() == null) {
@@ -55,7 +53,7 @@ public class RagController {
         return success ? Result.success(fileGroup) : Result.error("更新文件组失败");
     }
 
-    @PostMapping("/rag/file-group/query")
+    @PostMapping("/file-group/query")
     public Result queryFileGroups(@RequestParam(required = false) String groupName,
                                   @RequestParam(required = false) String groupType,
                                   @RequestParam int pageNum,

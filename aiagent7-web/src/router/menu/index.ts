@@ -27,6 +27,19 @@ const menu: PagesMenu[] = [
         ],
     },
     {
+        path: "prompt",
+        faPath: [],
+        title: "提示词管理",
+        icon: "Menu",
+        children: [
+            {
+                title: "在用提示词",
+                path: "/pages/prompt/usePrompt",
+                faPath: ["rag"],
+            },
+        ],
+    },
+    {
         path: "rag",
         faPath: [],
         title: "RAG管理",
