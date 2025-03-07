@@ -4,7 +4,7 @@ import com.shuangqi.aiagent7.common.Result;
 import com.shuangqi.aiagent7.model.domain.TRagFileGroup;
 import com.shuangqi.aiagent7.service.TRagFileGroupService;
 import com.shuangqi.aiagent7.service.TRagFileService;
-import com.shuangqi.aiagent7.utils.rag.RagVectorUtils;
+import com.shuangqi.aiagent7.utils.rag.RagFileVectorUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -17,12 +17,12 @@ import javax.validation.Valid;
 public class RagController {
     private final TRagFileService ragFileService;
     private final TRagFileGroupService ragFileGroupService;
-    private final RagVectorUtils ragVectorUtils;
+    private final RagFileVectorUtils ragFileVectorUtils;
 
-    public RagController(TRagFileService ragFileService, TRagFileGroupService ragFileGroupService, RagVectorUtils ragVectorUtils) {
+    public RagController(TRagFileService ragFileService, TRagFileGroupService ragFileGroupService, RagFileVectorUtils ragFileVectorUtils) {
         this.ragFileService = ragFileService;
         this.ragFileGroupService = ragFileGroupService;
-        this.ragVectorUtils = ragVectorUtils;
+        this.ragFileVectorUtils = ragFileVectorUtils;
     }
 
     @PostMapping("/file-group/add")

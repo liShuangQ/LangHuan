@@ -7,8 +7,7 @@ import com.shuangqi.aiagent7.common.Constant;
 import com.shuangqi.aiagent7.functionTools.DateTimeToolsD;
 import com.shuangqi.aiagent7.functionTools.FileReadTools;
 import com.shuangqi.aiagent7.service.TPromptsService;
-import com.shuangqi.aiagent7.utils.rag.RagVectorUtils;
-import lombok.SneakyThrows;
+import com.shuangqi.aiagent7.utils.rag.RagFileVectorUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
@@ -24,7 +23,6 @@ import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -38,10 +36,10 @@ public class ChatService {
     private final ChatClient chatClient;
     private final VectorStore vectorStore;
     private final InMemoryChatMemory inMemoryChatMemory;
-    private final RagVectorUtils ragVectorUtils;
+    private final RagFileVectorUtils ragFileVectorUtils;
 
-    public ChatService(ChatClient.Builder chatClientBuilder, VectorStore vectorStore, ApplicationContext applicationContext, RagVectorUtils ragVectorUtils) {
-        this.ragVectorUtils = ragVectorUtils;
+    public ChatService(ChatClient.Builder chatClientBuilder, VectorStore vectorStore, ApplicationContext applicationContext, RagFileVectorUtils ragFileVectorUtils) {
+        this.ragFileVectorUtils = ragFileVectorUtils;
         this.inMemoryChatMemory = new InMemoryChatMemory();
         this.vectorStore = vectorStore;
 //        用合适的美观的html格式的字符串的形式回复，当字符串中存在双引号的时候使用单引号替代。

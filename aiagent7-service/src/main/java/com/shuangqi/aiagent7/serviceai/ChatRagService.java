@@ -3,7 +3,7 @@ package com.shuangqi.aiagent7.serviceai;
 import com.shuangqi.aiagent7.advisors.MySimplelogAdvisor;
 import com.shuangqi.aiagent7.common.Constant;
 import com.shuangqi.aiagent7.service.TPromptsService;
-import com.shuangqi.aiagent7.utils.rag.RagVectorUtils;
+import com.shuangqi.aiagent7.utils.rag.RagFileVectorUtils;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
@@ -26,10 +26,10 @@ public class ChatRagService {
 
     private final ChatClient chatClient;
     private final VectorStore vectorStore;
-    private final RagVectorUtils ragVectorUtils;
+    private final RagFileVectorUtils ragFileVectorUtils;
 
 
-    public ChatRagService(ChatClient.Builder chatClientBuilder, VectorStore vectorStore, RagVectorUtils ragVectorUtils) {
+    public ChatRagService(ChatClient.Builder chatClientBuilder, VectorStore vectorStore, RagFileVectorUtils ragFileVectorUtils) {
         this.vectorStore = vectorStore;
         this.chatClient = chatClientBuilder
                 .defaultAdvisors(
@@ -41,7 +41,7 @@ public class ChatRagService {
                 )
                 .build();
 
-        this.ragVectorUtils = ragVectorUtils;
+        this.ragFileVectorUtils = ragFileVectorUtils;
     }
 
     public String chat(String q) {
@@ -90,14 +90,5 @@ public class ChatRagService {
         return contents.toString();
     }
 
-    @SneakyThrows
-    public String addRagVector(MultipartFile file) {
-        return ragVectorUtils.addRagFileVector(file, vectorStore);
-    }
-
-    @SneakyThrows
-    public String addRagVector(MultipartFile file, String parentFileId) {
-        return ragVectorUtils.addRagFileVector(file, vectorStore, parentFileId);
-    }
 
 }
