@@ -1,4 +1,4 @@
-package com.shuangqi.aiagent7.utils.rag;
+package com.shuangqi.aiagent7.utils.rag.splitter;
 
 import opennlp.tools.sentdetect.SentenceDetectorME;
 import opennlp.tools.sentdetect.SentenceModel;
@@ -21,14 +21,14 @@ public class OpenNLPSentenceSplitter {
         this.sentenceDetector = new SentenceDetectorME(model);
     }
 
-    public List<Document> apply(String text, Map<String, Object> metadata) {
-        List<Document> documents = new ArrayList<>();
+    public List<String> apply(String text, Map<String, Object> metadata) {
+        List<String> documents = new ArrayList<>();
         String[] sentences = sentenceDetector.sentDetect(text);
 
         for (String sentence : sentences) {
             sentence = sentence.trim();
             if (!sentence.isEmpty()) {
-                documents.add(new Document(sentence, metadata));
+                documents.add(sentence);
             }
         }
         return documents;

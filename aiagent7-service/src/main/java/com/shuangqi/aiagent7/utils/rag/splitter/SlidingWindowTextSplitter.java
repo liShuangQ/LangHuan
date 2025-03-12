@@ -1,9 +1,9 @@
-package com.shuangqi.aiagent7.utils.rag;
+package com.shuangqi.aiagent7.utils.rag.splitter;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class SlidingWindowTextSplitter implements TextSplitter {
+public class SlidingWindowTextSplitter{
 
     private final int windowSize;
     private final int overlapSize;
@@ -14,7 +14,6 @@ public class SlidingWindowTextSplitter implements TextSplitter {
     }
 
 
-    @Override
     public List<String> apply(String text) {
         List<String> documents = new ArrayList<>();
         int length = text.length();

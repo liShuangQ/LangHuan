@@ -1,4 +1,4 @@
-package com.shuangqi.aiagent7.serviceai;
+package com.shuangqi.aiagent7.serviceai.demo;
 
 import com.shuangqi.aiagent7.advisors.MySimplelogAdvisor;
 import com.shuangqi.aiagent7.service.TPromptsService;

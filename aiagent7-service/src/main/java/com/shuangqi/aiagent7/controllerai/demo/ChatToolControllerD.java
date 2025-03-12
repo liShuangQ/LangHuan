@@ -1,7 +1,7 @@
-package com.shuangqi.aiagent7.controllerai;
+package com.shuangqi.aiagent7.controllerai.demo;
 
-import com.shuangqi.aiagent7.serviceai.ChatGeneralAssistanceService;
-import com.shuangqi.aiagent7.serviceai.ChatToolService;
+import com.shuangqi.aiagent7.serviceai.demo.ChatGeneralAssistanceService;
+import com.shuangqi.aiagent7.serviceai.demo.ChatToolService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;

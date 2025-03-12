@@ -1,10 +1,8 @@
-package com.shuangqi.aiagent7.controllerai;
+package com.shuangqi.aiagent7.controllerai.demo;
 
-import com.shuangqi.aiagent7.common.Result;
-import com.shuangqi.aiagent7.serviceai.ChatRagService;
+import com.shuangqi.aiagent7.serviceai.demo.ChatRagService;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 import reactor.core.publisher.Flux;
 
 @RestController

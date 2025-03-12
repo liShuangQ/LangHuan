@@ -1,9 +1,10 @@
-package com.shuangqi.aiagent7.utils.rag;
+package com.shuangqi.aiagent7.utils.rag.splitter;
+
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class FixedWindowTextSplitter implements TextSplitter {
+public class FixedWindowTextSplitter {
 
     private final int windowSize;
 
@@ -11,7 +12,6 @@ public class FixedWindowTextSplitter implements TextSplitter {
         this.windowSize = windowSize;
     }
 
-    @Override
     public List<String> apply(String text) {
         List<String> documents = new ArrayList<>();
         int length = text.length();

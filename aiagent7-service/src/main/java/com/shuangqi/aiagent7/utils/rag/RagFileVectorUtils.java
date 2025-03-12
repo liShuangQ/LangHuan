@@ -2,6 +2,7 @@ package com.shuangqi.aiagent7.utils.rag;
 
 import com.shuangqi.aiagent7.common.Constant;
 import com.shuangqi.aiagent7.model.dao.RagMetaData;
+import com.shuangqi.aiagent7.utils.rag.splitter.PatternTokenTextSplitter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.document.Document;
@@ -11,15 +12,19 @@ import org.springframework.core.io.InputStreamResource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 @Slf4j
 @Component
 public class RagFileVectorUtils {
     private List<String> splitFileMethod() {
-        return List.of("PatternTokenTextSplitter", "OpenNLPSentenceSplitter", "FixedWindowTextSplitter", "SlidingWindowTextSplitter");
+        return List.of("PatternTokenTextSplitter", "OpenNLPSentenceSplitter", "FixedWindowTextSplitter",
+                "SlidingWindowTextSplitter");
     }
 
     /**
@@ -29,7 +34,8 @@ public class RagFileVectorUtils {
      * @return 分割后的文档块列表
      */
     @SneakyThrows
-    private Map<String, Object> readAndSplitDocument(MultipartFile file, String parentFileId, String splitFileMethod) {
+    private Map<String, Object> readAndSplitDocument(MultipartFile file, String parentFileId, String splitFileMethod,
+            Map<String, Object> methodData) {
         // 使用TikaDocumentReader读取文件内容
         TikaDocumentReader tikaDocumentReader = new TikaDocumentReader(new InputStreamResource(file.getInputStream()));
         List<Document> documents = tikaDocumentReader.read();
@@ -46,22 +52,17 @@ public class RagFileVectorUtils {
         ragMetaData.setFiletype(file.getContentType());
         ragMetaData.setParentFileId(parentFileId);
         List<String> apply = null;
-        // TODO
+
         if (splitFileMethod.equals("PatternTokenTextSplitter")) {
-            apply = new PatternTokenTextSplitter(Constant.DEFAULT_RAG_SPLIT_PATTERN).apply(documentText);
-        }
-        // TODO
-        if (splitFileMethod.equals("FixedWindowTextSplitter")) {
-            apply = new PatternTokenTextSplitter(Constant.DEFAULT_RAG_SPLIT_PATTERN).apply(documentText);
-        }
-        // TODO
-        if (splitFileMethod.equals("SlidingWindowTextSplitter")) {
-            apply = new PatternTokenTextSplitter(Constant.DEFAULT_RAG_SPLIT_PATTERN).apply(documentText);
+            // Pattern pattern = Pattern.compile((String) methodData.get("pattern"));
+            // Integer chunkSize = (Integer) methodData.get("chunkSize");
+            // Integer chunkOverlap = (Integer) methodData.get("chunkOverlap");
+            // PatternTokenTextSplitter patternTokenTextSplitter = new PatternTokenTextSplitter(pattern, chunkSize,
+            //         chunkOverlap);
         }
         return Map.of(
                 "documents", apply,
-                "metadata", Map.of("parentFileId", ragMetaData)
-        );
+                "metadata", Map.of("parentFileId", ragMetaData));
     }
 
     /**
@@ -70,7 +71,8 @@ public class RagFileVectorUtils {
      * @param documents 分割后的文档块列表
      * @param metadata  元数据
      */
-    private void writeDocumentsToVectorStore(List<String> documents, Map<String, Object> metadata, VectorStore vectorStore) {
+    private void writeDocumentsToVectorStore(List<String> documents, Map<String, Object> metadata,
+            VectorStore vectorStore) {
         List<Document> documentsList = new ArrayList<>();
         for (String document : documents) {
             documentsList.add(new Document(document, metadata));

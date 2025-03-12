@@ -2,7 +2,7 @@ package com.shuangqi.aiagent7.controllerai;
 
 import com.alibaba.fastjson2.JSONObject;
 import com.shuangqi.aiagent7.common.Result;
-import com.shuangqi.aiagent7.serviceai.ChatGeneralAssistanceService;
+import com.shuangqi.aiagent7.serviceai.demo.ChatGeneralAssistanceService;
 import com.shuangqi.aiagent7.serviceai.ChatService;
 import com.shuangqi.aiagent7.serviceai.StanfordChatService;
 import org.springframework.beans.factory.annotation.Value;
