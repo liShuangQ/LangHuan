@@ -1,15 +1,19 @@
 package com.shuangqi.aiagent7.controller;
 
+import com.alibaba.fastjson2.JSONObject;
 import com.shuangqi.aiagent7.common.Result;
 import com.shuangqi.aiagent7.model.domain.TRagFileGroup;
 import com.shuangqi.aiagent7.service.TRagFileGroupService;
 import com.shuangqi.aiagent7.service.TRagFileService;
+import com.shuangqi.aiagent7.serviceai.RagService;
 import com.shuangqi.aiagent7.utils.rag.RagFileVectorUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -18,11 +22,13 @@ public class RagController {
     private final TRagFileService ragFileService;
     private final TRagFileGroupService ragFileGroupService;
     private final RagFileVectorUtils ragFileVectorUtils;
+    private final RagService ragService;
 
-    public RagController(TRagFileService ragFileService, TRagFileGroupService ragFileGroupService, RagFileVectorUtils ragFileVectorUtils) {
+    public RagController(TRagFileService ragFileService, TRagFileGroupService ragFileGroupService, RagFileVectorUtils ragFileVectorUtils, RagService ragService) {
         this.ragFileService = ragFileService;
         this.ragFileGroupService = ragFileGroupService;
         this.ragFileVectorUtils = ragFileVectorUtils;
+        this.ragService = ragService;
     }
 
     @PostMapping("/file-group/add")
@@ -63,5 +69,17 @@ public class RagController {
             return Result.error("至少需要提供文件组名称或文件组类型");
         }
         return Result.success(ragFileGroupService.queryFileGroups(groupName, groupType, pageNum, pageSize));
+    }
+
+    @PostMapping("/readAndSplitDocument")
+    public Result readAndSplitDocument(
+            MultipartFile file,
+            String parentFileId,
+            String splitFileMethod,
+            String methodData
+    ) {
+        JSONObject jsonObject = JSONObject.parseObject(methodData);
+        List<String> list = ragService.readAndSplitDocument(file, splitFileMethod, jsonObject);
+        return Result.success(list);
     }
 }
