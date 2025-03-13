@@ -1,7 +1,7 @@
-# aiagent7
-## aiagent7-service
+# 万卷琅嬛
+## langhuan-service
 ### 项目描述
-aiagent7-service 是一个基于 Spring Boot 框架构建的服务端应用程序。该项目旨在提供与人工智能（AI）相关的服务，并集成了多种功能和依赖库以支持其业务需求。
+langhuan-service 是一个基于 Spring Boot 框架构建的服务端应用程序。该项目旨在提供与人工智能（AI）相关的服务，并集成了多种功能和依赖库以支持其业务需求。
 ### 主要特性
 - Spring Boot 版本：使用了最新的 Spring Boot 3.4.1-SNAPSHOT 版本，确保了对最新特性和性能优化的支持。
 - Java 版本：项目使用 Java 21，利用了最新的语言特性和改进。
@@ -17,12 +17,12 @@ aiagent7-service 是一个基于 Spring Boot 框架构建的服务端应用程�
 - Lombok：通过 Lombok 插件减少了样板代码的编写，提高了开发效率。
 ### 项目结构
 - groupId: com.shuangqi
-- artifactId: aiagent7-service
+- artifactId: langhuan-service
 ### 构建工具
 - 项目使用 Maven 进行构建和管理，并配置了相应的插件来支持编译和打包过程，包括 Lombok 注解处理器和 Spring Boot 插件。
-## aiagent7-web
+## langhuan-web
 ### 项目描述
-aiagent7-service的前端页面。此项目是一个基于 Webpack 5、TypeScript 和 Vue 3 的前端开发项目，旨在提供一个高效、灵活且易于维护的开发环境。它集成了多种流行的工具和库，以支持现代 Web 应用程序的开发。
+langhuan-service的前端页面。此项目是一个基于 Webpack 5、TypeScript 和 Vue 3 的前端开发项目，旨在提供一个高效、灵活且易于维护的开发环境。它集成了多种流行的工具和库，以支持现代 Web 应用程序的开发。
 ### 主要功能和技术栈
 构建工具
 - Webpack 5：用于模块打包。

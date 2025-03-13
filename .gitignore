@@ -4,10 +4,10 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 /logs/
-/aiagent7-service/logs/
+/langhuan-service/logs/
 /node_modules/
-aiagent7-web/node_modules
-aiagent7-web/node_modules/*
+langhuan-web/node_modules
+langhuan-web/node_modules/*
 .DS_Store
 
 ### STS ###
