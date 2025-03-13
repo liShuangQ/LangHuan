@@ -74,7 +74,6 @@ public class RagController {
     @PostMapping("/readAndSplitDocument")
     public Result readAndSplitDocument(
             MultipartFile file,
-            String parentFileId,
             String splitFileMethod,
             String methodData
     ) {

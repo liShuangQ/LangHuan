@@ -1,7 +1,7 @@
 <template>
     <div class="w-full h-full overflow-hidden">
         <div class="w-[calc(100%-1px)] h-[40px] text-center leading-10 bg-[#001f37] text-white font-bold">
-            AI_Agent7
+            LangHuan
         </div>
         <el-menu
             style="height:calc(100% - 40px);"

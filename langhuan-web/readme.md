@@ -1,4 +1,4 @@
-# aiagent7-web
+# langhuan-web
 
 ## 主要使用技术
 - WebPack5.88.2 + TypeScript + Vue3

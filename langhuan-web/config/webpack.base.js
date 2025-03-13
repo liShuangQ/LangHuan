@@ -86,7 +86,7 @@ module.exports = {
             __VUE_PROD_DEVTOOLS__: false
         }),
         new HtmlWebpackPlugin({
-            title: "aiagent7web",
+            title: "langhuan",
             template: "./index.html",
         }),
         new VueLoaderPlugin(),
@@ -119,7 +119,7 @@ module.exports = {
     },
     output: {
         filename: './js/[name].js',
-        path: path.resolve(__dirname, '../dist/aiagent7web'),
+        path: path.resolve(__dirname, '../dist/langhuan'),
         publicPath: devMode ? '/' : '/'
     }
 };

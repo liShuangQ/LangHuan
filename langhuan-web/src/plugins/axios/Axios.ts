@@ -17,7 +17,7 @@ export interface MyAxiosRequestConfig extends AxiosRequestConfig {
      * form: application/x-www-form-urlencoded
      * json: application/json
      */
-    q_contentType?: "form" | "json";
+    q_contentType?: "form" | "json" | "formfile";
 }
 
 export default class Axios {
@@ -44,6 +44,10 @@ export default class Axios {
                 if (config.q_contentType === "form") {
                     config.data = qs.stringify(config.data);
                     // config.headers && (config.headers['Content-Type'] = 'application/x-www-form-urlencoded')
+                    config.headers &&
+                        (config.headers["Content-Type"] =
+                            "multipart/form-data ");
+                } else if (config.q_contentType === "formfile") {
                     config.headers &&
                         (config.headers["Content-Type"] =
                             "multipart/form-data ");
