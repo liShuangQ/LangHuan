@@ -16,7 +16,7 @@ langhuan-service 是一个基于 Spring Boot 框架构建的服务端应用程�
 - 使用了 mybatis-plus-spring-boot3-starter 来简化 MyBatis 的配置和使用。
 - Lombok：通过 Lombok 插件减少了样板代码的编写，提高了开发效率。
 ### 项目结构
-- groupId: com.shuangqi
+- groupId: com.langhuan
 - artifactId: langhuan-service
 ### 构建工具
 - 项目使用 Maven 进行构建和管理，并配置了相应的插件来支持编译和打包过程，包括 Lombok 注解处理器和 Spring Boot 插件。
