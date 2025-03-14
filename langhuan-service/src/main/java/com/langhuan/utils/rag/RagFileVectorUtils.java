@@ -1,8 +1,8 @@
 package com.langhuan.utils.rag;
 
-import com.langhuan.utils.rag.splitter.SlidingWindowTextSplitter;
 import com.langhuan.utils.rag.splitter.FixedWindowTextSplitter;
 import com.langhuan.utils.rag.splitter.PatternTokenTextSplitter;
+import com.langhuan.utils.rag.splitter.SlidingWindowTextSplitter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.document.Document;
@@ -66,14 +66,19 @@ public class RagFileVectorUtils {
      * @param documents 分割后的文档块列表
      * @param metadata  元数据
      */
-    public void writeDocumentsToVectorStore(List<String> documents, String parentFileId, Map<String, Object> metadata,
-                                            VectorStore vectorStore) {
-        List<Document> documentsList = new ArrayList<>();
-        metadata.put("parentFileId", parentFileId);
-        for (String document : documents) {
-            documentsList.add(new Document(document, metadata));
+    public Boolean writeDocumentsToVectorStore(List<String> documents, Map<String, Object> metadata,
+                                               VectorStore vectorStore) {
+        try {
+            List<Document> documentsList = new ArrayList<>();
+//        metadata.put("parentFileId", parentFileId);
+            for (String document : documents) {
+                documentsList.add(new Document(document, metadata));
+            }
+            vectorStore.add(documentsList);
+            return true;
+        } catch (Exception e) {
+            return false;
         }
-        vectorStore.add(documentsList);
     }
 
 }

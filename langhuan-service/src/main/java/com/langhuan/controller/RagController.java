@@ -13,7 +13,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RestController
@@ -80,5 +82,28 @@ public class RagController {
         JSONObject jsonObject = JSONObject.parseObject(methodData);
         List<String> list = ragService.readAndSplitDocument(file, splitFileMethod, jsonObject);
         return Result.success(list);
+    }
+
+    @PostMapping("/writeDocumentsToVectorStore")
+    public Result writeDocumentsToVectorStore(
+            @RequestBody String data
+//            List<String> documents,
+//            String metadata
+    ) {
+        // 解析 JSON 数据
+        JSONObject jsonObjectData = JSONObject.parseObject(data);
+
+        // 获取 documents 并转换为 List<String>
+        List<Object> documentsObj = jsonObjectData.getJSONArray("documents");
+        List<String> documents = documentsObj.stream()
+                .map(Object::toString)
+                .toList();
+
+        // 获取 metadata 并转换为 Map<String, Object>
+        Map<String, Object> metadata = jsonObjectData.getJSONObject("metadata");
+
+        // 调用服务方法
+        return Result.success(ragService.writeDocumentsToVectorStore(documents, metadata));
+
     }
 }
