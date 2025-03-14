@@ -1,5 +1,8 @@
 package com.langhuan.utils.rag;
 
+import com.alibaba.fastjson2.JSONArray;
+import com.alibaba.fastjson2.JSONObject;
+import com.langhuan.serviceai.ChatGeneralAssistanceService;
 import com.langhuan.utils.rag.splitter.FixedWindowTextSplitter;
 import com.langhuan.utils.rag.splitter.PatternTokenTextSplitter;
 import com.langhuan.utils.rag.splitter.SlidingWindowTextSplitter;
@@ -20,6 +23,12 @@ import java.util.regex.Pattern;
 @Slf4j
 @Component
 public class RagFileVectorUtils {
+    private final ChatGeneralAssistanceService chatGeneralAssistanceService;
+
+    public RagFileVectorUtils(ChatGeneralAssistanceService chatGeneralAssistanceService) {
+        this.chatGeneralAssistanceService = chatGeneralAssistanceService;
+    }
+
     private List<String> splitFileMethod() {
         return List.of("PatternTokenTextSplitter", "OpenNLPSentenceSplitter", "FixedWindowTextSplitter",
                 "SlidingWindowTextSplitter");
@@ -47,6 +56,7 @@ public class RagFileVectorUtils {
 
         List<String> apply = null;
 
+        // TODO 当大文档时候的性能优化
         if (splitFileMethod.equals("FixedWindowTextSplitter")) {
             apply = new FixedWindowTextSplitter((Integer) methodData.get("windowSize")).apply(documentText);
         }
@@ -55,6 +65,13 @@ public class RagFileVectorUtils {
         }
         if (splitFileMethod.equals("SlidingWindowTextSplitter")) {
             apply = new SlidingWindowTextSplitter((Integer) methodData.get("windowSize"), (Integer) methodData.get("overlapSize")).apply(documentText);
+        }
+        if (splitFileMethod.equals("LlmTextSplitter")) {
+            String llmOutString = this.chatGeneralAssistanceService.llmTextSplitter((String) methodData.get("modelName"), documentText);
+            JSONArray content = JSONObject.parseObject(llmOutString).getJSONArray("content");
+            apply = content.stream()
+                    .map(Object::toString)
+                    .toList();
         }
 
         return apply;

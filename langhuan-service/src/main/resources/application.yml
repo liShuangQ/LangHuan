@@ -26,14 +26,12 @@ spring:
       client:
         enabled: true
     openai:
+      base-url: http://localhost:3000 #oneapi 转换
+      api-key: sk-jO5jliT3P2va54ibAb498cA06dBe453aB08eCcA228C1271a
       chat:
         options:
-          #          model: qwen2.5:3b
-          #      base-url: http://localhost:3000 #oneapi 转换
-          #      api-key: sk-jO5jliT3P2va54ibAb498cA06dBe453aB08eCcA228C1271a
-          model: deepseek-chat
-      base-url: https://api.deepseek.com
-      api-key: sk-dac2ffb2267a42acb558b8385f42a025
+          model: qwen2.5:3b
+      #          model: deepseek-chat
       embedding:
         options:
           model: mxbai-embed-large:latest

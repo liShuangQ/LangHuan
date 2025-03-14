@@ -3,7 +3,7 @@ package com.langhuan.controllerai;
 import com.alibaba.fastjson2.JSONObject;
 import com.langhuan.common.Result;
 import com.langhuan.serviceai.StanfordChatService;
-import com.langhuan.serviceai.demo.ChatGeneralAssistanceService;
+import com.langhuan.serviceai.ChatGeneralAssistanceService;
 import com.langhuan.serviceai.ChatService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -105,7 +105,6 @@ public class ChatController {
 
         }catch (Exception e){
             return Result.success(Map.of("data", List.of(Map.of("id", defaultModelName))));
-
         }
 
     }

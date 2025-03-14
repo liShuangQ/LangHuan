@@ -1,6 +1,6 @@
 package com.langhuan.controllerai.demo;
 
-import com.langhuan.serviceai.demo.ChatGeneralAssistanceService;
+import com.langhuan.serviceai.ChatGeneralAssistanceService;
 import com.langhuan.serviceai.demo.ChatToolService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

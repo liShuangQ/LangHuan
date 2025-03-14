@@ -46,7 +46,7 @@ const menu: PagesMenu[] = [
         icon: "Menu",
         children: [
             {
-                title: "添加向量文件",
+                title: "添加文件",
                 path: "/pages/rag/addFile",
                 faPath: ["rag"],
             },
