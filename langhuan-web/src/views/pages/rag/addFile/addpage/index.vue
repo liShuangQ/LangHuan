@@ -25,7 +25,6 @@ export default {
 </script>
 <script setup lang="ts">
 import { ref, computed, nextTick } from 'vue'
-import { http } from "@/plugins/axios";
 import Step1 from './Step1.vue'
 import Step2 from './Step2.vue'
 import Step3 from './Step3.vue'
