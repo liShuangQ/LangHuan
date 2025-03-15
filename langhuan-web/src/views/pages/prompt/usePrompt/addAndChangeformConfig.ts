@@ -17,9 +17,6 @@ export let addAndChangeFormItemConfig: FormItemConfigs = [
             key: "id",
             type: "input",
             label: "id",
-            rule: [
-                { required: true, message: "Please input", trigger: "blur" },
-            ],
             col: 12,
             show: false,
             clearable: true,
