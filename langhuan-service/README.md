@@ -45,6 +45,7 @@ docker run --name one-api -d --restart always -p 3000:3000 -e SQL_DSN="root:1234
 
 # 默认管理员账号密码：root 123456
 ```
+
 安装后，在oneapi中配置ollama的模型渠道，具体配置方式见官网。
 
 #### 嵌入模型和向量数据库（RAG使用）
@@ -87,4 +88,5 @@ ALTER COLUMN embedding TYPE vector USING embedding::vector;
 
 - [x] 提示词可配置添加数据库存储提示词并提供配置页面 （20250305）
 - [x] 文件组管理，文件管理，文件切分上传向量库 （20250315）
-- [ ] TODO 文件组 召回测试
+- [ ] 优化全部的现有功能，包括校验 边界情况等
+- [ ] TODO 召回测试

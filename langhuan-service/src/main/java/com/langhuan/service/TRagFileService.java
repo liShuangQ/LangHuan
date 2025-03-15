@@ -17,12 +17,13 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class TRagFileService extends ServiceImpl<TRagFileMapper, TRagFile> {
 
-    public Page<TRagFile> queryFiles(String fileName, String fileType, int pageNum, int pageSize) {
+    public Page<TRagFile> queryFiles(String fileName, String fileType, String fileGroupId, int pageNum, int pageSize) {
 
         return super.page(new Page<>(pageNum, pageSize),
                 new LambdaQueryWrapper<TRagFile>()
                         .like(!fileName.isEmpty(), TRagFile::getFileName, fileName)
                         .like(!fileType.isEmpty(), TRagFile::getFileType, fileType)
+                        .like(!fileGroupId.isEmpty(), TRagFile::getFileGroupId, fileGroupId)
                         .orderBy(true, false, TRagFile::getUploadedAt)
         );
     }

@@ -91,6 +91,9 @@ import {
 import dayjs from "dayjs";
 import { CheckboxValueType, ElMessageBox } from "element-plus";
 import pageConfig from "./pageConfig";
+import { getFileGroupOption } from "../addFile/addFileFormconfig";
+import { useRouter } from 'vue-router';
+const router = useRouter();
 const formComRef = ref<FormDefineExpose>();
 const tableComRef = ref<TableDefineExpose>();
 
@@ -123,14 +126,28 @@ const getUserPageList = () => {
                 })
             })
         }
+        res.data[pageConfig.search_tableData_key] = res.data[pageConfig.search_tableData_key].map((e: any, i: number) => {
+            return {
+                ...e,
+                fileGroupName: fileGroupOption.find((ee: any) => ee.value === e.fileGroupId)?.label,
+            }
+        })
         tableData.value = res.data[pageConfig.search_tableData_key];
         paginationConfig.value.total = res.data[pageConfig.search_paginationConfig_key];
     }).catch(err => {
         console.log(err)
     })
 };
-nextTick(() => {
+let fileGroupOption: any = []
+nextTick(async () => {
     getUserPageList()
+    const httpGetFileGroupOption: any = await getFileGroupOption()
+    fileGroupOption = httpGetFileGroupOption.data.map((e: any) => {
+        return {
+            label: e.groupName,
+            value: String(e.id),
+        }
+    })
 })
 
 const addAndChangeFormComRef = ref<FormDefineExpose>();
@@ -144,17 +161,20 @@ const relation = ref<{ relation_name: string, relation_id: string }[]>([])
 let nowUser: any = null;
 const addAndChangeFormShowFun = async (t: string, d: any = null) => {
     if (t === 'add') {
-        addAndChangeFormDialogTit.value = '新增'
-        addAndChangeFormVisible.value = true
-        nextTick(() => {
-            addAndChangeFormComRef.value!.resetForm()
-        })
+        router.push("/pages/rag/addFile")
     }
     if (t === 'change') {
         addAndChangeFormDialogTit.value = '修改'
         addAndChangeFormVisible.value = true
+
         nextTick(() => {
             addAndChangeFormComRef.value!.resetForm()
+            addAndChangeFormComRef.value!.setFormOption([
+                {
+                    key: "fileGroupId",
+                    option: fileGroupOption,
+                },
+            ])
             addAndChangeFormComRef.value!.setFormOption(Object.entries(d).map(([k, v]) => {
                 return {
                     key: k,
@@ -231,9 +251,9 @@ const addAndChangeFormShowFun = async (t: string, d: any = null) => {
     }
     if (t === 'save') {
         let url = ''
-        if (addAndChangeFormDialogTit.value === '新增') {
-            url = pageConfig.addUrl
-        }
+        // if (addAndChangeFormDialogTit.value === '新增') {
+        //     url = pageConfig.addUrl
+        // }
         if (addAndChangeFormDialogTit.value === '修改') {
             url = pageConfig.updataUrl
         }

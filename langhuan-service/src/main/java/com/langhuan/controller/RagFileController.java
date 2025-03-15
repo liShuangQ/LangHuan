@@ -38,9 +38,10 @@ public class RagFileController {
     @PostMapping("/query")
     public Result queryFiles(@RequestParam(required = false) String fileName,
                              @RequestParam(required = false) String fileType,
+                             @RequestParam(required = false) String fileGroupId,
                              @RequestParam int pageNum,
                              @RequestParam int pageSize) {
-        log.info("Querying file with fileName: {}, fileType: {}, page: {}, size: {}", fileName, fileType, pageNum, pageSize);
-        return Result.success(ragFileService.queryFiles(fileName, fileType, pageNum, pageSize));
+        log.info("Querying file with fileName: {}, fileType: {},fileGroupId:{}, page: {}, size: {}", fileName, fileType,fileGroupId, pageNum, pageSize);
+        return Result.success(ragFileService.queryFiles(fileName, fileType, fileGroupId,pageNum, pageSize));
     }
 }
