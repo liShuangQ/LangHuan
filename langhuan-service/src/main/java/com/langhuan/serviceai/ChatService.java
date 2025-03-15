@@ -1,6 +1,5 @@
 package com.langhuan.serviceai;
 
-import com.alibaba.fastjson.JSONObject;
 import com.langhuan.advisors.MySimplelogAdvisor;
 import com.langhuan.functionTools.DateTimeToolsD;
 import com.langhuan.functionTools.FileReadTools;
@@ -15,7 +14,6 @@ import org.springframework.ai.chat.client.advisor.QuestionAnswerAdvisor;
 import org.springframework.ai.chat.client.advisor.SafeGuardAdvisor;
 import org.springframework.ai.chat.memory.InMemoryChatMemory;
 import org.springframework.ai.chat.prompt.Prompt;
-import org.springframework.ai.document.Document;
 import org.springframework.ai.openai.OpenAiChatOptions;
 import org.springframework.ai.tool.ToolCallback;
 import org.springframework.ai.tool.ToolCallbacks;
@@ -23,8 +21,6 @@ import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 import static org.springframework.ai.chat.client.advisor.AbstractChatMemoryAdvisor.CHAT_MEMORY_CONVERSATION_ID_KEY;
 import static org.springframework.ai.chat.client.advisor.AbstractChatMemoryAdvisor.CHAT_MEMORY_RETRIEVE_SIZE_KEY;
@@ -36,10 +32,10 @@ public class ChatService {
     private final ChatClient chatClient;
     private final VectorStore vectorStore;
     private final InMemoryChatMemory inMemoryChatMemory;
-    private final RagFileVectorUtils ragFileVectorUtils;
+    private final RagService ragService;
 
-    public ChatService(ChatClient.Builder chatClientBuilder, VectorStore vectorStore, ApplicationContext applicationContext, RagFileVectorUtils ragFileVectorUtils) {
-        this.ragFileVectorUtils = ragFileVectorUtils;
+    public ChatService(ChatClient.Builder chatClientBuilder, VectorStore vectorStore, RagService ragService) {
+        this.ragService = ragService;
         this.inMemoryChatMemory = new InMemoryChatMemory();
         this.vectorStore = vectorStore;
 //        用合适的美观的html格式的字符串的形式回复，当字符串中存在双引号的时候使用单引号替代。
@@ -64,7 +60,7 @@ public class ChatService {
                                 .similarityThreshold(Constant.WITHSIMILARITYTHRESHOLD).build(), Constant.AIDEFAULTQUESTIONANSWERADVISORRPROMPT)
                         : new QuestionAnswerAdvisor(vectorStore,
                         SearchRequest.builder().topK(Constant.WITHTOPK)
-                                .filterExpression("groupId == " + groupId)
+                                .filterExpression("groupId == '" + groupId + "'" )//设置过滤条件
                                 .similarityThreshold(Constant.WITHSIMILARITYTHRESHOLD).build(), Constant.AIDEFAULTQUESTIONANSWERADVISORRPROMPT);
                 return this.chatClient.prompt(
                                 new Prompt(
@@ -119,30 +115,7 @@ public class ChatService {
 
 
     public String ragSearch(String q, String groupId) {
-        List<Document> searchDocuments = null;
-        if (groupId.isEmpty()) {
-            searchDocuments = vectorStore.similaritySearch(
-                    SearchRequest.builder().query(q).topK(5)
-                            .similarityThreshold(0.5).build() // 单独设置多一些
-            );
-        } else {
-            searchDocuments = vectorStore.similaritySearch(
-                    SearchRequest.builder().query(q).topK(5)
-                            .similarityThreshold(0.5)
-                            .filterExpression("groupId == " + groupId)//设置过滤条件
-                            .build()
-            );
-        }
-        log.debug("ragSearch: " + searchDocuments);
-        StringBuilder contents = new StringBuilder();
-        int i = 0;
-        for (Document document : searchDocuments) {
-            i += 1;
-            contents.append("<p>").append(i).append(":").append("&nbsp;").append(document.getText()).append("</p>");
-        }
-        JSONObject json = new JSONObject();
-        json.put("desc", contents.toString());
-        return json.toString();
+        return ragService.ragSearch(q, groupId);
     }
 
 }

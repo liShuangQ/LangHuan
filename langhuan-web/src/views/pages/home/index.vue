@@ -82,7 +82,7 @@ const sendMessage = (recommend = null): void => {
                 p: inputPromptText.value,
                 q: inputTextCopy,
                 isRag: ragEnabled.value,
-                ragType: ragGroup.value,
+                groupId: ragGroup.value,
                 isFunction: toolEnabled.value,
                 modelName: chatModelName.value,
                 chatMemoryRetrieveSize: 7,
@@ -177,6 +177,25 @@ const getModelList = (): Promise<any> => {
                 }
             })
             chatModelName.value = chatModelOption.value[0].value
+        }
+    })
+}
+// 获取Rag文件组
+const getRagGroupOptionList = (): Promise<any> => {
+    return http.request<any>({
+        url: '/rag/file-group/getEnum',
+        method: 'post',
+        q_spinning: true,
+        data: {},
+    }).then((res) => {
+        if (res.code === 200) {
+            ragGroupOption.value = res.data.map((e:any)=>{
+                return {
+                    label: e.groupName,
+                    value: e.id
+                }
+            })
+            ragGroup.value = ragGroupOption.value[0].value
         }
     })
 }
@@ -281,6 +300,8 @@ const chatServiceTypeChange = (e: any): void => {
 nextTick(async () => {
     await getModelList()
     addStartMessage()
+    getRagGroupOptionList()
+
 })
 
 </script>

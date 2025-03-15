@@ -46,6 +46,11 @@ const menu: PagesMenu[] = [
         icon: "Menu",
         children: [
             {
+                title: "召回测试",
+                path: "/pages/rag/recallTesting",
+                faPath: ["rag"],
+            },
+            {
                 title: "添加文件",
                 path: "/pages/rag/addFile",
                 faPath: ["rag"],

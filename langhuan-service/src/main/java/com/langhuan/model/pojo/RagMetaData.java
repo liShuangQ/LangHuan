@@ -6,5 +6,5 @@ import lombok.Data;
 public class RagMetaData {
     private String filename;
     private String fileId;
-    private String groupId;
+    private String groupId; // HACK: 改动字段名注意搜索：filterExpression
 }

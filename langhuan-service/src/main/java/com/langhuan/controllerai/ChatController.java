@@ -44,7 +44,7 @@ public class ChatController {
                        @RequestParam(name = "p", required = true, defaultValue = ".") String p,
                        @RequestParam(name = "q", required = true) String q,
                        @RequestParam(name = "isRag", required = true) Boolean isRag,
-                       @RequestParam(name = "ragType", required = true, defaultValue = "") String ragType,
+                       @RequestParam(name = "groupId", required = true, defaultValue = "") String groupId,
                        @RequestParam(name = "isFunction", required = true) Boolean isFunction,
                        @RequestParam(name = "modelName", required = true, defaultValue = "") String modelName,
                        @RequestParam(name = "chatMemoryRetrieveSize", required = true, defaultValue = "7") int chatMemoryRetrieveSize
@@ -53,7 +53,7 @@ public class ChatController {
             modelName = defaultModelName;
         }
 
-        String chat = chatService.chat(id, p, q, isRag, ragType, isFunction, modelName, chatMemoryRetrieveSize);
+        String chat = chatService.chat(id, p, q, isRag, groupId, isFunction, modelName, chatMemoryRetrieveSize);
         if (chat.indexOf("***prompt***") <= 5) {
             chat = chatGeneralAssistanceService.tools(chat);
         }
@@ -80,11 +80,11 @@ public class ChatController {
                               @RequestParam(name = "p", required = true, defaultValue = ".") String p,
                               @RequestParam(name = "q", required = true) String q,
                               @RequestParam(name = "isRag", required = true) Boolean isRag,
-                              @RequestParam(name = "ragType", required = true, defaultValue = "") String ragType,
+                              @RequestParam(name = "groupId", required = true, defaultValue = "") String groupId,
                               @RequestParam(name = "isFunction", required = true) Boolean isFunction
     ) {
         return Result.success(Map.of(
-                "chat", chatService.ragSearch(q, ragType)
+                "chat", chatService.ragSearch(q, groupId)
 //                "recommend", chatGeneralAssistanceService.otherQuestionsRecommended(q)
         ));
     }
