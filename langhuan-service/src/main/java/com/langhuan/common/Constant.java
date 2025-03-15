@@ -1,7 +1,7 @@
 package com.langhuan.common;
 
 import java.util.List;
-import java.util.regex.Pattern;
+import java.util.Map;
 
 public class Constant {
     // JWT密钥，用于签名和验证token，需要足够长以确保安全性
@@ -33,4 +33,9 @@ public class Constant {
     public static final int WITHTOPK = 2;
     //设置相似度阈值，常是一个介于 0 和 1 之间的浮点数，例如 0.5、0.7、0.8 等，如果设置得过高，可能会没有结果返回；如果设置得过低，可能会返回大量不相关的结果
     public static final double WITHSIMILARITYTHRESHOLD = 0.7;
+    public static final List<Map<String, Object>> CATEGORYENUM = List.of(
+            Map.of("label", "默认", "value", "default"),
+            Map.of("label", "系统", "value", "system"),
+            Map.of("label", "提示词", "value", "prompt")
+    );
 }

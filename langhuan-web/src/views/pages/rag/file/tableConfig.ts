@@ -10,28 +10,48 @@ export let tableColumnConfig = ref<TableColumnConfig[]>([
         prop: 'id',
     },
     {
-        label: '文件组名称',
-        prop: 'groupName',
+        label: '文件名称',
+        prop: 'fileName',
         width: 'auto',
     },
     {
-        label: '文件组类型',
-        prop: 'groupType',
+        label: '文件类型',
+        prop: 'fileType',
         width: 'auto',
     },
     {
-        label: '文件组描述',
-        prop: 'groupDesc',
+        label: '文件大小',
+        prop: 'fileSize',
         width: 'auto',
     },
     {
-        label: '创建用户',
-        prop: 'createdBy',
+        label: '文档切割数',
+        prop: 'documentNum',
         width: 'auto',
     },
     {
-        label: '创建时间',
-        prop: 'createdAt',
+        label: '文件描述',
+        prop: 'fileDesc',
+        width: 'auto',
+    },
+    {
+        label: '文件组ID',
+        prop: 'fileGroupId',
+        width: 'auto',
+    },
+    {
+        label: '文件组',
+        prop: 'fileGroupName',
+        width: 'auto',
+    },
+    {
+        label: '上传时间',
+        prop: 'uploadedAt',
+        width: 'auto',
+    },
+    {
+        label: '创建人',
+        prop: 'uploadedBy',
         width: 'auto',
     },
     {

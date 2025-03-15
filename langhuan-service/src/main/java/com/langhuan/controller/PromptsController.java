@@ -1,10 +1,14 @@
 package com.langhuan.controller;
 
+import com.langhuan.common.Constant;
 import com.langhuan.common.Result;
 import com.langhuan.model.domain.TPrompts;
 import com.langhuan.service.TPromptsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/prompts")
@@ -12,6 +16,13 @@ public class PromptsController {
 
     @Autowired
     private TPromptsService tPromptsService;
+
+    // 提示词分类的枚举
+    // NOTE：这里后续可能改动很小，直接在程序中定义死即可
+    @PostMapping("/usePrompt/getCategoryEnum")
+    public Result getCategoryEnum(@RequestBody TPrompts tPrompts) {
+        return Result.success(Constant.CATEGORYENUM);
+    }
 
     // 新增
     @PostMapping("/usePrompt/add")

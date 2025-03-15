@@ -2,6 +2,9 @@ package com.langhuan.utils.rag;
 
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.langhuan.model.pojo.RagMetaData;
 import com.langhuan.serviceai.ChatGeneralAssistanceService;
 import com.langhuan.utils.rag.splitter.FixedWindowTextSplitter;
 import com.langhuan.utils.rag.splitter.PatternTokenTextSplitter;
@@ -63,9 +66,9 @@ public class RagFileVectorUtils {
         if (splitFileMethod.equals("PatternTokenTextSplitter")) {
             apply = new PatternTokenTextSplitter(Pattern.compile((String) methodData.get("splitPattern"))).apply(documentText);
         }
-        if (splitFileMethod.equals("SlidingWindowTextSplitter")) {
-            apply = new SlidingWindowTextSplitter((Integer) methodData.get("windowSize"), (Integer) methodData.get("overlapSize")).apply(documentText);
-        }
+//        if (splitFileMethod.equals("SlidingWindowTextSplitter")) {
+//            apply = new SlidingWindowTextSplitter((Integer) methodData.get("windowSize"), (Integer) methodData.get("overlapSize")).apply(documentText);
+//        }
         if (splitFileMethod.equals("LlmTextSplitter")) {
             String llmOutString = this.chatGeneralAssistanceService.llmTextSplitter((String) methodData.get("modelName"), documentText);
             JSONArray content = JSONObject.parseObject(llmOutString).getJSONArray("content");
@@ -79,17 +82,25 @@ public class RagFileVectorUtils {
 
     /**
      * 将文档块添加到VectorStore中
+     * ¬
      *
      * @param documents 分割后的文档块列表
      * @param metadata  元数据
      */
-    public Boolean writeDocumentsToVectorStore(List<String> documents, Map<String, Object> metadata,
+    public Boolean writeDocumentsToVectorStore(List<String> documents, RagMetaData metadata,
                                                VectorStore vectorStore) {
         try {
             List<Document> documentsList = new ArrayList<>();
-//        metadata.put("parentFileId", parentFileId);
-            for (String document : documents) {
-                documentsList.add(new Document(document, metadata));
+            ObjectMapper objectMapper = new ObjectMapper();
+            String json = objectMapper.writeValueAsString(metadata);
+            Map<String, Object> personMap = objectMapper.readValue(json, new TypeReference<Map<String, Object>>() {
+            });
+            try {
+                for (String document : documents) {
+                    documentsList.add(new Document(document, personMap));
+                }
+            } catch (Exception e) {
+                log.error("writeDocumentsToVectorStore error", e);
             }
             vectorStore.add(documentsList);
             return true;

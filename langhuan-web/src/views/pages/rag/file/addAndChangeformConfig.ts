@@ -2,49 +2,13 @@ import {
     FormConfig,
     FormItemConfigs,
 } from "@/components/globalComponents/ElementFormC/form-component";
+import { cloneDeep } from "lodash";
+import { formItemConfig as addFileFrom } from "../addFile/addFileFormconfig";
 
 export let addAndChangeFormConfig: FormConfig = {
     size: "default",
-    labelWidth: "70px",
+    labelWidth: "90px",
     labelPosition: "top",
     showMessage: true,
 };
-
-export let addAndChangeFormItemConfig: FormItemConfigs = [
-    [
-        {
-            value: "",
-            key: "id",
-            type: "input",
-            label: "id",
-            col: 12,
-            show: false,
-            clearable: true,
-        },
-        {
-            value: "",
-            key: "groupName",
-            type: "input",
-            label: "文件组名称",
-            col: 12,
-            clearable: true,
-        },
-        {
-            value: "",
-            key: "groupType",
-            type: "input",
-            label: "文件组类型",
-            col: 12,
-            clearable: true,
-        },
-        {
-            value: "",
-            key: "groupDesc",
-            type: "input",
-            label: "文件组描述",
-            textarea:true,
-            col: 24,
-            clearable: true,
-        },
-    ],
-];
+export let addAndChangeFormItemConfig: FormItemConfigs = cloneDeep(addFileFrom);

@@ -88,25 +88,29 @@ ALTER TABLE vector_store
     ALTER COLUMN embedding TYPE vector USING embedding::vector;
 
 -- 创建提示词表
-CREATE TABLE t_prompts (
+CREATE TABLE t_prompts
+(
     -- 提示词的唯一标识符，使用自增序列
-                           id SERIAL PRIMARY KEY,
+    id         SERIAL PRIMARY KEY,
     -- 提示词的内容，使用文本类型存储较长的提示信息
-                           content TEXT NOT NULL,
+    content    TEXT NOT NULL,
     -- 提示词的分类，可根据业务需求进行分类，如业务类型、使用场景等
-                           category VARCHAR(255),
+    category   VARCHAR(255),
     -- 提示词的创建时间，使用时间戳类型自动记录创建时刻
-                           created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     -- 提示词的更新时间，使用时间戳类型，初始值为创建时间，后续更新时会修改
-                           updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 -- 向 prompts 表中添加 method_name 字段，用于存储方法名
-ALTER TABLE t_prompts ADD COLUMN method_name VARCHAR(255);
+ALTER TABLE t_prompts
+    ADD COLUMN method_name VARCHAR(255);
 -- 向 prompts 表中添加 description 字段，用于存储方法描述
-ALTER TABLE t_prompts ADD COLUMN description TEXT;
+ALTER TABLE t_prompts
+    ADD COLUMN description TEXT;
 -- 创建更新触发器函数
 CREATE OR REPLACE FUNCTION update_updated_at_column()
-    RETURNS TRIGGER AS $$
+    RETURNS TRIGGER AS
+$$
 BEGIN
     -- 当记录更新时，自动更新 updated_at 字段为当前时间
     NEW.updated_at = now();
@@ -116,11 +120,10 @@ $$ language 'plpgsql';
 
 -- 为 prompts 表添加更新触发器
 CREATE TRIGGER update_prompts_updated_at
-    BEFORE UPDATE ON t_prompts
-    FOR EACH ROW EXECUTE PROCEDURE update_updated_at_column();
-
-
-
+    BEFORE UPDATE
+    ON t_prompts
+    FOR EACH ROW
+EXECUTE PROCEDURE update_updated_at_column();
 
 
 
@@ -140,9 +143,11 @@ CREATE TABLE t_rag_file
 (
     id            SERIAL PRIMARY KEY,                 -- 自增主键
     file_name     VARCHAR(255) NOT NULL,              -- 文件名
-    file_type     VARCHAR(50)  NOT NULL,              -- 文件类型（例如：pdf, docx, jpg 等）
+    file_type     VARCHAR(255)  NOT NULL,              -- 文件类型（例如：pdf, docx, jpg 等）
+    file_size     VARCHAR(255) NOT NULL,              -- 文件大小
+    document_num  VARCHAR(255) NOT NULL,              -- 切分出文档的个数
     file_desc     VARCHAR(255) NOT NULL,              -- 文件描述
-    file_group_id VARCHAR(50)  NOT NULL,              -- 关联文件组id
+    file_group_id VARCHAR(255)  NOT NULL,             -- 关联文件组id
     uploaded_by   VARCHAR(100) NOT NULL,              -- 上传用户（可以是用户名或用户ID）
     uploaded_at   TIMESTAMP DEFAULT CURRENT_TIMESTAMP -- 上传时间，默认为当前时间
 );

@@ -10,17 +10,17 @@ export let formItemConfig: FormItemConfigs = [
     [
         {
             value: '',
-            key: 'groupName',
+            key: 'fileName',
             type: 'input',
-            label: '文件组名称',
+            label: '文件名称',
             col: 5,
             clearable: true,
         },
         {
             value: '',
-            key: 'groupType',
+            key: 'fileType',
             type: 'input',
-            label: '文件组类型',
+            label: '文件类型',
             col: 5,
             clearable: true,
         },

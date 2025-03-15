@@ -8,6 +8,8 @@
             <id property="id" column="id" jdbcType="INTEGER"/>
             <result property="fileName" column="file_name" jdbcType="VARCHAR"/>
             <result property="fileType" column="file_type" jdbcType="VARCHAR"/>
+            <result property="fileSize" column="file_size" jdbcType="VARCHAR"/>
+            <result property="documentNum" column="document_num" jdbcType="VARCHAR"/>
             <result property="fileDesc" column="file_desc" jdbcType="VARCHAR"/>
             <result property="fileGroupId" column="file_group_id" jdbcType="VARCHAR"/>
             <result property="uploadedBy" column="uploaded_by" jdbcType="VARCHAR"/>
@@ -16,7 +18,7 @@
 
     <sql id="Base_Column_List">
         id,file_name,file_type,
-        file_desc,file_group_id,uploaded_by,
-        uploaded_at
+        file_size,document_num,file_desc,
+        file_group_id,uploaded_by,uploaded_at
     </sql>
 </mapper>
