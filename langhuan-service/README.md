@@ -1,8 +1,8 @@
-# spring-boot-ai-chat-ollama
+# langhuan-service
 
 ## 介绍
 
-本项目主要基于springai+oneapi+ollama实现本地模型对话，对话记忆，RAG搜索，工具调用等功能。
+"琅嬛福地"，藏天下典籍
 
 ## 部署
 
@@ -10,12 +10,10 @@
 
 - 推荐使用 jdk21
 - postgres数据库 （下方介绍使用docker的方式。也可自己准备，需要RAG则需要pgvector插件）
-- oneapi
-- ollama
 
 ### 部署
 
-#### ollama
+#### ollama(可选)
 
 Ollama 是一个基于 Go 语言开发的开源工具，能让用户在本地便捷地管理和运行如 Llama、Falcon、Qwen2 等多种大型语言模型，具有自动硬件加速、无需虚拟化、支持
 API、多平台兼容等特性。
@@ -27,9 +25,9 @@ API、多平台兼容等特性。
 ollama run qwen2.5:3b (例子，使用其它模型在 https://ollama.com/library 中查询下载后修改application.yml中模型配置)
 ```
 
-- 在application.yml中修改spring.ai.ollama配置
+- 在application.yml中修改对应配置
 
-#### one api
+#### one api(可选)
 
 是一个开源的接口管理与分发系统，支持如 OpenAI、Google PaLM 2、百度文心一言等多种大模型平台。通过统一接口访问不同大模型服务，可用于二次分发管理
 key，仅单可执行文件，已打包好 Docker 镜像，能一键部署，开箱即用。
@@ -83,10 +81,3 @@ ALTER TABLE vector_store ADD COLUMN embedding float[];
 ALTER TABLE vector_store
 ALTER COLUMN embedding TYPE vector USING embedding::vector;
 ```
-
-## 功能
-
-- [x] 提示词可配置添加数据库存储提示词并提供配置页面 （20250305）
-- [x] 文件组管理，文件管理，文件切分上传向量库 （20250315）
-- [ ] 优化全部的现有功能，包括校验 边界情况等
-- [ ] TODO 召回测试
