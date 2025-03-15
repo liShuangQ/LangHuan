@@ -1,6 +1,8 @@
 package com.langhuan.serviceai;
 
 import cn.hutool.core.util.IdUtil;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.langhuan.model.domain.TRagFile;
 import com.langhuan.model.pojo.RagMetaData;
 import com.langhuan.service.TRagFileService;
@@ -46,7 +48,7 @@ public class RagService {
 
         RagMetaData metadata = new RagMetaData();
         metadata.setFilename(ragFile.getFileName());
-        metadata.setFileId(ragFile.getId());
+        metadata.setFileId(String.valueOf(ragFile.getId()));
         metadata.setGroupId(ragFile.getFileGroupId());
         if (ragFileVectorUtils.writeDocumentsToVectorStore(documents, metadata, vectorStore)) {
             ragFileService.save(ragFile);
@@ -66,5 +68,18 @@ public class RagService {
         dao.update(sql, id.toString());
         ragFileService.removeById(id);
         return true;
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public String changeFileAndDocuments(TRagFile ragFile) {
+        log.info("Updating changeFileAndDocuments: {}", ragFile);
+        String sql = """
+                        UPDATE vector_store
+                        SET metadata = jsonb_set(metadata::jsonb, '{groupId}', to_jsonb(?))
+                        WHERE metadata ->> 'fileId' = ?;
+                """;
+        dao.update(sql, ragFile.getFileGroupId(), ragFile.getId().toString());
+        ragFileService.updateById(ragFile);
+        return "更新成功";
     }
 }

@@ -49,7 +49,7 @@ export let addAndChangeFormItemConfig: FormItemConfigs = [
             label: "父级ID",
             col: 24,
             rule: [
-                { required: true, message: "请输入权限标识", trigger: "blur" },
+                { required: true, message: "请输入父级ID", trigger: "blur" },
             ],
             clearable: true,
         },

@@ -14,6 +14,9 @@ export let addAndChangeFormItemConfig: FormItemConfigs = [
             key: 'name',
             type: 'input',
             label: '姓名',
+            rule: [
+                { required: true, message: "Please input", trigger: "blur" },
+            ],
             col: 12,
             clearable: true,
         },
@@ -45,6 +48,9 @@ export let addAndChangeFormItemConfig: FormItemConfigs = [
             key: 'phone',
             type: 'input',
             label: '手机号',
+            rule: [
+                { required: true, message: "Please input", trigger: "blur" },
+            ],
             col: 12,
             clearable: true,
         },
@@ -61,6 +67,9 @@ export let addAndChangeFormItemConfig: FormItemConfigs = [
                     label: '女(2)',
                     value: '2',
                 },
+            ],
+            rule: [
+                { required: true, message: "Please change", trigger: "change" },
             ],
             label: '性别',
             col: 12,
@@ -81,6 +90,9 @@ export let addAndChangeFormItemConfig: FormItemConfigs = [
                 },
             ],
             label: '是否启用',
+            rule: [
+                { required: true, message: "Please change", trigger: "change" },
+            ],
             col: 12,
             clearable: true,
         },

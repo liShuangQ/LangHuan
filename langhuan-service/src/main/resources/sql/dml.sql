@@ -90,7 +90,7 @@ INSERT INTO t_prompts (id, content, category, created_at, updated_at, method_nam
 {
     "desc": "[\'问题一\'，\'问题二\']"
 }', 'system,prompt', '2025-03-05 03:11:56.641364', '2025-03-15 02:56:52.123748', 'otherQuestionsRecommended', '');
-INSERT INTO t_prompts (id, content, category`, created_at, updated_at, method_name, description) VALUES (-925409279, e'请按照以下规则将我的长文档拆分为适合RAG系统的段落：
+INSERT INTO t_prompts (id, content, category, created_at, updated_at, method_name, description) VALUES (-925409279, e'请按照以下规则将我的长文档拆分为适合RAG系统的段落：
 语义优先切割
 以自然段落/章节为最小切割单位，禁止在完整逻辑中间切断
 保留原始文档的层级结构（保留标题/子标题作为段落前缀）

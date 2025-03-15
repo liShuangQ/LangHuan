@@ -6,7 +6,7 @@
         </div>
         <div class="ml-1">
             <ElementFormC ref="formComRef" :formConfig="formConfig" :formItemConfig="formItemConfig"
-                @handle="formHandle">
+                          @handle="formHandle">
                 <template #custom-button>
                     <div class="float-right">
                         <el-button type="primary" @click="getUserPageList">查询</el-button>
@@ -15,12 +15,14 @@
                 </template>
             </ElementFormC>
         </div>
-        <div class="h-[600px] mt-2">
+        <div style="height: calc(100% - 120px)" class="mt-2">
             <ElementTableC ref="tableComRef" :paginationConfig="paginationConfig" :tableColumnConfig="tableColumnConfig"
-                :tableConfig="tableConfig" :tableData="tableData" @handle="tableHandle">
+                           :tableConfig="tableConfig" :tableData="tableData" @handle="tableHandle">
                 <template #content-buttonSlot="props">
-                    <el-button link type="primary" @click="addAndChangeFormShowFun('change', props.row)">修改</el-button>
-                    <el-button link type="primary" @click="addAndChangeFormShowFun('delete', props.row)">删除</el-button>
+                    <el-button link type="primary" @click="addAndChangeFormShowFun('change', props.row)">修改
+                    </el-button>
+                    <el-button link type="primary" @click="addAndChangeFormShowFun('delete', props.row)">删除
+                    </el-button>
                     <!--                    <div m="4">-->
                     <!--                        <p m="t-0 b-2">State: state</p>-->
                     <!--                        <p m="t-0 b-2">City: city</p>-->
@@ -32,7 +34,7 @@
 
         <el-dialog v-model="addAndChangeFormVisible" :title="addAndChangeFormDialogTit" width="800">
             <ElementFormC ref="addAndChangeFormComRef" :formConfig="addAndChangeFormConfig"
-                :formItemConfig="addAndChangeFormItemConfig" @handle="addAndChangeFormHandle">
+                          :formItemConfig="addAndChangeFormItemConfig" @handle="addAndChangeFormHandle">
             </ElementFormC>
             <template #footer>
                 <div class="dialog-footer">
@@ -53,14 +55,14 @@ export default {
 };
 </script>
 <script setup lang="ts">
-import { http } from "@/plugins/axios";
-import { TableDefineExpose } from "@/components/globalComponents/ElementTableC/table-component";
+import {http} from "@/plugins/axios";
+import {TableDefineExpose} from "@/components/globalComponents/ElementTableC/table-component";
 import {
     FormConfig,
     FormDefineExpose,
     FormItemConfig,
 } from "@/components/globalComponents/ElementFormC/form-component";
-import { formConfig, formItemConfig } from "./formConfig";
+import {formConfig, formItemConfig} from "./formConfig";
 import {
     paginationConfig,
     tableColumnConfig,
@@ -211,11 +213,11 @@ const addAndChangeFormShowFun = (t: string, d: any = null) => {
             })
             .catch((rej: any) => {
                 console.log(rej, "失败");
-                Object.keys(rej).forEach((k) => {
-                    rej[k].forEach((e: any) => {
-                        ElMessage.warning(e.message);
-                    });
-                });
+                // Object.keys(rej).forEach((k) => {
+                //     rej[k].forEach((e: any) => {
+                //         ElMessage.warning(e.message);
+                //     });
+                // });
             });
     }
     if (t === 'close') {

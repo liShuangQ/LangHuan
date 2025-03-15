@@ -99,7 +99,7 @@ export let formItemConfig: FormItemConfigs = [
             option: [],
             label: "文件组",
             rule: [
-                { required: true, message: "Please input", trigger: "change" },
+                { required: true, message: "Please select", trigger: "change" },
             ],
             col: 24,
             disabled: false,

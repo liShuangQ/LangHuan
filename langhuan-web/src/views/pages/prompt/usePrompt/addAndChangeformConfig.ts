@@ -17,6 +17,9 @@ export let addAndChangeFormItemConfig: FormItemConfigs = [
             key: "id",
             type: "input",
             label: "id",
+            rule: [
+                { required: true, message: "Please input", trigger: "blur" },
+            ],
             col: 12,
             show: false,
             clearable: true,
@@ -26,6 +29,9 @@ export let addAndChangeFormItemConfig: FormItemConfigs = [
             key: "methodName",
             type: "input",
             label: "方法名",
+            rule: [
+                { required: true, message: "Please input", trigger: "blur" },
+            ],
             col: 12,
             clearable: true,
         },
@@ -34,6 +40,9 @@ export let addAndChangeFormItemConfig: FormItemConfigs = [
             key: "category",
             type: "input",
             label: "分类",
+            rule: [
+                { required: true, message: "Please input", trigger: "blur" },
+            ],
             col: 12,
             clearable: true,
         },
@@ -42,6 +51,9 @@ export let addAndChangeFormItemConfig: FormItemConfigs = [
             key: "content",
             type: "input",
             label: "提示词",
+            rule: [
+                { required: true, message: "Please input", trigger: "blur" },
+            ],
             textarea: true,
             autosize:{minRows:3},
             col: 24,
@@ -52,6 +64,9 @@ export let addAndChangeFormItemConfig: FormItemConfigs = [
             key: "description",
             type: "input",
             label: "描述",
+            rule: [
+                { required: true, message: "Please input", trigger: "blur" },
+            ],
             textarea: true,
             col: 24,
             clearable: true,

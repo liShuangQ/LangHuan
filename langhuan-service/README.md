@@ -58,7 +58,7 @@ ollama pull mxbai-embed-large（默认配置） 或 ollama pull mofanke/dmeta-em
 - 下载 postgres pgvector/pgvector （如果你有数据库则跳过这步，如没有pgvector则需要添加此插件）
 
 ```text
-docker run -it --rm --name postgres -p 5432:5432 -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres pgvector/pgvector
+docker run -it -d --rm --name postgres -p 5432:5432 -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres pgvector/pgvector
 ```
 
 - 执行创建向量库sql

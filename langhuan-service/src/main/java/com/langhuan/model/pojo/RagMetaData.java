@@ -5,6 +5,6 @@ import lombok.Data;
 @Data
 public class RagMetaData {
     private String filename;
-    private Integer fileId;
+    private String fileId;
     private String groupId;
 }

@@ -36,6 +36,9 @@ export let addAndChangeFormItemConfig: FormItemConfigs = [
             key: "remark",
             type: "input",
             label: "备注",
+            rule: [
+                { required: true, message: "Please input", trigger: "blur" },
+            ],
             col: 24,
             clearable: true,
         },

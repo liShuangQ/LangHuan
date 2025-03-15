@@ -17,6 +17,9 @@ export let addAndChangeFormItemConfig: FormItemConfigs = [
             key: "id",
             type: "input",
             label: "id",
+            rule: [
+                { required: true, message: "Please input", trigger: "blur" },
+            ],
             col: 12,
             show: false,
             clearable: true,
@@ -26,6 +29,9 @@ export let addAndChangeFormItemConfig: FormItemConfigs = [
             key: "groupName",
             type: "input",
             label: "文件组名称",
+            rule: [
+                { required: true, message: "Please input", trigger: "blur" },
+            ],
             col: 12,
             clearable: true,
         },
@@ -34,6 +40,9 @@ export let addAndChangeFormItemConfig: FormItemConfigs = [
             key: "groupType",
             type: "input",
             label: "文件组类型",
+            rule: [
+                { required: true, message: "Please input", trigger: "blur" },
+            ],
             col: 12,
             clearable: true,
         },
@@ -42,6 +51,9 @@ export let addAndChangeFormItemConfig: FormItemConfigs = [
             key: "groupDesc",
             type: "input",
             label: "文件组描述",
+            rule: [
+                { required: true, message: "Please input", trigger: "blur" },
+            ],
             textarea:true,
             col: 24,
             clearable: true,

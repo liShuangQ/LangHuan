@@ -1,6 +1,6 @@
 export default {
     deleteUrl: "/rag/deleteFileAndDocuments",
-    updataUrl: "/rag/file/update",
+    updataUrl: "/rag/changeFileAndDocuments",
     searchUrl: "/rag/file/query",
     search_dayTransformation: ["uploadedAt"], // 是否有时间转换的字段
     search_tableData_key: "records", // 表格数据， 从res.data 开始算

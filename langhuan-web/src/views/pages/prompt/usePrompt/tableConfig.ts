@@ -38,12 +38,13 @@ export let tableColumnConfig = ref<TableColumnConfig[]>([
         label: "更新时间",
         prop: "updatedAt",
         width: "auto",
+
     },
     {
         label: "操作",
         prop: "buttonSlot",
         contentSlot: true,
-        width: "170",
+        width: "120",
     },
 ]);
 export let tableConfig = ref<TableConfig>({

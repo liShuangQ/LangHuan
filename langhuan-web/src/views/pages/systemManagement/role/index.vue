@@ -15,7 +15,7 @@
                 </template>
             </ElementFormC>
         </div>
-        <div class="h-[600px] mt-2">
+        <div style="height: calc(100% - 120px)" class="mt-2">
             <ElementTableC ref="tableComRef" :paginationConfig="paginationConfig" :tableColumnConfig="tableColumnConfig"
                 :tableConfig="tableConfig" :tableData="tableData" @handle="tableHandle">
                 <template #content-buttonSlot="props">
@@ -272,11 +272,11 @@ const addAndChangeFormShowFun = async (t: string, d: any = null) => {
             })
             .catch((rej: any) => {
                 console.log(rej, "失败");
-                Object.keys(rej).forEach((k) => {
-                    rej[k].forEach((e: any) => {
-                        ElMessage.warning(e.message);
-                    });
-                });
+                // Object.keys(rej).forEach((k) => {
+                //     rej[k].forEach((e: any) => {
+                //         ElMessage.warning(e.message);
+                //     });
+                // });
             });
     }
     if (t === 'close') {
