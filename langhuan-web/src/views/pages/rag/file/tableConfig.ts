@@ -27,6 +27,7 @@ export let tableColumnConfig = ref<TableColumnConfig[]>([
     {
         label: '文档切割数',
         prop: 'documentNum',
+        contentSlot: true,
         width: 'auto',
     },
     {
@@ -58,7 +59,7 @@ export let tableColumnConfig = ref<TableColumnConfig[]>([
         label: '操作',
         prop: 'buttonSlot',
         contentSlot: true,
-        width: '120',
+        width: '180',
     }
 ])
 export let tableConfig = ref<TableConfig>({

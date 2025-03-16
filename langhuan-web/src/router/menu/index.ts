@@ -46,8 +46,13 @@ const menu: PagesMenu[] = [
         icon: "Menu",
         children: [
             {
-                title: "召回测试",
-                path: "/pages/rag/recallTesting",
+                title: "文件组管理",
+                path: "/pages/rag/fileGroup",
+                faPath: ["rag"],
+            },
+            {
+                title: "文件管理",
+                path: "/pages/rag/file",
                 faPath: ["rag"],
             },
             {
@@ -56,13 +61,8 @@ const menu: PagesMenu[] = [
                 faPath: ["rag"],
             },
             {
-                title: "文件组管理",
-                path: "/pages/rag/fileGroup",
-                faPath: ["rag"],
-            },
-            {
-                title: "文件管理",
-                path: "/pages/rag/file",
+                title: "召回测试",
+                path: "/pages/rag/recallTesting",
                 faPath: ["rag"],
             },
         ],

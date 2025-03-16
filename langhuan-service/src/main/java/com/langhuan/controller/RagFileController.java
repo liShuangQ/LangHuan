@@ -1,6 +1,7 @@
 package com.langhuan.controller;
 
 import com.alibaba.fastjson2.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.langhuan.common.Result;
 import com.langhuan.model.domain.TRagFile;
 import com.langhuan.model.pojo.RagWriteDocumentsReq;
@@ -43,6 +44,19 @@ public class RagFileController {
         return Result.success(ragFileService.queryFiles(fileName, fileType, fileGroupId,pageNum, pageSize));
     }
 
+    @PostMapping("/file/queryDocumentsByFileId")
+    public Result queryDocumentsByFileId(@RequestParam(required = true) Integer fileId) {
+        return Result.success(ragService.queryDocumentsByFileId(fileId));
+    }
+
+    @PostMapping("/file/getFilesByGroupId")
+    public Result getFilesByGroupId(
+            @RequestParam(required = true) String groupId
+    ) {
+        return Result.success(ragFileService.list(
+                new LambdaQueryWrapper<TRagFile>().eq(TRagFile::getFileGroupId, groupId)
+        ));
+    }
     @PostMapping("/readAndSplitDocument")
     public Result readAndSplitDocument(
             MultipartFile file,

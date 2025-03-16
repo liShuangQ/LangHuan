@@ -8,7 +8,9 @@ import {http} from "@/plugins/axios";
 import axios, {CancelToken} from "axios";
 import {CancelTokenSource} from "axios/index";
 import {ElMessage} from "element-plus";
+import {useRouter} from 'vue-router';
 
+const router = useRouter();
 let chats = ref<Chat[]>([
     {
         id: 1,
@@ -22,6 +24,8 @@ let isTyping = ref<boolean>(false);
 let axiosCancel: CancelTokenSource | null = null;
 let ragGroup = ref<string>('')
 let ragGroupOption = ref<{ label: string, value: string }[]>([])
+let ragFile = ref<string>('')
+let ragFileOption = ref<{ label: string, value: string }[]>([])
 // 添加滚动到最新的消息
 const toDownPage = (): void => {
     nextTick(() => {
@@ -72,6 +76,7 @@ const sendMessage = (recommend = null): void => {
             data: {
                 q: inputTextCopy,
                 groupId: ragGroup.value,
+                fileId: ragFile.value,
             }
         }).then((res) => {
             if (res.code === 200) {
@@ -130,13 +135,41 @@ const getRagGroupOptionList = (): Promise<any> => {
             ragGroupOption.value = res.data.map((e: any) => {
                 return {
                     label: e.groupName,
-                    value: e.id
+                    value: String(e.id)
                 }
             })
             ragGroup.value = ragGroupOption.value[0].value
+            ragGroupChange(ragGroup.value)
         }
     })
 }
+// 文件组的变动
+const ragGroupChange = (value: string) => {
+    ragFile.value = ''
+    return http.request<any>({
+        url: '/rag/file/getFilesByGroupId',
+        method: 'post',
+        q_spinning: true,
+        q_contentType: 'form',
+        data: {
+            groupId: value
+        },
+    }).then((res) => {
+        ragFileOption.value = [
+            {
+                fileName: '全部',
+                id: ''
+            },
+            ...res.data
+        ].map((e: any) => {
+            return {
+                label: e.fileName,
+                value: String(e.id)
+            }
+        })
+    })
+}
+
 // 停止当前对话
 const messageStop = (): void => {
     if (axiosCancel) {
@@ -173,10 +206,20 @@ const getChatTopInfo = (): string => {
 
     return `${getCurrentDateTime()}`
 };
+
 // 初始化执行
 nextTick(async () => {
     addStartMessage()
-    getRagGroupOptionList()
+    await getRagGroupOptionList()
+    const {query} = router.currentRoute.value
+    console.log(query)
+    if (query.groupId) {
+        await ragGroupChange(query.groupId as string)
+        setTimeout(()=>{
+            query.fileId && (ragFile.value = query.fileId as string)
+        },200)
+    }
+
 
 })
 
@@ -245,9 +288,16 @@ nextTick(async () => {
                 <!-- 下功能区 -->
                 <div class=" flex justify-end">
                     <div class=" flex justify-between items-center ">
-                        <div class="text-sm font-medium text-gray-700 mr-2 w-40 ">选择文件组</div>
-                        <el-select v-model="ragGroup" :disabled="isTyping" placeholder="选择文件组" class="mr-2">
+                        <div class="text-sm font-medium text-gray-700 mr-2 w-60">选择文件组</div>
+                        <el-select v-model="ragGroup" :disabled="isTyping" @change="ragGroupChange"
+                                   placeholder="选择文件组" class="mr-2">
                             <el-option v-for="item in ragGroupOption" :key="item.value" :label="item.label"
+                                       :value="item.value"/>
+                        </el-select>
+                        <div class="text-sm font-medium text-gray-700 mr-2 w-60 ">选择文件</div>
+                        <el-select v-model="ragFile" clearable :disabled="isTyping" placeholder="选择文件"
+                                   class="mr-2">
+                            <el-option v-for="item in ragFileOption" :key="item.value" :label="item.label"
                                        :value="item.value"/>
                         </el-select>
                     </div>

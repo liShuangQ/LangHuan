@@ -20,8 +20,9 @@ public class RagController {
     @PostMapping("/rag/recallTesting")
     public Result recallTesting(
             @RequestParam(name = "q", required = true) String q,
-            @RequestParam(name = "groupId", required = true) String groupId
+            @RequestParam(name = "groupId", required = true) String groupId,
+            @RequestParam(name = "fileId", required = true) String fileId
     ) {
-        return Result.success(ragService.ragSearch(q, groupId));
+        return Result.success(ragService.ragSearch(q, groupId, fileId));
     }
 }

@@ -85,8 +85,16 @@ public class RagService {
         ragFileService.updateById(ragFile);
         return "更新成功";
     }
+    @Transactional(rollbackFor = Exception.class)
+    public List<Map<String, Object>> queryDocumentsByFileId(Integer fileId) {
+        log.info("queryDocumentsByFileId: {}", fileId);
+        String sql = """
+                        SELECT content FROM vector_store WHERE metadata ->> 'fileId' = ?;
+                """;
+        return dao.queryForList(sql, fileId.toString());
+    }
 
-    public String ragSearch(String q, String groupId) {
+    public String ragSearch(String q, String groupId, String fileId) {
         List<Document> searchDocuments = null;
         if (groupId.isEmpty()) {
             searchDocuments = vectorStore.similaritySearch(
@@ -94,10 +102,12 @@ public class RagService {
                             .similarityThreshold(0.5).build() // 单独设置多一些
             );
         } else {
+            // HACK:一个组下有相同的文件ID再用       groupId == '" + groupId + "' AND
+            String sql = fileId.isEmpty() ? "groupId == '" + groupId + "'" : "fileId == '" + fileId + "'";
             searchDocuments = vectorStore.similaritySearch(
                     SearchRequest.builder().query(q).topK(5)
                             .similarityThreshold(0.5)
-                            .filterExpression("groupId == '" + groupId + "'" )//设置过滤条件
+                            .filterExpression(sql)//设置过滤条件
                             .build()
             );
         }

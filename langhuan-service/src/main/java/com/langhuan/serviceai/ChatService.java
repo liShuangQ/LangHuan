@@ -60,7 +60,7 @@ public class ChatService {
                                 .similarityThreshold(Constant.WITHSIMILARITYTHRESHOLD).build(), Constant.AIDEFAULTQUESTIONANSWERADVISORRPROMPT)
                         : new QuestionAnswerAdvisor(vectorStore,
                         SearchRequest.builder().topK(Constant.WITHTOPK)
-                                .filterExpression("groupId == '" + groupId + "'" )//设置过滤条件
+                                .filterExpression("groupId == '" + groupId + "'")//设置过滤条件
                                 .similarityThreshold(Constant.WITHSIMILARITYTHRESHOLD).build(), Constant.AIDEFAULTQUESTIONANSWERADVISORRPROMPT);
                 return this.chatClient.prompt(
                                 new Prompt(
@@ -115,7 +115,7 @@ public class ChatService {
 
 
     public String ragSearch(String q, String groupId) {
-        return ragService.ragSearch(q, groupId);
+        return ragService.ragSearch(q, groupId, "");
     }
 
 }
