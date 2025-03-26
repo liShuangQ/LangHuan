@@ -7,7 +7,8 @@ module.exports = merge( baseConfig, {
     mode: "development",
     target: "web",
     devServer: {
-        port: '8077',
+        port: '9088',
+        host: '0.0.0.0',
         hot: true,
         open: false,
         client: {
@@ -15,7 +16,7 @@ module.exports = merge( baseConfig, {
         },
         proxy: {
             // 配置代理，解决开发环境的跨域问题
-            // '/api': 'http://localhost:3000'
+            '/': 'http://app:9077/',
         },
     },
     devtool: "eval-cheap-module-source-map",//eval-cheap-module-source-map

@@ -163,7 +163,7 @@
                         <exclude>
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok</artifactId>
-                            <version>1.18.36</version>
+                            <!-- <version>1.18.36</version> -->
                         </exclude>
                     </excludes>
                 </configuration>
@@ -171,6 +171,10 @@
         </plugins>
     </build>
     <repositories>
+        <!-- <repository>
+            <id>local-repo</id>
+            <url>file://${project.basedir}/local-repo</url>
+        </repository> -->
         <repository>
             <id>alimaven</id>
             <name>aliyun maven</name>

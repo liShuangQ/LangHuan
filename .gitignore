@@ -9,6 +9,7 @@ target/
 langhuan-web/node_modules
 langhuan-web/node_modules/*
 .DS_Store
+postgres-data/*
 
 ### STS ###
 .apt_generated
