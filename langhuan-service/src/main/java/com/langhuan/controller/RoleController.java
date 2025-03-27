@@ -2,7 +2,9 @@ package com.langhuan.controller;
 
 import com.langhuan.common.Result;
 import com.langhuan.model.domain.TRole;
-import com.langhuan.service.RoleService;
+import com.langhuan.service.TRoleService;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -12,30 +14,32 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping(path = "/role")
 public class RoleController {
-    private final RoleService roleService;
+    private final TRoleService TRoleService;
 
-    public RoleController(RoleService roleService) {
-        this.roleService = roleService;
+    public RoleController(TRoleService TRoleService) {
+        this.TRoleService = TRoleService;
     }
 
 
     @PostMapping("/add")
     public Result add(@RequestBody TRole role) {
-        return Result.success(roleService.add(role));
+        return Result.success(TRoleService.add(role));
     }
 
+    @PreAuthorize("hasRole('/user/manager')")
     @PostMapping("/delete")
-    public Result delete(@RequestParam(name = "id", required = true) Integer id) {
-        Boolean delete = roleService.delete(id);
+    public Result delete(@RequestParam(name = "id", required = true) Integer id) throws AuthorizationDeniedException {
+        Boolean delete = TRoleService.delete(id);
         if (!delete) {
             return Result.error("删除失败");
         }
         return Result.success("删除成功");
     }
 
+    @PreAuthorize("hasRole('/user/manager')")
     @PostMapping("/change")
-    public Result change(@RequestBody TRole role) {
-        return Result.success(roleService.change(role));
+    public Result change(@RequestBody TRole role) throws AuthorizationDeniedException {
+        return Result.success(TRoleService.change(role));
     }
 
     @PostMapping("/getPageList")
@@ -45,12 +49,12 @@ public class RoleController {
             @RequestParam(name = "currentPage", required = false, defaultValue = "1") int currentPage,
             @RequestParam(name = "pageSize", required = false, defaultValue = "10") int pageSize
     ) {
-        return Result.success(roleService.getPageList(name, remark, currentPage, pageSize));
+        return Result.success(TRoleService.getPageList(name, remark, currentPage, pageSize));
     }
 
     @PostMapping("/getRolePermission")
     public Result getRolePermission(@RequestParam(name = "id", required = false) Integer id) {
-        return Result.success(roleService.getRolePermission(id));
+        return Result.success(TRoleService.getRolePermission(id));
     }
 
     @PostMapping("/relevancyRoles")
@@ -60,10 +64,10 @@ public class RoleController {
     ) {
         try {
             if (permissionIds.isEmpty()) {
-                roleService.relevancyPermissions(id, new ArrayList<>());
+                TRoleService.relevancyPermissions(id, new ArrayList<>());
             } else {
                 String[] strings = permissionIds.split(",");
-                roleService.relevancyPermissions(id, Arrays.stream(strings).map(Integer::parseInt).collect(Collectors.toList()));
+                TRoleService.relevancyPermissions(id, Arrays.stream(strings).map(Integer::parseInt).collect(Collectors.toList()));
             }
         } catch (Exception e) {
             return Result.error("权限id格式错误");

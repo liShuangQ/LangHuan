@@ -16,7 +16,8 @@ module.exports = merge( baseConfig, {
         },
         proxy: {
             // 配置代理，解决开发环境的跨域问题
-            '/': 'http://app:9077/',
+            // '/': 'http://app:9077/',  //docker
+            '/': 'http://localhost:9077/', // 开发
         },
     },
     devtool: "eval-cheap-module-source-map",//eval-cheap-module-source-map

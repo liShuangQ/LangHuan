@@ -21,15 +21,17 @@ import java.util.Map;
  * @createDate 2024-12-24 10:01:31
  */
 @Service
-public class RoleService extends ServiceImpl<TRoleMapper, TRole> {
-    private final RolePermissionService rolePermissionService;
-    private final UserRoleService userRoleService;
+public class TRoleService extends ServiceImpl<TRoleMapper, TRole> {
+    private final TRolePermissionService TRolePermissionService;
+    private final TUserRoleService TUserRoleService;
     private final JdbcTemplate dao;
+    private final CacheService cacheService;
 
-    public RoleService(RolePermissionService rolePermissionService, UserRoleService userRoleService, JdbcTemplate dao) {
-        this.rolePermissionService = rolePermissionService;
-        this.userRoleService = userRoleService;
+    public TRoleService(TRolePermissionService TRolePermissionService, TUserRoleService TUserRoleService, JdbcTemplate dao, CacheService cacheService) {
+        this.TRolePermissionService = TRolePermissionService;
+        this.TUserRoleService = TUserRoleService;
         this.dao = dao;
+        this.cacheService = cacheService;
     }
 
     public Boolean add(TRole role) {
@@ -39,15 +41,25 @@ public class RoleService extends ServiceImpl<TRoleMapper, TRole> {
     //数据库事务 出现异常回滚
     @Transactional(rollbackFor = Exception.class)
     public Boolean delete(Integer roleId) {
-        rolePermissionService.remove(new LambdaQueryWrapper<TRolePermission>()
+        TRolePermissionService.remove(new LambdaQueryWrapper<TRolePermission>()
                 .eq(TRolePermission::getRoleId, roleId));
-        userRoleService.remove(new LambdaQueryWrapper<TUserRole>()
+        TUserRoleService.remove(new LambdaQueryWrapper<TUserRole>()
                 .eq(TUserRole::getRoleId, roleId));
-        return super.removeById(roleId);
+        boolean b = super.removeById(roleId);
+        if (b) {
+            cacheService.clearPermissionCache();
+            return true;
+        }
+        return false;
     }
 
     public Boolean change(TRole role) {
-        return super.update(role, new LambdaQueryWrapper<TRole>().eq(TRole::getId, role.getId()));
+        boolean b = super.update(role, new LambdaQueryWrapper<TRole>().eq(TRole::getId, role.getId()));
+        if (b) {
+            cacheService.clearPermissionCache();
+            return true;
+        }
+        return false;
     }
 
     public Page<TRole> getPageList(String name, String remark, int currentPage, int pageSize) {
@@ -84,7 +96,7 @@ public class RoleService extends ServiceImpl<TRoleMapper, TRole> {
 
     @Transactional(rollbackFor = Exception.class)
     public void relevancyPermissions(Integer roleId, List<Integer> permissionIds) {
-        rolePermissionService.remove(new LambdaQueryWrapper<TRolePermission>().eq(TRolePermission::getRoleId, roleId));
+        TRolePermissionService.remove(new LambdaQueryWrapper<TRolePermission>().eq(TRolePermission::getRoleId, roleId));
         List<TRolePermission> rolePermissions = new ArrayList<>();
         permissionIds.forEach(permissionId -> {
             TRolePermission rolePermission = new TRolePermission();
@@ -92,7 +104,8 @@ public class RoleService extends ServiceImpl<TRoleMapper, TRole> {
             rolePermission.setPermissionId(permissionId);
             rolePermissions.add(rolePermission);
         });
-        rolePermissionService.saveBatch(rolePermissions);
+        TRolePermissionService.saveBatch(rolePermissions);
+        cacheService.clearPermissionCache();
     }
 }
 

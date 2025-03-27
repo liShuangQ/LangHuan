@@ -1,36 +1,40 @@
 package com.langhuan.controller;
 
-import com.langhuan.model.domain.TPermission;
 import com.langhuan.common.Result;
-import com.langhuan.service.PermissionService;
+import com.langhuan.model.domain.TPermission;
+import com.langhuan.service.TPermissionService;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping(path = "/permission")
 public class PermissionController {
-    private final PermissionService permissionService;
+    private final TPermissionService TPermissionService;
 
-    public PermissionController(PermissionService permissionService) {
-        this.permissionService = permissionService;
+    public PermissionController(TPermissionService TPermissionService) {
+        this.TPermissionService = TPermissionService;
     }
 
     @PostMapping("/add")
     public Result add(@RequestBody TPermission role) {
-        return Result.success(permissionService.add(role));
+        return Result.success(TPermissionService.add(role));
     }
 
+    @PreAuthorize("hasRole('/user/manager')")
     @PostMapping("/delete")
-    public Result delete(@RequestParam(name = "id", required = true) Integer id) {
-        Boolean delete = permissionService.delete(id);
+    public Result delete(@RequestParam(name = "id", required = true) Integer id) throws AuthorizationDeniedException {
+        Boolean delete = TPermissionService.delete(id);
         if (!delete) {
             return Result.error("删除失败");
         }
         return Result.success("删除成功");
     }
 
+    @PreAuthorize("hasRole('/user/manager')")
     @PostMapping("/change")
-    public Result change(@RequestBody TPermission role) {
-        return Result.success(permissionService.change(role));
+    public Result change(@RequestBody TPermission role) throws AuthorizationDeniedException {
+        return Result.success(TPermissionService.change(role));
     }
 
     @PostMapping("/getPageList")
@@ -41,7 +45,7 @@ public class PermissionController {
             @RequestParam(name = "currentPage", required = false, defaultValue = "1") int currentPage,
             @RequestParam(name = "pageSize", required = false, defaultValue = "10") int pageSize
     ) {
-        return Result.success(permissionService.getPageList(name, url, parentId, currentPage, pageSize));
+        return Result.success(TPermissionService.getPageList(name, url, parentId, currentPage, pageSize));
     }
 
 }

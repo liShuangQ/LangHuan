@@ -5,13 +5,13 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.langhuan.common.BusinessException;
 import com.langhuan.model.domain.TPermission;
 import com.langhuan.model.domain.TRolePermission;
 import com.langhuan.model.domain.TUser;
 import com.langhuan.model.domain.TUserRole;
 import com.langhuan.model.dto.UserLoginDTO;
 import com.langhuan.model.mapper.TUserMapper;
-import com.langhuan.common.BusinessException;
 import com.langhuan.utils.other.JwtUtil;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -32,28 +32,25 @@ import java.util.*;
  */
 @Slf4j
 @Service
-public class UserService extends ServiceImpl<TUserMapper, TUser> {
-    // 用户映射器，用于执行用户相关的数据库操作
-    private final TUserMapper mapper;
+public class TUserService extends ServiceImpl<TUserMapper, TUser> {
     // 用户角色服务，用于处理用户和角色之间的关系
-    private final UserRoleService userRoleService;
+    private final TUserRoleService TUserRoleService;
     // 角色权限服务，用于处理角色和权限之间的关系
-    private final RolePermissionService rolePermissionService;
-    private final RoleService roleService;
+    private final TRolePermissionService TRolePermissionService;
     // 权限服务，用于执行权限相关的数据库操作
-    private final PermissionService permissionService;
+    private final TPermissionService TPermissionService;
     private final JwtUtil jwtUtil;
     private final JdbcTemplate dao;
+    private final CacheService cacheService;
 
     // 构造方法，注入必要的服务和映射器
-    public UserService(TUserMapper mapper, UserRoleService userRoleService, RolePermissionService rolePermissionService, PermissionService permissionService, RoleService roleService, JwtUtil jwtUtil, JdbcTemplate dao) {
-        this.mapper = mapper;
-        this.userRoleService = userRoleService;
-        this.rolePermissionService = rolePermissionService;
-        this.permissionService = permissionService;
-        this.roleService = roleService;
+    public TUserService(TUserRoleService TUserRoleService, TRolePermissionService TRolePermissionService, TPermissionService TPermissionService, JwtUtil jwtUtil, JdbcTemplate dao, CacheService cacheService) {
+        this.TUserRoleService = TUserRoleService;
+        this.TRolePermissionService = TRolePermissionService;
+        this.TPermissionService = TPermissionService;
         this.jwtUtil = jwtUtil;
         this.dao = dao;
+        this.cacheService = cacheService;
     }
 
     /**
@@ -61,8 +58,9 @@ public class UserService extends ServiceImpl<TUserMapper, TUser> {
      * 首先通过用户名查询用户信息，然后调用getPermissionByUser方法获取权限列表
      */
     @Cacheable(value = "permission")
-    // 这里注意缓存配置，todo在操作用户后要清空缓存
+    // 这里注意缓存配置，在操作用户后要清空缓存
     public List<TPermission> getPermissionByUsername(String username) {
+        log.info("setPermissionCache: {}", username);
         TUser user = super.getOne(new LambdaQueryWrapper<TUser>().eq(TUser::getUsername, username), true);
         return this.getPermissionByUser(user);
     }
@@ -85,7 +83,7 @@ public class UserService extends ServiceImpl<TUserMapper, TUser> {
         List<TPermission> permissions = new ArrayList<>();
         if (null != user) {
             // 获取用户的角色列表
-            List<TUserRole> userRoles = userRoleService.list(new LambdaQueryWrapper<TUserRole>().eq(TUserRole::getUserId, user.getId()));
+            List<TUserRole> userRoles = TUserRoleService.list(new LambdaQueryWrapper<TUserRole>().eq(TUserRole::getUserId, user.getId()));
             if (CollectionUtils.isNotEmpty(userRoles)) {
                 // 提取角色ID列表
                 List<Integer> roleIds = new ArrayList<>();
@@ -93,7 +91,7 @@ public class UserService extends ServiceImpl<TUserMapper, TUser> {
                     roleIds.add(userRole.getRoleId());
                 });
                 // 获取角色对应的权限列表
-                List<TRolePermission> rolePermissions = rolePermissionService.list(new LambdaQueryWrapper<TRolePermission>().in(TRolePermission::getRoleId, roleIds));
+                List<TRolePermission> rolePermissions = TRolePermissionService.list(new LambdaQueryWrapper<TRolePermission>().in(TRolePermission::getRoleId, roleIds));
                 if (CollectionUtils.isNotEmpty(rolePermissions)) {
                     // 提取权限ID列表
                     List<Integer> permissionIds = new ArrayList<>();
@@ -101,7 +99,7 @@ public class UserService extends ServiceImpl<TUserMapper, TUser> {
                         permissionIds.add(rolePermission.getPermissionId());
                     });
                     // 根据权限ID列表查询权限信息
-                    permissions = permissionService.list(new LambdaQueryWrapper<TPermission>().in(TPermission::getId, permissionIds));
+                    permissions = TPermissionService.list(new LambdaQueryWrapper<TPermission>().in(TPermission::getId, permissionIds));
                 }
             }
         }
@@ -123,6 +121,7 @@ public class UserService extends ServiceImpl<TUserMapper, TUser> {
     public TUser change(TUser user) {
         user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
         super.update(user, new LambdaUpdateWrapper<TUser>().eq(TUser::getUsername, user.getUsername()));
+        cacheService.clearPermissionCache();
         return user;
     }
 
@@ -181,7 +180,8 @@ public class UserService extends ServiceImpl<TUserMapper, TUser> {
         if (user.getId().equals(1)) {
             throw new BusinessException("超级管理员不能删除");
         }
-        userRoleService.remove(new LambdaQueryWrapper<TUserRole>().eq(TUserRole::getUserId, userId));
+        TUserRoleService.remove(new LambdaQueryWrapper<TUserRole>().eq(TUserRole::getUserId, userId));
+        cacheService.clearPermissionCache();
         return super.removeById(userId);
     }
 
@@ -224,7 +224,7 @@ public class UserService extends ServiceImpl<TUserMapper, TUser> {
 
     @Transactional(rollbackFor = Exception.class)
     public void relevancyRoles(Integer userId, List<Integer> roleIds) {
-        userRoleService.remove(new LambdaQueryWrapper<TUserRole>().eq(TUserRole::getUserId, userId));
+        TUserRoleService.remove(new LambdaQueryWrapper<TUserRole>().eq(TUserRole::getUserId, userId));
         List<TUserRole> userRoles = new ArrayList<>();
         roleIds.forEach(roleId -> {
             TUserRole userRole = new TUserRole();
@@ -232,6 +232,7 @@ public class UserService extends ServiceImpl<TUserMapper, TUser> {
             userRole.setRoleId(roleId);
             userRoles.add(userRole);
         });
-        userRoleService.saveBatch(userRoles);
+        TUserRoleService.saveBatch(userRoles);
+        cacheService.clearPermissionCache();
     }
 }

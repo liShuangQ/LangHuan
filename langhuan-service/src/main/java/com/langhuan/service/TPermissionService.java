@@ -15,12 +15,14 @@ import org.springframework.transaction.annotation.Transactional;
  * @createDate 2024-12-24 10:01:31
  */
 @Service
-public class PermissionService extends ServiceImpl<TPermissionMapper, TPermission> {
+public class TPermissionService extends ServiceImpl<TPermissionMapper, TPermission> {
 
-    private final RolePermissionService rolePermissionService;
+    private final TRolePermissionService TRolePermissionService;
+    private final CacheService cacheService;
 
-    public PermissionService(RolePermissionService rolePermissionService) {
-        this.rolePermissionService = rolePermissionService;
+    public TPermissionService(TRolePermissionService TRolePermissionService, CacheService cacheService) {
+        this.TRolePermissionService = TRolePermissionService;
+        this.cacheService = cacheService;
     }
 
     public Boolean add(TPermission Permission) {
@@ -30,14 +32,24 @@ public class PermissionService extends ServiceImpl<TPermissionMapper, TPermissio
     //数据库事务 出现异常回滚
     @Transactional(rollbackFor = Exception.class)
     public Boolean delete(Integer permissionId) {
-        rolePermissionService.remove(new LambdaQueryWrapper<TRolePermission>()
+        TRolePermissionService.remove(new LambdaQueryWrapper<TRolePermission>()
                 .eq(TRolePermission::getPermissionId, permissionId)
         );
-        return super.removeById(permissionId);
+        boolean b = super.removeById(permissionId);
+        if (b) {
+            cacheService.clearPermissionCache();
+            return true;
+        }
+        return false;
     }
 
     public Boolean change(TPermission Permission) {
-        return super.update(Permission, new LambdaQueryWrapper<TPermission>().eq(TPermission::getId, Permission.getId()));
+        boolean b = super.update(Permission, new LambdaQueryWrapper<TPermission>().eq(TPermission::getId, Permission.getId()));
+        if (b) {
+            cacheService.clearPermissionCache();
+            return true;
+        }
+        return false;
     }
 
     public Page<TPermission> getPageList(String name, String url, Integer parentId, int currentPage, int pageSize) {

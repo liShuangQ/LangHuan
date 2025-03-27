@@ -18,15 +18,15 @@ import java.util.stream.Collectors;
 
 @Service
 public class AccountUserDetailsService implements UserDetailsService {
-    private final UserService userService;
+    private final TUserService TUserService;
 
-    public AccountUserDetailsService(UserService userService) {
-        this.userService = userService;
+    public AccountUserDetailsService(TUserService TUserService) {
+        this.TUserService = TUserService;
     }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        TUser user = userService.getOne(Wrappers.<TUser>lambdaQuery().eq(TUser::getUsername, username), true);
+        TUser user = TUserService.getOne(Wrappers.<TUser>lambdaQuery().eq(TUser::getUsername, username), true);
         if (user == null) {
             throw new UsernameNotFoundException("用户名或密码错误");
         }
@@ -45,11 +45,11 @@ public class AccountUserDetailsService implements UserDetailsService {
         // 比如ROLE_admin,ROLE_normal,sys:user:list,...
 
         // 使用；
-        // @PreAuthorize配合@EnableGlobalMethodSecurity(prePostEnabled = true)使用
+        // @PreAuthorize配合@EnableMethodSecurity(prePostEnabled = true)使用
         // @PreAuthorize("hasAuthority('/user/list')")
         // @PreAuthorize("hasAnyRole('admin', 'normal')")
         // @PreAuthorize("hasRole('/user/manager1')") //具有xx权限才支持这个接口
-        List<TPermission> permissions = userService.getPermissionByUsername(username);
+        List<TPermission> permissions = TUserService.getPermissionByUsername(username);
         String authority = "";
         if (CollectionUtils.isNotEmpty(permissions)) {
             // 当前 url 为权限，权限前加 ROLE_ 开头

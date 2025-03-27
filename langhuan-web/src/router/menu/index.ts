@@ -13,19 +13,19 @@ const menu: PagesMenu[] = [
         title: "主页",
         icon: "HomeFilled",
     },
-    {
-        path: "/pages/aiUtopia",
-        faPath: [],
-        title: "斯坦福小镇",
-        icon: "Menu",
-        children: [
-            {
-                title: "多角色对话",
-                path: "/pages/aiUtopia/aiChat",
-                faPath: ["aiUtopia"],
-            },
-        ],
-    },
+    // {
+    //     path: "/pages/aiUtopia",
+    //     faPath: [],
+    //     title: "斯坦福小镇",
+    //     icon: "Menu",
+    //     children: [
+    //         {
+    //             title: "多角色对话",
+    //             path: "/pages/aiUtopia/aiChat",
+    //             faPath: ["aiUtopia"],
+    //         },
+    //     ],
+    // },
     {
         path: "prompt",
         faPath: [],
@@ -67,24 +67,24 @@ const menu: PagesMenu[] = [
             },
         ],
     },
-    {
-        path: "tool",
-        faPath: [],
-        title: "Tool管理",
-        icon: "Menu",
-        children: [
-            {
-                title: "工具组管理",
-                path: "/pages/tool/functionGroup",
-                faPath: ["tool"],
-            },
-            {
-                title: "工具管理",
-                path: "/pages/tool/function",
-                faPath: ["tool"],
-            },
-        ],
-    },
+    // {
+    //     path: "tool",
+    //     faPath: [],
+    //     title: "Tool管理",
+    //     icon: "Menu",
+    //     children: [
+    //         {
+    //             title: "工具组管理",
+    //             path: "/pages/tool/functionGroup",
+    //             faPath: ["tool"],
+    //         },
+    //         {
+    //             title: "工具管理",
+    //             path: "/pages/tool/function",
+    //             faPath: ["tool"],
+    //         },
+    //     ],
+    // },
     {
         path: "user",
         faPath: [],
