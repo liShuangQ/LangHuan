@@ -7,6 +7,15 @@
 - "琅嬛福地"，藏天下典籍
 - langhuan-service 是一个基于 Spring Boot 框架构建的服务端应用程序。该项目旨在提供与人工智能（AI）相关的服务，并集成了多种功能和依赖库以支持其业务需求。
 
+### 部署
+#### docker
+- langhuan-service/src/main/resources/application.yml 配置文件中修改对应配置
+- langhuan-web/config/webpack.dev.js 配置文件中修改proxy的对应配置
+- 项目根目录执行 docker-compose up -d 启动服务
+- 执行 docker-compose down 停止服务
+#### 本地部署
+- 本地部署请参考langhuan-service和langhuan-web的README.md
+
 ### 功能日志
 
 - [x] 第一个对话例子 （20241211）
@@ -23,4 +32,5 @@
 - [x] 文件组管理，文件管理，文件切分上传向量库 （20250315）
 - [x] 第一轮优化全部的现有功能，包括校验 边界情况等（20250315）
 - [x] 召回测试（20250316）
+- [x] 添加docker部署方式，优化用户角色权限缓存（20250327）
 - [ ] 后续单独使用要在细化用户处
