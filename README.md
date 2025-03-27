@@ -11,7 +11,7 @@
 #### docker
 - langhuan-service/src/main/resources/application.yml 配置文件中修改对应配置
 - langhuan-web/config/webpack.dev.js 配置文件中修改proxy的对应配置
-- 项目根目录执行 docker-compose up -d 启动服务
+- 项目根目录执行 docker-compose up -d 启动服务（服务启动后会在项目根目录下添加postgres-data文件夹，用于保存数据库数据）
 - 执行 docker-compose down 停止服务
 #### 本地部署
 - 本地部署请参考langhuan-service和langhuan-web的README.md
