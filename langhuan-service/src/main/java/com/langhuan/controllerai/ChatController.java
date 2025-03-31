@@ -2,9 +2,9 @@ package com.langhuan.controllerai;
 
 import com.alibaba.fastjson2.JSONObject;
 import com.langhuan.common.Result;
-import com.langhuan.serviceai.StanfordChatService;
 import com.langhuan.serviceai.ChatGeneralAssistanceService;
 import com.langhuan.serviceai.ChatService;
+import com.langhuan.serviceai.StanfordChatService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -64,6 +64,25 @@ public class ChatController {
         ));
     }
 
+    @PostMapping("/chat/easyChat")
+    public Result easyChat(
+            @RequestParam(name = "p", required = true, defaultValue = ".") String p,
+            @RequestParam(name = "q", required = true) String q,
+            @RequestParam(name = "modelName", required = true, defaultValue = "") String modelName
+
+    ) {
+        if (modelName.isEmpty()) {
+            modelName = defaultModelName;
+        }
+
+        String chat = chatService.easyChat(p, q, modelName);
+        return Result.success(Map.of(
+                "chat", chat,
+//                "recommend", chatGeneralAssistanceService.otherQuestionsRecommended(q)
+                "recommend", List.of()
+        ));
+    }
+
     @GetMapping("/chat/getPrompt")
     public Result getPrompt(
             @RequestParam(name = "q", required = true) String q) {
@@ -103,7 +122,7 @@ public class ChatController {
             response = client.send(request, HttpResponse.BodyHandlers.ofString());
             return Result.success(JSONObject.parseObject(response.body()));
 
-        }catch (Exception e){
+        } catch (Exception e) {
             return Result.success(Map.of("data", List.of(Map.of("id", defaultModelName))));
         }
 

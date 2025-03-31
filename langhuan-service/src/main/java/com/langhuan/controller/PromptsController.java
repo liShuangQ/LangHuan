@@ -4,18 +4,20 @@ import com.langhuan.common.Constant;
 import com.langhuan.common.Result;
 import com.langhuan.model.domain.TPrompts;
 import com.langhuan.service.TPromptsService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.langhuan.serviceai.ChatService;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/prompts")
 public class PromptsController {
 
-    @Autowired
-    private TPromptsService tPromptsService;
+    private final TPromptsService tPromptsService;
+    private final ChatService chatService;
+
+    public PromptsController(TPromptsService tPromptsService, ChatService chatService) {
+        this.tPromptsService = tPromptsService;
+        this.chatService = chatService;
+    }
 
     // 提示词分类的枚举
     // NOTE：这里后续可能改动很小，直接在程序中定义死即可
@@ -56,4 +58,5 @@ public class PromptsController {
     ) {
         return Result.success(tPromptsService.getTPromptsByPage(pageNum, pageSize, methodName, category, description));
     }
+
 }

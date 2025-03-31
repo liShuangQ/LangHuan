@@ -1,11 +1,10 @@
 package com.langhuan.serviceai;
 
 import com.langhuan.advisors.MySimplelogAdvisor;
-import com.langhuan.functionTools.DateTimeToolsD;
-import com.langhuan.functionTools.FileReadTools;
-import com.langhuan.utils.rag.RagFileVectorUtils;
 import com.langhuan.common.BusinessException;
 import com.langhuan.common.Constant;
+import com.langhuan.functionTools.DateTimeToolsD;
+import com.langhuan.functionTools.FileReadTools;
 import com.langhuan.service.TPromptsService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
@@ -19,7 +18,6 @@ import org.springframework.ai.tool.ToolCallback;
 import org.springframework.ai.tool.ToolCallbacks;
 import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
 import static org.springframework.ai.chat.client.advisor.AbstractChatMemoryAdvisor.CHAT_MEMORY_CONVERSATION_ID_KEY;
@@ -105,6 +103,19 @@ public class ChatService {
             log.error("advisor-error: {}", e.getMessage());
             throw new BusinessException("抱歉，我暂时无法回答这个问题。");
         }
+    }
+
+    public String easyChat(String p, String q, String modelName) {
+        return this.chatClient.prompt(
+                        new Prompt(
+                                p,
+                                OpenAiChatOptions.builder()
+                                        .model(modelName)
+                                        .build()
+                        )
+                )
+                .user(q)
+                .call().content();
     }
 
     public String clearChatMemory(String id) {

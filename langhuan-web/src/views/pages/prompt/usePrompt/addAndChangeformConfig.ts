@@ -52,7 +52,7 @@ export let addAndChangeFormItemConfig: FormItemConfigs = [
                 { required: true, message: "Please input", trigger: "blur" },
             ],
             textarea: true,
-            autosize:{minRows:3},
+            autosize: { minRows: 3, maxRows: 7 },
             col: 24,
             clearable: true,
         },
@@ -67,6 +67,6 @@ export let addAndChangeFormItemConfig: FormItemConfigs = [
             textarea: true,
             col: 24,
             clearable: true,
-        }
+        },
     ],
 ];

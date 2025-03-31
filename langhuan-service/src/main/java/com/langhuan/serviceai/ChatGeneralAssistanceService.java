@@ -7,8 +7,6 @@ import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.openai.OpenAiChatOptions;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
 public class ChatGeneralAssistanceService {
 

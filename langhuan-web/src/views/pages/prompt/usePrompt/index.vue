@@ -19,8 +19,10 @@
             <ElementTableC ref="tableComRef" :paginationConfig="paginationConfig" :tableColumnConfig="tableColumnConfig"
                 :tableConfig="tableConfig" :tableData="tableData" @handle="tableHandle">
                 <template #content-buttonSlot="props">
-                    <el-button link type="primary" @click="addAndChangeFormShowFun('change', props.row)">修改</el-button>
-                    <el-button link type="primary" @click="addAndChangeFormShowFun('delete', props.row)">删除</el-button>
+                    <el-button link type="primary" :disabled="props.row.category.indexOf('system') !== -1"
+                        @click="addAndChangeFormShowFun('change', props.row)">修改</el-button>
+                    <el-button link type="primary" :disabled="props.row.category.indexOf('system') !== -1"
+                        @click="addAndChangeFormShowFun('delete', props.row)">删除</el-button>
                     <el-button v-if="pageConfig.relation" link type="primary"
                         @click="addAndChangeFormShowFun('relation', props.row)">{{ pageConfig.relationBtnName
                         }}</el-button>
@@ -104,6 +106,9 @@ const addAndChangeFormHandle = (type: string, key: string, data: any, other: any
 
 const tableHandle = (t: string, d: any, key: string) => {
     console.log("tableHandle:::", t, d, key);
+    if (t === 'handleCurrentChange' || t === 'handleSizeChange') {
+        getUserPageList()
+    }
 };
 
 const getUserPageList = () => {
@@ -113,8 +118,8 @@ const getUserPageList = () => {
         q_spinning: true,
         data: {
             ...formComRef.value!.getFromValue(),
-            pageNum: 1,
-            pageSize: 10,
+            pageNum: paginationConfig.value.currentPage,
+            pageSize: paginationConfig.value.pageSize,
         },
     }).then(res => {
         if (pageConfig.search_dayTransformation && pageConfig.search_dayTransformation.length >= 0) {

@@ -33,6 +33,11 @@ const menu: PagesMenu[] = [
         icon: "Menu",
         children: [
             {
+                title: "提示词优化",
+                path: "/pages/prompt/promptOptimize",
+                faPath: ["rag"],
+            },
+            {
                 title: "在用提示词",
                 path: "/pages/prompt/usePrompt",
                 faPath: ["rag"],
