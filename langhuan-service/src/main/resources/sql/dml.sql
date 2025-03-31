@@ -55,7 +55,7 @@ VALUES (12, 2, 6);
 
 
 INSERT INTO public.t_prompts (id, content, category, created_at, updated_at, method_name, description)
-VALUES (1, '你是一个AI助手，请根据回答我提问的问题。', 'default,system', '2025-03-05 09:19:46.000000',
+VALUES (1, '你是一个AI助手，请回答我提问的问题。', 'default,system', '2025-03-05 09:19:46.000000',
         '2025-03-31 08:23:08.407193', 'AIDEFAULTSYSTEMPROMPT', 'ai系统默认提示词');
 INSERT INTO public.t_prompts (id, content, category, created_at, updated_at, method_name, description)
 VALUES (5, e'在接下来的对话中，你将作为一个独特的个体参与交流。
