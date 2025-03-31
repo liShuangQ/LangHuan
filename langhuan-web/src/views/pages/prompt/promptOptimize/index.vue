@@ -40,7 +40,12 @@
 
                 <!-- 优化结果 -->
                 <div>
-                    <label class="block text-sm font-medium mb-1">优化后的提示词</label>
+                    <div class="flex items-center justify-between mb-1">
+                    <label class="block text-sm font-medium">优化后的提示词</label>
+                    <el-button size="small" @click="copyOptimizedPrompt">
+                        <el-icon><DocumentCopy /></el-icon>
+                    </el-button>
+                </div>
                     <el-input v-model="optimizedPrompt" type="textarea" :rows="16" placeholder="优化后的提示词将显示在这里"
                         readonly />
                     <el-button style="float:right;margin-top: 8px;" type="primary"
@@ -118,6 +123,8 @@ export default {
 <script lang="ts" setup>
 import { http } from "@/plugins/axios";
 import { ref } from 'vue'
+import { DocumentCopy } from '@element-plus/icons-vue'
+import { ElMessage } from 'element-plus'
 import {
     addAndChangeFormConfig as addFormConfig,
     addAndChangeFormItemConfig as addFormItemConfig,
@@ -137,6 +144,31 @@ const testModel = ref('')
 const originalResult = ref('')
 const optimizedResult = ref('')
 const compareMode = ref(true)
+
+const copyOptimizedPrompt = async () => {
+    if (!optimizedPrompt.value) {
+        ElMessage.warning('没有可复制的内容')
+        return
+    }
+    try {
+        if (navigator.clipboard) {
+            await navigator.clipboard.writeText(optimizedPrompt.value)
+            ElMessage.success('复制成功')
+        } else {
+            // 备用方案
+            const textarea = document.createElement('textarea')
+            textarea.value = optimizedPrompt.value
+            document.body.appendChild(textarea)
+            textarea.select()
+            document.execCommand('copy')
+            document.body.removeChild(textarea)
+            ElMessage.success('复制成功')
+        }
+    } catch (err) {
+        console.error('复制失败', err)
+        ElMessage.error('复制失败')
+    }
+}
 
 watch(compareMode, (newVal) => {
     if (newVal) {
