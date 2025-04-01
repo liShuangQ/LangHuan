@@ -1,18 +1,15 @@
 package com.langhuan.controller;
 
-import com.alibaba.fastjson2.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.langhuan.common.Result;
 import com.langhuan.model.domain.TRagFile;
-import com.langhuan.model.pojo.RagWriteDocumentsReq;
 import com.langhuan.service.TRagFileService;
 import com.langhuan.serviceai.RagService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-
-import javax.validation.Valid;
-import java.util.List;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RestController
@@ -20,6 +17,7 @@ import java.util.List;
 public class RagFileController {
     private final TRagFileService ragFileService;
     private final RagService ragService;
+
     public RagFileController(TRagFileService ragFileService, RagService ragService) {
         this.ragFileService = ragFileService;
         this.ragService = ragService;
@@ -40,8 +38,8 @@ public class RagFileController {
                              @RequestParam(required = false) String fileGroupId,
                              @RequestParam int pageNum,
                              @RequestParam int pageSize) {
-        log.info("Querying file with fileName: {}, fileType: {},fileGroupId:{}, page: {}, size: {}", fileName, fileType,fileGroupId, pageNum, pageSize);
-        return Result.success(ragFileService.queryFiles(fileName, fileType, fileGroupId,pageNum, pageSize));
+        log.info("Querying file with fileName: {}, fileType: {},fileGroupId:{}, page: {}, size: {}", fileName, fileType, fileGroupId, pageNum, pageSize);
+        return Result.success(ragFileService.queryFiles(fileName, fileType, fileGroupId, pageNum, pageSize));
     }
 
     @PostMapping("/file/queryDocumentsByFileId")
@@ -56,37 +54,5 @@ public class RagFileController {
         return Result.success(ragFileService.list(
                 new LambdaQueryWrapper<TRagFile>().eq(TRagFile::getFileGroupId, groupId)
         ));
-    }
-    @PostMapping("/readAndSplitDocument")
-    public Result readAndSplitDocument(
-            MultipartFile file,
-            String splitFileMethod,
-            String methodData
-    ) {
-        JSONObject jsonObject = JSONObject.parseObject(methodData);
-        List<String> list = ragService.readAndSplitDocument(file, splitFileMethod, jsonObject);
-        return Result.success(list);
-    }
-
-    @PostMapping("/writeDocumentsToVectorStore")
-    public Result writeDocumentsToVectorStore(
-            @RequestBody RagWriteDocumentsReq ragWriteDocumentsReq
-    ) {
-        return Result.success(ragService.writeDocumentsToVectorStore(ragWriteDocumentsReq.getDocuments(), ragWriteDocumentsReq.getRagFile()));
-
-    }
-
-    @PostMapping("/deleteFileAndDocuments")
-    public Result deleteFileAndDocuments(
-            @RequestParam(value = "id", required = true) Integer fileId
-    ) {
-        return Result.success(ragService.deleteFileAndDocuments(fileId));
-    }
-
-    @PostMapping("/changeFileAndDocuments")
-    public Result changeFileAndDocuments(
-            @Valid @RequestBody TRagFile ragFile
-    ) {
-        return Result.success(ragService.changeFileAndDocuments(ragFile));
     }
 }

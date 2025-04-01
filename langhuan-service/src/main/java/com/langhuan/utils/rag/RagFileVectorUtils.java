@@ -100,11 +100,12 @@ public class RagFileVectorUtils {
                     documentsList.add(new Document(document, personMap));
                 }
             } catch (Exception e) {
-                log.error("writeDocumentsToVectorStore error", e);
+                log.error("writeDocumentsToVectorStore documentsList.add error", e);
             }
             vectorStore.add(documentsList);
             return true;
         } catch (Exception e) {
+            log.error("writeDocumentsToVectorStore error", e);
             return false;
         }
     }

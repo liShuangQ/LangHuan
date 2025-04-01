@@ -16,16 +16,15 @@ export let formItemConfig: FormItemConfigs = [
             value: "",
             key: "fileName",
             type: "input",
-            label: "文件名称",
+            label: "文档名称",
             rule: [
                 { required: true, message: "Please input", trigger: "blur" },
             ],
             col: 12,
-            disabled: true,
             clearable: true,
         },
         {
-            value: "",
+            value: "文字添加",
             key: "fileType",
             type: "input",
             label: "文件类型",
@@ -39,7 +38,7 @@ export let formItemConfig: FormItemConfigs = [
     ],
     [
         {
-            value: "",
+            value: "无",
             key: "fileSize",
             type: "input",
             label: "文件大小",

@@ -1,5 +1,6 @@
 <template>
     <div class="mt-4">
+        <div class=" text-red-200">注：添加后在文件管理中查看</div>
         <ElementFormC ref="fileFormRef" :formConfig="formConfig" :formItemConfig="formItemConfig" @handle="formHandle">
         </ElementFormC>
     </div>
@@ -17,25 +18,12 @@ const fileFormRef = ref<FormDefineExpose>()
 
 const init = async () => {
     emit('setNextDisabled', false)
-    const { file } = stepData.value
 
     const res = await getFileGroupOption()
     fileFormRef.value!.setFormOption([
         {
-            key: 'fileName',
-            value: file.name,
-        },
-        {
-            key: 'fileType',
-            value: file.raw.type,
-        },
-        {
-            key: 'fileSize',
-            value: file.raw.size,
-        },
-        {
             key: 'documentNum',
-            value: stepData.value.fineTuneData.length,
+            value: stepData.value.documentData.length,
         },
         {
             key: "fileGroupId",
@@ -61,7 +49,7 @@ const submit = () => {
         q_spinning: true,
         q_contentType: 'json',
         data: {
-            documents: stepData.value.fineTuneData,
+            documents: stepData.value.documentData,
             ragFile: fileFormRef.value!.getFromValue(),
         },
     }).then(res => {

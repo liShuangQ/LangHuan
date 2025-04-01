@@ -61,6 +61,11 @@ const menu: PagesMenu[] = [
                 faPath: ["rag"],
             },
             {
+                title: "添加文字",
+                path: "/pages/rag/addDocuments",
+                faPath: ["rag"],
+            },
+            {
                 title: "添加文件",
                 path: "/pages/rag/addFile",
                 faPath: ["rag"],

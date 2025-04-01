@@ -26,22 +26,23 @@ spring:
       client:
         enabled: true
     openai:
-      base-url: http://localhost:3000 #oneapi 转换
-      api-key: sk-jO5jliT3P2va54ibAb498cA06dBe453aB08eCcA228C1271a
+      base-url: xxx #oneapi 转换
+      api-key: xxx
       chat:
         options:
-          model: qwen2.5:3b
-      #          model: deepseek-chat
+          model: qwen-turbo
       embedding:
         options:
-          model: mxbai-embed-large:latest
-        base-url: http://localhost:3000
-        api-key: sk-jO5jliT3P2va54ibAb498cA06dBe453aB08eCcA228C1271a
+          model: text-embedding-v3
+        base-url: xxx
+        api-key: xxx
     vectorstore:
       pgvector:
         index-type: HNSW # 最近邻搜索索引类型，可选值为NONE（精确最近邻搜索）、IVFFlat（将向量划分为列表，然后搜索与查询向量最接近的子集，构建速度较快且内存使用较少，但查询性能较低）、HNSW（创建多层图，构建速度较慢且内存使用较多，但查询性能较好，无需训练步骤）
         distance-type: COSINE_DISTANCE # 搜索距离类型，默认为COSINE_DISTANCE，如果向量已归一化长度为1，可使用EUCLIDEAN_DISTANCE或NEGATIVE_INNER_PRODUCT以获得最佳性能
-        dimensions: 1536 # 嵌入维度，如果未显式指定，PgVectorStore将从提供的EmbeddingModel中获取维度，在创建表时设置嵌入列的维度，若更改维度则需重新创建vector_store表
+        # 嵌入维度，如果未显式指定，PgVectorStore将从提供的EmbeddingModel中获取维度，在创建表时设置嵌入列的维度，若更改维度则需重新创建vector_store表
+        # 同时注意嵌入模型支持的最大维度
+        dimensions: 1024
         remove-existing-vector-store-table: false # 是否在启动时删除现有的vector_store表
         initialize-schema: false # 是否初始化所需的模式
         schema-name: public # 向量存储模式名称

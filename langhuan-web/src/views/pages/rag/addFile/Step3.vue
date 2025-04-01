@@ -1,8 +1,8 @@
 <template>
     <div class=" border-box pt-2 w-full">
         <div class=" h-full w-full overflow-y-scroll ">
-            <el-input v-for="(item, index) in fineTuneData" :key="index" v-model="fineTuneData[index]" autosize
-                type="textarea" />
+            <el-input class="mb-2" v-for="(item, index) in fineTuneData" :key="index" v-model="fineTuneData[index]"
+                autosize type="textarea" />
         </div>
 
     </div>
