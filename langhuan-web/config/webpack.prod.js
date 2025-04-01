@@ -2,15 +2,15 @@
 const { merge } = require("webpack-merge");
 const baseConfig = require("./webpack.base.js");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
+// const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
 module.exports = merge(baseConfig, {
     mode: "production",
     plugins: [
         new MiniCssExtractPlugin(),
-        new BundleAnalyzerPlugin({
-            analyzerMode: "disabled",
-            generateStatsFile: true,
-        }),
+        // new BundleAnalyzerPlugin({
+        //     analyzerMode: "disabled",
+        //     generateStatsFile: false,
+        // }),
     ],
     output: {
         clean: true,

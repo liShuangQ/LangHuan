@@ -16,7 +16,7 @@
 - 地址：服务器ip:9088                       初始账号/密码： admin/123456
 ##### 打包部署
 - langhuan-service/src/main/resources/application.yml 配置文件中修改对应配置
-- langhuan-web/.env 修改BASE_URL为指向'http://127.0.0.1:9088/service'(对应langhuan_docker_dist/langhuan-web/nginx.conf配置)
+- langhuan-web/.env 修改BASE_URL为指向'service'(对应langhuan_docker_dist/langhuan-web/nginx.conf配置)
 - 将langhuan-service打包成jar包后放置在langhuan_docker_dist/langhuan-service文件夹下（已有可忽略）
 - 将langhuan-web打包langhuan文件夹后放置在langhuan_docker_dist/langhuan-web文件夹下，可删除stats.json（已有可忽略）
 - 将langhuan-service/src/main/resources/sql文件夹复制在langhuan_docker_dist文件夹下（已有可忽略）
