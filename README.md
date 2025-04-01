@@ -8,10 +8,21 @@
 
 ### 部署
 #### docker
+##### 构建部署
 - langhuan-service/src/main/resources/application.yml 配置文件中修改对应配置
 - langhuan-web/config/webpack.dev.js 配置文件中修改proxy的对应配置
-- 项目根目录执行 docker-compose up -d 启动服务（服务启动后会在项目根目录下添加postgres-data文件夹，用于保存数据库数据）
-- 执行 docker-compose down 停止服务
+- 项目根目录执行 docker compose up -d (docker-compose up -d) 启动服务（服务启动后会在项目根目录下添加postgres-data文件夹，用于保存数据库数据）
+- 执行 docker compose down(docker-compose down) 停止服务
+- 地址：服务器ip:9088                       初始账号/密码： admin/123456
+##### 打包部署
+- langhuan-service/src/main/resources/application.yml 配置文件中修改对应配置
+- langhuan-web/.env 修改BASE_URL为指向'http://127.0.0.1:9088/service'(对应langhuan_docker_dist/langhuan-web/nginx.conf配置)
+- 将langhuan-service打包成jar包后放置在langhuan_docker_dist/langhuan-service文件夹下（已有可忽略）
+- 将langhuan-web打包langhuan文件夹后放置在langhuan_docker_dist/langhuan-web文件夹下（已有可忽略）
+- 将langhuan-service/src/main/resources/sql文件夹复制在langhuan_docker_dist文件夹下（已有可忽略）
+- 执行 docker compose up -d (docker-compose up -d) 启动服务（服务启动后会在目录下添加postgres-data文件夹，用于保存数据库数据）
+- 地址：服务器ip:9088                       初始账号/密码： admin/123456
+
 #### 本地部署
 - 本地部署请参考langhuan-service和langhuan-web的README.md
 

@@ -11,7 +11,7 @@ public class Constant {
     // HTTP请求头中的token字段名
     public static final String HEADER = "Authorization";
     // 访问白名单
-    public static final String[] URL_WHITELIST = {"/favicon.ico", "/user/login", "/user/register", "/test/*"};
+    public static final String[] URL_WHITELIST = {"/favicon.ico", "/user/login", "/user/register", "/service/user/login", "/service/user/register", "/test/*"};
     // ai的rag默认拆分规则
     public static final String DEFAULT_RAG_SPLIT_PATTERN = "[;；]+\\s*";
     // ai系统默认提示词数据库定时刷新时间

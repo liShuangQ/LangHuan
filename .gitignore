@@ -10,6 +10,11 @@ langhuan-web/node_modules
 langhuan-web/node_modules/*
 .DS_Store
 postgres-data/*
+postgres-data
+langhuan_docker_dist/langhuan-service/langhuan-service-0.0.1-SNAPSHOT.jar
+langhuan_docker_dist/langhuan-web/langhuan
+langhuan_docker_dist/sql
+
 
 ### STS ###
 .apt_generated
