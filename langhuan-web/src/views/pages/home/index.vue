@@ -74,10 +74,10 @@ const sendMessage = (recommend = null): void => {
         axiosCancel = axios.CancelToken.source();
         http.request<any>({
             url: chatServiceType.value + '/chat',
-            method: 'get',
+            method: 'post',
             q_spinning: false,
             cancelToken: axiosCancel.token,
-            params: {
+            data: {
                 id: chat.id,
                 p: inputPromptText.value,
                 q: inputTextCopy,
@@ -101,7 +101,7 @@ const sendMessage = (recommend = null): void => {
                 } catch (error) {
                     addMessage(chat,
                         {
-                            text: res.data.chat,
+                            text: res.data.chat && ((res.data.chat?.desc ?? false) ? res.data.chat.desc : res.data.chat),
                             recommend: res.data.recommend,
                             isUser: false,
                             topInfo: getChatTopInfo()
@@ -147,9 +147,9 @@ const sendMessage = (recommend = null): void => {
 const optimizePromptWords = (): void => {
     http.request<any>({
         url: chatServiceType.value + '/getPrompt',
-        method: 'get',
+        method: 'post',
         q_spinning: true,
-        params: {
+        data: {
             q: inputMessageText.value
         }
     }).then((res) => {
@@ -189,7 +189,7 @@ const getRagGroupOptionList = (): Promise<any> => {
         data: {},
     }).then((res) => {
         if (res.code === 200) {
-            ragGroupOption.value = res.data.map((e:any)=>{
+            ragGroupOption.value = res.data.map((e: any) => {
                 return {
                     label: e.groupName,
                     value: e.id
@@ -212,9 +212,9 @@ const clearChatMemory = (isList = false, id = 0): void => {
         const useId = isList ? id : chat.id
         http.request<any>({
             url: chatServiceType.value + '/clearChatMemory',
-            method: 'get',
+            method: 'post',
             q_spinning: true,
-            params: {
+            data: {
                 id: useId,
             }
         }).then((res: any) => {
@@ -434,15 +434,18 @@ nextTick(async () => {
                 </div>
                 <!-- 下功能区 -->
                 <div class=" flex justify-end">
-                    <el-switch v-model="toolEnabled" inactive-text="工具" :disabled="isTyping" :active-value="true" :inactive-value="false"
-                        active-color="#3b82f6" inactive-color="#dc2626" class="mr-2" />
-                    <el-select v-if="toolEnabled" v-model="toolGroup" :disabled="isTyping" placeholder="选择工具组" class="mr-2">
+                    <el-switch v-model="toolEnabled" inactive-text="工具" :disabled="isTyping" :active-value="true"
+                        :inactive-value="false" active-color="#3b82f6" inactive-color="#dc2626" class="mr-2" />
+                    <el-select v-if="toolEnabled" v-model="toolGroup" :disabled="isTyping" placeholder="选择工具组"
+                        class="mr-2">
                         <el-option v-for="item in toolGroupOption" :key="item.value" :label="item.label"
                             :value="item.value" />
                     </el-select>
-                    <el-switch v-model="ragEnabled" inactive-text="RAG" :disabled="isTyping" :active-value="true" :inactive-value="false"
-                        active-color="#3b82f6" inactive-color="#dc2626" class="mr-2" @change="ragEnabledChange" />
-                    <el-select v-if="ragEnabled" v-model="ragGroup" :disabled="isTyping" placeholder="选择文件组" class="mr-2">
+                    <el-switch v-model="ragEnabled" inactive-text="RAG" :disabled="isTyping" :active-value="true"
+                        :inactive-value="false" active-color="#3b82f6" inactive-color="#dc2626" class="mr-2"
+                        @change="ragEnabledChange" />
+                    <el-select v-if="ragEnabled" v-model="ragGroup" :disabled="isTyping" placeholder="选择文件组"
+                        class="mr-2">
                         <el-option v-for="item in ragGroupOption" :key="item.value" :label="item.label"
                             :value="item.value" />
                     </el-select>
@@ -488,6 +491,4 @@ nextTick(async () => {
     </div>
 </template>
 
-<style>
-
-</style>
+<style></style>

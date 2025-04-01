@@ -126,9 +126,9 @@ const addAIPrompt = () => {
 const clearChatMemory = (isList = false, id = 0): any => {
     return http.request<any>({
         url: '/chat/clearChatMemory',
-        method: 'get',
+        method: 'post',
         q_spinning: true,
-        params: {
+        data: {
             id: 99999,
         }
     })

@@ -22,9 +22,9 @@ public class ChatToolControllerD {
     public String tools(@RequestParam String p) {
         // 二次询问ai，弥补因模型问题导致的内部工具调用错误。
         // 由于模型返回的就是字符串，所有这里可能无法使用一个好的方式判断是不是使用模型二次阅读。
-        // 这里暂时使用字符串判断，如果模型返回的结果是以***prompt***开始，则说明是二次询问ai，否则直接返回。
+        // 这里暂时使用字符串判断，如果模型返回的结果是以***tools***开始，则说明是二次询问ai，否则直接返回。
         String tools = chatToolService.tools(p);
-        if (tools.indexOf("***prompt***") <= 5) {
+        if (tools.startsWith("***tools***")) {
             return chatGeneralAssistanceService.tools(tools);
         } else {
             return tools;

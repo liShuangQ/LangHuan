@@ -82,7 +82,7 @@ public class ChatService {
             } else {
                 return this.chatClient.prompt(
                                 new Prompt(
-                                        p,
+                                        "你是一个人工智能",
                                         OpenAiChatOptions.builder()
                                                 .model(modelName)
                                                 .build()
