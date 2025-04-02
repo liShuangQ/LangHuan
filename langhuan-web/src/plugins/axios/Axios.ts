@@ -18,6 +18,8 @@ export interface MyAxiosRequestConfig extends AxiosRequestConfig {
      * json: application/json
      */
     q_contentType?: "form" | "json" | "formfile";
+    q_baseUrl?: string;
+    q_headers?: any;
 }
 
 export default class Axios {
@@ -119,9 +121,15 @@ export default class Axios {
                         text: "Loading",
                         background: "rgba(0, 0, 0, 0.7)",
                     }));
+                config.q_baseUrl && (config.baseURL = config.q_baseUrl);
+
                 config.headers &&
                     (config.headers[process.env.TOKEN_KEY as string] =
                         store.token());
+                config.headers = {
+                    ...config.headers,
+                    ...config.q_headers,
+                };
                 return config;
             },
             (error) => {
@@ -133,13 +141,17 @@ export default class Axios {
 
     private interceptorsResponse(): void {
         this.instance.interceptors.response.use(
-            (response: AxiosResponse<any, any>) => {
+            // (response: AxiosResponse<any, any>) => {
+            (response: any) => {
                 this.loadingInstance && this.loadingInstance.close();
 
                 // if ([500, 555, 777].includes(response.data.code)) {
                 //     ElMessage.error(response.data?.message ?? "请求失败。");
                 // }
-                if (![200].includes(response.data.code)) {
+                if (
+                    ![200].includes(response.data.code) &&
+                    !response.config.q_baseUrl
+                ) {
                     ElMessage.error(response.data?.message ?? "请求失败。");
                 }
                 // 2xx 范围内的状态码都会触发该函数。

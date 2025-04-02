@@ -41,7 +41,7 @@
         </div>
         <div class=" w-3/5 overflow-y-scroll ">
             <div class=" border-b-2 border-b-slate-300 pb-2" v-for="(item, index) in previewADocument" :key="index"> {{
-                    item }}
+                item }}
             </div>
         </div>
     </div>
@@ -52,7 +52,7 @@
 import { ref } from 'vue'
 import { http } from "@/plugins/axios";
 import stepData from './stepData'
-
+import aimodel from "@/store/aimodel"
 const emit = defineEmits(['next', 'setNextDisabled'])
 const splitFileMethod = ref()
 const previewADocument = ref<string[]>([])
@@ -71,27 +71,7 @@ const methodData = ref<any>({
 })
 
 // 获取支持的模型列表
-const getModelList = (): Promise<any> => {
-    return http.request<any>({
-        url: '/chatModel/getModelList',
-        method: 'post',
-        q_spinning: true,
-        data: {},
-    }).then((res) => {
-        if (res.code === 200) {
-            chatModelOption.value = res.data.data.filter((e: any) => {
-                return e.id.indexOf('embed') === -1
-            }).map((e: any) => {
-                return {
-                    label: e.id,
-                    value: e.id
-                }
-            })
-            methodData.value.LlmTextSplitter.modelName
-        }
-    })
-}
-getModelList()
+chatModelOption.value = toRaw(aimodel().getModelOptions()) as any
 const getDocument = () => {
     let formData = new FormData()
     formData.append('file', stepData.value.file.raw)

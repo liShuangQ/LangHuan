@@ -9,6 +9,7 @@ import axios, { CancelToken } from "axios";
 import { CancelTokenSource } from "axios/index";
 import { ElMessage } from "element-plus";
 import { chatServiceTypeOption } from "./config"
+import aimodel from "@/store/aimodel"
 let chats = ref<Chat[]>([
 
 ]);
@@ -153,27 +154,6 @@ const optimizePromptWords = (): void => {
         }
     })
 }
-// 获取支持的模型列表
-const getModelList = (): Promise<any> => {
-    return http.request<any>({
-        url: '/chatModel/getModelList',
-        method: 'post',
-        q_spinning: true,
-        data: {},
-    }).then((res) => {
-        if (res.code === 200) {
-            chatModelOption.value = res.data.data.filter((e: any) => {
-                return e.id.indexOf('embed') === -1
-            }).map((e: any) => {
-                return {
-                    label: e.id,
-                    value: e.id
-                }
-            })
-            chatModelName.value = chatModelOption.value[0].value
-        }
-    })
-}
 // 获取Rag文件组
 const getRagGroupOptionList = (): Promise<any> => {
     return http.request<any>({
@@ -292,7 +272,8 @@ const chatServiceTypeChange = (e: any): void => {
 }
 // 初始化执行
 nextTick(async () => {
-    await getModelList()
+    await aimodel().setModelOptions()
+    chatModelOption.value = toRaw(aimodel().getModelOptions()) as any
     addStartMessage()
     getRagGroupOptionList()
 

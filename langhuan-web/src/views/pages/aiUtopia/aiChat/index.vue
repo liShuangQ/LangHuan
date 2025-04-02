@@ -58,7 +58,7 @@ export default {
 <script setup lang="ts">
 import { http } from '@/plugins/axios';
 import { reactive, ref } from 'vue';
-
+import aimodel from "@/store/aimodel"
 interface Message {
     isAI: boolean;
     role: string;
@@ -67,23 +67,8 @@ interface Message {
 
 const predefinedModels = ref<string[]>([]); // 预定义的模型列表
 // 获取支持的模型列表
-const getModelList = (): Promise<any> => {
-    return http.request<any>({
-        url: '/chatModel/getModelList',
-        method: 'post',
-        q_spinning: true,
-        data: {},
-    }).then((res) => {
-        if (res.code === 200) {
-            predefinedModels.value = res.data.data.filter((e: any) => {
-                return e.id.indexOf('embed') === -1
-            }).map((e: any) => {
-                return e.id
-            })
-        }
-    })
-}
-getModelList()
+predefinedModels.value = toRaw(aimodel().getModelOptions()) as any
+
 const settings = reactive({
     rounds: 5,
     background: '',

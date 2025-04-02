@@ -134,6 +134,7 @@ import {
 import {
     FormDefineExpose,
 } from "@/components/globalComponents/ElementFormC/form-component";
+import aimodel from "@/store/aimodel"
 // 左侧区块数据
 const originalPrompt = ref('')
 const optimizeModel = ref('')
@@ -207,7 +208,7 @@ const handleOptimize = () => {
     })
 }
 // 对比处理
-const handleCompare = async () => {
+const handleCompare =  () => {
     if (testContent.value === '') {
         ElMessage.warning('请输入测试内容')
         return
@@ -220,7 +221,7 @@ const handleCompare = async () => {
         ElMessage.warning('请输入原始提示词')
         return
     }
-    compareMode.value && await http.request<any>({
+    compareMode.value && http.request<any>({
         url: '/chat/easyChat',
         method: 'post',
         q_spinning: true,
@@ -233,46 +234,30 @@ const handleCompare = async () => {
         if (res.code === 200) {
             originalResult.value = res.data.chat
         }
-    })
-    if (optimizedPrompt.value === '') {
-        ElMessage.warning('请先优化提示词')
-        return
-    }
-    await http.request<any>({
-        url: '/chat/easyChat',
-        method: 'post',
-        q_spinning: true,
-        data: {
-            p: optimizedPrompt.value,
-            q: testContent.value,
-            modelName: testModel.value,
-        },
-    }).then((res) => {
-        if (res.code === 200) {
-            optimizedResult.value = res.data.chat
+    }).then(() => {
+        if (optimizedPrompt.value === '') {
+            ElMessage.warning('请先优化提示词')
+            return
         }
+        http.request<any>({
+            url: '/chat/easyChat',
+            method: 'post',
+            q_spinning: true,
+            data: {
+                p: optimizedPrompt.value,
+                q: testContent.value,
+                modelName: testModel.value,
+            },
+        }).then((res) => {
+            if (res.code === 200) {
+                optimizedResult.value = res.data.chat
+            }
+        })
     })
+
 }
 // 获取支持的模型列表
-const getModelList = (): Promise<any> => {
-    return http.request<any>({
-        url: '/chatModel/getModelList',
-        method: 'post',
-        q_spinning: true,
-        data: {},
-    }).then((res) => {
-        if (res.code === 200) {
-            modelOptions.value = res.data.data.filter((e: any) => {
-                return e.id.indexOf('embed') === -1
-            }).map((e: any) => {
-                return {
-                    label: e.id,
-                    value: e.id
-                }
-            })
-        }
-    })
-}
+modelOptions.value = toRaw(aimodel().getModelOptions()) as any
 // 获取提示词的列表
 const getPromptOptionList = (): Promise<any> => {
     return http.request<any>({
@@ -346,7 +331,6 @@ const addToUsePrompt = async (t: string, d: any = null) => {
 
 // 初始化执行
 nextTick(async () => {
-    await getModelList()
     await getPromptOptionList()
 
 })
