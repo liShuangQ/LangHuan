@@ -1,9 +1,7 @@
 package com.langhuan.serviceai;
 
 import cn.hutool.core.util.IdUtil;
-import com.alibaba.fastjson.JSONObject;
-import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.langhuan.common.Constant;
 import com.langhuan.model.domain.TRagFile;
 import com.langhuan.model.pojo.RagMetaData;
 import com.langhuan.service.TRagFileService;
@@ -53,6 +51,7 @@ public class RagService {
         metadata.setFilename(ragFile.getFileName());
         metadata.setFileId(String.valueOf(ragFile.getId()));
         metadata.setGroupId(ragFile.getFileGroupId());
+        metadata.setRank(0);
         if (ragFileVectorUtils.writeDocumentsToVectorStore(documents, metadata, vectorStore)) {
             ragFileService.save(ragFile);
             return "添加成功";
@@ -85,6 +84,7 @@ public class RagService {
         ragFileService.updateById(ragFile);
         return "更新成功";
     }
+
     @Transactional(rollbackFor = Exception.class)
     public List<Map<String, Object>> queryDocumentsByFileId(Integer fileId) {
         log.info("queryDocumentsByFileId: {}", fileId);
@@ -94,31 +94,30 @@ public class RagService {
         return dao.queryForList(sql, fileId.toString());
     }
 
-    public String ragSearch(String q, String groupId, String fileId) {
+    public List<Document> ragSearch(String q, String groupId, String fileId) {
         List<Document> searchDocuments = null;
         if (groupId.isEmpty()) {
             searchDocuments = vectorStore.similaritySearch(
-                    SearchRequest.builder().query(q).topK(5)
-                            .similarityThreshold(0.5).build() // 单独设置多一些
+                    SearchRequest.builder().query(q).topK(Constant.WITHTOPK)
+                            .similarityThreshold(Constant.WITHSIMILARITYTHRESHOLD).build() // 单独设置多一些
             );
         } else {
             // HACK:一个组下有相同的文件ID再用       groupId == '" + groupId + "' AND
             String sql = fileId.isEmpty() ? "groupId == '" + groupId + "'" : "fileId == '" + fileId + "'";
             searchDocuments = vectorStore.similaritySearch(
-                    SearchRequest.builder().query(q).topK(5)
-                            .similarityThreshold(0.5)
+                    SearchRequest.builder().query(q).topK(Constant.WITHTOPK)
+                            .similarityThreshold(Constant.WITHSIMILARITYTHRESHOLD)
                             .filterExpression(sql)//设置过滤条件
                             .build()
             );
         }
-        StringBuilder contents = new StringBuilder();
-        int i = 0;
-        for (Document document : searchDocuments) {
-            i += 1;
-            contents.append("<p>").append(i).append(":").append("&nbsp;").append(document.getText()).append("</p>");
-        }
-        JSONObject json = new JSONObject();
-        json.put("desc", contents.toString());
-        return json.toString();
+
+        // 排序rank
+        searchDocuments.sort((o1, o2) -> {
+            Integer rank1 = (int) o1.getMetadata().get("rank");
+            Integer rank2 = (int) o2.getMetadata().get("rank");
+            return rank2.compareTo(rank1);
+        });
+        return searchDocuments;
     }
 }

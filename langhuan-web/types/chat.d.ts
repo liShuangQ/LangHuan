@@ -7,7 +7,7 @@ interface Message {
 }
 
 interface Chat {
-    id: number;
+    id: string;
     messages: Message[];
     active: boolean;
 }

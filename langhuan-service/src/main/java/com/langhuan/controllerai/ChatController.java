@@ -4,9 +4,12 @@ import com.alibaba.fastjson2.JSONObject;
 import com.langhuan.common.Result;
 import com.langhuan.serviceai.ChatGeneralAssistanceService;
 import com.langhuan.serviceai.ChatService;
+import com.langhuan.serviceai.RagService;
 import com.langhuan.serviceai.StanfordChatService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.ai.document.Document;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -26,6 +29,7 @@ public class ChatController {
     private final ChatService chatService;
     private final ChatGeneralAssistanceService chatGeneralAssistanceService;
     private final StanfordChatService stanfordChatService;
+    private final RagService ragService;
     @Value("${spring.ai.openai.chat.options.model}")
     private String defaultModelName;
     @Value("${spring.ai.openai.base-url}")
@@ -33,10 +37,11 @@ public class ChatController {
     @Value("${spring.ai.openai.api-key}")
     private String oneApiKey;
 
-    public ChatController(ChatService chatService, ChatGeneralAssistanceService chatGeneralAssistanceService, StanfordChatService stanfordChatService) {
+    public ChatController(ChatService chatService, ChatGeneralAssistanceService chatGeneralAssistanceService, StanfordChatService stanfordChatService, RagService ragService) {
         this.chatService = chatService;
         this.chatGeneralAssistanceService = chatGeneralAssistanceService;
         this.stanfordChatService = stanfordChatService;
+        this.ragService = ragService;
     }
 
     //    NOTE:Flux<String>会和Security的拦截器冲突，所以要设置白名单  "/chat/chatFlux"
@@ -50,6 +55,8 @@ public class ChatController {
                        @RequestParam(name = "modelName", required = true, defaultValue = "") String modelName,
                        @RequestParam(name = "chatMemoryRetrieveSize", required = true, defaultValue = "7") int chatMemoryRetrieveSize
     ) {
+        id = SecurityContextHolder.getContext().getAuthentication().getName() + "_" + id;
+
         if (modelName.isEmpty()) {
             modelName = defaultModelName;
         }
@@ -106,8 +113,16 @@ public class ChatController {
                               @RequestParam(name = "groupId", required = true, defaultValue = "") String groupId,
                               @RequestParam(name = "isFunction", required = true) Boolean isFunction
     ) {
+
+        List<Document> documentList = ragService.ragSearch(q, groupId, "");
+        StringBuilder contents = new StringBuilder();
+        int i = 0;
+        for (Document document : documentList) {
+            i += 1;
+            contents.append("<p>").append(i).append(":").append("&nbsp;").append(document.getText()).append("</p>");
+        }
         return Result.success(Map.of(
-                "chat", chatService.ragSearch(q, groupId)
+                "chat", contents.toString()
 //                "recommend", chatGeneralAssistanceService.otherQuestionsRecommended(q)
         ));
     }
@@ -127,6 +142,7 @@ public class ChatController {
             return Result.success(JSONObject.parseObject(response.body()));
 
         } catch (Exception e) {
+            log.error("获取模型列表失败", e);
             return Result.success(Map.of("data", List.of(Map.of("id", defaultModelName))));
         }
 

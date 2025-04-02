@@ -17,7 +17,7 @@
             active-text-color="#0089fa"
         >
             <!--      router-->
-            <template v-for="item in menuData" :key="item.path">
+            <template v-for="(item) in menuData as any" :key="item.path">
                 <template v-if="!item.children || item.children === 0">
                     <el-menu-item :index="item.path">
                         <el-icon v-if="item.icon && item.icon !== ''">

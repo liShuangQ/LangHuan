@@ -9,16 +9,17 @@ import com.langhuan.service.TPromptsService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
-import org.springframework.ai.chat.client.advisor.QuestionAnswerAdvisor;
 import org.springframework.ai.chat.client.advisor.SafeGuardAdvisor;
 import org.springframework.ai.chat.memory.InMemoryChatMemory;
 import org.springframework.ai.chat.prompt.Prompt;
+import org.springframework.ai.document.Document;
 import org.springframework.ai.openai.OpenAiChatOptions;
 import org.springframework.ai.tool.ToolCallback;
 import org.springframework.ai.tool.ToolCallbacks;
-import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 import static org.springframework.ai.chat.client.advisor.AbstractChatMemoryAdvisor.CHAT_MEMORY_CONVERSATION_ID_KEY;
 import static org.springframework.ai.chat.client.advisor.AbstractChatMemoryAdvisor.CHAT_MEMORY_RETRIEVE_SIZE_KEY;
@@ -52,37 +53,11 @@ public class ChatService {
                 ToolCallbacks.from();
         try {
             if (isRag) {
-                QuestionAnswerAdvisor questionAnswerAdvisor = groupId.isEmpty()
-                        ? new QuestionAnswerAdvisor(vectorStore,
-                        SearchRequest.builder().topK(Constant.WITHTOPK)
-                                .similarityThreshold(Constant.WITHSIMILARITYTHRESHOLD).build(), Constant.AIDEFAULTQUESTIONANSWERADVISORRPROMPT)
-                        : new QuestionAnswerAdvisor(vectorStore,
-                        SearchRequest.builder().topK(Constant.WITHTOPK)
-                                .filterExpression("groupId == '" + groupId + "'")//设置过滤条件
-                                .similarityThreshold(Constant.WITHSIMILARITYTHRESHOLD).build(), Constant.AIDEFAULTQUESTIONANSWERADVISORRPROMPT);
-                return this.chatClient.prompt(
-                                new Prompt(
-                                        p,
-                                        OpenAiChatOptions.builder()
-                                                .model(modelName)
-                                                .build()
-                                )
-                        )
-                        .user(q)
-                        .system(TPromptsService.getCachedTPromptsByMethodName("ChatService"))
-                        .advisors(questionAnswerAdvisor)
-                        .advisors(
-                                a -> a
-                                        .param(CHAT_MEMORY_CONVERSATION_ID_KEY, id)
-                                        .param(CHAT_MEMORY_RETRIEVE_SIZE_KEY, chatMemoryRetrieveSize)
-                        )
-                        .tools(tools)
-                        .call().content();
-                //chatResponse().getResult().getOutput().getText()
+                return this.isRagChat(id, p, q, groupId, modelName, chatMemoryRetrieveSize, tools);
             } else {
                 return this.chatClient.prompt(
                                 new Prompt(
-                                        "你是一个人工智能",
+                                        p,
                                         OpenAiChatOptions.builder()
                                                 .model(modelName)
                                                 .build()
@@ -105,6 +80,48 @@ public class ChatService {
         }
     }
 
+    public String isRagChat(String id, String p, String q, String groupId, String modelName, int chatMemoryRetrieveSize, ToolCallback[] tools) {
+        // 自带方法 没法做排序
+//        QuestionAnswerAdvisor questionAnswerAdvisor = groupId.isEmpty()
+//                ? new QuestionAnswerAdvisor(vectorStore,
+//                SearchRequest.builder().topK(Constant.WITHTOPK)
+//                        .similarityThreshold(Constant.WITHSIMILARITYTHRESHOLD).build(), Constant.AIDEFAULTQUESTIONANSWERADVISORRPROMPT)
+//                : new QuestionAnswerAdvisor(vectorStore,
+//                SearchRequest.builder().topK(c)
+//                        .filterExpression("groupId == '" + groupId + "'")//设置过滤条件
+//                        .similarityThreshold(Constant.WITHSIMILARITYTHRESHOLD).build(), Constant.AIDEFAULTQUESTIONANSWERADVISORRPROMPT);
+
+
+        // 使用排序后的结果手动喂给ai
+        List<Document> documentList = ragService.ragSearch(q, groupId, "");
+        StringBuilder ragContents = new StringBuilder();
+        int i = 0;
+        for (Document document : documentList) {
+            i += 1;
+            ragContents.append(i).append(":").append(document.getText()).append(";").append("\n");
+        }
+        String ragPrompt = Constant.AIDEFAULTQUESTIONANSWERADVISORRPROMPT.replace("{question_answer_context}", ragContents.toString());
+        return this.chatClient.prompt(
+                        new Prompt(
+                                ragPrompt + "\n" + p,
+                                OpenAiChatOptions.builder()
+                                        .model(modelName)
+                                        .build()
+                        )
+                )
+                .user(q)
+                .system(TPromptsService.getCachedTPromptsByMethodName("ChatService"))
+//                .advisors(questionAnswerAdvisor)
+                .advisors(
+                        a -> a
+                                .param(CHAT_MEMORY_CONVERSATION_ID_KEY, id)
+                                .param(CHAT_MEMORY_RETRIEVE_SIZE_KEY, chatMemoryRetrieveSize)
+                )
+                .tools(tools)
+                .call().content();
+        //chatResponse().getResult().getOutput().getText()
+    }
+
     public String easyChat(String p, String q, String modelName) {
         return this.chatClient.prompt(
                         new Prompt(
@@ -124,9 +141,5 @@ public class ChatService {
         return "清除成功";
     }
 
-
-    public String ragSearch(String q, String groupId) {
-        return ragService.ragSearch(q, groupId, "");
-    }
 
 }

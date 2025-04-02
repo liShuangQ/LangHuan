@@ -1,6 +1,6 @@
 <template>
     <div class="mt-4">
-        <div class=" text-red-200">注：添加后在文件管理中查看</div>
+        <div class=" text-red-500 mb-2 ">注：添加后在文件管理中查看</div>
         <ElementFormC ref="fileFormRef" :formConfig="formConfig" :formItemConfig="formItemConfig" @handle="formHandle">
         </ElementFormC>
     </div>

@@ -10,16 +10,12 @@ import { CancelTokenSource } from "axios/index";
 import { ElMessage } from "element-plus";
 import { chatServiceTypeOption } from "./config"
 let chats = ref<Chat[]>([
-    {
-        id: 1,
-        messages: [],
-        active: true
-    }
+
 ]);
 let chatServiceType = ref<string>('/chat');
 let inputMessageText = ref<string>('');
 let inputPromptText = ref<string>('');
-let currentChatId = ref<number>(1);
+let currentChatId = ref<string>();
 let isTyping = ref<boolean>(false);
 let axiosCancel: CancelTokenSource | null = null;
 let ragEnabled = ref<boolean>(false)
@@ -85,14 +81,14 @@ const sendMessage = (recommend = null): void => {
                 groupId: ragGroup.value,
                 isFunction: toolEnabled.value,
                 modelName: chatModelName.value,
-                chatMemoryRetrieveSize: 7,
+                chatMemoryRetrieveSize: 17,
             }
         }).then((res) => {
             if (res.code === 200) {
                 try {
                     addMessage(chat,
                         {
-                            text: res.data.chat && (JSON.parse(res.data.chat)?.desc ?? "json格式错误"),
+                            text: res.data.chat,
                             recommend: res.data.recommend && (JSON.parse(res.data.recommend)?.desc ?? []),
                             isUser: false,
                             topInfo: getChatTopInfo()
@@ -101,7 +97,7 @@ const sendMessage = (recommend = null): void => {
                 } catch (error) {
                     addMessage(chat,
                         {
-                            text: res.data.chat && ((res.data.chat?.desc ?? false) ? res.data.chat.desc : res.data.chat),
+                            text: res.data.chat,
                             recommend: res.data.recommend,
                             isUser: false,
                             topInfo: getChatTopInfo()
@@ -154,8 +150,7 @@ const optimizePromptWords = (): void => {
         }
     }).then((res) => {
         if (res.code === 200) {
-            res.data = JSON.parse(res.data)
-            inputMessageText.value = res.data.desc
+            inputMessageText.value = res.data
         }
     })
 }
@@ -206,7 +201,7 @@ const messageStop = (): void => {
     }
 }
 // 清空对话记忆
-const clearChatMemory = (isList = false, id = 0): void => {
+const clearChatMemory = (isList = false, id = ''): void => {
     const chat = chats.value.find(c => c.id === currentChatId.value);
     if (chat) {
         const useId = isList ? id : chat.id
@@ -253,7 +248,7 @@ const addStartMessage = (): void => {
 }
 // 开始一个新的对话
 const startNewChat = (): void => {
-    const newChatId = (chats.value[chats.value.length - 1]?.id ?? 0) + 1;
+    const newChatId = 'chat' + Date.now();
     chats.value.push({
         id: newChatId,
         messages: [],
@@ -263,7 +258,7 @@ const startNewChat = (): void => {
     addStartMessage()
 };
 // 设置对话窗口
-const switchChat = (chatId: number): void => {
+const switchChat = (chatId: string): void => {
     currentChatId.value = chatId;
 };
 // 找到当前的窗口
@@ -323,13 +318,13 @@ nextTick(async () => {
             </div>
             <ul class="space-y-2 overflow-y-auto" style="height: calc(100% - 32px - 64px);">
                 <li v-for="chat in chats" :key="chat.id" :class="[
-                    'p-2 rounded-lg transition-colors duration-200 flex justify-between items-center',
-                    chat.id === currentChatId ? 'bg-blue-100' : 'hover:bg-gray-100'
-                ]">
-                    <span class="cursor-pointer" @click="switchChat(chat.id)">
-                        对话 #{{ chat.id }}
+            'p-2 rounded-lg transition-colors duration-200 flex justify-between items-center',
+            chat.id === currentChatId ? 'bg-blue-100' : 'hover:bg-gray-100'
+        ]">
+                    <span class="cursor-pointer " @click="switchChat(chat.id)">
+                        对话# {{ chat.id }}
                     </span>
-                    <span class="text-blue-500 cursor-pointer" @click="clearChatMemory(true, chat.id)">清除</span>
+                    <span class="text-blue-500 cursor-pointer w-10" @click="clearChatMemory(true, chat.id)">清除</span>
                 </li>
             </ul>
             <!--                            {{ message.text }}-->
@@ -360,9 +355,9 @@ nextTick(async () => {
                         <div class="text-[12px] ">{{ message.topInfo }}</div>
 
                         <div v-html="message.text" :class="[
-                            'max-full p-3 rounded-lg transition-all duration-200',
-                            message.isUser ? 'bg-blue-500 text-white' : 'bg-gray-200'
-                        ]"></div>
+            'max-full p-3 rounded-lg transition-all duration-200',
+            message.isUser ? 'bg-blue-500 text-white' : 'bg-gray-200'
+        ]"></div>
                         <!--                        推荐列表-->
                         <div v-if="(message?.recommend ?? []).length > 0"
                             class="w-full flex justify-start items-center mt-1">

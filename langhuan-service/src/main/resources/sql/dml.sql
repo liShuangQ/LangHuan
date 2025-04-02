@@ -68,14 +68,8 @@ VALUES (5, e'在接下来的对话中，你将作为一个独特的个体参与�
         'StanfordChatService', '斯坦福小镇测试mbti');
 
 INSERT INTO t_prompts (id, content, category, created_at, updated_at, method_name, description)
-VALUES (2, e'请根据用户输入的问题，理解其含义，生成两个相关的推荐问题。
-请直接输出推荐问题，无需解释或额外对话。
-
-以JSON格式返回。
-确保你的回答遵循以下结构：
-{
-    "desc": "[\'问题一\'，\'问题二\']"
-}', 'system,prompt', '2025-03-05 03:11:56.641364', '2025-03-15 02:56:52.123748', 'otherQuestionsRecommended', '');
+VALUES (2, '请根据用户输入的问题，理解其含义，生成两个相关的推荐问题。
+请直接输出推荐问题，无需解释或额外对话。', 'system,prompt', '2025-03-05 03:11:56.641364', '2025-03-15 02:56:52.123748', 'otherQuestionsRecommended', '');
 
 INSERT INTO t_prompts (id, content, category, created_at, updated_at, method_name, description)
 VALUES (3, e'你是一个提示词优化专家，擅长快速分析和改进提示词。我会提供一段提示词，请你直接优化它，确保优化后的提示词具备以下特点：
@@ -83,13 +77,7 @@ VALUES (3, e'你是一个提示词优化专家，擅长快速分析和改进提�
 具体性：包含足够的上下文和细节。
 结构化：逻辑清晰，易于AI理解。
 简洁性：避免冗余，突出重点。
-请直接输出优化后的提示词，无需解释或额外对话。
-
-以JSON格式返回。
-确保你的回答遵循以下结构：
-{
-    "desc": "这里是回答的内容，请用合适的字符串的形式回复，当字符串中存在双引号的时候使用单引号替代。"
-}', 'system,prompt', '2025-03-05 03:19:32.531417', '2025-03-15 02:56:52.123748', 'optimizePromptWords', null);
+请直接输出优化后的提示词，无需解释或额外对话。', 'system,prompt', '2025-03-05 03:19:32.531417', '2025-03-15 02:56:52.123748', 'optimizePromptWords', null);
 
 INSERT INTO t_prompts (id, content, category, created_at, updated_at, method_name, description)
 VALUES (4, e'你是一个智能参数提取助手，能够将自然语言中的信息提取并匹配到给定的JSON格式接口入参中。
@@ -112,12 +100,8 @@ VALUES (6, e'你是一个高级对话管理系统的一部分，负责协调多�
         '2025-03-05 03:28:15.209582', '2025-03-05 03:28:15.209582', 'StanfordChatService_copy', '斯坦福小镇备用提示词');
 
 INSERT INTO t_prompts (id, content, category, created_at, updated_at, method_name, description)
-VALUES (7, e'你是一个人工智能，根据用户要求回答问题。
-以JSON格式返回。
-确保你的回答遵循以下结构：
-{
-   "desc": "{回复内容}"
-}', 'system', '2025-03-05 03:30:32.152094', '2025-03-05 03:30:32.152094', 'ChatService', null);
+VALUES (7, '你是一个人工智能，根据用户要求回答问题。
+以JSON格式返回。', 'system', '2025-03-05 03:30:32.152094', '2025-03-05 03:30:32.152094', 'ChatService', null);
 
 INSERT INTO t_prompts (id, content, category, created_at, updated_at, method_name, description)
 VALUES (-925409279, e'请按照以下规则将我的长文档拆分为适合RAG系统的段落：

@@ -5,6 +5,7 @@ import com.langhuan.common.Result;
 import com.langhuan.model.domain.TRagFile;
 import com.langhuan.model.pojo.RagWriteDocumentsReq;
 import com.langhuan.serviceai.RagService;
+import org.springframework.ai.document.Document;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -62,7 +63,14 @@ public class RagController {
             @RequestParam(name = "groupId", required = true) String groupId,
             @RequestParam(name = "fileId", required = true) String fileId
     ) {
-        return Result.success(ragService.ragSearch(q, groupId, fileId));
+        List<Document> documentList = ragService.ragSearch(q, groupId, fileId);
+        StringBuilder contents = new StringBuilder();
+        int i = 0;
+        for (Document document : documentList) {
+            i += 1;
+            contents.append("<p>").append(i).append(":").append("&nbsp;").append(document.getText()).append("</p>");
+        }
+        return Result.success(contents.toString());
     }
 
 }

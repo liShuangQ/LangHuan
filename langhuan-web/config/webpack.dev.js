@@ -10,14 +10,14 @@ module.exports = merge(baseConfig, {
         port: '9088',
         host: '0.0.0.0',
         hot: true,
-        open: true,
+        open: false,
         client: {
             overlay: false,
         },
         proxy: {
             // 配置代理，解决开发环境的跨域问题
             // '/service/': 'http://app:9077/',  //docker
-            '/service/': 'http://localhost:9078/', // 开发
+            // '/service/': 'http://localhost:9077/', // 开发
         },
     },
     devtool: "eval-cheap-module-source-map",//eval-cheap-module-source-map
