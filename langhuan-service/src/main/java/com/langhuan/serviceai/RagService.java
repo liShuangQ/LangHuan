@@ -86,6 +86,18 @@ public class RagService {
     }
 
     @Transactional(rollbackFor = Exception.class)
+    public String changeDocumentsRank(String documentId, Integer rank) {
+        log.info("Updating changeDocumentsRank: {} rank: {}", documentId, rank);
+        String sql = """
+                        UPDATE vector_store
+                        SET metadata = jsonb_set(metadata::jsonb, '{rank}', to_jsonb(?))
+                        WHERE id = ?::uuid;
+                """;
+        dao.update(sql, rank, documentId);
+        return "更新成功";
+    }
+
+    @Transactional(rollbackFor = Exception.class)
     public List<Map<String, Object>> queryDocumentsByFileId(Integer fileId) {
         log.info("queryDocumentsByFileId: {}", fileId);
         String sql = """
@@ -111,7 +123,6 @@ public class RagService {
                             .build()
             );
         }
-
         // 排序rank
         searchDocuments.sort((o1, o2) -> {
             Integer rank1 = (int) o1.getMetadata().get("rank");

@@ -318,9 +318,9 @@ nextTick(async () => {
             </div>
             <ul class="space-y-2 overflow-y-auto" style="height: calc(100% - 32px - 64px);">
                 <li v-for="chat in chats" :key="chat.id" :class="[
-            'p-2 rounded-lg transition-colors duration-200 flex justify-between items-center',
-            chat.id === currentChatId ? 'bg-blue-100' : 'hover:bg-gray-100'
-        ]">
+                    'p-2 rounded-lg transition-colors duration-200 flex justify-between items-center',
+                    chat.id === currentChatId ? 'bg-blue-100' : 'hover:bg-gray-100'
+                ]">
                     <span class="cursor-pointer " @click="switchChat(chat.id)">
                         对话# {{ chat.id }}
                     </span>
@@ -354,10 +354,13 @@ nextTick(async () => {
                         <!--                        对话回复-->
                         <div class="text-[12px] ">{{ message.topInfo }}</div>
 
-                        <div v-html="message.text" :class="[
-            'max-full p-3 rounded-lg transition-all duration-200',
-            message.isUser ? 'bg-blue-500 text-white' : 'bg-gray-200'
-        ]"></div>
+                        <div
+                            :class="message.isUser ? 'flex items-center justify-end' : 'flex items-center justify-start'">
+                            <div v-html="message.text" :class="[
+                                'max-full p-3 rounded-lg transition-all duration-200',
+                                message.isUser ? 'bg-blue-500 text-white' : 'bg-gray-200'
+                            ]"></div>
+                        </div>
                         <!--                        推荐列表-->
                         <div v-if="(message?.recommend ?? []).length > 0"
                             class="w-full flex justify-start items-center mt-1">

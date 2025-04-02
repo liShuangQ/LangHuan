@@ -69,11 +69,20 @@ public class RagController {
         List<Document> documentList = ragService.ragSearch(q, groupId, fileId);
         for (Document document : documentList) {
             out.add(Map.of(
+                    "id", document.getId(),
                     "text", document.getText(),
                     "metadata", document.getMetadata()
             ));
         }
         return Result.success(out);
+    }
+
+    @PostMapping("/rag/changeDocumentsRank")
+    public Result changeDocumentsRank(
+            @RequestParam(name = "id", required = true) String id,
+            @RequestParam(name = "rank", required = true) int rank
+    ) {
+        return Result.success(ragService.changeDocumentsRank(id, rank));
     }
 
 }

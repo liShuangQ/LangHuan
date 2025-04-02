@@ -40,6 +40,7 @@ const addMessage = (chat: Chat, messageData: Message): void => {
         id: Date.now(),
         text: messageData.text,
         recommend: messageData?.recommend ?? [],
+        metadata: messageData?.metadata ?? {},
         isUser: messageData.isUser,
         topInfo: getChatTopInfo()
     });
@@ -91,6 +92,7 @@ const sendMessage = (recommend = null): void => {
                                 `排名：${e.metadata.rank}`,
                                 `来源：${e.metadata.filename}`
                             ],
+                            metadata: { ...e.metadata, id: e.id }, // HACK 集合处理
                             isUser: false,
                             topInfo: getChatTopInfo()
                         }
@@ -177,7 +179,6 @@ const ragGroupChange = (value: string) => {
         })
     })
 }
-
 // 停止当前对话
 const messageStop = (): void => {
     if (axiosCancel) {
@@ -192,6 +193,22 @@ const addStartMessage = (): void => {
         recommend: [],
         isUser: false,
         topInfo: getChatTopInfo()
+    })
+}
+// 文档的点踩机制
+const documentRankHandle = (t: string, d: any) => {
+    http.request<any>({
+        url: '/rag/changeDocumentsRank',
+        method: 'post',
+        q_spinning: true,
+        data: {
+            id: d.metadata.id,
+            rank: t === 'good' ? d.metadata.rank + 1 : d.metadata.rank - 1
+        },
+    }).then((res) => {
+        if (res.code === 200) {
+            ElMessage.success(res.data)
+        }
     })
 }
 
@@ -252,15 +269,25 @@ nextTick(async () => {
                         <!--                        对话回复-->
                         <div class="text-[12px] ">{{ message.topInfo }}</div>
 
-                        <div v-html="message.text" :class="[
-                            'max-full p-3 rounded-lg transition-all duration-200',
-                            message.isUser ? 'bg-blue-500 text-white' : 'bg-gray-200'
-                        ]"></div>
-                        <!--                        推荐列表-->
+                        <div
+                            :class="message.isUser ? 'flex items-center justify-end' : 'flex items-center justify-start'">
+                            <div v-html="message.text" :class="[
+                                'max-full p-3 rounded-lg transition-all duration-200',
+                                message.isUser ? 'bg-blue-500 text-white' : 'bg-gray-200'
+                            ]"></div>
+                            <div v-if="!message.isUser && message.recommend.length > 0"
+                                class="flex items-center justify-left">
+                                <img @click="documentRankHandle('good', message)" class="cursor-pointer"
+                                    style="height: 20px;margin: 0 8px;" src="./good.svg" alt="" srcset="">
+                                <img @click="documentRankHandle('bad', message)" class="cursor-pointer"
+                                    style="height: 20px;" src="./bad.svg" alt="" srcset="">
+                            </div>
+                        </div>
+                        <!--                        召回信息-->
                         <div v-if="(message?.recommend ?? []).length > 0"
                             class="w-full flex justify-start items-center mt-1">
-                            <div class="bg-blue-100 w-max mr-2 px-1.5 py-0.5 text-[14px] rounded-md cursor-pointer"
-                                v-for="item in message.recommend" :key="item" @click="sendMessage(item)">
+                            <div class="bg-blue-100 w-max mr-2 px-1.5 py-0.5 text-[14px] rounded-md"
+                                v-for="item in message.recommend" :key="item">
                                 {{ item }}
                             </div>
                         </div>
