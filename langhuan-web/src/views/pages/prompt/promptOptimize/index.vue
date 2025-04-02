@@ -46,7 +46,7 @@
                         <el-icon><DocumentCopy /></el-icon>
                     </el-button>
                 </div>
-                    <el-input v-model="optimizedPrompt" type="textarea" :rows="16" placeholder="优化后的提示词将显示在这里"
+                    <el-input v-model="optimizedPrompt" type="textarea" :rows="14" placeholder="优化后的提示词将显示在这里"
                         readonly />
                     <el-button style="float:right;margin-top: 8px;" type="primary"
                         @click="addToUsePrompt('add')">添加到在用提示词</el-button>

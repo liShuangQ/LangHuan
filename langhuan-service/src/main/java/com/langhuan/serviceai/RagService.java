@@ -1,7 +1,9 @@
 package com.langhuan.serviceai;
 
 import cn.hutool.core.util.IdUtil;
+import com.langhuan.common.BusinessException;
 import com.langhuan.common.Constant;
+import com.langhuan.config.VectorStoreConfig;
 import com.langhuan.model.domain.TRagFile;
 import com.langhuan.model.pojo.RagMetaData;
 import com.langhuan.service.TRagFileService;
@@ -24,16 +26,16 @@ import java.util.Map;
 public class RagService {
 
     private final RagFileVectorUtils ragFileVectorUtils;
-    private final VectorStore vectorStore;
     private final TRagFileService ragFileService;
     private final JdbcTemplate dao;
+    private final VectorStore ragVectorStore;
 
 
-    public RagService(RagFileVectorUtils ragFileVectorUtils, VectorStore vectorStore, TRagFileService ragFileService, JdbcTemplate dao) {
+    public RagService(RagFileVectorUtils ragFileVectorUtils, TRagFileService ragFileService, JdbcTemplate dao, VectorStoreConfig vectorStoreConfig) {
         this.ragFileVectorUtils = ragFileVectorUtils;
-        this.vectorStore = vectorStore;
         this.ragFileService = ragFileService;
         this.dao = dao;
+        this.ragVectorStore = vectorStoreConfig.ragVectorStore();
     }
 
     public List<String> readAndSplitDocument(MultipartFile file, String splitFileMethod,
@@ -52,7 +54,7 @@ public class RagService {
         metadata.setFileId(String.valueOf(ragFile.getId()));
         metadata.setGroupId(ragFile.getFileGroupId());
         metadata.setRank(0);
-        if (ragFileVectorUtils.writeDocumentsToVectorStore(documents, metadata, vectorStore)) {
+        if (ragFileVectorUtils.writeDocumentsToVectorStore(documents, metadata, ragVectorStore)) {
             ragFileService.save(ragFile);
             return "添加成功";
         } else {
@@ -108,20 +110,25 @@ public class RagService {
 
     public List<Document> ragSearch(String q, String groupId, String fileId) {
         List<Document> searchDocuments = null;
-        if (groupId.isEmpty()) {
-            searchDocuments = vectorStore.similaritySearch(
-                    SearchRequest.builder().query(q).topK(Constant.WITHTOPK)
-                            .similarityThreshold(Constant.WITHSIMILARITYTHRESHOLD).build() // 单独设置多一些
-            );
-        } else {
-            // HACK:一个组下有相同的文件ID再用       groupId == '" + groupId + "' AND
-            String sql = fileId.isEmpty() ? "groupId == '" + groupId + "'" : "fileId == '" + fileId + "'";
-            searchDocuments = vectorStore.similaritySearch(
-                    SearchRequest.builder().query(q).topK(Constant.WITHTOPK)
-                            .similarityThreshold(Constant.WITHSIMILARITYTHRESHOLD)
-                            .filterExpression(sql)//设置过滤条件
-                            .build()
-            );
+        try {
+            if (groupId.isEmpty()) {
+                searchDocuments = ragVectorStore.similaritySearch(
+                        SearchRequest.builder().query(q).topK(Constant.WITHTOPK)
+                                .similarityThreshold(Constant.WITHSIMILARITYTHRESHOLD).build() // 单独设置多一些
+                );
+            } else {
+                // HACK:一个组下有相同的文件ID再用       groupId == '" + groupId + "' AND
+                String sql = fileId.isEmpty() ? "groupId == '" + groupId + "'" : "fileId == '" + fileId + "'";
+                searchDocuments = ragVectorStore.similaritySearch(
+                        SearchRequest.builder().query(q).topK(Constant.WITHTOPK)
+                                .similarityThreshold(Constant.WITHSIMILARITYTHRESHOLD)
+                                .filterExpression(sql)//设置过滤条件
+                                .build()
+                );
+            }
+        } catch (Exception e) {
+            log.error("ragSearch error: {}", e.getMessage());
+            throw new BusinessException("查询失败");
         }
         // 排序rank
         searchDocuments.sort((o1, o2) -> {

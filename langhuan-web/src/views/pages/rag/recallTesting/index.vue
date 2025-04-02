@@ -88,7 +88,7 @@ const sendMessage = (recommend = null): void => {
                         {
                             text: e.text,
                             recommend: [
-                                `相似度：${e.metadata.distance}`,
+                                `距离：${e.metadata.distance}`,
                                 `排名：${e.metadata.rank}`,
                                 `来源：${e.metadata.filename}`
                             ],

@@ -4,6 +4,7 @@ import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.langhuan.config.VectorStoreConfig;
 import com.langhuan.model.pojo.RagMetaData;
 import com.langhuan.serviceai.ChatGeneralAssistanceService;
 import com.langhuan.utils.rag.splitter.FixedWindowTextSplitter;
