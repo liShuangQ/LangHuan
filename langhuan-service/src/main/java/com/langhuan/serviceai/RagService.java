@@ -66,7 +66,7 @@ public class RagService {
     public Boolean deleteFileAndDocuments(Integer id) {
         log.info("Deleting file and documents with ID: {}", id);
         String sql = """
-                        DELETE FROM vector_store
+                        DELETE FROM vector_store_rag
                         WHERE metadata ->> 'fileId' = ?;
                 """;
         dao.update(sql, id.toString());
@@ -78,7 +78,7 @@ public class RagService {
     public String changeFileAndDocuments(TRagFile ragFile) {
         log.info("Updating changeFileAndDocuments: {}", ragFile);
         String sql = """
-                        UPDATE vector_store
+                        UPDATE vector_store_rag
                         SET metadata = jsonb_set(metadata::jsonb, '{groupId}', to_jsonb(?))
                         WHERE metadata ->> 'fileId' = ?;
                 """;
@@ -91,7 +91,7 @@ public class RagService {
     public String changeDocumentsRank(String documentId, Integer rank) {
         log.info("Updating changeDocumentsRank: {} rank: {}", documentId, rank);
         String sql = """
-                        UPDATE vector_store
+                        UPDATE vector_store_rag
                         SET metadata = jsonb_set(metadata::jsonb, '{rank}', to_jsonb(?))
                         WHERE id = ?::uuid;
                 """;
@@ -103,7 +103,7 @@ public class RagService {
     public List<Map<String, Object>> queryDocumentsByFileId(Integer fileId) {
         log.info("queryDocumentsByFileId: {}", fileId);
         String sql = """
-                        SELECT content FROM vector_store WHERE metadata ->> 'fileId' = ?;
+                        SELECT content FROM vector_store_rag WHERE metadata ->> 'fileId' = ?;
                 """;
         return dao.queryForList(sql, fileId.toString());
     }

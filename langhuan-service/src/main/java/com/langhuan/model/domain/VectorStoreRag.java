@@ -8,11 +8,11 @@ import lombok.Data;
 
 /**
  * 
- * @TableName vector_store
+ * @TableName vector_store_rag
  */
-@TableName(value ="vector_store")
+@TableName(value ="vector_store_rag")
 @Data
-public class VectorStore implements Serializable {
+public class VectorStoreRag implements Serializable {
     /**
      * 
      */
@@ -48,7 +48,7 @@ public class VectorStore implements Serializable {
         if (getClass() != that.getClass()) {
             return false;
         }
-        VectorStore other = (VectorStore) that;
+        VectorStoreRag other = (VectorStoreRag) that;
         return (this.getId() == null ? other.getId() == null : this.getId().equals(other.getId()))
             && (this.getContent() == null ? other.getContent() == null : this.getContent().equals(other.getContent()))
             && (this.getMetadata() == null ? other.getMetadata() == null : this.getMetadata().equals(other.getMetadata()))
