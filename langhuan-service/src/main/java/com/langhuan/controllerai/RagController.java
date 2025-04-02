@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -57,20 +58,22 @@ public class RagController {
     ) {
         return Result.success(ragService.changeFileAndDocuments(ragFile));
     }
+
     @PostMapping("/rag/recallTesting")
     public Result recallTesting(
             @RequestParam(name = "q", required = true) String q,
             @RequestParam(name = "groupId", required = true) String groupId,
             @RequestParam(name = "fileId", required = true) String fileId
     ) {
+        List<Map<String, Object>> out = new ArrayList<>();
         List<Document> documentList = ragService.ragSearch(q, groupId, fileId);
-        StringBuilder contents = new StringBuilder();
-        int i = 0;
         for (Document document : documentList) {
-            i += 1;
-            contents.append("<p>").append(i).append(":").append("&nbsp;").append(document.getText()).append("</p>");
+            out.add(Map.of(
+                    "text", document.getText(),
+                    "metadata", document.getMetadata()
+            ));
         }
-        return Result.success(contents.toString());
+        return Result.success(out);
     }
 
 }

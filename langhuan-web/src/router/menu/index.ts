@@ -71,7 +71,7 @@ const menu: PagesMenu[] = [
                 faPath: ["rag"],
             },
             {
-                title: "召回测试",
+                title: "召回标记",
                 path: "/pages/rag/recallTesting",
                 faPath: ["rag"],
             },

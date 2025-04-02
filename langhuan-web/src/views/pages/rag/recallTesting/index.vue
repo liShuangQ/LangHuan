@@ -4,22 +4,21 @@ export default {
 };
 </script>
 <script lang="ts" setup>
-import {http} from "@/plugins/axios";
-import axios, {CancelToken} from "axios";
-import {CancelTokenSource} from "axios/index";
-import {ElMessage} from "element-plus";
-import {useRouter} from 'vue-router';
+import { http } from "@/plugins/axios";
+import axios, { CancelToken } from "axios";
+import { CancelTokenSource } from "axios/index";
+import { ElMessage } from "element-plus";
+import { useRouter } from 'vue-router';
 
 const router = useRouter();
-let chats = ref<Chat[]>([
-    {
-        id: 1,
-        messages: [],
-        active: true
-    }
+let chats = ref<Chat[]>([{
+    id: 'recallTesting',
+    messages: [],
+    active: true
+}
 ]);
 let inputMessageText = ref<string>('');
-let currentChatId = ref<number>(1);
+let currentChatId = ref<string>('recallTesting');
 let isTyping = ref<boolean>(false);
 let axiosCancel: CancelTokenSource | null = null;
 let ragGroup = ref<string>('')
@@ -50,6 +49,7 @@ const addMessage = (chat: Chat, messageData: Message): void => {
 }
 // 发送信息
 const sendMessage = (recommend = null): void => {
+
     if (isTyping.value) {
         ElMessage.error('请等待回复完成。')
         return
@@ -57,7 +57,9 @@ const sendMessage = (recommend = null): void => {
     if (recommend) {
         inputMessageText.value = recommend;
     }
-    const chat = chats.value.find(c => c.id === currentChatId.value);
+
+    const chat = chats.value.find((c: any) => c.id === currentChatId.value);
+
     if (inputMessageText.value.trim() && chat) {
         addMessage(chat, {
             text: inputMessageText.value,
@@ -80,14 +82,20 @@ const sendMessage = (recommend = null): void => {
             }
         }).then((res) => {
             if (res.code === 200) {
-                addMessage(chat,
-                    {
-                        text: res.data && (JSON.parse(res.data)?.desc ?? "json格式错误"),
-                        recommend: [],
-                        isUser: false,
-                        topInfo: getChatTopInfo()
-                    }
-                )
+                res.data.forEach((e: any) => {
+                    addMessage(chat,
+                        {
+                            text: e.text,
+                            recommend: [
+                                `相似度：${e.metadata.distance}`,
+                                `排名：${e.metadata.rank}`,
+                                `来源：${e.metadata.filename}`
+                            ],
+                            isUser: false,
+                            topInfo: getChatTopInfo()
+                        }
+                    )
+                });
             } else {
                 addMessage(chat,
                     {
@@ -178,7 +186,7 @@ const messageStop = (): void => {
 }
 // 添加初始的对话消息
 const addStartMessage = (): void => {
-    const chat = chats.value.find(c => c.id === currentChatId.value);
+    const chat = chats.value.find((c: any) => c.id === currentChatId.value);
     chat && addMessage(chat, {
         text: '你好，请开始召回测试。',
         recommend: [],
@@ -189,7 +197,7 @@ const addStartMessage = (): void => {
 
 // 找到当前的窗口
 const currentChat = (): Chat | any => {
-    return chats.value.find(c => c.id === currentChatId.value) || {messages: []};
+    return chats.value.find((c: any) => c.id === currentChatId.value) || { messages: [] };
 };
 // 对话框上面的信息
 const getChatTopInfo = (): string => {
@@ -211,13 +219,13 @@ const getChatTopInfo = (): string => {
 nextTick(async () => {
     addStartMessage()
     await getRagGroupOptionList()
-    const {query} = router.currentRoute.value
+    const { query } = router.currentRoute.value
     console.log(query)
     if (query.groupId) {
         await ragGroupChange(query.groupId as string)
-        setTimeout(()=>{
+        setTimeout(() => {
             query.fileId && (ragFile.value = query.fileId as string)
-        },200)
+        }, 200)
     }
 
 
@@ -235,9 +243,9 @@ nextTick(async () => {
 
             <div class="flex-1 overflow-y-auto p-4 space-y-4">
                 <div v-for="message in currentChat().messages" :key="message.id"
-                     :class="['flex items-start gap-3', message.isUser ? 'justify-end' : 'justify-start']">
+                    :class="['flex items-start gap-3', message.isUser ? 'justify-end' : 'justify-start']">
                     <div v-if="!message.isUser"
-                         class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white">
+                        class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white">
                         AI
                     </div>
                     <div class="max-w-[80%]">
@@ -250,15 +258,15 @@ nextTick(async () => {
                         ]"></div>
                         <!--                        推荐列表-->
                         <div v-if="(message?.recommend ?? []).length > 0"
-                             class="w-full flex justify-start items-center mt-1">
+                            class="w-full flex justify-start items-center mt-1">
                             <div class="bg-blue-100 w-max mr-2 px-1.5 py-0.5 text-[14px] rounded-md cursor-pointer"
-                                 v-for="item in message.recommend" :key="item" @click="sendMessage(item)">
+                                v-for="item in message.recommend" :key="item" @click="sendMessage(item)">
                                 {{ item }}
                             </div>
                         </div>
                     </div>
                     <div v-if="message.isUser"
-                         class="w-8 h-8 rounded-full bg-gray-500 flex items-center justify-center text-white">
+                        class="w-8 h-8 rounded-full bg-gray-500 flex items-center justify-center text-white">
                         Me
                     </div>
                 </div>
@@ -283,22 +291,22 @@ nextTick(async () => {
                 <div class=" flex justify-between items-center ">
                     <div class="text-sm font-medium text-gray-700 mr-2 w-16 ">消息内容</div>
                     <el-input v-model="inputMessageText" type="textarea" autosize placeholder="输入消息内容..."
-                              @keyup.enter="sendMessage()"></el-input>
+                        @keyup.enter="sendMessage()"></el-input>
                 </div>
                 <!-- 下功能区 -->
                 <div class=" flex justify-end">
                     <div class=" flex justify-between items-center ">
                         <div class="text-sm font-medium text-gray-700 mr-2 w-20">选择文件组</div>
-                        <el-select v-model="ragGroup" :disabled="isTyping" @change="ragGroupChange"
-                                   placeholder="选择文件组" class="mr-2">
+                        <el-select v-model="ragGroup" :disabled="isTyping" @change="ragGroupChange" placeholder="选择文件组"
+                            class="mr-2">
                             <el-option v-for="item in ragGroupOption" :key="item.value" :label="item.label"
-                                       :value="item.value"/>
+                                :value="item.value" />
                         </el-select>
                         <div class="text-sm font-medium text-gray-700 mr-2 w-20 ">选择文件</div>
                         <el-select v-model="ragFile" clearable :disabled="isTyping" placeholder="选择文件"
-                                   class="mr-2 w-80">
+                            class="mr-2 w-80">
                             <el-option v-for="item in ragFileOption" :key="item.value" :label="item.label"
-                                       :value="item.value"/>
+                                :value="item.value" />
                         </el-select>
                     </div>
                     <el-button v-show="!isTyping" @click="sendMessage()" type="primary">
@@ -320,4 +328,3 @@ nextTick(async () => {
 
     </div>
 </template>
-
