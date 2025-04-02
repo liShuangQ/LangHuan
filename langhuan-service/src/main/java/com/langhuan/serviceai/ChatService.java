@@ -10,21 +10,18 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
 import org.springframework.ai.chat.client.advisor.SafeGuardAdvisor;
-import org.springframework.ai.chat.client.advisor.VectorStoreChatMemoryAdvisor;
 import org.springframework.ai.chat.memory.InMemoryChatMemory;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.document.Document;
 import org.springframework.ai.openai.OpenAiChatOptions;
 import org.springframework.ai.tool.ToolCallback;
 import org.springframework.ai.tool.ToolCallbacks;
-import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 import static org.springframework.ai.chat.client.advisor.AbstractChatMemoryAdvisor.CHAT_MEMORY_CONVERSATION_ID_KEY;
 import static org.springframework.ai.chat.client.advisor.AbstractChatMemoryAdvisor.CHAT_MEMORY_RETRIEVE_SIZE_KEY;
-//import static org.springframework.ai.chat.client.advisor.VectorStoreChatMemoryAdvisor.DOCUMENT_METADATA_CONVERSATION_ID;
 
 @Service
 @Slf4j
@@ -40,8 +37,7 @@ public class ChatService {
 //        用合适的美观的html格式的字符串的形式回复，当字符串中存在双引号的时候使用单引号替代。
         this.chatClient = chatClientBuilder
                 .defaultAdvisors(
-                        new MessageChatMemoryAdvisor(inMemoryChatMemory),
-//                        new VectorStoreChatMemoryAdvisor(VectorStoreConfig),
+//                        new MessageChatMemoryAdvisor(inMemoryChatMemory),
                         new SafeGuardAdvisor(Constant.AIDEFAULTSAFEGUARDADVISOR),
                         new MySimplelogAdvisor()
                 )
@@ -50,14 +46,14 @@ public class ChatService {
     }
 
 
-    public String chat(String id, String p, String q, Boolean isRag, String groupId, Boolean isFunction, String modelName, int chatMemoryRetrieveSize) {
+    public String chat(String id, String p, String q, Boolean isRag, String groupId, Boolean isFunction, String modelName) {
         ToolCallback[] tools = isFunction ? ToolCallbacks.from(new DateTimeToolsD(), new FileReadTools()) :
                 ToolCallbacks.from();
         try {
             if (isRag) {
-                return this.isRagChat(id, p, q, groupId, modelName, chatMemoryRetrieveSize, tools);
+                return this.isRagChat(id, p, q, groupId, modelName, tools);
             } else {
-                return this.noRagChat(id, p, q, modelName, chatMemoryRetrieveSize, tools);
+                return this.noRagChat(id, p, q, modelName, tools);
             }
         } catch (Exception e) {
             log.error("advisor-error: {}", e.getMessage());
@@ -65,8 +61,8 @@ public class ChatService {
         }
     }
 
-    public String isRagChat(String id, String p, String q, String groupId, String modelName, int chatMemoryRetrieveSize, ToolCallback[] tools) {
-        // 自带方法 没法做排序
+    public String isRagChat(String id, String p, String q, String groupId, String modelName, ToolCallback[] tools) {
+        // 自带方法 不好做排序
 //        QuestionAnswerAdvisor questionAnswerAdvisor = groupId.isEmpty()
 //                ? new QuestionAnswerAdvisor(VectorStoreConfig,
 //                SearchRequest.builder().topK(Constant.WITHTOPK)
@@ -97,19 +93,17 @@ public class ChatService {
                 .user(q)
                 .system(TPromptsService.getCachedTPromptsByMethodName("ChatService"))
 //                .advisors(questionAnswerAdvisor)
-                .advisors(
-                        a -> a
-                                .param(CHAT_MEMORY_CONVERSATION_ID_KEY, id)
-//                                .param(CHAT_MEMORY_RETRIEVE_SIZE_KEY, chatMemoryRetrieveSize)
-//                                .param(DOCUMENT_METADATA_CONVERSATION_ID, id)
-                                .param(CHAT_MEMORY_RETRIEVE_SIZE_KEY, chatMemoryRetrieveSize)
-                )
+//                .advisors(
+//                        a -> a
+//                                .param(CHAT_MEMORY_CONVERSATION_ID_KEY, id)
+//                                .param(CHAT_MEMORY_RETRIEVE_SIZE_KEY, Constant.CHATMEMORYRETRIEVESIZE)
+//                )
                 .tools(tools)
                 .call().content();
         //chatResponse().getResult().getOutput().getText()
     }
 
-    public String noRagChat(String id, String p, String q, String modelName, int chatMemoryRetrieveSize, ToolCallback[] tools) {
+    public String noRagChat(String id, String p, String q, String modelName, ToolCallback[] tools) {
         return this.chatClient.prompt(
                         new Prompt(
                                 p,
@@ -120,11 +114,11 @@ public class ChatService {
                 )
                 .user(q)
                 .system(TPromptsService.getCachedTPromptsByMethodName("ChatService"))
-                .advisors(
-                        a -> a
-                                .param(CHAT_MEMORY_CONVERSATION_ID_KEY, id)
-                                .param(CHAT_MEMORY_RETRIEVE_SIZE_KEY, chatMemoryRetrieveSize)
-                )
+//                .advisors(
+//                        a -> a
+//                                .param(CHAT_MEMORY_CONVERSATION_ID_KEY, id)
+//                                .param(CHAT_MEMORY_RETRIEVE_SIZE_KEY, Constant.CHATMEMORYRETRIEVESIZE)
+//                )
                 .tools(tools)
                 .call().content();
     }

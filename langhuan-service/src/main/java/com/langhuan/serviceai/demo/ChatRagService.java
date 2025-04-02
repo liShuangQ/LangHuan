@@ -27,7 +27,7 @@ public class ChatRagService {
     private final VectorStore ragVectorStore;
 
 
-    public ChatRagService(ChatClient.Builder chatClientBuilder, VectorStore vectorStore, RagFileVectorUtils ragFileVectorUtils, VectorStoreConfig vectorStoreConfig) {
+    public ChatRagService(ChatClient.Builder chatClientBuilder, VectorStoreConfig vectorStoreConfig) {
         this.ragVectorStore = vectorStoreConfig.ragVectorStore();
         this.chatClient = chatClientBuilder
                 .defaultAdvisors(

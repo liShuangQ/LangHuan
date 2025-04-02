@@ -41,11 +41,13 @@
                 <!-- 优化结果 -->
                 <div>
                     <div class="flex items-center justify-between mb-1">
-                    <label class="block text-sm font-medium">优化后的提示词</label>
-                    <el-button size="small" @click="copyOptimizedPrompt">
-                        <el-icon><DocumentCopy /></el-icon>
-                    </el-button>
-                </div>
+                        <label class="block text-sm font-medium">优化后的提示词</label>
+                        <el-button size="small" @click="copyOptimizedPrompt">
+                            <el-icon>
+                                <DocumentCopy />
+                            </el-icon>
+                        </el-button>
+                    </div>
                     <el-input v-model="optimizedPrompt" type="textarea" :rows="14" placeholder="优化后的提示词将显示在这里"
                         readonly />
                     <el-button style="float:right;margin-top: 8px;" type="primary"

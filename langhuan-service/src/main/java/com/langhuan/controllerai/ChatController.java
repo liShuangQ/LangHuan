@@ -52,8 +52,7 @@ public class ChatController {
                        @RequestParam(name = "isRag", required = true) Boolean isRag,
                        @RequestParam(name = "groupId", required = true, defaultValue = "") String groupId,
                        @RequestParam(name = "isFunction", required = true) Boolean isFunction,
-                       @RequestParam(name = "modelName", required = true, defaultValue = "") String modelName,
-                       @RequestParam(name = "chatMemoryRetrieveSize", required = true, defaultValue = "7") int chatMemoryRetrieveSize
+                       @RequestParam(name = "modelName", required = true, defaultValue = "") String modelName
     ) {
         id = SecurityContextHolder.getContext().getAuthentication().getName() + "_" + id;
 
@@ -61,7 +60,7 @@ public class ChatController {
             modelName = defaultModelName;
         }
 
-        String chat = chatService.chat(id, p, q, isRag, groupId, isFunction, modelName, chatMemoryRetrieveSize);
+        String chat = chatService.chat(id, p, q, isRag, groupId, isFunction, modelName);
 
         if (chat.startsWith("***tools***")) {
             log.info("***tools***,工具询问二次询问模型");

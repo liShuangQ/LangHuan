@@ -80,8 +80,7 @@ const sendMessage = (recommend = null): void => {
                 isRag: ragEnabled.value,
                 groupId: ragGroup.value,
                 isFunction: toolEnabled.value,
-                modelName: chatModelName.value,
-                chatMemoryRetrieveSize: 17,
+                modelName: chatModelName.value
             }
         }).then((res) => {
             if (res.code === 200) {

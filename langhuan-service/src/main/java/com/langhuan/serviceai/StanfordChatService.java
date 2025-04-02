@@ -26,7 +26,7 @@ public class StanfordChatService {
     private final InMemoryChatMemory inMemoryChatMemory;
 
 
-    public StanfordChatService(ChatClient.Builder chatClientBuilder, ChatClient chatClient, VectorStore vectorStore, ApplicationContext applicationContext) {
+    public StanfordChatService(ChatClient.Builder chatClientBuilder) {
         this.inMemoryChatMemory = new InMemoryChatMemory();
         this.chatClient = chatClientBuilder
                 .defaultAdvisors(
