@@ -1,4 +1,4 @@
-package com.langhuan.serviceai.demo;
+package democode.demo;
 
 import com.langhuan.advisors.MySimplelogAdvisor;
 import com.langhuan.common.Constant;

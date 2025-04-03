@@ -1,11 +1,10 @@
-package com.langhuan.controllerai.demo;
+package democode.demo.controller;
 
 import com.langhuan.serviceai.demo.ChatRagService;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 
-@RestController
 @RequestMapping("/chatRag")
 public class ChatRagControllerD {
     private final ChatRagService chatRagService;

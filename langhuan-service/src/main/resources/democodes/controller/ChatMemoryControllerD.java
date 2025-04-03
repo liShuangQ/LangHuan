@@ -1,4 +1,4 @@
-package com.langhuan.controllerai.demo;
+package democode.demo.controller;
 
 import com.langhuan.serviceai.demo.ChatMemoryService;
 import lombok.extern.slf4j.Slf4j;
@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 
 @Slf4j
-@RestController
 @RequestMapping("/chatMemory")
 public class ChatMemoryControllerD {
 

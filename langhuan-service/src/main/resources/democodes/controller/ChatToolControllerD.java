@@ -1,4 +1,4 @@
-package com.langhuan.controllerai.demo;
+package democode.demo.controller;
 
 import com.langhuan.serviceai.ChatGeneralAssistanceService;
 import com.langhuan.serviceai.demo.ChatToolService;
@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-@RestController
 @RequestMapping("/test")
 public class ChatToolControllerD {
     private final ChatToolService chatToolService;

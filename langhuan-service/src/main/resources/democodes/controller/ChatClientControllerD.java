@@ -1,4 +1,4 @@
-package com.langhuan.controllerai.demo;
+package democode.demo.controller;
 
 import com.langhuan.serviceai.demo.ChatClientService;
 import org.springframework.ai.chat.model.ChatResponse;
@@ -11,7 +11,6 @@ import reactor.core.publisher.Flux;
 import java.util.List;
 import java.util.Map;
 
-@RestController
 @RequestMapping("/chatClient")
 public class ChatClientControllerD {
 
