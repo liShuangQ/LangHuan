@@ -52,6 +52,10 @@ const addMessage = (chat: Chat, messageData: Message): void => {
 }
 // 发送信息
 const sendMessage = (recommend = null): void => {
+    if (!chatModelName.value) {
+        ElMessage.error('请选择模型。')
+        return
+    }
     if (isTyping.value) {
         ElMessage.error('请等待回复完成。')
         return
@@ -336,10 +340,12 @@ nextTick(async () => {
 
                         <div
                             :class="message.isUser ? 'flex items-center justify-end' : 'flex items-center justify-start'">
-                            <div v-html="message.text" :class="[
+                            <!-- <div v-html="message.text" :class="[
                                 'max-full p-3 rounded-lg transition-all duration-200',
                                 message.isUser ? 'bg-blue-500 text-white' : 'bg-gray-200'
-                            ]"></div>
+                            ]"></div> -->
+                            <!-- <v-md-editor :text="message.text" class=" max-full text-black "></v-md-editor> -->
+                            <v-md-preview :text="message.text"></v-md-preview>
                         </div>
                         <!--                        推荐列表-->
                         <div v-if="(message?.recommend ?? []).length > 0"
@@ -469,4 +475,12 @@ nextTick(async () => {
     </div>
 </template>
 
-<style></style>
+<style>
+.github-markdown-body {
+    padding: 8px 0 0 0;
+}
+
+.github-markdown-body p {
+    margin-bottom: 8px;
+}
+</style>
