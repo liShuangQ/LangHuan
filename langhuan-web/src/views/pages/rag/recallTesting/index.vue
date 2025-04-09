@@ -83,6 +83,17 @@ const sendMessage = (recommend = null): void => {
             }
         }).then((res) => {
             if (res.code === 200) {
+                if (res.data.length === 0) {
+                    addMessage(chat,
+                        {
+                            text: '无结果',
+                            recommend: [],
+                            metadata: {}, // HACK 集合处理
+                            isUser: false,
+                            topInfo: getChatTopInfo()
+                        }
+                    )
+                }
                 res.data.forEach((e: any) => {
                     addMessage(chat,
                         {
