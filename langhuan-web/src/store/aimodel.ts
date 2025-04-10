@@ -59,6 +59,9 @@ export default defineStore("aimodel", {
                     }));
         },
         getModelOptions() {
+            if (this.modelOptions === null) {
+                this.setModelOptions();
+            }
             return this.modelOptions;
         },
     },

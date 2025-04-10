@@ -76,10 +76,8 @@ public class ChatService {
         // 使用排序后的结果手动喂给ai
         List<Document> documentList = ragService.ragSearch(q, groupId, "");
         StringBuilder ragContents = new StringBuilder();
-        int i = 0;
         for (Document document : documentList) {
-            i += 1;
-            ragContents.append(i).append(":").append(document.getText()).append(";").append("\n");
+            ragContents.append(document.getText()).append(";").append("\n");
         }
         String ragPrompt = Constant.AIDEFAULTQUESTIONANSWERADVISORRPROMPT.replace("{question_answer_context}", ragContents.toString());
         return this.chatClient.prompt(

@@ -281,7 +281,6 @@ nextTick(async () => {
     chatModelName.value = chatModelOption.value[0].value
     addStartMessage()
     getRagGroupOptionList()
-    startNewChat()
 
 })
 
@@ -290,10 +289,43 @@ nextTick(async () => {
 <template>
     <div class="w-full h-full bg-white flex gap-4 relative">
 
+        <!-- 对话窗口列表 -->
+        <div :class="[
+            'w-64 bg-white rounded-lg shadow-lg p-4 transition-transform duration-300',
+            'fixed md:static h-full] z-40',
+        ]">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-lg font-semibold">对话列表</h2>
+                <el-button @click="startNewChat"
+                    class="!px-3 !py-2 !bg-blue-500 !text-white hover:!bg-blue-600 active:!bg-blue-700 transition-colors duration-200">
+                    新建对话
+                </el-button>
+            </div>
+            <ul class="space-y-2 overflow-y-auto" style="height: calc(100% - 32px - 64px);">
+                <li v-for="chat in chats" :key="chat.id" :class="[
+                    'p-2 rounded-lg transition-colors duration-200 flex justify-between items-center',
+                    chat.id === currentChatId ? 'bg-blue-100' : 'hover:bg-gray-100'
+                ]">
+                    <span class="cursor-pointer " @click="switchChat(chat.id)">
+                        对话# {{ chat.id }}
+                    </span>
+                    <span class="text-blue-500 cursor-pointer w-10" @click="clearChatMemory(true, chat.id)">清除</span>
+                </li>
+            </ul>
+            <!--                            {{ message.text }}-->
+            <div class="mt-4 absolute bottom-4 left-2 bg-white w-60">
+                <el-button @click="aiOptionVisible = true" class="w-full !bg-blue-500 hover:!bg-green-600">
+                    <span class="font-medium text-white">
+                        设置
+                    </span>
+                </el-button>
+            </div>
+        </div>
+
         <!-- 对话窗口 -->
         <div v-if="chats.length > 0" class="flex-1 bg-white rounded-lg shadow-lg flex flex-col h-full">
             <div class="p-4 pb-3 border-b-2  border-gray-300">
-                欢迎来到LangHuan
+                对话 #{{ currentChatId }}
             </div>
 
             <div class="flex-1 overflow-y-auto p-4 space-y-4">
@@ -386,8 +418,7 @@ nextTick(async () => {
                 </div>
                 <!-- 下功能区 -->
                 <div class=" flex justify-end">
-                    <!-- HACK 暂时关闭工具调用！！！ -->
-                    <el-switch v-model="toolEnabled" inactive-text="工具" :disabled="true || isTyping"
+                    <el-switch v-model="toolEnabled" inactive-text="工具" :disabled="isTyping"
                         :active-value="true" :inactive-value="false" active-color="#3b82f6" inactive-color="#dc2626"
                         class="mr-2" />
                     <el-select v-if="toolEnabled" v-model="toolGroup" :disabled="isTyping" placeholder="选择工具组"

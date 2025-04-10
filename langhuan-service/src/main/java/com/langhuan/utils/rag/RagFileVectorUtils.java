@@ -1,17 +1,13 @@
 package com.langhuan.utils.rag;
 
-import com.alibaba.fastjson2.JSONArray;
-import com.alibaba.fastjson2.JSONObject;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.langhuan.config.VectorStoreConfig;
 import com.langhuan.model.pojo.RagMetaData;
 import com.langhuan.serviceai.ChatGeneralAssistanceService;
-import com.langhuan.utils.rag.splitter.FixedWindowTextSplitter;
-import com.langhuan.utils.rag.splitter.PatternTokenTextSplitter;
-import com.langhuan.utils.rag.splitter.SlidingWindowTextSplitter;
+import com.langhuan.utils.rag.splitter.*;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import opennlp.tools.sentdetect.SentenceDetectorME;
 import org.springframework.ai.document.Document;
 import org.springframework.ai.reader.tika.TikaDocumentReader;
 import org.springframework.ai.vectorstore.VectorStore;
@@ -28,7 +24,6 @@ import java.util.regex.Pattern;
 @Component
 public class RagFileVectorUtils {
     private final ChatGeneralAssistanceService chatGeneralAssistanceService;
-
     public RagFileVectorUtils(ChatGeneralAssistanceService chatGeneralAssistanceService) {
         this.chatGeneralAssistanceService = chatGeneralAssistanceService;
     }
@@ -70,12 +65,11 @@ public class RagFileVectorUtils {
 //        if (splitFileMethod.equals("SlidingWindowTextSplitter")) {
 //            apply = new SlidingWindowTextSplitter((Integer) methodData.get("windowSize"), (Integer) methodData.get("overlapSize")).apply(documentText);
 //        }
+//        if (splitFileMethod.equals("OpenNLPSentenceSplitter")) {
+//            apply = new OpenNLPSentenceSplitter().apply(documentText);
+//        }
         if (splitFileMethod.equals("LlmTextSplitter")) {
-            String llmOutString = this.chatGeneralAssistanceService.llmTextSplitter((String) methodData.get("modelName"), documentText);
-            JSONArray content = JSONObject.parseObject(llmOutString).getJSONArray("content");
-            apply = content.stream()
-                    .map(Object::toString)
-                    .toList();
+            apply = new LlmTextSplitter((Integer) methodData.get("windowSize"), (String) methodData.get("modelName"), chatGeneralAssistanceService).apply(documentText);
         }
 
         return apply;
@@ -91,19 +85,26 @@ public class RagFileVectorUtils {
     public Boolean writeDocumentsToVectorStore(List<String> documents, RagMetaData metadata,
                                                VectorStore vectorStore) {
         try {
-            List<Document> documentsList = new ArrayList<>();
+            List<List<Document>> documentsListBatch = new ArrayList<>();
             ObjectMapper objectMapper = new ObjectMapper();
             String json = objectMapper.writeValueAsString(metadata);
             Map<String, Object> personMap = objectMapper.readValue(json, new TypeReference<Map<String, Object>>() {
             });
             try {
-                for (String document : documents) {
-                    documentsList.add(new Document(document, personMap));
+                for (int i = 0; i < documents.size(); i += 10) {
+                    List<Document> documentsList = new ArrayList<>();
+                    for (String document : documents.subList(i, Math.min(i + 10, documents.size()))) {
+                        log.info("writeDocumentsToVectorStore documents.add {}", document);
+                        documentsList.add(new Document(document, personMap));
+                    }
+                    documentsListBatch.add(documentsList);
+                }
+                for (List<Document> listBatch : documentsListBatch) {
+                    vectorStore.add(listBatch);
                 }
             } catch (Exception e) {
                 log.error("writeDocumentsToVectorStore documentsList.add error", e);
             }
-            vectorStore.add(documentsList);
             return true;
         } catch (Exception e) {
             log.error("writeDocumentsToVectorStore error", e);

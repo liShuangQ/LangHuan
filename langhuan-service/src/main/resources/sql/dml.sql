@@ -55,7 +55,7 @@ VALUES (12, 2, 6);
 
 
 INSERT INTO t_prompts (id, content, category, created_at, updated_at, method_name, description)
-VALUES (1, '你是一个AI助手，请回答我提问的问题。', 'default,system', '2025-03-05 09:19:46.000000',
+VALUES (1, '你是一个AI助手，请回答我提问的问题。要求回答使用markdown格式。', 'default,system', '2025-03-05 09:19:46.000000',
         '2025-03-31 08:23:08.407193', 'AIDEFAULTSYSTEMPROMPT', 'ai系统默认提示词');
 
 INSERT INTO t_prompts (id, content, category, created_at, updated_at, method_name, description)
@@ -100,8 +100,7 @@ VALUES (6, e'你是一个高级对话管理系统的一部分，负责协调多�
         '2025-03-05 03:28:15.209582', '2025-03-05 03:28:15.209582', 'StanfordChatService_copy', '斯坦福小镇备用提示词');
 
 INSERT INTO t_prompts (id, content, category, created_at, updated_at, method_name, description)
-VALUES (7, '你是一个人工智能，根据用户要求回答问题。
-以JSON格式返回。', 'system', '2025-03-05 03:30:32.152094', '2025-03-05 03:30:32.152094', 'ChatService', null);
+VALUES (7, '你是一个人工智能，根据用户要求回答问题。要求回答使用markdown格式。', 'system', '2025-03-05 03:30:32.152094', '2025-03-05 03:30:32.152094', 'ChatService', null);
 
 INSERT INTO t_prompts (id, content, category, created_at, updated_at, method_name, description)
 VALUES (-925409279, e'请按照以下规则将我的长文档拆分为适合RAG系统的段落：

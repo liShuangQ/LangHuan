@@ -208,7 +208,7 @@ const handleOptimize = () => {
     })
 }
 // 对比处理
-const handleCompare =  () => {
+const handleCompare = () => {
     if (testContent.value === '') {
         ElMessage.warning('请输入测试内容')
         return
@@ -256,8 +256,6 @@ const handleCompare =  () => {
     })
 
 }
-// 获取支持的模型列表
-modelOptions.value = toRaw(aimodel().getModelOptions()) as any
 // 获取提示词的列表
 const getPromptOptionList = (): Promise<any> => {
     return http.request<any>({
@@ -332,7 +330,7 @@ const addToUsePrompt = async (t: string, d: any = null) => {
 // 初始化执行
 nextTick(async () => {
     await getPromptOptionList()
-
+    modelOptions.value = toRaw(aimodel().getModelOptions()) as any
 })
 </script>
 

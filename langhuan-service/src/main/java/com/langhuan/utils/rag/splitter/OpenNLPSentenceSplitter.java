@@ -2,26 +2,24 @@ package com.langhuan.utils.rag.splitter;
 
 import opennlp.tools.sentdetect.SentenceDetectorME;
 import opennlp.tools.sentdetect.SentenceModel;
-import org.springframework.ai.document.Document;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class OpenNLPSentenceSplitter {
 
     private final SentenceDetectorME sentenceDetector;
 
     public OpenNLPSentenceSplitter() throws IOException {
-        InputStream modelIn = getClass().getResourceAsStream("/models/en-sent.bin");
+        // 获取src/main/resources/nlpModels处的文件
+        InputStream modelIn = getClass().getResourceAsStream("/nlpModels/opennlp-en-ud-ewt-sentence-1.2-2.5.0.bin");
         SentenceModel model = new SentenceModel(modelIn);
         this.sentenceDetector = new SentenceDetectorME(model);
     }
 
-    public List<String> apply(String text, Map<String, Object> metadata) {
+    public List<String> apply(String text) {
         List<String> documents = new ArrayList<>();
         String[] sentences = sentenceDetector.sentDetect(text);
 

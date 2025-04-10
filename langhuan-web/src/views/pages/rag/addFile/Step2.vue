@@ -7,6 +7,7 @@
                 <el-radio-group v-model="splitFileMethod">
                     <el-radio border label="FixedWindowTextSplitter">固定窗口切分</el-radio>
                     <el-radio border label="PatternTokenTextSplitter">正则切分</el-radio>
+                    <!-- <el-radio border label="OpenNLPSentenceSplitter">NLP切分</el-radio> -->
                     <el-radio border label="LlmTextSplitter">大模型切分</el-radio>
                 </el-radio-group>
             </div>
@@ -22,7 +23,13 @@
                     <div class=" text-xs ">正则表达式</div>
                     <el-input v-model="methodData.PatternTokenTextSplitter.splitPattern" size="small" />
                 </div>
+                <div v-else-if="splitFileMethod === 'OpenNLPSentenceSplitter'">
+
+                </div>
                 <div v-else-if="splitFileMethod === 'LlmTextSplitter'">
+                    <div class=" text-xs ">窗口大小</div>
+                    <el-slider v-model="methodData.LlmTextSplitter.windowSize" show-input size="small" :min="50"
+                        :max="1000" :step="50" show-stops />
                     <div class=" text-xs ">选择模型</div>
                     <el-select v-model="methodData.LlmTextSplitter.modelName" placeholder="选择模型">
                         <el-option v-for="item in chatModelOption" :key="item.value" :label="item.label"
@@ -65,7 +72,11 @@ const methodData = ref<any>({
     PatternTokenTextSplitter: {
         splitPattern: "[;；]+\\s*"
     },
+    OpenNLPSentenceSplitter: {
+
+    },
     LlmTextSplitter: {
+        windowSize: 200,
         modelName: ""
     },
 })
