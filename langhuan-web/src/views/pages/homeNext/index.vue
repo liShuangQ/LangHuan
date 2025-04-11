@@ -31,7 +31,7 @@ let aiOptionVisible = ref<boolean>(false)
 let chatModelOption = ref<{ label: string, value: string }[]>([])
 let chatModelName = ref<string>('')
 let aiRagDocumentVisible = ref<boolean>(false)
-let aiRagDocumentData = ref<List<any>>([])
+let aiRagDocumentData = ref<any[]>([])
 // 添加信息 HACK 跟随 interface Message  更改 !!!
 const addMessage = (chat: Chat, messageData: Message): void => {
     chat.messages.push({

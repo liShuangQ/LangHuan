@@ -10,6 +10,7 @@ import { CancelTokenSource } from "axios/index";
 import { ElMessage } from "element-plus";
 import { chatServiceTypeOption } from "./config"
 import aimodel from "@/store/aimodel"
+import { documentRankHandleApi } from "@/api/rag";
 let chats = ref<Chat[]>([
 
 ]);
@@ -28,6 +29,8 @@ let toolGroupOption = ref<{ label: string, value: string }[]>([])
 let aiOptionVisible = ref<boolean>(false)
 let chatModelOption = ref<{ label: string, value: string }[]>([])
 let chatModelName = ref<string>('')
+let aiRagDocumentVisible = ref<boolean>(false)
+let aiRagDocumentData = ref<any[]>([])
 // 添加滚动到最新的消息
 const toDownPage = (): void => {
     nextTick(() => {
@@ -37,16 +40,16 @@ const toDownPage = (): void => {
         }
     });
 };
-// 添加信息 HACK 跟随 interface Message  更改
+// 添加信息 HACK 跟随 interface Message  更改 !!!
 const addMessage = (chat: Chat, messageData: Message): void => {
     chat.messages.push({
         id: Date.now(),
         text: messageData.text,
         recommend: messageData?.recommend ?? [],
+        rag: messageData?.rag ?? [],
         isUser: messageData.isUser,
         topInfo: getChatTopInfo()
     });
-
     isTyping.value = messageData.isUser
     toDownPage()
 }
@@ -94,6 +97,7 @@ const sendMessage = (recommend = null): void => {
                         {
                             text: res.data.chat,
                             recommend: res.data.recommend && (JSON.parse(res.data.recommend)?.desc ?? []),
+                            rag: res.data?.rag ?? [],
                             isUser: false,
                             topInfo: getChatTopInfo()
                         }
@@ -103,6 +107,7 @@ const sendMessage = (recommend = null): void => {
                         {
                             text: res.data.chat,
                             recommend: res.data.recommend,
+                            rag: res.data?.rag ?? [],
                             isUser: false,
                             topInfo: getChatTopInfo()
                         }
@@ -274,6 +279,19 @@ const chatServiceTypeChange = (e: any): void => {
     }
 
 }
+// 打开引用的文档
+const openRagDocumentView = (rag: any[]) => {
+    aiRagDocumentData.value = rag
+    aiRagDocumentVisible.value = true
+}
+// 文档的点踩机制
+const documentRankHandle = async (t: 'good' | 'bad', d: any) => {
+    const res: any = await documentRankHandleApi(d.id, d.metadata.rank, t)
+    if (res.code === 200) {
+        ElMessage.success(res.data)
+    }
+}
+
 // 初始化执行
 nextTick(async () => {
     await aimodel().setModelOptions()
@@ -322,6 +340,11 @@ nextTick(async () => {
                                 v-for="item in message.recommend" :key="item" @click="sendMessage(item)">
                                 {{ item }}
                             </div>
+                        </div>
+                        <!--                        引用的知识 -->
+                        <div>
+                            <el-button v-if="message.rag.length > 0" style="padding-bottom: 0px;" :key="'text'"
+                                @click="openRagDocumentView(message.rag)" text>引用的知识库</el-button>
                         </div>
                     </div>
                     <div v-if="message.isUser"
@@ -437,6 +460,33 @@ nextTick(async () => {
             <template #footer>
                 <div class="dialog-footer">
                     <el-button type="primary" @click="aiOptionVisible = false">
+                        关闭
+                    </el-button>
+                </div>
+            </template>
+        </el-dialog>
+        <!-- 引用的知识 -->
+        <el-dialog v-model="aiRagDocumentVisible" title="引用的知识库" width="900">
+            <div class="h-[50vh] overflow-y-scroll">
+                <div v-for="(item) in aiRagDocumentData" :key="item.id">
+                    <div class="mb-4">
+                        {{ item.text }}
+                    </div>
+                    <div class=" flex justify-start items-center gap-1">
+                        <el-tag type="primary">排名：{{ item.metadata.rank }}</el-tag>
+                        <el-tag type="primary">距离：{{ item.metadata.distance }}</el-tag>
+                        <el-tag type="primary">文件名：{{ item.metadata.filename }}</el-tag>
+                        <img class="cursor-pointer" @click="documentRankHandle('good', item)"
+                            style="height: 20px;margin: 0 8px;" src="./good.svg" alt="" srcset="">
+                        <img class="cursor-pointer" @click="documentRankHandle('bad', item)" style="height: 20px;"
+                            src="./bad.svg" alt="" srcset="">
+                    </div>
+                    <el-divider />
+                </div>
+            </div>
+            <template #footer>
+                <div class="dialog-footer">
+                    <el-button type="primary" @click="aiRagDocumentVisible = false">
                         关闭
                     </el-button>
                 </div>
