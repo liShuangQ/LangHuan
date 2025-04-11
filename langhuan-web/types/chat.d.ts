@@ -2,6 +2,7 @@ interface Message {
     id?: number;
     text: string;
     recommend?: Array<String>,
+    rag?: Array<any>,
     metadata?: any,
     isUser: boolean;
     topInfo: string;

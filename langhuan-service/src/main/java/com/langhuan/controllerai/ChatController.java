@@ -2,6 +2,7 @@ package com.langhuan.controllerai;
 
 import com.alibaba.fastjson2.JSONObject;
 import com.langhuan.common.Result;
+import com.langhuan.model.pojo.ChatModelResult;
 import com.langhuan.serviceai.ChatGeneralAssistanceService;
 import com.langhuan.serviceai.ChatService;
 import com.langhuan.serviceai.RagService;
@@ -60,8 +61,9 @@ public class ChatController {
             modelName = defaultModelName;
         }
 
-        String chat = chatService.chat(id, p, q, isRag, groupId, isFunction, modelName);
+        ChatModelResult chatModelResult = chatService.chat(id, p, q, isRag, groupId, isFunction, modelName);
 
+        String chat = chatModelResult.getChat();
         if (chat.startsWith("***tools***")) {
             log.info("***tools***,工具询问二次询问模型");
             chat = chatGeneralAssistanceService.tools(chat);
@@ -69,6 +71,7 @@ public class ChatController {
 
         return Result.success(Map.of(
                 "chat", chat,
+                "rag", chatModelResult.getRag(),
 //                "recommend", chatGeneralAssistanceService.otherQuestionsRecommended(q)
                 "recommend", List.of()
         ));

@@ -9,7 +9,7 @@ import axios, { CancelToken } from "axios";
 import { CancelTokenSource } from "axios/index";
 import { ElMessage } from "element-plus";
 import { useRouter } from 'vue-router';
-
+import { documentRankHandleApi } from "@/api/rag";
 const router = useRouter();
 let chats = ref<Chat[]>([{
     id: 'recallTesting',
@@ -99,8 +99,8 @@ const sendMessage = (recommend = null): void => {
                         {
                             text: e.text,
                             recommend: [
-                                `距离：${e.metadata.distance}`,
                                 `排名：${e.metadata.rank}`,
+                                `距离：${e.metadata.distance}`,
                                 `来源：${e.metadata.filename}`
                             ],
                             metadata: { ...e.metadata, id: e.id }, // HACK 集合处理
@@ -207,20 +207,11 @@ const addStartMessage = (): void => {
     })
 }
 // 文档的点踩机制
-const documentRankHandle = (t: string, d: any) => {
-    http.request<any>({
-        url: '/rag/changeDocumentsRank',
-        method: 'post',
-        q_spinning: true,
-        data: {
-            id: d.metadata.id,
-            rank: t === 'good' ? d.metadata.rank + 1 : d.metadata.rank - 1
-        },
-    }).then((res) => {
-        if (res.code === 200) {
-            ElMessage.success(res.data)
-        }
-    })
+const documentRankHandle = async (t: 'good' | 'bad', d: any) => {
+    const res: any = await documentRankHandleApi(d.metadata.id, d.metadata.rank, t)
+    if (res.code === 200) {
+        ElMessage.success(res.data)
+    }
 }
 
 // 找到当前的窗口

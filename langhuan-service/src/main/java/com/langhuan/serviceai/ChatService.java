@@ -5,10 +5,10 @@ import com.langhuan.common.BusinessException;
 import com.langhuan.common.Constant;
 import com.langhuan.functionTools.DateTimeToolsD;
 import com.langhuan.functionTools.FileReadTools;
+import com.langhuan.model.pojo.ChatModelResult;
 import com.langhuan.service.TPromptsService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
 import org.springframework.ai.chat.client.advisor.SafeGuardAdvisor;
 import org.springframework.ai.chat.memory.InMemoryChatMemory;
 import org.springframework.ai.chat.prompt.Prompt;
@@ -19,9 +19,6 @@ import org.springframework.ai.tool.ToolCallbacks;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-
-import static org.springframework.ai.chat.client.advisor.AbstractChatMemoryAdvisor.CHAT_MEMORY_CONVERSATION_ID_KEY;
-import static org.springframework.ai.chat.client.advisor.AbstractChatMemoryAdvisor.CHAT_MEMORY_RETRIEVE_SIZE_KEY;
 
 @Service
 @Slf4j
@@ -46,7 +43,7 @@ public class ChatService {
     }
 
 
-    public String chat(String id, String p, String q, Boolean isRag, String groupId, Boolean isFunction, String modelName) {
+    public ChatModelResult chat(String id, String p, String q, Boolean isRag, String groupId, Boolean isFunction, String modelName) {
         ToolCallback[] tools = isFunction ? ToolCallbacks.from(new DateTimeToolsD(), new FileReadTools()) :
                 ToolCallbacks.from();
         try {
@@ -61,7 +58,7 @@ public class ChatService {
         }
     }
 
-    public String isRagChat(String id, String p, String q, String groupId, String modelName, ToolCallback[] tools) {
+    public ChatModelResult isRagChat(String id, String p, String q, String groupId, String modelName, ToolCallback[] tools) {
         // 自带方法 不好做排序
 //        QuestionAnswerAdvisor questionAnswerAdvisor = groupId.isEmpty()
 //                ? new QuestionAnswerAdvisor(VectorStoreConfig,
@@ -80,7 +77,7 @@ public class ChatService {
             ragContents.append(document.getText()).append(";").append("\n");
         }
         String ragPrompt = Constant.AIDEFAULTQUESTIONANSWERADVISORRPROMPT.replace("{question_answer_context}", ragContents.toString());
-        return this.chatClient.prompt(
+        String chat = this.chatClient.prompt(
                         new Prompt(
                                 ragPrompt + "\n" + p,
                                 OpenAiChatOptions.builder()
@@ -99,10 +96,14 @@ public class ChatService {
                 .tools(tools)
                 .call().content();
         //chatResponse().getResult().getOutput().getText()
+        ChatModelResult chatModelResult = new ChatModelResult();
+        chatModelResult.setChat(chat);
+        chatModelResult.setRag(documentList);
+        return chatModelResult;
     }
 
-    public String noRagChat(String id, String p, String q, String modelName, ToolCallback[] tools) {
-        return this.chatClient.prompt(
+    public ChatModelResult noRagChat(String id, String p, String q, String modelName, ToolCallback[] tools) {
+        String chat = this.chatClient.prompt(
                         new Prompt(
                                 p,
                                 OpenAiChatOptions.builder()
@@ -119,6 +120,10 @@ public class ChatService {
 //                )
                 .tools(tools)
                 .call().content();
+        ChatModelResult chatModelResult = new ChatModelResult();
+        chatModelResult.setChat(chat);
+        chatModelResult.setRag(null);
+        return chatModelResult;
     }
 
     public String easyChat(String p, String q, String modelName) {

@@ -96,30 +96,35 @@ const menu: PagesMenu[] = [
     //     ],
     // },
     {
-        path: "user",
+        path: "system",
         faPath: [],
         title: "系统管理",
         icon: "Menu",
         children: [
             {
+                path: "/pages/homeNext",
+                faPath: ["system"],
+                title: "主页Next",
+            },
+            {
                 title: "路由查看",
                 path: "/pages/systemManagement/routeView",
-                faPath: ["user"],
+                faPath: ["system"],
             },
             {
                 title: "用户管理",
                 path: "/pages/systemManagement/user",
-                faPath: ["user"],
+                faPath: ["system"],
             },
             {
                 title: "角色管理",
                 path: "/pages/systemManagement/role",
-                faPath: ["user"],
+                faPath: ["system"],
             },
             {
                 title: "权限管理",
                 path: "/pages/systemManagement/permission",
-                faPath: ["user"],
+                faPath: ["system"],
             },
         ],
     },
