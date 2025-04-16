@@ -498,7 +498,7 @@ nextTick(async () => {
 <style>
 .github-markdown-body {
     width: 700px;
-    padding: 16px 8px 0 16px !important;
+    padding: 8px 8px 0 16px !important;
     background-color: aliceblue;
 }
 

@@ -239,12 +239,12 @@ nextTick(async () => {
     addStartMessage()
     await getRagGroupOptionList()
     const { query } = router.currentRoute.value
-    console.log(query)
     if (query.groupId) {
+        ragGroup.value = query.groupId as string
         await ragGroupChange(query.groupId as string)
         setTimeout(() => {
             query.fileId && (ragFile.value = query.fileId as string)
-        }, 200)
+        }, 500)
     }
 
 
