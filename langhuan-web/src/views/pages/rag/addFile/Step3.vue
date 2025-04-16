@@ -37,7 +37,7 @@ const init = () => {
 const exportData = () => {
     stepData.value = {
         ...toRaw(stepData.value),
-        fineTuneData: toRaw(fineTuneData.value)
+        fineTuneData: toRaw(fineTuneData.value).filter(item => item && item.trim() !== '')
     }
 }
 defineExpose({ init, exportData })

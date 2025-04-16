@@ -35,7 +35,7 @@ watch(() => documentData.value, (newValue, oldValue) => {
 const exportData = () => {
     stepData.value = {
         ...toRaw(stepData.value),
-        documentData: toRaw(documentData.value)
+        documentData: toRaw(documentData.value).filter(item => item && item.trim() !== '')
     }
 }
 const addDocument = () => {
