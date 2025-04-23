@@ -527,15 +527,3 @@ nextTick(async () => {
         </el-dialog>
     </div>
 </template>
-
-<style>
-.github-markdown-body {
-    width: 700px;
-    padding: 8px 8px 0 16px !important;
-    background-color: aliceblue;
-}
-
-.github-markdown-body p {
-    margin-bottom: 8px;
-}
-</style>

@@ -42,3 +42,26 @@
     height: 100%;
   }
 }
+
+
+.github-markdown-body {
+    max-width: 700px !important;
+    width: max-content !important;
+    padding: 12px 16px 0 16px !important;
+    background-color: aliceblue;
+    font-size: 14px;
+    border-radius: 4px;
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        margin-top: 16px;
+        margin-bottom: 8px;
+    }
+    p {
+        margin-bottom: 8px;
+    }
+
+}

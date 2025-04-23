@@ -306,7 +306,7 @@ nextTick(async () => {
 </script>
 
 <template>
-    <div class="w-full h-full bg-white flex gap-4 relative">
+    <div class="w-full h-screen bg-white flex gap-4 relative">
 
         <!-- 对话窗口 -->
         <div v-if="chats.length > 0" class="flex-1 bg-white rounded-lg shadow-lg flex flex-col h-full">
@@ -385,11 +385,11 @@ nextTick(async () => {
                     </div>
                     <!-- 右 -->
                     <div class="flex justify-end items-center">
-                        <el-button @click="clearChatMemory(false)" :disabled="isTyping" type="primary">
+                        <!-- <el-button @click="clearChatMemory(false)" :disabled="isTyping" type="primary">
                             <span class="font-medium text-white">
                                 清除记忆
                             </span>
-                        </el-button>
+                        </el-button> -->
 
                         <el-button @click="clearMessage()" :disabled="isTyping" type="primary">
                             <span class="font-medium text-white">
@@ -494,15 +494,3 @@ nextTick(async () => {
         </el-dialog>
     </div>
 </template>
-
-<style>
-.github-markdown-body {
-    width: 700px;
-    padding: 8px 8px 0 16px !important;
-    background-color: aliceblue;
-}
-
-.github-markdown-body p {
-    margin-bottom: 8px;
-}
-</style>

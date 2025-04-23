@@ -7,7 +7,6 @@ import com.langhuan.serviceai.ChatGeneralAssistanceService;
 import com.langhuan.utils.rag.splitter.*;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import opennlp.tools.sentdetect.SentenceDetectorME;
 import org.springframework.ai.document.Document;
 import org.springframework.ai.reader.tika.TikaDocumentReader;
 import org.springframework.ai.vectorstore.VectorStore;
