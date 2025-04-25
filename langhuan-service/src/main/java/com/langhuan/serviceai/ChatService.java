@@ -5,6 +5,7 @@ import com.langhuan.common.BusinessException;
 import com.langhuan.common.Constant;
 import com.langhuan.functionTools.DateTimeToolsD;
 import com.langhuan.functionTools.FileReadTools;
+import com.langhuan.functionTools.RestRequestTools;
 import com.langhuan.model.pojo.ChatModelResult;
 import com.langhuan.service.TPromptsService;
 import lombok.extern.slf4j.Slf4j;
@@ -44,7 +45,7 @@ public class ChatService {
 
 
     public ChatModelResult chat(String id, String p, String q, Boolean isRag, String groupId, Boolean isFunction, String modelName) {
-        ToolCallback[] tools = isFunction ? ToolCallbacks.from(new DateTimeToolsD(), new FileReadTools()) :
+        ToolCallback[] tools = isFunction ? ToolCallbacks.from(new RestRequestTools()) :
                 ToolCallbacks.from();
         try {
             if (isRag) {

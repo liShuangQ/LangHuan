@@ -11,6 +11,8 @@ import { ElMessage } from "element-plus";
 import { chatServiceTypeOption } from "./config"
 import aimodel from "@/store/aimodel"
 import { documentRankHandleApi } from "@/api/rag";
+import { useRouter } from 'vue-router';
+const router = useRouter();
 let chats = ref<Chat[]>([
 
 ]);
@@ -306,7 +308,9 @@ nextTick(async () => {
 </script>
 
 <template>
-    <div class="w-full h-screen bg-white flex gap-4 relative">
+    <div :class="router.currentRoute.value.path.includes('chat')
+    ? 'h-screen w-full bg-white flex gap-4 relative'
+     : 'h-full w-full bg-white flex gap-4 relative'">
 
         <!-- 对话窗口 -->
         <div v-if="chats.length > 0" class="flex-1 bg-white rounded-lg shadow-lg flex flex-col h-full">
