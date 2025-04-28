@@ -4,6 +4,7 @@ interface Message {
     recommend?: Array<String>,
     rag?: Array<any>,
     metadata?: any,
+    isStart?: any,
     isUser: boolean;
     topInfo: string;
 }

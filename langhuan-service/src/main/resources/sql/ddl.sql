@@ -172,9 +172,6 @@ CREATE TABLE t_tool
 );
 
 
--- 创建类型枚举（保留原有类型）
-CREATE TYPE interaction_type AS ENUM ('like', 'dislike');
-
 -- 用户对话反馈统计表
 DROP TABLE IF EXISTS t_chat_feedback;
 CREATE TABLE t_chat_feedback (
@@ -184,9 +181,9 @@ CREATE TABLE t_chat_feedback (
                                   question_id VARCHAR(64) NOT NULL,        -- 问题唯一标识
                                   question_content TEXT NOT NULL,           -- 问题具体内容
                                   answer_content TEXT NOT NULL,             -- 问题对应的回答内容
-                                  interaction interaction_type NOT NULL,   -- 互动类型（点赞/点踩）
+                                  interaction VARCHAR(10) NOT NULL,         -- 互动类型（点赞/点踩） like dislike
                                   interaction_time TIMESTAMP DEFAULT NOW(), -- 互动时间（带时区）
-                                  knowledge_base_ids VARCHAR[] NOT NULL,    -- 所调用的知识库ID数组（例如 '{KB001,KB002}'）
+                                  knowledge_base_ids VARCHAR(1024) NOT NULL,    -- 所调用的知识库ID数组（例如 '{KB001,KB002}'）
                                   suggestion TEXT                           -- 用户附加建议（可选，用于收集改进意见）
 );
 

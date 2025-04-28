@@ -3,11 +3,11 @@ import {RouteRecordRaw} from "vue-router";
 // 全局路由
 export const routes: RouteRecordRaw[] = [
     // HACK：初始路由，登陆默认、home按钮都会跳转到此地址，注意指定到一个没有被菜单嵌套的地址(影响默认的左侧菜单选中)
-    {name: "index", path: "/", redirect: "/pages/home"},
+    {name: "index", path: "/", redirect: "/pages/homeNext"},
     {
         name: "chat",
         path: "/chat",
-        component: () => import("@/views/pages/home/index.vue"),
+        component: () => import("@/views/pages/homeNext/index.vue"),
     },
     {
         name: "notfound",

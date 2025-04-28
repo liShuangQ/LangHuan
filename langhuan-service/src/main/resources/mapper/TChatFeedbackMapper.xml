@@ -11,7 +11,7 @@
             <result property="questionId" column="question_id" jdbcType="VARCHAR"/>
             <result property="questionContent" column="question_content" jdbcType="VARCHAR"/>
             <result property="answerContent" column="answer_content" jdbcType="VARCHAR"/>
-            <result property="interaction" column="interaction" jdbcType="INTEGER"/>
+            <result property="interaction" column="interaction" jdbcType="VARCHAR"/>
             <result property="interactionTime" column="interaction_time" jdbcType="TIMESTAMP"/>
             <result property="knowledgeBaseIds" column="knowledge_base_ids" jdbcType="VARCHAR"/>
             <result property="suggestion" column="suggestion" jdbcType="VARCHAR"/>

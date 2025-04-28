@@ -1,9 +1,6 @@
 <template>
 
     <div class="box-border p-3 bg-white">
-        <div class="mb-2">
-            <el-button type="primary" @click="addAndChangeFormShowFun('add')">新增</el-button>
-        </div>
         <div class="ml-1">
             <ElementFormC ref="formComRef" :formConfig="formConfig" :formItemConfig="formItemConfig"
                 @handle="formHandle">
@@ -18,12 +15,9 @@
         <div style="height: calc(100% - 120px)" class="mt-2">
             <ElementTableC ref="tableComRef" :paginationConfig="paginationConfig" :tableColumnConfig="tableColumnConfig"
                 :tableConfig="tableConfig" :tableData="tableData" @handle="tableHandle">
-                <template #content-buttonSlot="props">
-                    <el-button link type="primary" :disabled="props.row.category.indexOf('system') !== -1"
-                        @click="addAndChangeFormShowFun('change', props.row)">修改</el-button>
-                    <el-button link type="primary" :disabled="props.row.category.indexOf('system') !== -1"
-                        @click="addAndChangeFormShowFun('delete', props.row)">删除</el-button>
-                </template>
+                <!-- <template #content-buttonSlot="props">
+                    <el-button link type="primary" @click="addAndChangeFormShowFun('change', props.row)">修改</el-button>
+                </template> -->
             </ElementTableC>
         </div>
 
@@ -41,6 +35,7 @@
                 </div>
             </template>
         </el-dialog>
+
 
 
     </div>
@@ -120,14 +115,11 @@ nextTick(() => {
 const addAndChangeFormComRef = ref<FormDefineExpose>();
 let addAndChangeFormVisible = ref(false)
 let addAndChangeFormDialogTit = ref("")
+let relevancyVisible = ref(false)
+const checkAll = ref(false)
+const isIndeterminate = ref(true)
+const checkedRoles = ref<string[]>([])
 const addAndChangeFormShowFun = async (t: string, d: any = null) => {
-    if (t === 'add') {
-        addAndChangeFormDialogTit.value = '新增'
-        addAndChangeFormVisible.value = true
-        nextTick(() => {
-            addAndChangeFormComRef.value!.resetForm()
-        })
-    }
     if (t === 'change') {
         addAndChangeFormDialogTit.value = '修改'
         addAndChangeFormVisible.value = true
@@ -214,6 +206,8 @@ const addAndChangeFormShowFun = async (t: string, d: any = null) => {
         addAndChangeFormVisible.value = false
     }
 }
+
+
 </script>
 
 <style scoped></style>

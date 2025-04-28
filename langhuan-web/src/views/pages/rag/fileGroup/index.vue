@@ -44,25 +44,6 @@
         </el-dialog>
 
 
-        <el-dialog v-model="relevancyVisible" :title="addAndChangeFormDialogTit" width="800">
-            <el-checkbox v-model="checkAll" :indeterminate="isIndeterminate" @change="handleCheckAllChange">
-                Check all
-            </el-checkbox>
-            <el-checkbox-group v-model="checkedRoles" @change="handleCheckedCitiesChange">
-                <el-checkbox v-for="item in relation" :key="item.relation_id" :label="item.relation_id"
-                    :value="item.relation_id">
-                    {{ item.relation_name }}
-                </el-checkbox>
-            </el-checkbox-group>
-            <template #footer>
-                <div class="dialog-footer">
-                    <el-button @click="relevancyShowFun('close')">取消</el-button>
-                    <el-button type="primary" @click="relevancyShowFun('save')">
-                        确定
-                    </el-button>
-                </div>
-            </template>
-        </el-dialog>
     </div>
 
 </template>
@@ -139,12 +120,7 @@ nextTick(() => {
 const addAndChangeFormComRef = ref<FormDefineExpose>();
 let addAndChangeFormVisible = ref(false)
 let addAndChangeFormDialogTit = ref("")
-let relevancyVisible = ref(false)
-const checkAll = ref(false)
-const isIndeterminate = ref(true)
-const checkedRoles = ref<string[]>([])
-const relation = ref<{ relation_name: string, relation_id: string }[]>([])
-let nowUser: any = null;
+
 const addAndChangeFormShowFun = async (t: string, d: any = null) => {
     if (t === 'add') {
         addAndChangeFormDialogTit.value = '新增'
@@ -199,39 +175,6 @@ const addAndChangeFormShowFun = async (t: string, d: any = null) => {
                 })
             })
     }
-    if (t === 'relation') {
-        nowUser = d
-        relevancyVisible.value = true
-        checkedRoles.value = []
-        relation.value = []
-        await nextTick(async () => {
-            await http.request<any>({
-                url: '/user/getUserRoles',
-                method: 'post',
-                q_spinning: true,
-                q_contentType: 'form',
-                data: {},
-            }).then(res => {
-                if (res.code === 200) {
-                    relation.value = res.data
-                }
-            })
-            await http.request<any>({
-                url: '/user/getUserRoles',
-                method: 'post',
-                q_spinning: true,
-                q_contentType: 'form',
-                data: {
-                    id: d.id
-                },
-            }).then(res => {
-                if (res.code === 200) {
-                    checkedRoles.value = res.data.map((e: any) => e.relation_id)
-                }
-            })
-            handleCheckedCitiesChange(checkedRoles.value)
-        })
-    }
     if (t === 'save') {
         let url = ''
         if (addAndChangeFormDialogTit.value === '新增') {
@@ -273,38 +216,6 @@ const addAndChangeFormShowFun = async (t: string, d: any = null) => {
     }
 }
 
-const handleCheckAllChange = (val: boolean | CheckboxValueType) => {
-    checkedRoles.value = val ? relation.value.map(e => e.relation_id) : []
-    isIndeterminate.value = false
-}
-const handleCheckedCitiesChange = (value: string[] | CheckboxValueType[]) => {
-    const checkedCount = value.length
-    checkAll.value = checkedCount === relation.value.length
-    isIndeterminate.value = checkedCount > 0 && checkedCount < relation.value.length
-}
-const relevancyShowFun = (t: string, d: any = null) => {
-    if (t === 'save') {
-        http.request<any>({
-            url: '/user/relevancyRoles',
-            method: 'post',
-            q_spinning: true,
-            q_contentType: 'form',
-            data: {
-                id: nowUser.id,
-                roleIds: checkedRoles.value.join(',')
-            },
-        }).then(res => {
-            if (res.code === 200) {
-                relevancyVisible.value = false
-                ElMessage.success("操作成功")
-            }
-        })
-
-    }
-    if (t === 'close') {
-        relevancyVisible.value = false
-    }
-}
 </script>
 
 <style scoped></style>

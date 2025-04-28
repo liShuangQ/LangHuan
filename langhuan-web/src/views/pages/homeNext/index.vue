@@ -39,6 +39,7 @@ const addMessage = (chat: Chat, messageData: Message): void => {
         text: messageData.text,
         recommend: messageData?.recommend ?? [],
         rag: messageData?.rag ?? [],
+        isStart: messageData?.isStart ?? false,
         isUser: messageData.isUser,
         topInfo: getChatTopInfo()
     });
@@ -231,6 +232,7 @@ const addStartMessage = (): void => {
     chat && addMessage(chat, {
         text: '很高兴见到你！我可以帮你写代码、读文件、写作各种创意内容，请把你的任务交给我吧~',
         recommend: ['你是谁？', '你能做些什么？'],
+        isStart: true,
         rag: [],
         isUser: false,
         topInfo: getChatTopInfo()
@@ -292,7 +294,54 @@ const documentRankHandle = async (t: 'good' | 'bad', d: any) => {
         ElMessage.success(res.data)
     }
 }
+let feedbackVisible = ref<boolean>(false);
+let feedbackText = ref<string>('');
+let feedbackCache = ref<any>();
+// 打开反馈
+const chatFeedback = (message: Message, type: string) => {
+    feedbackVisible.value = true;
+    feedbackText.value = '';
+    feedbackCache.value = { ...message, type: type };
+}
+// 提交反馈逻辑
+const submitFeedback = () => {
+    // if (feedbackText.value.trim() === '') {
+    //     ElMessage.error('请输入反馈内容');
+    //     return;
+    // }
 
+    const nowChat = currentChat().messages
+    const nowMessageIndex = nowChat.findIndex((item: any) => item.id === feedbackCache.value?.id);
+    const question = nowChat[nowMessageIndex - 1]?.text;
+    const answer = nowChat[nowMessageIndex]?.text;
+
+    http.request<any>({
+        url: '/chatFeedback/add',
+        method: 'post',
+        q_spinning: true,
+        q_contentType: 'json',
+        data: {
+            questionId: feedbackCache.value?.id,
+            questionContent: question,
+            answerContent: answer,
+            interaction: feedbackCache.value?.type ?? 'dislike',
+            knowledgeBaseIds: feedbackCache.value?.rag?.map((e: any) => e.id).join(','),
+            suggestion: feedbackText.value,
+        },
+
+    }).then((res) => {
+        if (res.code === 200) {
+            feedbackVisible.value = false;
+            feedbackText.value = '';
+            feedbackCache.value = void 0;
+            ElMessage.success('反馈已提交，谢谢！');
+        }
+    }).catch((error) => {
+        ElMessage.error('提交反馈失败，请重试。');
+    });
+
+
+}
 // 初始化执行
 nextTick(async () => {
     await aimodel().setModelOptions()
@@ -300,7 +349,7 @@ nextTick(async () => {
     chatModelName.value = chatModelOption.value[0].value
     addStartMessage()
     getRagGroupOptionList()
-
+    startNewChat()
 })
 
 </script>
@@ -358,13 +407,19 @@ nextTick(async () => {
                         <!--                        对话回复-->
                         <div class="text-[12px] ">{{ message.topInfo }}</div>
 
-                        <div
-                            :class="message.isUser ? 'flex items-center justify-end' : 'flex items-center justify-start'">
+                        <div :class="message.isUser ? 'flex items-end justify-end' : 'flex items-end justify-start'">
                             <!-- <div v-html="message.text" :class="[
                                 'max-full p-3 rounded-lg transition-all duration-200',
                                 message.isUser ? 'bg-blue-500 text-white' : 'bg-gray-200'
                             ]"></div> -->
                             <v-md-preview :text="message.text"></v-md-preview>
+
+                            <img v-if="!message.isStart && !message.isUser" class="cursor-pointer"
+                                @click="chatFeedback(message, 'like')" style="height: 20px;margin: 0 8px;"
+                                src="./good.svg" alt="" srcset="">
+                            <img v-if="!message.isStart && !message.isUser" class="cursor-pointer"
+                                @click="chatFeedback(message, 'dislike')" style="height: 20px;" src="./bad.svg" alt=""
+                                srcset="">
                         </div>
                         <div class="flex items-center justify-start ">
                             <!--                        推荐列表-->
@@ -444,13 +499,13 @@ nextTick(async () => {
                 </div>
                 <!-- 下功能区 -->
                 <div class=" flex justify-end">
-                    <el-switch v-model="toolEnabled" inactive-text="工具" :disabled="isTyping" :active-value="true"
+                    <!-- <el-switch v-model="toolEnabled" inactive-text="工具" :disabled="isTyping" :active-value="true"
                         :inactive-value="false" active-color="#3b82f6" inactive-color="#dc2626" class="mr-2" />
                     <el-select v-if="toolEnabled" v-model="toolGroup" :disabled="isTyping" placeholder="选择工具组"
                         class="mr-2">
                         <el-option v-for="item in toolGroupOption" :key="item.value" :label="item.label"
                             :value="item.value" />
-                    </el-select>
+                    </el-select> -->
                     <el-switch v-model="ragEnabled" inactive-text="RAG" :disabled="isTyping" :active-value="true"
                         :inactive-value="false" active-color="#3b82f6" inactive-color="#dc2626" class="mr-2"
                         @change="ragEnabledChange" />
@@ -524,6 +579,15 @@ nextTick(async () => {
                     </el-button>
                 </div>
             </template>
+        </el-dialog>
+        <!-- 反馈区域 -->
+        <el-dialog v-model="feedbackVisible" title="反馈" width="600">
+            <div class="feedback-area">
+                <el-input v-model="feedbackText" type="textarea" placeholder="输入反馈内容或者您想要的结果，这对我们很重要..."></el-input>
+                <div class="flex justify-end mt-4">
+                    <el-button @click="submitFeedback" type="primary">提交反馈</el-button>
+                </div>
+            </div>
         </el-dialog>
     </div>
 </template>

@@ -46,7 +46,7 @@ public class TChatFeedback {
     /**
      * 
      */
-    private Integer interaction;
+    private String interaction;
 
     /**
      * 
