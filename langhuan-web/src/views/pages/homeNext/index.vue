@@ -12,9 +12,10 @@ import { chatServiceTypeOption } from "./config"
 import aimodel from "@/store/aimodel"
 import { List } from "lodash";
 import { documentRankHandleApi } from "@/api/rag";
-let chats = ref<Chat[]>([
-
-]);
+import { useRouter } from 'vue-router';
+const router = useRouter();
+const nowIsChat = router.currentRoute.value.path.includes('chat')
+let chats = ref<Chat[]>([]);
 let chatServiceType = ref<string>('/chat');
 let inputMessageText = ref<string>('');
 let inputPromptText = ref<string>('');
@@ -355,10 +356,12 @@ nextTick(async () => {
 </script>
 
 <template>
-    <div class="w-full h-full bg-white flex gap-4 relative">
+    <div :class="nowIsChat
+        ? 'h-screen w-full bg-white flex gap-4 relative'
+        : 'h-full w-full bg-white flex gap-4 relative'">
 
         <!-- 对话窗口列表 -->
-        <div :class="[
+        <div v-if="!nowIsChat" :class="[
             'w-64 bg-white rounded-lg shadow-lg p-4 transition-transform duration-300',
             'fixed md:static h-full] z-40',
         ]">
@@ -393,7 +396,8 @@ nextTick(async () => {
         <!-- 对话窗口 -->
         <div v-if="chats.length > 0" class="flex-1 bg-white rounded-lg shadow-lg flex flex-col h-full">
             <div class="p-4 pb-3 border-b-2  border-gray-300">
-                对话 #{{ currentChatId }}
+                对话
+                <!-- #{{ currentChatId }} -->
             </div>
 
             <div class="flex-1 overflow-y-auto p-4 space-y-4">
