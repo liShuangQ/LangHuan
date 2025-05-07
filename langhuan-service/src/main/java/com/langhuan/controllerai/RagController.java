@@ -3,6 +3,8 @@ package com.langhuan.controllerai;
 import com.alibaba.fastjson2.JSONObject;
 import com.langhuan.common.Result;
 import com.langhuan.model.domain.TRagFile;
+import com.langhuan.model.pojo.RagChangeDocumentsReq;
+import com.langhuan.model.pojo.RagDeleteDocumentsReq;
 import com.langhuan.model.pojo.RagWriteDocumentsReq;
 import com.langhuan.serviceai.RagService;
 import org.springframework.ai.document.Document;
@@ -83,6 +85,29 @@ public class RagController {
             @RequestParam(name = "rank", required = true) int rank
     ) {
         return Result.success(ragService.changeDocumentsRank(id, rank));
+    }
+
+    @PostMapping("/rag/changeDocumentText")
+    public Result changeDocumentText(
+            @RequestBody RagChangeDocumentsReq ragChangeDocumentsReq
+    ) {
+        if (ragChangeDocumentsReq.getDocuments().size() != 1) {
+            return Result.error("只能修改一条信息");
+        }
+        return Result.success(ragService.changeDocumentText(ragChangeDocumentsReq.getDocuments(),
+                ragChangeDocumentsReq.getDocumentId(),
+                ragChangeDocumentsReq.getRagFile()
+        ));
+    }
+
+    @PostMapping("/rag/deleteDocumentText")
+    public Result deleteDocumentText(
+            @RequestBody RagDeleteDocumentsReq ragDeleteDocumentsReq
+    ) {
+        return Result.success(ragService.deleteDocumentText(
+                ragDeleteDocumentsReq.getDocumentId(),
+                ragDeleteDocumentsReq.getRagFile()
+        ));
     }
 
 }

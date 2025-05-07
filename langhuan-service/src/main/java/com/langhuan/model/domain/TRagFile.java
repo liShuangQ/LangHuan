@@ -2,60 +2,62 @@ package com.langhuan.model.domain;
 
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import java.util.Date;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
+import java.util.Date;
+
 /**
- * 
  * @TableName t_rag_file
  */
-@TableName(value ="t_rag_file")
+@TableName(value = "t_rag_file")
 @Data
 public class TRagFile {
     /**
-     * 
+     *
      */
     @TableId
     private Integer id;
 
     /**
-     * 
+     *
      */
     private String fileName;
 
     /**
-     * 
+     *
      */
     private String fileType;
 
     /**
-     * 
+     *
      */
     private String fileSize;
 
     /**
-     * 
+     *
      */
     private String documentNum;
 
     /**
-     * 
+     *
      */
     private String fileDesc;
 
     /**
-     * 
+     *
      */
     private String fileGroupId;
 
     /**
-     * 
+     *
      */
     private String uploadedBy;
 
     /**
-     * 
+     *
      */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date uploadedAt;
 
     @Override
@@ -71,14 +73,14 @@ public class TRagFile {
         }
         TRagFile other = (TRagFile) that;
         return (this.getId() == null ? other.getId() == null : this.getId().equals(other.getId()))
-            && (this.getFileName() == null ? other.getFileName() == null : this.getFileName().equals(other.getFileName()))
-            && (this.getFileType() == null ? other.getFileType() == null : this.getFileType().equals(other.getFileType()))
-            && (this.getFileSize() == null ? other.getFileSize() == null : this.getFileSize().equals(other.getFileSize()))
-            && (this.getDocumentNum() == null ? other.getDocumentNum() == null : this.getDocumentNum().equals(other.getDocumentNum()))
-            && (this.getFileDesc() == null ? other.getFileDesc() == null : this.getFileDesc().equals(other.getFileDesc()))
-            && (this.getFileGroupId() == null ? other.getFileGroupId() == null : this.getFileGroupId().equals(other.getFileGroupId()))
-            && (this.getUploadedBy() == null ? other.getUploadedBy() == null : this.getUploadedBy().equals(other.getUploadedBy()))
-            && (this.getUploadedAt() == null ? other.getUploadedAt() == null : this.getUploadedAt().equals(other.getUploadedAt()));
+                && (this.getFileName() == null ? other.getFileName() == null : this.getFileName().equals(other.getFileName()))
+                && (this.getFileType() == null ? other.getFileType() == null : this.getFileType().equals(other.getFileType()))
+                && (this.getFileSize() == null ? other.getFileSize() == null : this.getFileSize().equals(other.getFileSize()))
+                && (this.getDocumentNum() == null ? other.getDocumentNum() == null : this.getDocumentNum().equals(other.getDocumentNum()))
+                && (this.getFileDesc() == null ? other.getFileDesc() == null : this.getFileDesc().equals(other.getFileDesc()))
+                && (this.getFileGroupId() == null ? other.getFileGroupId() == null : this.getFileGroupId().equals(other.getFileGroupId()))
+                && (this.getUploadedBy() == null ? other.getUploadedBy() == null : this.getUploadedBy().equals(other.getUploadedBy()))
+                && (this.getUploadedAt() == null ? other.getUploadedAt() == null : this.getUploadedAt().equals(other.getUploadedAt()));
     }
 
     @Override

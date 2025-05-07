@@ -96,6 +96,19 @@ const menu: PagesMenu[] = [
     //     ],
     // },
     {
+        path: "dailyOperation",
+        faPath: [],
+        title: "日常运维",
+        icon: "Menu",
+        children: [
+            {
+                title: "反馈管理",
+                path: "/pages/chatFeedback",
+                faPath: ["dailyOperation"],
+            },
+        ],
+    },
+    {
         path: "system",
         faPath: [],
         title: "系统管理",
@@ -109,11 +122,6 @@ const menu: PagesMenu[] = [
             {
                 title: "路由查看",
                 path: "/pages/systemManagement/routeView",
-                faPath: ["system"],
-            },
-            {
-                title: "反馈管理",
-                path: "/pages/chatFeedback",
                 faPath: ["system"],
             },
             {

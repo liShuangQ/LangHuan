@@ -1,12 +1,11 @@
 <template>
-
     <div class="box-border p-3 bg-white">
         <div class="mb-2">
             <el-button type="primary" @click="addAndChangeFormShowFun('add')">新增</el-button>
         </div>
         <div class="ml-1">
             <ElementFormC ref="formComRef" :formConfig="formConfig" :formItemConfig="formItemConfig"
-                          @handle="formHandle">
+                @handle="formHandle">
                 <template #custom-button>
                     <div class="float-right">
                         <el-button type="primary" @click="getUserPageList">查询</el-button>
@@ -17,7 +16,7 @@
         </div>
         <div style="height: calc(100% - 120px)" class="mt-2">
             <ElementTableC ref="tableComRef" :paginationConfig="paginationConfig" :tableColumnConfig="tableColumnConfig"
-                           :tableConfig="tableConfig" :tableData="tableData" @handle="tableHandle">
+                :tableConfig="tableConfig" :tableData="tableData" @handle="tableHandle">
                 <template #content-documentNum="props">
                     <el-button link type="primary" @click="openDocumentNum(props.row)">{{ props.row.documentNum }}
                     </el-button>
@@ -30,7 +29,7 @@
                     <el-button link type="primary" @click="addAndChangeFormShowFun('fileRecallTesting', props.row)">文件召回
                     </el-button>
                     <el-button v-if="pageConfig.relation" link type="primary"
-                               @click="addAndChangeFormShowFun('relation', props.row)">{{
+                        @click="addAndChangeFormShowFun('relation', props.row)">{{
                             pageConfig.relationBtnName
                         }}
                     </el-button>
@@ -41,7 +40,7 @@
 
         <el-dialog v-model="addAndChangeFormVisible" :title="addAndChangeFormDialogTit" width="800">
             <ElementFormC ref="addAndChangeFormComRef" :formConfig="addAndChangeFormConfig"
-                          :formItemConfig="addAndChangeFormItemConfig" @handle="addAndChangeFormHandle">
+                :formItemConfig="addAndChangeFormItemConfig" @handle="addAndChangeFormHandle">
             </ElementFormC>
             <template #footer>
                 <div class="dialog-footer">
@@ -60,7 +59,7 @@
             </el-checkbox>
             <el-checkbox-group v-model="checkedRoles" @change="handleCheckedCitiesChange">
                 <el-checkbox v-for="item in relation" :key="item.relation_id" :label="item.relation_id"
-                             :value="item.relation_id">
+                    :value="item.relation_id">
                     {{ item.relation_name }}
                 </el-checkbox>
             </el-checkbox-group>
@@ -74,10 +73,27 @@
             </template>
         </el-dialog>
         <el-dialog v-model="documentNumVisible" :title="'文档列表'" width="900">
-            <div class=" h-[70vh] overflow-y-scroll">
-                <div v-for="(item,index) in documentNumData" :key="index">
-                    {{ item }}
-                    <el-divider/>
+            <div class="h-[70vh] overflow-y-scroll">
+                <div v-for="(item, index) in documentNumData" :key="index" class="mb-4">
+                    <div v-if="!item.isEditing">
+                        <div>
+                            <div style="white-space: pre-wrap">{{ item.content }}</div>
+                            <div class=" float-right">
+                                <el-button type="primary" link @click="documentHandle('edit', index, item)">修改</el-button>
+                                <el-button type="primary" link
+                                    @click="documentHandle('delete', index, item)">删除</el-button>
+                            </div>
+                        </div>
+                    </div>
+                    <div v-else>
+                        <el-input v-model="item.tempContent" type="textarea" :rows="7" class="mb-2" />
+                        <div class="flex justify-end gap-2">
+                            <el-button size="small" @click="documentHandle('cancel', index, item)">取消</el-button>
+                            <el-button size="small" type="primary"
+                                @click="documentHandle('save', index, item)">确定</el-button>
+                        </div>
+                    </div>
+                    <el-divider />
                 </div>
             </div>
         </el-dialog>
@@ -90,12 +106,12 @@ export default {
 };
 </script>
 <script setup lang="ts">
-import {http} from "@/plugins/axios";
-import {TableDefineExpose} from "@/components/globalComponents/ElementTableC/table-component";
+import { http } from "@/plugins/axios";
+import { TableDefineExpose } from "@/components/globalComponents/ElementTableC/table-component";
 import {
     FormDefineExpose,
 } from "@/components/globalComponents/ElementFormC/form-component";
-import {formConfig, formItemConfig} from "./formConfig";
+import { formConfig, formItemConfig } from "./formConfig";
 import {
     paginationConfig,
     tableColumnConfig,
@@ -107,10 +123,10 @@ import {
     addAndChangeFormItemConfig
 } from "./addAndChangeformConfig";
 import dayjs from "dayjs";
-import {CheckboxValueType, ElMessageBox} from "element-plus";
+import { CheckboxValueType, ElMessageBox } from "element-plus";
 import pageConfig from "./pageConfig";
-import {getFileGroupOption} from "../addFile/addFileFormconfig";
-import {useRouter} from 'vue-router';
+import { getFileGroupOption } from "../addFile/addFileFormconfig";
+import { useRouter } from 'vue-router';
 
 const router = useRouter();
 const formComRef = ref<FormDefineExpose>();
@@ -178,17 +194,21 @@ let addAndChangeFormVisible = ref(false)
 let addAndChangeFormDialogTit = ref("")
 let relevancyVisible = ref(false)
 let documentNumVisible = ref(false)
-let documentNumData = ref<String[]>([])
+let documentNumData = ref<any>([])
 const checkAll = ref(false)
 const isIndeterminate = ref(true)
 const checkedRoles = ref<string[]>([])
 const relation = ref<{ relation_name: string, relation_id: string }[]>([])
 let nowUser: any = null;
+let nowRow: any = null;
+
 const addAndChangeFormShowFun = async (t: string, d: any = null) => {
+
     if (t === 'add') {
         router.push("/pages/rag/addFile")
     }
     if (t === 'change') {
+        nowRow = d
         addAndChangeFormDialogTit.value = '修改'
         addAndChangeFormVisible.value = true
 
@@ -275,6 +295,7 @@ const addAndChangeFormShowFun = async (t: string, d: any = null) => {
         })
     }
     if (t === 'save') {
+
         let url = ''
         // if (addAndChangeFormDialogTit.value === '新增') {
         //     url = pageConfig.addUrl
@@ -286,12 +307,16 @@ const addAndChangeFormShowFun = async (t: string, d: any = null) => {
             .value!.submitForm()
             .then((res) => {
                 let sd: any = addAndChangeFormComRef.value!.getFromValue()
+
                 http.request<any>({
                     url: url,
                     method: 'post',
                     q_spinning: true,
                     q_contentType: 'json',
-                    data: sd,
+                    data: {
+                        ...sd,
+                        id: nowRow.id,
+                    },
                 }).then(res => {
                     if (res.code === 200) {
                         ElMessage.success('操作成功')
@@ -356,8 +381,8 @@ const relevancyShowFun = (t: string, d: any = null) => {
         relevancyVisible.value = false
     }
 }
-
 const openDocumentNum = (row: any) => {
+    nowRow = JSON.parse(JSON.stringify(row))
     http.request<any>({
         url: '/rag/file/queryDocumentsByFileId',
         method: 'post',
@@ -369,12 +394,80 @@ const openDocumentNum = (row: any) => {
     }).then(res => {
         documentNumVisible.value = true
         nextTick(() => {
-            documentNumData.value = res.data.map((e: any) => {
-                return e.content
-            })
+            documentNumData.value = res.data.map((e: any) => ({
+                id: e.id,
+                content: e.content,
+                isEditing: false,
+                tempContent: e.content
+            }))
         })
     })
 }
+const documentHandle = (type: string, index: number, item: any) => {
+    if (type === 'edit') {
+        documentNumData.value[index].isEditing = true;
+        documentNumData.value[index].tempContent = documentNumData.value[index].content;
+    }
+    if (type === 'delete') {
+        ElMessageBox.confirm(
+            '确认删除?',
+            '通知',
+            {
+                confirmButtonText: '确定',
+                cancelButtonText: '返回',
+                type: 'warning',
+            }
+        )
+            .then(() => {
+
+                http.request<any>({
+                    url: '/rag/deleteDocumentText',
+                    method: 'post',
+                    q_spinning: true,
+                    q_contentType: 'json',
+                    data: {
+                        ragFile: nowRow,
+                        documentId: item.id,
+                    },
+                }).then(res => {
+                    if (res.code === 200) {
+                        ElMessage.success(res.data)
+                    }
+                })
+
+            })
+            .catch(() => {
+                ElMessage({
+                    type: 'info',
+                    message: '取消删除',
+                })
+            })
+    }
+    if (type === 'cancel') {
+        documentNumData.value[index].isEditing = false;
+    }
+    if (type === 'save') {
+        documentNumData.value[index].content = documentNumData.value[index].tempContent;
+
+        http.request<any>({
+            url: '/rag/changeDocumentText',
+            method: 'post',
+            q_spinning: true,
+            q_contentType: 'json',
+            data: {
+                ragFile: nowRow,
+                documentId: item.id,
+                documents: [item.tempContent]
+            },
+        }).then(res => {
+            if (res.code === 200) {
+                documentNumData.value[index].isEditing = false;
+                ElMessage.success(res.data)
+            }
+        })
+    }
+}
+
 </script>
 
 <style scoped></style>

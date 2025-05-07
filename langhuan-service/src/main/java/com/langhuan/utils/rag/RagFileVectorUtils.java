@@ -2,9 +2,12 @@ package com.langhuan.utils.rag;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.langhuan.model.domain.TRagFile;
 import com.langhuan.model.pojo.RagMetaData;
 import com.langhuan.serviceai.ChatGeneralAssistanceService;
-import com.langhuan.utils.rag.splitter.*;
+import com.langhuan.utils.rag.splitter.FixedWindowTextSplitter;
+import com.langhuan.utils.rag.splitter.LlmTextSplitter;
+import com.langhuan.utils.rag.splitter.PatternTokenTextSplitter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.document.Document;
@@ -23,6 +26,7 @@ import java.util.regex.Pattern;
 @Component
 public class RagFileVectorUtils {
     private final ChatGeneralAssistanceService chatGeneralAssistanceService;
+
     public RagFileVectorUtils(ChatGeneralAssistanceService chatGeneralAssistanceService) {
         this.chatGeneralAssistanceService = chatGeneralAssistanceService;
     }
@@ -30,6 +34,21 @@ public class RagFileVectorUtils {
     private List<String> splitFileMethod() {
         return List.of("PatternTokenTextSplitter", "OpenNLPSentenceSplitter", "FixedWindowTextSplitter",
                 "SlidingWindowTextSplitter");
+    }
+
+    /**
+     * 创建元数据
+     *
+     * @param ragFile 文件信息
+     * @return 元数据
+     */
+    public RagMetaData makeMateData(TRagFile ragFile) {
+        RagMetaData metadata = new RagMetaData();
+        metadata.setFilename(ragFile.getFileName());
+        metadata.setFileId(String.valueOf(ragFile.getId()));
+        metadata.setGroupId(ragFile.getFileGroupId());
+        metadata.setRank(0);
+        return metadata;
     }
 
     /**
