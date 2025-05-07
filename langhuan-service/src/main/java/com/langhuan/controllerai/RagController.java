@@ -91,9 +91,6 @@ public class RagController {
     public Result changeDocumentText(
             @RequestBody RagChangeDocumentsReq ragChangeDocumentsReq
     ) {
-        if (ragChangeDocumentsReq.getDocuments().size() != 1) {
-            return Result.error("只能修改一条信息");
-        }
         return Result.success(ragService.changeDocumentText(ragChangeDocumentsReq.getDocuments(),
                 ragChangeDocumentsReq.getDocumentId(),
                 ragChangeDocumentsReq.getRagFile()

@@ -52,6 +52,23 @@ public class RagFileVectorUtils {
     }
 
     /**
+     * 创建元数据
+     *
+     * @param fileName 文件名
+     * @param fileId   文件ID
+     * @param groupId  分组ID
+     * @return 元数据
+     */
+    public RagMetaData makeMateData(String fileName, String fileId, String groupId) {
+        RagMetaData metadata = new RagMetaData();
+        metadata.setFilename(fileName);
+        metadata.setFileId(fileId);
+        metadata.setGroupId(groupId);
+        metadata.setRank(0);
+        return metadata;
+    }
+
+    /**
      * 读取并分割文档
      *
      * @param file 要解析的文件

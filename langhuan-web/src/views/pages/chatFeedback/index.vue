@@ -15,9 +15,10 @@
         <div style="height: calc(100% - 120px)" class="mt-2">
             <ElementTableC ref="tableComRef" :paginationConfig="paginationConfig" :tableColumnConfig="tableColumnConfig"
                 :tableConfig="tableConfig" :tableData="tableData" @handle="tableHandle">
-                <!-- <template #content-buttonSlot="props">
-                    <el-button link type="primary" @click="addAndChangeFormShowFun('change', props.row)">修改</el-button>
-                </template> -->
+                <template #content-knowledgeBaseIds="props">
+                    <el-button link type="primary" @click="openDocumentIds(props.row)">知识库片段
+                    </el-button>
+                </template>
             </ElementTableC>
         </div>
 
@@ -36,7 +37,29 @@
             </template>
         </el-dialog>
 
-
+        <el-dialog v-model="documentIdsVisible" :title="'文档列表(修改后文档将自动归档)'" width="900">
+            <div class="h-[70vh] overflow-y-scroll">
+                <div v-for="(item, index) in documentIdsData" :key="index" class="mb-4">
+                    <div v-if="!item.isEditing">
+                        <div>
+                            <div style="white-space: pre-wrap">{{ item.content }}</div>
+                            <div class=" float-right">
+                                <el-button type="primary" link @click="documentHandle('edit', index, item)">修改</el-button>
+                            </div>
+                        </div>
+                    </div>
+                    <div v-else>
+                        <el-input v-model="item.tempContent" type="textarea" :rows="7" class="mb-2" />
+                        <div class="flex justify-end gap-2">
+                            <el-button size="small" @click="documentHandle('cancel', index, item)">取消</el-button>
+                            <el-button size="small" type="primary"
+                                @click="documentHandle('save', index, item)">确定</el-button>
+                        </div>
+                    </div>
+                    <el-divider />
+                </div>
+            </div>
+        </el-dialog>
 
     </div>
 
@@ -69,7 +92,8 @@ import pageConfig from "./pageConfig";
 import { nextTick, ref } from "vue";
 const formComRef = ref<FormDefineExpose>();
 const tableComRef = ref<TableDefineExpose>();
-
+let documentIdsVisible = ref(false)
+let documentIdsData = ref<any[]>([]);
 const formHandle = (type: string, key: string, data: any, other: any) => {
     console.log(type, key, data, other);
 };
@@ -204,6 +228,54 @@ const addAndChangeFormShowFun = async (t: string, d: any = null) => {
     if (t === 'close') {
         addAndChangeFormDialogTit.value = ''
         addAndChangeFormVisible.value = false
+    }
+}
+const openDocumentIds = (row: any) => {
+    http.request<any>({
+        url: '/chatFeedback/queryDocumentsByIds',
+        method: 'post',
+        q_spinning: true,
+        q_contentType: 'form',
+        data: {
+            fileIds: row.knowledgeBaseIds,
+        },
+    }).then(res => {
+        documentIdsVisible.value = true
+        nextTick(() => {
+            documentIdsData.value = res.data.map((e: any) => ({
+                id: e.id,
+                content: e.content,
+                isEditing: false,
+                tempContent: e.content
+            }))
+        })
+    })
+}
+const documentHandle = (type: string, index: number, item: any) => {
+    if (type === 'edit') {
+        documentIdsData.value[index].isEditing = true;
+        documentIdsData.value[index].tempContent = documentIdsData.value[index].content;
+    }
+    if (type === 'cancel') {
+        documentIdsData.value[index].isEditing = false;
+    }
+    if (type === 'save') {
+        documentIdsData.value[index].content = documentIdsData.value[index].tempContent;
+
+        http.request<any>({
+            url: '/chatFeedback/changeDocumentTextByString',
+            method: 'post',
+            q_spinning: true,
+            data: {
+                documentId: item.id,
+                document: item.tempContent
+            },
+        }).then(res => {
+            if (res.code === 200) {
+                documentIdsData.value[index].isEditing = false;
+                ElMessage.success(res.data)
+            }
+        })
     }
 }
 

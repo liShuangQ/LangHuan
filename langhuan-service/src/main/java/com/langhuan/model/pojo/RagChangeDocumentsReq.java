@@ -7,7 +7,7 @@ import java.util.List;
 
 @Data
 public class RagChangeDocumentsReq {
-    private List<String> documents;
+    private String documents;
     private String documentId;
     private TRagFile ragFile;
 }

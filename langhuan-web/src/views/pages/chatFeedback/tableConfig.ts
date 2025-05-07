@@ -47,6 +47,7 @@ export let tableColumnConfig = ref<TableColumnConfig[]>([
     {
         label: "调用的知识库",
         prop: "knowledgeBaseIds",
+        contentSlot: true,
         width: "auto",
     },
     {

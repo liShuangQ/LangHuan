@@ -1,7 +1,8 @@
 package com.langhuan.serviceai;
 
 import cn.hutool.core.util.IdUtil;
-import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+
+import com.alibaba.fastjson2.JSONObject;
 import com.langhuan.common.BusinessException;
 import com.langhuan.common.Constant;
 import com.langhuan.config.VectorStoreConfig;
@@ -9,6 +10,8 @@ import com.langhuan.model.domain.TRagFile;
 import com.langhuan.service.TRagFileService;
 import com.langhuan.utils.rag.RagFileVectorUtils;
 import lombok.extern.slf4j.Slf4j;
+
+import org.postgresql.util.PGobject;
 import org.springframework.ai.document.Document;
 import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
@@ -33,7 +36,7 @@ public class RagService {
 
     @Autowired
     public RagService(RagFileVectorUtils ragFileVectorUtils, TRagFileService ragFileService, JdbcTemplate jdbcTemplate,
-                      VectorStoreConfig vectorStoreConfig) {
+            VectorStoreConfig vectorStoreConfig) {
         this.ragFileVectorUtils = ragFileVectorUtils;
         this.ragFileService = ragFileService;
         this.baseDao = jdbcTemplate;
@@ -41,11 +44,35 @@ public class RagService {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public String changeDocumentText(List<String> documents, String documentId, TRagFile ragFile) {
-        log.info("Updating changeDocument: {},documentId: {},documents: {}", ragFile, documentId, documents);
+    public String changeDocumentText(String documents, String documentId, TRagFile ragFile) {
+        log.info("Updating changeDocumentText: {},documentId: {},documents: {}", ragFile, documentId, documents);
         String sql = "DELETE FROM vector_store_rag WHERE id = ?::uuid";
         baseDao.update(sql, documentId);
-        if (ragFileVectorUtils.writeDocumentsToVectorStore(documents, ragFileVectorUtils.makeMateData(ragFile),
+        if (ragFileVectorUtils.writeDocumentsToVectorStore(List.of(documents), ragFileVectorUtils.makeMateData(ragFile),
+                ragVectorStore)) {
+            return "更新成功";
+        } else {
+            return "更新失败，请检查日志。";
+        }
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public String changeDocumentTextByString(String documents, String documentId) {
+        log.info("Updating changeDocumentTextByString: {}, documentId: {}, documents: {}", documentId, documents);
+
+        String seqsql = "SELECT * FROM vector_store_rag WHERE id = ?::uuid";
+        List<Map<String, Object>> queryForList = baseDao.queryForList(seqsql, documentId);
+        PGobject pgObject = (PGobject) queryForList.get(0).get("metadata");
+        String string = pgObject.getValue(); // 提取 JSON 字符串
+        JSONObject object = JSONObject.parseObject(string);
+        String fileName = object.getString("filename");
+        String fileId = object.getString("fileId");
+        String groupId = object.getString("groupId");
+
+        String delsql = "DELETE FROM vector_store_rag WHERE id = ?::uuid";
+        baseDao.update(delsql, documentId);
+        if (ragFileVectorUtils.writeDocumentsToVectorStore(List.of(documents),
+                ragFileVectorUtils.makeMateData(fileName, fileId, groupId),
                 ragVectorStore)) {
             return "更新成功";
         } else {
@@ -56,8 +83,8 @@ public class RagService {
     @Transactional(rollbackFor = Exception.class)
     public String deleteDocumentText(String documentId, TRagFile ragFile) {
         log.info("Delete deleteDocumentText: {},documentId: {}", ragFile, documentId);
-//        String sql = "DELETE FROM vector_store_rag WHERE id = ?::uuid";
-//        baseDao.update(sql, documentId);
+        String sql = "DELETE FROM vector_store_rag WHERE id = ?::uuid";
+        baseDao.update(sql, documentId);
         String num = String.valueOf(Integer.parseInt(ragFile.getDocumentNum()) - 1);
         ragFile.setDocumentNum(num);
         boolean updated = ragFileService.updateById(ragFile);
@@ -65,7 +92,7 @@ public class RagService {
     }
 
     public List<String> readAndSplitDocument(MultipartFile file, String splitFileMethod,
-                                             Map<String, Object> methodData) {
+            Map<String, Object> methodData) {
         return ragFileVectorUtils.readAndSplitDocument(file, splitFileMethod, methodData);
     }
 
@@ -123,9 +150,35 @@ public class RagService {
     public List<Map<String, Object>> queryDocumentsByFileId(Integer fileId) {
         log.info("queryDocumentsByFileId: {}", fileId);
         String sql = """
-                        SELECT id,content FROM vector_store_rag WHERE metadata ->> 'fileId' = ?;
+                        SELECT * FROM vector_store_rag WHERE metadata ->> 'fileId' = ?;
                 """;
         return baseDao.queryForList(sql, fileId.toString());
+    }
+
+    public List<Map<String, Object>> queryDocumentsByIds(String fileIds) {
+        String[] fileIdsArray = fileIds.split(",");
+        if (fileIdsArray.length == 0) {
+            throw new BusinessException("fileId不能为空");
+        }
+        if (fileIdsArray.length > 10) {
+            throw new BusinessException("fileId数量不能超过10");
+        }
+        StringBuilder sqlBuilder = new StringBuilder("SELECT * FROM vector_store_rag WHERE id IN (");
+        for (int i = 0; i < fileIdsArray.length; i++) {
+            sqlBuilder.append("?::uuid");
+            if (i < fileIdsArray.length - 1) {
+                sqlBuilder.append(",");
+            }
+        }
+        sqlBuilder.append(");");
+        String sql = sqlBuilder.toString();
+        Object[] params = new Object[fileIdsArray.length];
+        for (int i = 0; i < fileIdsArray.length; i++) {
+            params[i] = fileIdsArray[i];
+        }
+        // 执行查询
+        log.info("queryDocumentsByFileIds: {}", fileIds);
+        return baseDao.queryForList(sql, params);
     }
 
     public List<Document> ragSearch(String q, String groupId, String fileId) {

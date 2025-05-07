@@ -457,7 +457,7 @@ const documentHandle = (type: string, index: number, item: any) => {
             data: {
                 ragFile: nowRow,
                 documentId: item.id,
-                documents: [item.tempContent]
+                documents: item.tempContent
             },
         }).then(res => {
             if (res.code === 200) {
