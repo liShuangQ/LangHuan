@@ -1,8 +1,8 @@
 <template>
     <div>
-<!--        <el-config-provider :locale="'zhLocale'">-->
-            <router-view></router-view>
-<!--        </el-config-provider>-->
+        <!--        <el-config-provider :locale="'zhLocale'">-->
+        <router-view></router-view>
+        <!--        </el-config-provider>-->
     </div>
 </template>
 <script setup lang="ts">

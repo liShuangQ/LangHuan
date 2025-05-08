@@ -2,11 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer base {
+/* @layer base {
     button, [type='button'], [type='reset'], [type='submit'] {
         background-color: var(--el-color-primary);
     }
-}
+} */
 
 :root {
     --test--: {

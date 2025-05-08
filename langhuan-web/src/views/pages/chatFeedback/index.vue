@@ -12,7 +12,7 @@
                 </template>
             </ElementFormC>
         </div>
-        <div style="height: calc(100% - 120px)" class="mt-2">
+        <div style="height: calc(100% - 70px)" class="mt-2">
             <ElementTableC ref="tableComRef" :paginationConfig="paginationConfig" :tableColumnConfig="tableColumnConfig"
                 :tableConfig="tableConfig" :tableData="tableData" @handle="tableHandle">
                 <template #content-knowledgeBaseIds="props">
@@ -44,7 +44,8 @@
                         <div>
                             <div style="white-space: pre-wrap">{{ item.content }}</div>
                             <div class=" float-right">
-                                <el-button type="primary" link @click="documentHandle('edit', index, item)">修改</el-button>
+                                <el-button type="primary" link
+                                    @click="documentHandle('edit', index, item)">修改</el-button>
                             </div>
                         </div>
                     </div>
