@@ -14,3 +14,4 @@ docker compose up -d --no-deps --build web
 docker-compose down
 docker rmi 镜像
 docker-compose up -d
+

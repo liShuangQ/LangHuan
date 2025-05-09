@@ -7,9 +7,13 @@
         --el-table-tr-bg-color: var(--el-color-success-light-9);
     }
 }
-.el-dialog__header{
-    .el-dialog__headerbtn{
+.el-dialog__header {
+    .el-dialog__headerbtn {
         background-color: #ffffff !important;
     }
 }
-
+.el-message-box {
+    .el-message-box__headerbtn {
+        background-color: #ffffff !important;
+    }
+}
