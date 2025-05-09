@@ -7,8 +7,6 @@ import com.langhuan.model.domain.TChatFeedback;
 import com.langhuan.service.TChatFeedbackService;
 import com.langhuan.serviceai.RagService;
 
-import java.util.List;
-
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,6 +29,17 @@ public class ChatFeedbackController {
         return Result.success(tChatFeedbackService.save(chatFeedback));
     }
 
+    @PostMapping(path = "/delete")
+    public Result delete(
+            @RequestParam(name = "id", required = true) Integer id) {
+        boolean removeById = tChatFeedbackService.removeById(id);
+        if (removeById) {
+            return Result.success("删除成功");
+        } else {
+            return Result.error("删除失败");
+        }
+    }
+
     @PostMapping(path = "/search")
     public Result search(
             @RequestParam(name = "userId", required = false) String userId,
@@ -51,11 +60,12 @@ public class ChatFeedbackController {
             @RequestParam(name = "documentId", required = false) String documentId) {
         return Result.success(ragService.changeDocumentTextByString(
                 document, documentId));
-    }    
-    
+    }
+
     @PostMapping(path = "/queryDocumentsByIds")
     public Result queryDocumentsByIds(
             @RequestParam(name = "fileIds", required = false) String fileIds) {
         return Result.success(ragService.queryDocumentsByIds(fileIds));
     }
+
 }

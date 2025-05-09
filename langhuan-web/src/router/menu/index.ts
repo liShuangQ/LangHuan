@@ -102,7 +102,7 @@ const menu: PagesMenu[] = [
         icon: "Menu",
         children: [
             {
-                title: "反馈管理",
+                title: "对话反馈",
                 path: "/pages/chatFeedback",
                 faPath: ["dailyOperation"],
             },
@@ -114,11 +114,6 @@ const menu: PagesMenu[] = [
         title: "系统管理",
         icon: "Menu",
         children: [
-            {
-                title: "主页Next",
-                path: "/pages/homeNext",
-                faPath: ["system"],
-            },
             {
                 title: "路由查看",
                 path: "/pages/systemManagement/routeView",

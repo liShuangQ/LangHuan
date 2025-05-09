@@ -1,4 +1,4 @@
-package com.langhuan.controllerai;
+package com.langhuan.controller;
 
 import com.alibaba.fastjson2.JSONObject;
 import com.langhuan.common.Result;

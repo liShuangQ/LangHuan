@@ -86,7 +86,7 @@ module.exports = {
             __VUE_PROD_DEVTOOLS__: false
         }),
         new HtmlWebpackPlugin({
-            title: "langhuan",
+            title: process.env.BASE_PROJECT_NAME,
             template: "./index.html",
         }),
         new VueLoaderPlugin(),

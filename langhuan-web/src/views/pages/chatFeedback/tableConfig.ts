@@ -5,10 +5,10 @@ import {
 } from "@/components/globalComponents/ElementTableC/table-component";
 
 export let tableColumnConfig = ref<TableColumnConfig[]>([
-    {
-        label: "ID",
-        prop: "id",
-    },
+    // {
+    //     label: "ID",
+    //     prop: "id",
+    // },
     {
         label: "用户",
         prop: "userId",
@@ -38,6 +38,7 @@ export let tableColumnConfig = ref<TableColumnConfig[]>([
         label: "互动类型",
         prop: "interaction",
         width: "auto",
+        contentSlot: true,
     },
     {
         label: "互动时间",
@@ -55,12 +56,12 @@ export let tableColumnConfig = ref<TableColumnConfig[]>([
         prop: "suggestion",
         width: "auto",
     },
-    // {
-    //     label: "操作",
-    //     prop: "buttonSlot",
-    //     contentSlot: true,
-    //     width: "170",
-    // },
+    {
+        label: "操作",
+        prop: "buttonSlot",
+        contentSlot: true,
+        width: "70",
+    },
 ]);
 export let tableConfig = ref<TableConfig>({
     align: "center",

@@ -5,11 +5,11 @@ import {
 } from "@/components/globalComponents/ElementTableC/table-component";
 
 export let tableColumnConfig = ref<TableColumnConfig[]>([
-    {
-        label: 'ID',
-        prop: 'id',
-        width: '120',
-    },
+    // {
+    //     label: 'ID',
+    //     prop: 'id',
+    //     width: '120',
+    // },
     {
         label: '名字',
         prop: 'name',

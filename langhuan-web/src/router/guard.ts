@@ -16,7 +16,7 @@ class Guard {
         // 检查不被展示的路由
         if (process.env.AFTER_MENU !== 'true') {
             fifterPagesRouter(menu).forEach((e: RouteRecordRaw): void => {
-                console.warn(`LangHuan:Pay attention to checking for redundant routing file addresses: "${e.path}"`)
+                console.warn(`${process.env.BASE_PROJECT_NAME as string}:Pay attention to checking for redundant routing file addresses: "${e.path}"`)
                 this.router.removeRoute(e.name as string)
             })
         }
@@ -35,7 +35,7 @@ class Guard {
                 if (process.env.AFTER_MENU === 'true') {
                     // 后台权限菜单 （适应变换的用户信息所以any）
                     fifterPagesRouter((this.userStore.info as any).menu).forEach((e: RouteRecordRaw): void => {
-                        console.warn(`LangHuan:Pay attention to checking for redundant routing file addresses: "${e.path}"`)
+                        console.warn(`${process.env.BASE_PROJECT_NAME as string}:Pay attention to checking for redundant routing file addresses: "${e.path}"`)
                         this.router.removeRoute(e.name as string)
                     })
                 }

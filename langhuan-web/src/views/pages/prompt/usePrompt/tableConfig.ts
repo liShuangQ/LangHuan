@@ -5,10 +5,10 @@ import {
 } from "@/components/globalComponents/ElementTableC/table-component";
 
 export let tableColumnConfig = ref<TableColumnConfig[]>([
-    {
-        label: "ID",
-        prop: "id",
-    },
+    // {
+    //     label: "ID",
+    //     prop: "id",
+    // },
     {
         label: "方法名",
         prop: "methodName",

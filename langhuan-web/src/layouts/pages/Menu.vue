@@ -1,7 +1,7 @@
 <template>
     <div class="w-full h-full overflow-hidden">
         <div class="w-[calc(100%-1px)] h-[40px] text-center leading-10 bg-[#001f37] text-white font-bold">
-            LangHuan
+            {{ BASE_PROJECT_NAME }}
         </div>
         <el-menu
             style="height:calc(100% - 40px);"
@@ -52,6 +52,9 @@ export default defineComponent({
         "sub-menu": SubMenu,
     },
     setup() {
+        const BASE_PROJECT_NAME = computed(() => {
+            return process.env.BASE_PROJECT_NAME as string
+        })
         const isCollapse = ref<boolean>(false)
         let menuRef = ref(null)
         const menuData = ref<PagesMenu[] | null>(null)
@@ -77,7 +80,7 @@ export default defineComponent({
         }
 
         return {
-            menuData, isCollapse, menuRef, menuSelect, getNowMenu
+            BASE_PROJECT_NAME, menuData, isCollapse, menuRef, menuSelect, getNowMenu
         }
     }
 })
