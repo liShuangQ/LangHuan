@@ -10,6 +10,7 @@ import { CancelTokenSource } from "axios/index";
 import { ElMessage } from "element-plus";
 import { useRouter } from 'vue-router';
 import { documentRankHandleApi } from "@/api/rag";
+import { fa } from "element-plus/es/locale";
 const router = useRouter();
 let chats = ref<Chat[]>([{
     id: 'recallTesting',
@@ -233,7 +234,42 @@ const getChatTopInfo = (): string => {
 
     return `${getCurrentDateTime()}`
 };
+let changeCheckVisible = ref(false)
+let changeCheckValue = ref('')
+let changeCheckCancel: any = null
+const changeCheckHandle = (t = 'open', d: any) => {
+    console.log(d, 'ddd');
 
+    if (t === 'open') {
+        changeCheckCancel = d
+        changeCheckVisible.value = true
+        changeCheckValue.value = d.text
+    }
+    if (t === 'save') {
+        http.request<any>({
+            url: '/rag/changeDocumentText',
+            method: 'post',
+            q_spinning: true,
+            q_contentType: 'json',
+            data: {
+                ragFile: {
+                    ...changeCheckCancel.metadata,
+                    id: Number(changeCheckCancel.metadata.fileId),
+                    fileGroupId: Number(changeCheckCancel.metadata.groupId),
+                    fileName: Number(changeCheckCancel.metadata.filename),
+                },
+                documentId: String(changeCheckCancel.metadata.id),
+                documents: changeCheckValue.value
+            },
+        }).then(res => {
+            if (res.code === 200) {
+                ElMessage.success(res.data)
+                changeCheckVisible.value = false
+            }
+        })
+    }
+
+}
 // 初始化执行
 nextTick(async () => {
     addStartMessage()
@@ -274,21 +310,29 @@ nextTick(async () => {
                         <div
                             :class="message.isUser ? 'flex items-center justify-end' : 'flex items-center justify-start'">
                             <div v-html="message.text" :class="[
-                                'max-full p-3 rounded-lg transition-all duration-200',
+                                'max-full px-3 py-2 rounded-lg transition-all duration-200',
                                 message.isUser ? 'bg-blue-500 text-white' : 'bg-gray-200'
                             ]"></div>
                             <div v-if="!message.isUser && message.recommend.length > 0"
                                 class="flex items-center justify-left">
-                                <img @click="documentRankHandle('good', message)" class="cursor-pointer"
-                                    style="height: 20px;margin: 0 8px;" src="./good.svg" alt="" srcset="">
-                                <img @click="documentRankHandle('bad', message)" class="cursor-pointer"
-                                    style="height: 20px;" src="./bad.svg" alt="" srcset="">
+                                <el-icon style="font-size: 18px;margin: 0 4px; cursor: pointer;"
+                                    @click="documentRankHandle('good', message)">
+                                    <Top />
+                                </el-icon>
+                                <el-icon style="font-size: 18px; margin-right: 4px; cursor: pointer;"
+                                    @click="documentRankHandle('bad', message)">
+                                    <Bottom />
+                                </el-icon>
+                                <el-icon style="font-size: 18px; cursor: pointer;"
+                                    @click="changeCheckHandle('open', message)">
+                                    <Edit />
+                                </el-icon>
                             </div>
                         </div>
                         <!--                        召回信息-->
                         <div v-if="(message?.recommend ?? []).length > 0"
                             class="w-full flex justify-start items-center mt-1">
-                            <div class="bg-blue-100 w-max mr-2 px-1.5 py-0.5 text-[14px] rounded-md"
+                            <div class="bg-blue-100 w-max mr-2 px-1.5 py-0.5 text-[12px] rounded-md"
                                 v-for="item in message.recommend" :key="item">
                                 {{ item }}
                             </div>
@@ -354,6 +398,15 @@ nextTick(async () => {
         <div v-else class="flex-1 bg-white rounded-lg shadow-lg flex flex-col h-full items-center justify-center">
             请开启新的对话
         </div>
-
+        <el-dialog v-model="changeCheckVisible" title="向量修改" width="500">
+            <el-input v-model="changeCheckValue" placeholder="Please input" show-word-limit type="textarea" />
+            <template #footer>
+                <div class="dialog-footer">
+                    <el-button type="primary" @click="changeCheckHandle('save', null)">
+                        确认
+                    </el-button>
+                </div>
+            </template>
+        </el-dialog>
     </div>
 </template>

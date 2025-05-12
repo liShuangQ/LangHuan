@@ -181,7 +181,7 @@ CREATE TABLE t_chat_feedback (
                                   question_id VARCHAR(64) NOT NULL,        -- 问题唯一标识
                                   question_content TEXT NOT NULL,           -- 问题具体内容
                                   answer_content TEXT NOT NULL,             -- 问题对应的回答内容
-                                  interaction VARCHAR(10) NOT NULL,         -- 互动类型（点赞/点踩） like dislike
+                                  interaction VARCHAR(10) NOT NULL,         -- 互动类型（点赞/点踩/完成） like dislike end
                                   interaction_time TIMESTAMP DEFAULT NOW(), -- 互动时间（带时区）
                                   knowledge_base_ids VARCHAR(1024) NOT NULL,    -- 所调用的知识库ID数组（例如 '{KB001,KB002}'）
                                   suggestion TEXT                           -- 用户附加建议（可选，用于收集改进意见）

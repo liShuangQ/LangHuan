@@ -18,14 +18,17 @@
                 <template #content-interaction="props">
                     <el-tag v-if="props.row.interaction === 'like'" type="success">{{ props.row.interaction }}</el-tag>
                     <el-tag v-if="props.row.interaction === 'dislike'" type="warning">{{ props.row.interaction
-                        }}</el-tag>
+                    }}</el-tag>
+                    <el-tag v-if="props.row.interaction === 'end'" type="info">{{ props.row.interaction
+                    }}</el-tag>
                 </template>
                 <template #content-knowledgeBaseIds="props">
                     <el-button link type="primary" @click="openDocumentIds(props.row)">知识库片段
                     </el-button>
                 </template>
                 <template #content-buttonSlot="props">
-                    <el-button link type="primary" @click="tableBtnHandle('del', props.row)">删除
+                    <el-button type="primary" link @click="tableBtnHandle('end', props.row)">标记完成</el-button>
+                    <el-button link :disabled="true" type="primary" @click="tableBtnHandle('del', props.row)">删除
                     </el-button>
                 </template>
             </ElementTableC>
@@ -173,6 +176,28 @@ const documentHandle = (type: string, index: number, item: any) => {
     }
 }
 const tableBtnHandle = (type: string, row: any) => {
+    if (type === 'end') {
+        ElMessageBox.confirm('是否完成该条记录?', '提示', {
+            type: 'warning',
+            showCancelButton: true,
+            cancelButtonText: '取消',
+            confirmButtonText: '确定',
+        }).then(() => {
+            http.request<any>({
+                url: '/chatFeedback/changeInteractionToEnd',
+                method: 'post',
+                q_spinning: true,
+                data: {
+                    id: row.id
+                },
+            }).then(res => {
+                if (res.code === 200) {
+                    ElMessage.success(res.data)
+                    getUserPageList()
+                }
+            })
+        })
+    }
     if (type === 'del') {
         ElMessageBox.confirm('是否删除该条记录?', '提示', {
             type: 'warning',

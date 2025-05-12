@@ -479,11 +479,11 @@ nextTick(async () => {
                     </div>
                     <!-- 右 -->
                     <div class="flex justify-end items-center">
-                        <el-button @click="clearChatMemory(false)" :disabled="isTyping" type="primary">
+                        <!-- <el-button @click="clearChatMemory(false)" :disabled="isTyping" type="primary">
                             <span class="font-medium text-white">
                                 清除记忆
                             </span>
-                        </el-button>
+                        </el-button> -->
 
                         <el-button @click="clearMessage()" :disabled="isTyping" type="primary">
                             <span class="font-medium text-white">
@@ -568,10 +568,13 @@ nextTick(async () => {
                         <el-tag type="primary">排名：{{ item.metadata.rank }}</el-tag>
                         <el-tag type="primary">距离：{{ item.metadata.distance }}</el-tag>
                         <el-tag type="primary">文件名：{{ item.metadata.filename }}</el-tag>
-                        <img class="cursor-pointer" @click="documentRankHandle('good', item)"
-                            style="height: 20px;margin: 0 8px;" src="./good.svg" alt="" srcset="">
-                        <img class="cursor-pointer" @click="documentRankHandle('bad', item)" style="height: 20px;"
-                            src="./bad.svg" alt="" srcset="">
+                        <el-icon style="font-size: 18px;margin: 0 4px; cursor: pointer;"
+                            @click="documentRankHandle('good', item)">
+                            <Top />
+                        </el-icon>
+                        <el-icon style="font-size: 18px; cursor: pointer;" @click="documentRankHandle('bad', item)">
+                            <Bottom />
+                        </el-icon>
                     </div>
                     <el-divider />
                 </div>

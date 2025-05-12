@@ -1,6 +1,7 @@
 package com.langhuan.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.langhuan.common.Result;
 import com.langhuan.model.domain.TChatFeedback;
@@ -47,11 +48,16 @@ public class ChatFeedbackController {
             @RequestParam(name = "currentPage", required = false, defaultValue = "1") int currentPage,
             @RequestParam(name = "pageSize", required = false, defaultValue = "10") int pageSize) {
         return Result.success(tChatFeedbackService.page(
-                new Page<>(currentPage, pageSize),
-                new LambdaQueryWrapper<TChatFeedback>()
-                        .like(!userId.isEmpty(), TChatFeedback::getUserId, userId)
-                        .eq(!interaction.isEmpty(), TChatFeedback::getInteraction, interaction)
-                        .orderBy(true, false, TChatFeedback::getInteractionTime)));
+            new Page<>(currentPage, pageSize),
+            new LambdaQueryWrapper<TChatFeedback>()
+                .like(userId != null && !userId.isEmpty(), TChatFeedback::getUserId, userId)
+                .eq(interaction != null && !interaction.isEmpty(), TChatFeedback::getInteraction, interaction)
+                .last("ORDER BY CASE interaction " +
+                      "WHEN 'dislike' THEN 1 " +
+                      "WHEN 'like' THEN 2 " +
+                      "WHEN 'end' THEN 3 " +
+                      "ELSE 4 END, interaction_time DESC")
+                ));
     }
 
     @PostMapping(path = "/changeDocumentTextByString")
@@ -66,6 +72,15 @@ public class ChatFeedbackController {
     public Result queryDocumentsByIds(
             @RequestParam(name = "fileIds", required = false) String fileIds) {
         return Result.success(ragService.queryDocumentsByIds(fileIds));
+    }
+
+    @PostMapping(path = "/changeInteractionToEnd")
+    public Result changeInteractionToEnd(
+            @RequestParam(name = "id", required = false) Integer id) {
+        boolean update = tChatFeedbackService.update(new LambdaUpdateWrapper<TChatFeedback>()
+                .set(TChatFeedback::getInteraction, "end")
+                .eq(TChatFeedback::getId, id));
+        return Result.success(update ? "标记成功" : "标记失败");
     }
 
 }

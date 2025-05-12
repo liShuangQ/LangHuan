@@ -33,6 +33,10 @@ export let formItemConfig: FormItemConfigs = [
                     label: "dislike",
                     value: "dislike",
                 },
+                {
+                    label: "end",
+                    value: "end",
+                },
             ],
             col: 7,
             clearable: true,
