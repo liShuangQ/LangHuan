@@ -42,10 +42,10 @@ public class PermissionController {
             @RequestParam(name = "name", required = false, defaultValue = "") String name,
             @RequestParam(name = "url", required = false, defaultValue = "") String url,
             @RequestParam(name = "parentId", required = false) Integer parentId,
-            @RequestParam(name = "currentPage", required = false, defaultValue = "1") int currentPage,
+            @RequestParam(name = "pageNum", required = false, defaultValue = "1") int pageNum,
             @RequestParam(name = "pageSize", required = false, defaultValue = "10") int pageSize
     ) {
-        return Result.success(TPermissionService.getPageList(name, url, parentId, currentPage, pageSize));
+        return Result.success(TPermissionService.getPageList(name, url, parentId, pageNum, pageSize));
     }
 
 }

@@ -59,11 +59,11 @@ public class UserController {
             @RequestParam(name = "username", required = false, defaultValue = "") String username,
             @RequestParam(name = "gender", required = false) Integer gender,
             @RequestParam(name = "enabled", required = false) Integer enabled,
-            @RequestParam(name = "currentPage", required = false, defaultValue = "1") int currentPage,
+            @RequestParam(name = "pageNum", required = false, defaultValue = "1") int pageNum,
             @RequestParam(name = "pageSize", required = false, defaultValue = "10") int pageSize
     ) {
 
-        return Result.success(TUserService.getUserPageList(name, username, gender, enabled, currentPage, pageSize));
+        return Result.success(TUserService.getUserPageList(name, username, gender, enabled, pageNum, pageSize));
     }
 
     @PreAuthorize("hasRole('/user/manager')")

@@ -46,10 +46,10 @@ public class RoleController {
     public Result getPageList(
             @RequestParam(name = "name", required = false, defaultValue = "") String name,
             @RequestParam(name = "remark", required = false, defaultValue = "") String remark,
-            @RequestParam(name = "currentPage", required = false, defaultValue = "1") int currentPage,
+            @RequestParam(name = "pageNum", required = false, defaultValue = "1") int pageNum,
             @RequestParam(name = "pageSize", required = false, defaultValue = "10") int pageSize
     ) {
-        return Result.success(TRoleService.getPageList(name, remark, currentPage, pageSize));
+        return Result.success(TRoleService.getPageList(name, remark, pageNum, pageSize));
     }
 
     @PostMapping("/getRolePermission")

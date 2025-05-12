@@ -45,10 +45,10 @@ public class ChatFeedbackController {
     public Result search(
             @RequestParam(name = "userId", required = false) String userId,
             @RequestParam(name = "interaction", required = false) String interaction,
-            @RequestParam(name = "currentPage", required = false, defaultValue = "1") int currentPage,
+            @RequestParam(name = "pageNum", required = false, defaultValue = "1") int pageNum,
             @RequestParam(name = "pageSize", required = false, defaultValue = "10") int pageSize) {
         return Result.success(tChatFeedbackService.page(
-            new Page<>(currentPage, pageSize),
+            new Page<>(pageNum, pageSize),
             new LambdaQueryWrapper<TChatFeedback>()
                 .like(userId != null && !userId.isEmpty(), TChatFeedback::getUserId, userId)
                 .eq(interaction != null && !interaction.isEmpty(), TChatFeedback::getInteraction, interaction)

@@ -52,8 +52,8 @@ public class TPermissionService extends ServiceImpl<TPermissionMapper, TPermissi
         return false;
     }
 
-    public Page<TPermission> getPageList(String name, String url, Integer parentId, int currentPage, int pageSize) {
-        return super.page(new Page<>(currentPage, pageSize),
+    public Page<TPermission> getPageList(String name, String url, Integer parentId, int pageNum, int pageSize) {
+        return super.page(new Page<>(pageNum, pageSize),
                 new LambdaQueryWrapper<TPermission>()
                         .like(!name.isEmpty(), TPermission::getName, name)
                         .like(!url.isEmpty(), TPermission::getUrl, url)

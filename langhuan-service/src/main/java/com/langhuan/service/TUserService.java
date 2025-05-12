@@ -185,8 +185,8 @@ public class TUserService extends ServiceImpl<TUserMapper, TUser> {
         return super.removeById(userId);
     }
 
-    public Page<TUser> getUserPageList(String name, String username, Integer gender, Integer enabled, int currentPage, int pageSize) {
-        Page<TUser> userPage = super.page(new Page<>(currentPage, pageSize),
+    public Page<TUser> getUserPageList(String name, String username, Integer gender, Integer enabled, int pageNum, int pageSize) {
+        Page<TUser> userPage = super.page(new Page<>(pageNum, pageSize),
                 new LambdaQueryWrapper<TUser>()
                         .like(!name.isEmpty(), TUser::getName, name)
                         .like(!username.isEmpty(), TUser::getUsername, username)

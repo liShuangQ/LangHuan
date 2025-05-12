@@ -62,8 +62,8 @@ public class TRoleService extends ServiceImpl<TRoleMapper, TRole> {
         return false;
     }
 
-    public Page<TRole> getPageList(String name, String remark, int currentPage, int pageSize) {
-        return super.page(new Page<>(currentPage, pageSize),
+    public Page<TRole> getPageList(String name, String remark, int pageNum, int pageSize) {
+        return super.page(new Page<>(pageNum, pageSize),
                 new LambdaQueryWrapper<TRole>()
                         .like(!name.isEmpty(), TRole::getName, name)
                         .like(!remark.isEmpty(), TRole::getRemark, remark)
