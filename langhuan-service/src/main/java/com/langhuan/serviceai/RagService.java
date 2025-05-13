@@ -1,7 +1,6 @@
 package com.langhuan.serviceai;
 
 import cn.hutool.core.util.IdUtil;
-
 import com.alibaba.fastjson2.JSONObject;
 import com.langhuan.common.BusinessException;
 import com.langhuan.common.Constant;
@@ -10,7 +9,6 @@ import com.langhuan.model.domain.TRagFile;
 import com.langhuan.service.TRagFileService;
 import com.langhuan.utils.rag.RagFileVectorUtils;
 import lombok.extern.slf4j.Slf4j;
-
 import org.postgresql.util.PGobject;
 import org.springframework.ai.document.Document;
 import org.springframework.ai.vectorstore.SearchRequest;
@@ -36,7 +34,7 @@ public class RagService {
 
     @Autowired
     public RagService(RagFileVectorUtils ragFileVectorUtils, TRagFileService ragFileService, JdbcTemplate jdbcTemplate,
-            VectorStoreConfig vectorStoreConfig) {
+                      VectorStoreConfig vectorStoreConfig) {
         this.ragFileVectorUtils = ragFileVectorUtils;
         this.ragFileService = ragFileService;
         this.baseDao = jdbcTemplate;
@@ -92,19 +90,28 @@ public class RagService {
     }
 
     public List<String> readAndSplitDocument(MultipartFile file, String splitFileMethod,
-            Map<String, Object> methodData) {
+                                             Map<String, Object> methodData) {
         return ragFileVectorUtils.readAndSplitDocument(file, splitFileMethod, methodData);
     }
 
     public String writeDocumentsToVectorStore(List<String> documents, TRagFile ragFile) {
-        log.info("Adding new file: {}", ragFile);
-        ragFile.setId((int) IdUtil.getSnowflakeNextId());
+        log.info("writeDocumentsToVectorStore: {}", ragFile);
+        boolean b = ragFile.getId().equals(0) || ragFile.getId().toString().isEmpty();
+        if (b) {
+            ragFile.setId((int) IdUtil.getSnowflakeNextId());
+            log.info("添加到新增文件");
+        }
+        log.info("添加到已有文件");
         ragFile.setUploadedAt(new java.util.Date());
         ragFile.setUploadedBy(SecurityContextHolder.getContext().getAuthentication().getName());
 
         if (ragFileVectorUtils.writeDocumentsToVectorStore(documents, ragFileVectorUtils.makeMateData(ragFile),
                 ragVectorStore)) {
-            ragFileService.save(ragFile);
+            if (b) {
+                ragFileService.save(ragFile);
+            } else {
+                ragFileService.updateById(ragFile);
+            }
             return "添加成功";
         } else {
             return "添加失败，请检查日志。";

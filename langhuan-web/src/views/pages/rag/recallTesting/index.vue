@@ -398,7 +398,7 @@ nextTick(async () => {
         <div v-else class="flex-1 bg-white rounded-lg shadow-lg flex flex-col h-full items-center justify-center">
             请开启新的对话
         </div>
-        <el-dialog v-model="changeCheckVisible" title="向量修改" width="500">
+        <el-dialog v-model="changeCheckVisible" title="文本修改" width="500">
             <el-input v-model="changeCheckValue" placeholder="Please input" show-word-limit type="textarea" />
             <template #footer>
                 <div class="dialog-footer">

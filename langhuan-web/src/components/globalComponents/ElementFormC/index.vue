@@ -269,6 +269,8 @@
                         "
                         :style="{width:(item.width || '100%')}"
                         :size="item.size || 'default'"
+                        :remote="item.remote"
+                        :remote-method="item.remoteMethod"
                         value-key="value"
                         @change="(value:string|number)=>emit('handle','change',item.key,value,'')"
                     >
@@ -412,7 +414,6 @@
 import type {FormInstance} from "element-plus";
 import {FormConfig, FormDefineExpose, FormItemConfig,} from "@/components/globalComponents/ElementFormC/form-component";
 import {toRaw} from "vue";
-import * as querystring from "querystring";
 import {Star, StarFilled} from "@element-plus/icons-vue";
 
 const props = withDefaults(

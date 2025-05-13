@@ -81,3 +81,11 @@ ALTER TABLE vector_store ADD COLUMN embedding float[];
 ALTER TABLE vector_store
 ALTER COLUMN embedding TYPE vector USING embedding::vector;
 ```
+
+#### 升级spring版本
+
+```text
+./mvnw -U org.openrewrite.maven:rewrite-maven-plugin:run \
+-Drewrite.recipeArtifactCoordinates=io.arconia.migrations:rewrite-spring:LATEST \
+-Drewrite.activeRecipes=io.arconia.rewrite.spring.ai.UpgradeSpringAi_1_0
+```

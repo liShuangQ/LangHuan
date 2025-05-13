@@ -9,6 +9,7 @@ import com.langhuan.service.TPromptsService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.SafeGuardAdvisor;
+import org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor;
 import org.springframework.ai.chat.memory.InMemoryChatMemory;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.document.Document;
@@ -35,7 +36,8 @@ public class ChatService {
                 .defaultAdvisors(
 //                        new MessageChatMemoryAdvisor(inMemoryChatMemory),
                         new SafeGuardAdvisor(Constant.AIDEFAULTSAFEGUARDADVISOR),
-                        new MySimplelogAdvisor()
+//                        new MySimplelogAdvisor()
+                        new SimpleLoggerAdvisor()
                 )
                 .build();
 
@@ -92,7 +94,7 @@ public class ChatService {
 //                                .param(CHAT_MEMORY_CONVERSATION_ID_KEY, id)
 //                                .param(CHAT_MEMORY_RETRIEVE_SIZE_KEY, Constant.CHATMEMORYRETRIEVESIZE)
 //                )
-                .tools(tools)
+                .toolCallbacks(tools)
                 .call().content();
         //chatResponse().getResult().getOutput().getText()
         ChatModelResult chatModelResult = new ChatModelResult();
@@ -117,7 +119,7 @@ public class ChatService {
 //                                .param(CHAT_MEMORY_CONVERSATION_ID_KEY, id)
 //                                .param(CHAT_MEMORY_RETRIEVE_SIZE_KEY, Constant.CHATMEMORYRETRIEVESIZE)
 //                )
-                .tools(tools)
+                .toolCallbacks(tools)
                 .call().content();
         ChatModelResult chatModelResult = new ChatModelResult();
         chatModelResult.setChat(chat);
