@@ -96,12 +96,16 @@ public class RagService {
 
     public String writeDocumentsToVectorStore(List<String> documents, TRagFile ragFile) {
         log.info("writeDocumentsToVectorStore: {}", ragFile);
-        boolean b = ragFile.getId().equals(0) || ragFile.getId().toString().isEmpty();
+        boolean b = false;
+        try {
+            b = ragFile.getId().equals(0) || ragFile.getId().toString().isEmpty();
+        } catch (Exception e) {
+            log.info("添加到已有文件");
+        }
         if (b) {
             ragFile.setId((int) IdUtil.getSnowflakeNextId());
             log.info("添加到新增文件");
         }
-        log.info("添加到已有文件");
         ragFile.setUploadedAt(new java.util.Date());
         ragFile.setUploadedBy(SecurityContextHolder.getContext().getAuthentication().getName());
 

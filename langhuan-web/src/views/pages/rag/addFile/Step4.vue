@@ -62,7 +62,10 @@ const submit = () => {
         q_contentType: 'json',
         data: {
             documents: stepData.value.fineTuneData,
-            ragFile: fileFormRef.value!.getFromValue(),
+            ragFile: {
+                id: 0,
+                ...fileFormRef.value!.getFromValue()
+            },
         },
     }).then(res => {
         if (res.data.indexOf('成功') !== -1) {
