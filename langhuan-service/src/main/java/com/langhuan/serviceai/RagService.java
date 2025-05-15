@@ -34,7 +34,7 @@ public class RagService {
 
     @Autowired
     public RagService(RagFileVectorUtils ragFileVectorUtils, TRagFileService ragFileService, JdbcTemplate jdbcTemplate,
-                      VectorStoreConfig vectorStoreConfig) {
+            VectorStoreConfig vectorStoreConfig) {
         this.ragFileVectorUtils = ragFileVectorUtils;
         this.ragFileService = ragFileService;
         this.baseDao = jdbcTemplate;
@@ -90,21 +90,15 @@ public class RagService {
     }
 
     public List<String> readAndSplitDocument(MultipartFile file, String splitFileMethod,
-                                             Map<String, Object> methodData) {
+            Map<String, Object> methodData) {
         return ragFileVectorUtils.readAndSplitDocument(file, splitFileMethod, methodData);
     }
 
     public String writeDocumentsToVectorStore(List<String> documents, TRagFile ragFile) {
         log.info("writeDocumentsToVectorStore: {}", ragFile);
-        boolean b = false;
-        try {
-            b = ragFile.getId().equals(0) || ragFile.getId().toString().isEmpty();
-        } catch (Exception e) {
-            log.info("添加到已有文件");
-        }
+        boolean b = ragFile.getId() == null || ragFile.getId() == 0 || ragFile.getId().toString().isEmpty();
         if (b) {
             ragFile.setId((int) IdUtil.getSnowflakeNextId());
-            log.info("添加到新增文件");
         }
         ragFile.setUploadedAt(new java.util.Date());
         ragFile.setUploadedBy(SecurityContextHolder.getContext().getAuthentication().getName());
@@ -112,8 +106,10 @@ public class RagService {
         if (ragFileVectorUtils.writeDocumentsToVectorStore(documents, ragFileVectorUtils.makeMateData(ragFile),
                 ragVectorStore)) {
             if (b) {
+                log.info("添加到新增文件");
                 ragFileService.save(ragFile);
             } else {
+                log.info("添加到已有文件");
                 ragFileService.updateById(ragFile);
             }
             return "添加成功";
