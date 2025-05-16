@@ -130,18 +130,36 @@ public class ChatService {
         return chatModelResult;
     }
 
+
+    public List<String> getChatMemoryWindows() {
+        log.info("ChatMemory-get-windows");
+        return chatMemoryRepository.findConversationIds();
+    }
+
+
+    public List<Message> getChatMemory(String id) {
+        log.info("ChatMemory-get: {}", id);
+        return chatMemoryRepository.findByConversationId(id);
+    }
+
+    public void initChatMemory(String id) {
+        log.info("ChatMemory-init: {}", id);
+        List<Message> byConversationId = chatMemoryRepository.findByConversationId(id);
+        chatMemory.add(SecurityContextHolder.getContext().getAuthentication().getName() + '_' + id, byConversationId);
+    }
+
     public String saveChatMemory(String id) {
-        log.info("advisor-clear: {}", "用户id-" + id);
-        List<Message> messages = chatMemory.get(SecurityContextHolder.getContext().getAuthentication().getName() + "_" + id);
-        chatMemoryRepository.saveAll(SecurityContextHolder.getContext().getAuthentication().getName() + "_" + id, messages);
+        log.info("ChatMemory-save: {}", id);
+        // 不知道为啥 内存中非得拼用户id。 内存中是有 用户_ 的，所以这里拼上，实际存储存储不带用户的，这样后面拿都不耽误
+        List<Message> messages = chatMemory.get(SecurityContextHolder.getContext().getAuthentication().getName() + '_' + id);
+        chatMemoryRepository.saveAll(id, messages);
         return "保存成功";
     }
 
     public String clearChatMemory(String id) {
-        log.info("advisor-clear: {}", "用户id-" + id);
-        String ID = SecurityContextHolder.getContext().getAuthentication().getName() + "_" + id;
-        chatMemory.clear(ID);
-        chatMemoryRepository.deleteByConversationId(ID);
+        log.info("ChatMemory-clear: {}", id);
+        chatMemory.clear(SecurityContextHolder.getContext().getAuthentication().getName() + '_' + id);
+        chatMemoryRepository.deleteByConversationId(id);
         return "清除成功";
     }
 

@@ -101,6 +101,17 @@ public class ChatController {
         return Result.success(chatGeneralAssistanceService.optimizePromptWords(q));
     }
 
+    @PostMapping("/chat/getChatMemoryWindows")
+    public Result getChatMemoryWindows() {
+        return Result.success(chatService.getChatMemoryWindows());
+    }
+
+    @PostMapping("/chat/getChatMemory")
+    public Result getChatMemory(@RequestParam String id) {
+        chatService.initChatMemory(id);
+        return Result.success(chatService.getChatMemory(id));
+    }
+
     @PostMapping("/chat/saveChatMemory")
     public Result saveChatMemory(@RequestParam String id) {
         return Result.success(chatService.saveChatMemory(id));

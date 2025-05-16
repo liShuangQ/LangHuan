@@ -78,7 +78,7 @@ const sendMessage = (recommend = null): void => {
     if (inputMessageText.value.trim() && chat) {
         // 判断当前对话窗口是不是第一次提问问题
         if ((chat?.messages ?? []).length === 1) {
-            addChatsInfo(chat as ChatWindow, inputMessageText.value)
+            chat.title = inputMessageText.value;
         }
         addMessage(chat, {
             text: inputMessageText.value,
@@ -160,29 +160,10 @@ const sendMessage = (recommend = null): void => {
 
     }
 };
-// 添加当前的对话列表信息到数据库
-const addChatsInfo = (chat: ChatWindow, chatTitle: string): void => {
-    chat.title = chatTitle;
-    // http.request<any>({
-    //         url: chatServiceType.value + '/chat',
-    //         method: 'post',
-    //         q_spinning: false,
-    //         cancelToken: axiosCancel.token,
-    //         data: {
-    //             id: chat.id,
-    //             p: inputPromptText.value,
-    //             q: inputTextCopy,
-    //             isRag: ragEnabled.value,
-    //             groupId: ragGroup.value,
-    //             isFunction: toolEnabled.value,
-    //             modelName: chatModelName.value
-    //         }
-    //     })
-}
 // 优化替换提示词到输入框
 const optimizePromptWords = (): void => {
     http.request<any>({
-        url: chatServiceType.value + '/getPrompt',
+        url: '/chat/getPrompt',
         method: 'post',
         q_spinning: true,
         data: {
@@ -220,66 +201,51 @@ const messageStop = (): void => {
     }
 }
 // 保存对话记忆
-const saveChatMemory = (isList = false, id = ''): void => {
-    const chat = chats.value.find(c => c.id === currentChatId.value);
-    if (chat) {
-        const useId = isList ? id : chat.id
-        http.request<any>({
-            url: chatServiceType.value + '/saveChatMemory',
-            method: 'post',
-            q_spinning: true,
-            data: {
-                id: useId,
-            }
-        }).then((res: any) => {
-            // if (isList) {
-            //     chats.value = chats.value.filter(c => c.id !== useId)
-            // } else {
-
-            // }
-        })
-    }
+const saveChatMemory = () => {
+    return http.request<any>({
+        url: '/chat/saveChatMemory',
+        method: 'post',
+        q_spinning: true,
+        data: {
+            id: currentChatId.value,
+        }
+    }).then((res: any) => {
+        ElMessage.success(res.data)
+    })
 
 };
-// 清空对话记忆
-const clearChatMemory = (isList = false, id = ''): void => {
-    const chat = chats.value.find(c => c.id === currentChatId.value);
-    if (chat) {
-        const useId = isList ? id : chat.id
-        http.request<any>({
-            url: chatServiceType.value + '/clearChatMemory',
-            method: 'post',
-            q_spinning: true,
-            data: {
-                id: useId,
-            }
-        }).then((res: any) => {
-            if (isList) {
-                chats.value = chats.value.filter(c => c.id !== useId)
-            } else {
-                chat.messages.push({
-                    id: Date.now(),
-                    text: '已成功清空上下文',
-                    isUser: false,
-                    recommend: [],
-                    topInfo: getChatTopInfo(false)
-                });
-                toDownPage()
-            }
-        })
-    }
+// 清空对话记忆 删除对话框
+const clearChatMemory = (id = ''): void => {
+    http.request<any>({
+        url: '/chat/clearChatMemory',
+        method: 'post',
+        q_spinning: true,
+        data: {
+            id: id,
+        }
+    }).then((res: any) => {
+        chats.value = chats.value.filter(c => c.id !== id);
 
+        const lastId = chats.value[chats.value.length - 1]?.id ?? false;
+        if (lastId) {
+            switchChat(false, lastId);
+        } else {
+            startNewChat()
+        }
+        ElMessage.success(res.data)
+    })
 };
-// 清空聊天记录
-const clearMessage = (): void => {
-    const chat = chats.value.find(c => c.id === currentChatId.value);
-    if (chat) {
-        chat.messages = [];
-    }
-    ElMessage.success('已成功清空聊天记录。');
-}
-// 添加初始的对话消息
-const addStartMessage = (): void => {
+
+// 开始一个新的对话
+const startNewChat = (): void => {
+    const newChatId = 'chat' + Date.now();
+    currentChatId.value = newChatId;
+    chats.value.push({
+        id: newChatId,
+        title: '新对话',
+        messages: [],
+        active: false
+    });
     const chat = chats.value.find(c => c.id === currentChatId.value);
     chat && addMessage(chat, {
         text: '很高兴见到你！我可以帮你写代码、读文件、写作各种创意内容，请把你的任务交给我吧~',
@@ -289,22 +255,39 @@ const addStartMessage = (): void => {
         isUser: false,
         topInfo: getChatTopInfo(false)
     })
-}
-// 开始一个新的对话
-const startNewChat = (): void => {
-    const newChatId = 'chat' + Date.now();
-    chats.value.push({
-        id: newChatId,
-        title: '新对话',
-        messages: [],
-        active: false
-    });
-    currentChatId.value = newChatId;
-    addStartMessage()
 };
-// 设置对话窗口
-const switchChat = (chatId: string): void => {
+// 设置对话窗口。 切换 找记录
+const switchChat = async (isGetMemory: boolean, chatId: string) => {
+    if (currentChatId.value === chatId) {
+        return;
+    }
     currentChatId.value = chatId;
+    isGetMemory && await http.request<any>({
+        url: '/chat/getChatMemory',
+        method: 'post',
+        q_spinning: true,
+        data: {
+            id: currentChatId.value,
+        }
+    }).then((res: any) => {
+        if (res.code === 200) {
+            let chat = chats.value.find(c => c.id === currentChatId.value);
+            chat!.title = res.data[res.data.length - 2].text
+            chat!.messages = []
+            if (chat) {
+                res.data.forEach((e: any) => {
+                    addMessage(chat, {
+                        text: e.text,
+                        recommend: [],
+                        rag: [],
+                        isUser: e.messageType === 'USER',
+                        topInfo: ''
+                    })
+                })
+            }
+        }
+    })
+    toDownPage()
 };
 // 找到当前的窗口
 const currentChat = (): ChatWindow | any => {
@@ -395,15 +378,39 @@ const submitFeedback = () => {
 
 
 }
+// 初始化对话记忆
+const initChatMemory = async () => {
+    const chatWindows = await http.request<any>({
+        url: '/chat/getChatMemoryWindows',
+        method: 'post',
+        q_spinning: true,
+    })
+    if (chatWindows.data.length > 0) {
+        for (let index = 0; index < chatWindows.data.length; index++) {
+            const e = chatWindows.data[index];
+            chats.value.push({
+                id: e,
+                title: '新对话',
+                messages: [],
+                active: false
+            });
+            await switchChat(true, e)
+        }
+    } else {
+        startNewChat()
+        await switchChat(false, chats.value[0].id)
+    }
+
+
+}
 
 // 初始化执行
 nextTick(async () => {
     await aimodel().setModelOptions()
     chatModelOption.value = toRaw(aimodel().getModelOptions()) as any
     chatModelName.value = chatModelOption.value[0].value
-    addStartMessage()
     getRagGroupOptionList()
-    startNewChat()
+    await initChatMemory()
 })
 
 </script>
@@ -420,7 +427,7 @@ nextTick(async () => {
         ]">
             <div class="flex justify-between items-center mb-4">
                 <h2 class="text-lg font-semibold">对话列表</h2>
-                <el-button @click="startNewChat"
+                <el-button @click="startNewChat()"
                     class="!px-3 !py-2 !bg-blue-500 !text-white hover:!bg-blue-600 active:!bg-blue-700 transition-colors duration-200">
                     新建对话
                 </el-button>
@@ -431,10 +438,11 @@ nextTick(async () => {
                     chat.id === currentChatId ? 'bg-blue-100' : 'hover:bg-gray-100'
                 ]">
                     <span class="cursor-pointer overflow-hidden text-ellipsis whitespace-nowrap"
-                        style="max-width: calc(100% - 70px); display: inline-block;" @click="switchChat(chat.id)">
+                        style="max-width: calc(100% - 70px); display: inline-block;"
+                        @click="switchChat(false, chat.id)">
                         {{ chat.title }}
                     </span>
-                    <span class="text-blue-500 cursor-pointer w-10" @click="clearChatMemory(true, chat.id)">清除</span>
+                    <span class="text-blue-500 cursor-pointer w-10" @click="clearChatMemory(chat.id)">清除</span>
                 </li>
             </ul>
             <!--                            {{ message.text }}-->
@@ -490,8 +498,8 @@ nextTick(async () => {
                             </div>
                             <!--                        引用的知识 -->
                             <div>
-                                <el-button v-if="(message?.rag ?? []).length > 0" style="padding-bottom: 0px;" :key="'text'"
-                                    @click="openRagDocumentView(message.rag)" text>引用的知识库</el-button>
+                                <el-button v-if="(message?.rag ?? []).length > 0" style="padding-bottom: 0px;"
+                                    :key="'text'" @click="openRagDocumentView(message.rag)" text>引用的知识库</el-button>
                             </div>
                         </div>
 
@@ -534,22 +542,12 @@ nextTick(async () => {
                     </div>
                     <!-- 右 -->
                     <div class="flex justify-end items-center">
-                        <el-button @click="saveChatMemory(false)" :disabled="isTyping" type="primary">
+                        <el-button @click="saveChatMemory()" :disabled="isTyping" type="primary">
                             <span class="font-medium text-white">
-                                保存记忆
-                            </span>
-                        </el-button>
-                        <el-button @click="clearChatMemory(false)" :disabled="isTyping" type="primary">
-                            <span class="font-medium text-white">
-                                清除记忆
+                                保存记录
                             </span>
                         </el-button>
 
-                        <el-button @click="clearMessage()" :disabled="isTyping" type="primary">
-                            <span class="font-medium text-white">
-                                清除聊天记录
-                            </span>
-                        </el-button>
 
                     </div>
                 </div>
