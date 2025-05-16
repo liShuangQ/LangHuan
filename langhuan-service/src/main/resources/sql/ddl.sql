@@ -176,7 +176,7 @@ CREATE TABLE t_tool
 DROP TABLE IF EXISTS t_chat_feedback;
 CREATE TABLE t_chat_feedback (
                                   id SERIAL PRIMARY KEY,                   -- 自增主键
-                                  user_id VARCHAR(64) NOT NULL,            -- 用户唯一标识（建议使用UUID）
+                                  user_id VARCHAR(64) NOT NULL,            -- 用户唯一标识
                                   user_info JSONB,                          -- 用户扩展信息（可选，存储用户画像等结构化数据）
                                   question_id VARCHAR(64) NOT NULL,        -- 问题唯一标识
                                   question_content TEXT NOT NULL,           -- 问题具体内容
@@ -187,3 +187,13 @@ CREATE TABLE t_chat_feedback (
                                   suggestion TEXT                           -- 用户附加建议（可选，用于收集改进意见）
 );
 
+-- 对话记忆
+CREATE TABLE IF NOT EXISTS SPRING_AI_CHAT_MEMORY (
+                                                     conversation_id VARCHAR(36) NOT NULL,
+                                                     content TEXT NOT NULL,
+                                                     type VARCHAR(10) NOT NULL CHECK (type IN ('USER', 'ASSISTANT', 'SYSTEM', 'TOOL')),
+                                                     "timestamp" TIMESTAMP NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS SPRING_AI_CHAT_MEMORY_CONVERSATION_ID_TIMESTAMP_IDX
+    ON SPRING_AI_CHAT_MEMORY(conversation_id, "timestamp");

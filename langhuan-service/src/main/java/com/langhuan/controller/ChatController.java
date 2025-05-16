@@ -3,10 +3,7 @@ package com.langhuan.controller;
 import com.alibaba.fastjson2.JSONObject;
 import com.langhuan.common.Result;
 import com.langhuan.model.pojo.ChatModelResult;
-import com.langhuan.serviceai.ChatGeneralAssistanceService;
-import com.langhuan.serviceai.ChatService;
-import com.langhuan.serviceai.RagService;
-import com.langhuan.serviceai.StanfordChatService;
+import com.langhuan.serviceai.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.document.Document;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,6 +28,7 @@ public class ChatController {
     private final ChatGeneralAssistanceService chatGeneralAssistanceService;
     private final StanfordChatService stanfordChatService;
     private final RagService ragService;
+    private final EasyChatService easyChatService;
     @Value("${spring.ai.openai.chat.options.model}")
     private String defaultModelName;
     @Value("${spring.ai.openai.base-url}")
@@ -38,11 +36,12 @@ public class ChatController {
     @Value("${spring.ai.openai.api-key}")
     private String oneApiKey;
 
-    public ChatController(ChatService chatService, ChatGeneralAssistanceService chatGeneralAssistanceService, StanfordChatService stanfordChatService, RagService ragService) {
+    public ChatController(ChatService chatService, ChatGeneralAssistanceService chatGeneralAssistanceService, StanfordChatService stanfordChatService, RagService ragService, EasyChatService easyChatService) {
         this.chatService = chatService;
         this.chatGeneralAssistanceService = chatGeneralAssistanceService;
         this.stanfordChatService = stanfordChatService;
         this.ragService = ragService;
+        this.easyChatService = easyChatService;
     }
 
     //    NOTE:Flux<String>会和Security的拦截器冲突，所以要设置白名单  "/chat/chatFlux"
@@ -88,7 +87,7 @@ public class ChatController {
             modelName = defaultModelName;
         }
 
-        String chat = chatService.easyChat(p, q, modelName);
+        String chat = easyChatService.chat(p, q, modelName);
         return Result.success(Map.of(
                 "chat", chat,
 //                "recommend", chatGeneralAssistanceService.otherQuestionsRecommended(q)
@@ -102,8 +101,13 @@ public class ChatController {
         return Result.success(chatGeneralAssistanceService.optimizePromptWords(q));
     }
 
+    @PostMapping("/chat/saveChatMemory")
+    public Result saveChatMemory(@RequestParam String id) {
+        return Result.success(chatService.saveChatMemory(id));
+    }
+
     @PostMapping("/chat/clearChatMemory")
-    public Result chat(@RequestParam String id) {
+    public Result clearChatMemory(@RequestParam String id) {
         return Result.success(chatService.clearChatMemory(id));
     }
 

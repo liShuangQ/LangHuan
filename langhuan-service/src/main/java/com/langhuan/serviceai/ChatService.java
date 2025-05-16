@@ -1,6 +1,5 @@
 package com.langhuan.serviceai;
 
-import com.langhuan.advisors.MySimplelogAdvisor;
 import com.langhuan.common.BusinessException;
 import com.langhuan.common.Constant;
 import com.langhuan.functionTools.RestRequestTools;
@@ -8,45 +7,58 @@ import com.langhuan.model.pojo.ChatModelResult;
 import com.langhuan.service.TPromptsService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
 import org.springframework.ai.chat.client.advisor.SafeGuardAdvisor;
 import org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor;
-import org.springframework.ai.chat.memory.InMemoryChatMemory;
+import org.springframework.ai.chat.memory.ChatMemory;
+import org.springframework.ai.chat.memory.MessageWindowChatMemory;
+import org.springframework.ai.chat.memory.repository.jdbc.JdbcChatMemoryRepository;
+import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.document.Document;
 import org.springframework.ai.openai.OpenAiChatOptions;
+import org.springframework.ai.support.ToolCallbacks;
 import org.springframework.ai.tool.ToolCallback;
-import org.springframework.ai.tool.ToolCallbacks;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
 @Slf4j
 public class ChatService {
 
-    private final ChatClient chatClient;
-    private final InMemoryChatMemory inMemoryChatMemory;
-    private final RagService ragService;
+    @Autowired
+    JdbcChatMemoryRepository chatMemoryRepository;
+    ChatClient chatClient;
+    RagService ragService;
+    ChatMemory chatMemory;
+
 
     public ChatService(ChatClient.Builder chatClientBuilder, RagService ragService) {
         this.ragService = ragService;
-        this.inMemoryChatMemory = new InMemoryChatMemory();
-//        用合适的美观的html格式的字符串的形式回复，当字符串中存在双引号的时候使用单引号替代。
+
+        chatMemory = MessageWindowChatMemory.builder()
+                .chatMemoryRepository(chatMemoryRepository)
+                .maxMessages(20)
+                .build();
         this.chatClient = chatClientBuilder
                 .defaultAdvisors(
-//                        new MessageChatMemoryAdvisor(inMemoryChatMemory),
                         new SafeGuardAdvisor(Constant.AIDEFAULTSAFEGUARDADVISOR),
-//                        new MySimplelogAdvisor()
-                        new SimpleLoggerAdvisor()
+                        new SimpleLoggerAdvisor(),
+                        MessageChatMemoryAdvisor.builder(chatMemory).build()
+
                 )
                 .build();
-
     }
 
 
     public ChatModelResult chat(String id, String p, String q, Boolean isRag, String groupId, Boolean isFunction, String modelName) {
         ToolCallback[] tools = isFunction ? ToolCallbacks.from(new RestRequestTools()) :
                 ToolCallbacks.from();
+
         try {
             if (isRag) {
                 return this.isRagChat(id, p, q, groupId, modelName, tools);
@@ -88,15 +100,10 @@ public class ChatService {
                 )
                 .user(q)
                 .system(TPromptsService.getCachedTPromptsByMethodName("ChatService"))
-//                .advisors(questionAnswerAdvisor)
-//                .advisors(
-//                        a -> a
-//                                .param(CHAT_MEMORY_CONVERSATION_ID_KEY, id)
-//                                .param(CHAT_MEMORY_RETRIEVE_SIZE_KEY, Constant.CHATMEMORYRETRIEVESIZE)
-//                )
+//                .advisors(questionAnswerAdvisor) // 官方的rag方法
+                .advisors(a -> a.param(chatMemory.CONVERSATION_ID, id))
                 .toolCallbacks(tools)
                 .call().content();
-        //chatResponse().getResult().getOutput().getText()
         ChatModelResult chatModelResult = new ChatModelResult();
         chatModelResult.setChat(chat);
         chatModelResult.setRag(documentList);
@@ -114,35 +121,27 @@ public class ChatService {
                 )
                 .user(q)
                 .system(TPromptsService.getCachedTPromptsByMethodName("ChatService"))
-//                .advisors(
-//                        a -> a
-//                                .param(CHAT_MEMORY_CONVERSATION_ID_KEY, id)
-//                                .param(CHAT_MEMORY_RETRIEVE_SIZE_KEY, Constant.CHATMEMORYRETRIEVESIZE)
-//                )
+                .advisors(a -> a.param(chatMemory.CONVERSATION_ID, id))
                 .toolCallbacks(tools)
                 .call().content();
         ChatModelResult chatModelResult = new ChatModelResult();
         chatModelResult.setChat(chat);
-        chatModelResult.setRag(null);
+        chatModelResult.setRag(new ArrayList<>());
         return chatModelResult;
     }
 
-    public String easyChat(String p, String q, String modelName) {
-        return this.chatClient.prompt(
-                        new Prompt(
-                                p,
-                                OpenAiChatOptions.builder()
-                                        .model(modelName)
-                                        .build()
-                        )
-                )
-                .user(q)
-                .call().content();
+    public String saveChatMemory(String id) {
+        log.info("advisor-clear: {}", "用户id-" + id);
+        List<Message> messages = chatMemory.get(SecurityContextHolder.getContext().getAuthentication().getName() + "_" + id);
+        chatMemoryRepository.saveAll(SecurityContextHolder.getContext().getAuthentication().getName() + "_" + id, messages);
+        return "保存成功";
     }
 
     public String clearChatMemory(String id) {
         log.info("advisor-clear: {}", "用户id-" + id);
-        this.inMemoryChatMemory.clear(id);
+        String ID = SecurityContextHolder.getContext().getAuthentication().getName() + "_" + id;
+        chatMemory.clear(ID);
+        chatMemoryRepository.deleteByConversationId(ID);
         return "清除成功";
     }
 

@@ -10,12 +10,11 @@ import { CancelTokenSource } from "axios/index";
 import { ElMessage } from "element-plus";
 import { chatServiceTypeOption } from "./config"
 import aimodel from "@/store/aimodel"
-import { List } from "lodash";
 import { documentRankHandleApi } from "@/api/rag";
 import { useRouter } from 'vue-router';
 const router = useRouter();
 const nowIsChat = router.currentRoute.value.path.includes('chat')
-let chats = ref<Chat[]>([]);
+let chats = ref<ChatWindow[]>([]);
 let chatServiceType = ref<string>('/chat');
 let inputMessageText = ref<string>('');
 let inputPromptText = ref<string>('');
@@ -33,20 +32,9 @@ let chatModelOption = ref<{ label: string, value: string }[]>([])
 let chatModelName = ref<string>('')
 let aiRagDocumentVisible = ref<boolean>(false)
 let aiRagDocumentData = ref<any[]>([])
-// 添加信息 HACK 跟随 interface Message  更改 !!!
-const addMessage = (chat: Chat, messageData: Message): void => {
-    chat.messages.push({
-        id: Date.now(),
-        text: messageData.text,
-        recommend: messageData?.recommend ?? [],
-        rag: messageData?.rag ?? [],
-        isStart: messageData?.isStart ?? false,
-        isUser: messageData.isUser,
-        topInfo: getChatTopInfo()
-    });
-    isTyping.value = messageData.isUser
-    toDownPage()
-}
+const BASE_PROJECT_NAME = computed(() => {
+    return process.env.BASE_PROJECT_NAME as string
+})
 // 添加滚动到最新的消息
 const toDownPage = (): void => {
     nextTick(() => {
@@ -56,6 +44,23 @@ const toDownPage = (): void => {
         }
     });
 };
+// 添加信息 HACK 跟随 interface Message  更改 !!!
+// 同时将信息添加到数据库
+const addMessage = (chat: ChatWindow, messageData: Message): void => {
+    chat.messages.push({
+        id: Date.now(),
+        time: Date.now(),
+        text: messageData.text,
+        recommend: messageData?.recommend ?? [],
+        rag: messageData?.rag ?? [],
+        isStart: messageData?.isStart ?? false,
+        isUser: messageData.isUser,
+        useLlm: toRaw(chatModelName.value),
+        topInfo: getChatTopInfo(messageData.isUser)
+    });
+    isTyping.value = messageData.isUser
+    toDownPage()
+}
 // 发送信息
 const sendMessage = (recommend = null): void => {
     if (!chatModelName.value) {
@@ -71,10 +76,14 @@ const sendMessage = (recommend = null): void => {
     }
     const chat = chats.value.find(c => c.id === currentChatId.value);
     if (inputMessageText.value.trim() && chat) {
+        // 判断当前对话窗口是不是第一次提问问题
+        if ((chat?.messages ?? []).length === 1) {
+            addChatsInfo(chat as ChatWindow, inputMessageText.value)
+        }
         addMessage(chat, {
             text: inputMessageText.value,
             isUser: true,
-            topInfo: getChatTopInfo()
+            topInfo: getChatTopInfo(true)
         })
         const inputTextCopy = inputMessageText.value;
         inputMessageText.value = '';
@@ -102,7 +111,7 @@ const sendMessage = (recommend = null): void => {
                             recommend: res.data.recommend && (JSON.parse(res.data.recommend)?.desc ?? []),
                             rag: res.data?.rag ?? [],
                             isUser: false,
-                            topInfo: getChatTopInfo()
+                            topInfo: getChatTopInfo(false)
                         }
                     )
                 } catch (error) {
@@ -112,7 +121,7 @@ const sendMessage = (recommend = null): void => {
                             recommend: res.data.recommend,
                             rag: res.data?.rag ?? [],
                             isUser: false,
-                            topInfo: getChatTopInfo()
+                            topInfo: getChatTopInfo(false)
                         }
                     )
                 }
@@ -122,7 +131,7 @@ const sendMessage = (recommend = null): void => {
                         text: "回答出现错误，请换种方式提问。",
                         recommend: [],
                         isUser: false,
-                        topInfo: getChatTopInfo()
+                        topInfo: getChatTopInfo(false)
                     }
                 )
             }
@@ -133,7 +142,7 @@ const sendMessage = (recommend = null): void => {
                         text: "请求已取消。",
                         recommend: [],
                         isUser: false,
-                        topInfo: getChatTopInfo()
+                        topInfo: getChatTopInfo(false)
                     }
                 )
             } else {
@@ -143,7 +152,7 @@ const sendMessage = (recommend = null): void => {
                         text: "未知错误。",
                         recommend: [],
                         isUser: false,
-                        topInfo: getChatTopInfo()
+                        topInfo: getChatTopInfo(false)
                     }
                 )
             }
@@ -151,6 +160,25 @@ const sendMessage = (recommend = null): void => {
 
     }
 };
+// 添加当前的对话列表信息到数据库
+const addChatsInfo = (chat: ChatWindow, chatTitle: string): void => {
+    chat.title = chatTitle;
+    // http.request<any>({
+    //         url: chatServiceType.value + '/chat',
+    //         method: 'post',
+    //         q_spinning: false,
+    //         cancelToken: axiosCancel.token,
+    //         data: {
+    //             id: chat.id,
+    //             p: inputPromptText.value,
+    //             q: inputTextCopy,
+    //             isRag: ragEnabled.value,
+    //             groupId: ragGroup.value,
+    //             isFunction: toolEnabled.value,
+    //             modelName: chatModelName.value
+    //         }
+    //     })
+}
 // 优化替换提示词到输入框
 const optimizePromptWords = (): void => {
     http.request<any>({
@@ -191,6 +219,28 @@ const messageStop = (): void => {
         axiosCancel.cancel();
     }
 }
+// 保存对话记忆
+const saveChatMemory = (isList = false, id = ''): void => {
+    const chat = chats.value.find(c => c.id === currentChatId.value);
+    if (chat) {
+        const useId = isList ? id : chat.id
+        http.request<any>({
+            url: chatServiceType.value + '/saveChatMemory',
+            method: 'post',
+            q_spinning: true,
+            data: {
+                id: useId,
+            }
+        }).then((res: any) => {
+            // if (isList) {
+            //     chats.value = chats.value.filter(c => c.id !== useId)
+            // } else {
+
+            // }
+        })
+    }
+
+};
 // 清空对话记忆
 const clearChatMemory = (isList = false, id = ''): void => {
     const chat = chats.value.find(c => c.id === currentChatId.value);
@@ -211,7 +261,8 @@ const clearChatMemory = (isList = false, id = ''): void => {
                     id: Date.now(),
                     text: '已成功清空上下文',
                     isUser: false,
-                    topInfo: getChatTopInfo()
+                    recommend: [],
+                    topInfo: getChatTopInfo(false)
                 });
                 toDownPage()
             }
@@ -236,7 +287,7 @@ const addStartMessage = (): void => {
         isStart: true,
         rag: [],
         isUser: false,
-        topInfo: getChatTopInfo()
+        topInfo: getChatTopInfo(false)
     })
 }
 // 开始一个新的对话
@@ -244,6 +295,7 @@ const startNewChat = (): void => {
     const newChatId = 'chat' + Date.now();
     chats.value.push({
         id: newChatId,
+        title: '新对话',
         messages: [],
         active: false
     });
@@ -255,11 +307,11 @@ const switchChat = (chatId: string): void => {
     currentChatId.value = chatId;
 };
 // 找到当前的窗口
-const currentChat = (): Chat | any => {
+const currentChat = (): ChatWindow | any => {
     return chats.value.find(c => c.id === currentChatId.value) || { messages: [] };
 };
 // 对话框上面的信息
-const getChatTopInfo = (): string => {
+const getChatTopInfo = (isUser: boolean): string => {
     const getCurrentDateTime = (): string => {
         const now = new Date();
         const year = now.getFullYear();
@@ -271,7 +323,7 @@ const getChatTopInfo = (): string => {
         return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
     };
 
-    return `${toRaw(chatModelName.value)}：      ${getCurrentDateTime()}`
+    return isUser ? `${getCurrentDateTime()}` : `${toRaw(chatModelName.value)}：      ${getCurrentDateTime()}`
 };
 // rag按钮变化
 const ragEnabledChange = (e: any): void => {
@@ -343,6 +395,7 @@ const submitFeedback = () => {
 
 
 }
+
 // 初始化执行
 nextTick(async () => {
     await aimodel().setModelOptions()
@@ -377,8 +430,9 @@ nextTick(async () => {
                     'p-2 rounded-lg transition-colors duration-200 flex justify-between items-center',
                     chat.id === currentChatId ? 'bg-blue-100' : 'hover:bg-gray-100'
                 ]">
-                    <span class="cursor-pointer " @click="switchChat(chat.id)">
-                        对话# {{ chat.id }}
+                    <span class="cursor-pointer overflow-hidden text-ellipsis whitespace-nowrap"
+                        style="max-width: calc(100% - 70px); display: inline-block;" @click="switchChat(chat.id)">
+                        {{ chat.title }}
                     </span>
                     <span class="text-blue-500 cursor-pointer w-10" @click="clearChatMemory(true, chat.id)">清除</span>
                 </li>
@@ -396,7 +450,7 @@ nextTick(async () => {
         <!-- 对话窗口 -->
         <div v-if="chats.length > 0" class="flex-1 bg-white rounded-lg shadow-lg flex flex-col h-full">
             <div class="p-4 pb-3 border-b-2  border-gray-300">
-                对话
+                欢迎来到 {{ BASE_PROJECT_NAME }}
                 <!-- #{{ currentChatId }} -->
             </div>
 
@@ -427,7 +481,8 @@ nextTick(async () => {
                         </div>
                         <div class="flex items-center justify-start ">
                             <!--                        推荐列表-->
-                            <div v-if="message.recommend.length > 0" class="w-min flex justify-start items-center mt-1">
+                            <div v-if="(message?.recommend ?? []).length > 0"
+                                class="w-min flex justify-start items-center mt-1">
                                 <div class="bg-blue-100 w-max mr-2 px-1.5 py-0.5 text-[14px] rounded-md cursor-pointer"
                                     v-for="item in message.recommend" :key="item" @click="sendMessage(item)">
                                     {{ item }}
@@ -435,7 +490,7 @@ nextTick(async () => {
                             </div>
                             <!--                        引用的知识 -->
                             <div>
-                                <el-button v-if="message.rag.length > 0" style="padding-bottom: 0px;" :key="'text'"
+                                <el-button v-if="(message?.rag ?? []).length > 0" style="padding-bottom: 0px;" :key="'text'"
                                     @click="openRagDocumentView(message.rag)" text>引用的知识库</el-button>
                             </div>
                         </div>
@@ -479,11 +534,16 @@ nextTick(async () => {
                     </div>
                     <!-- 右 -->
                     <div class="flex justify-end items-center">
-                        <!-- <el-button @click="clearChatMemory(false)" :disabled="isTyping" type="primary">
+                        <el-button @click="saveChatMemory(false)" :disabled="isTyping" type="primary">
+                            <span class="font-medium text-white">
+                                保存记忆
+                            </span>
+                        </el-button>
+                        <el-button @click="clearChatMemory(false)" :disabled="isTyping" type="primary">
                             <span class="font-medium text-white">
                                 清除记忆
                             </span>
-                        </el-button> -->
+                        </el-button>
 
                         <el-button @click="clearMessage()" :disabled="isTyping" type="primary">
                             <span class="font-medium text-white">
@@ -565,9 +625,9 @@ nextTick(async () => {
                         {{ item.text }}
                     </div>
                     <div class=" flex justify-start items-center gap-1">
-                        <el-tag type="primary">排名：{{ item.metadata.rank }}</el-tag>
-                        <el-tag type="primary">距离：{{ item.metadata.distance }}</el-tag>
-                        <el-tag type="primary">文件名：{{ item.metadata.filename }}</el-tag>
+                        <el-tag type="">排名：{{ item.metadata.rank }}</el-tag>
+                        <el-tag type="">距离：{{ item.metadata.distance }}</el-tag>
+                        <el-tag type="">文件名：{{ item.metadata.filename }}</el-tag>
                         <el-icon style="font-size: 18px;margin: 0 4px; cursor: pointer;"
                             @click="documentRankHandle('good', item)">
                             <Top />

@@ -1,12 +1,12 @@
 <template>
     <div class="common-layout h-screen bg-gray-100">
         <el-container>
-            <el-aside :style="{display:fullScreenValue?'none':'block',width:'auto'}"
-                      class="h-screen">
+            <el-aside :style="{ display: fullScreenValue ? 'none' : 'block', width: 'auto' }" class="h-screen">
                 <Menu></Menu>
             </el-aside>
             <el-container>
-                <el-header :style="{display:fullScreenValue?'none':'block',height: 'max-content',padding:'0'}">
+                <el-header
+                    :style="{ display: fullScreenValue ? 'none' : 'block', height: 'max-content', padding: '0' }">
                     <div class="h-[40px] flex justify-between items-center bg-white mb-2">
                         <Breadcrumb></Breadcrumb>
                         <BarUtil @pageFullScreen="pageFullScreen" @refreshPage="refreshPage"></BarUtil>
@@ -22,16 +22,16 @@
                     </div>
                 </el-header>
                 <el-main style="padding: 8px;overflow: hidden;height: calc(100vh - 75px)">
-                    <router-view
-                        v-slot="{ Component }"
-                        class="h-full w-full bg-white overflow-auto"
-                    >
+                    <router-view v-slot="{ Component }" class="h-full w-full bg-white overflow-auto">
                         <Transition appear enter-active-class="animate__animated animate__fadeIn">
-                            <component
-                                :is="Component" v-if="refreshPageValue"></component>
+                            <keep-alive>
+                                <component :key="$route.fullPath" :is="Component" v-if="refreshPageValue" />
+                            </keep-alive>
                         </Transition>
                     </router-view>
                 </el-main>
+
+
             </el-container>
         </el-container>
     </div>
@@ -52,7 +52,7 @@ import SearchMenu from './pages/Search.vue'
 import MenuUtil from './pages/MenuUtil.vue'
 import Breadcrumb from './pages/Breadcrumb.vue'
 import BarUtil from './pages/BarUtil.vue'
-import {ElMessage} from "element-plus";
+import { ElMessage } from "element-plus";
 
 let refreshPageValue = ref<boolean>(true);
 const refreshPage = () => {
@@ -82,5 +82,4 @@ const pageFullScreen = () => {
     width: 200px;
     min-height: 400px;
 }
-
 </style>

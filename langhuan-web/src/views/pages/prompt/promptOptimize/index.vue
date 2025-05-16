@@ -256,32 +256,7 @@ const handleCompare = () => {
     })
 
 }
-// 获取提示词的列表
-const getPromptOptionList = (): Promise<any> => {
-    return http.request<any>({
-        url: '/prompts/usePrompt/query',
-        method: 'post',
-        q_spinning: true,
-        data: {
-            methodName: '',
-            category: 'promptOptimize',
-            description: '',
-            button: '',
-            pageNum: 1,
-            pageSize: 10000
-        },
-    }).then((res) => {
-        if (res.code === 200) {
-            promptOptions.value = res.data.records.map((e: any) => {
-                return {
-                    label: e.methodName,
-                    value: e.content,
-                    desc: e.description,
-                }
-            })
-        }
-    })
-}
+
 // 添加到在用提示词
 const addToUsePrompt = async (t: string, d: any = null) => {
     if (optimizedPrompt.value === '') {
@@ -329,7 +304,6 @@ const addToUsePrompt = async (t: string, d: any = null) => {
 
 // 初始化执行
 nextTick(async () => {
-    await getPromptOptionList()
     modelOptions.value = toRaw(aimodel().getModelOptions()) as any
 })
 </script>

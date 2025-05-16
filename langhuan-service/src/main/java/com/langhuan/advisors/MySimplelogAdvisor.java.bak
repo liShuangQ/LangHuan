@@ -8,6 +8,8 @@ import reactor.core.publisher.Flux;
 @Slf4j
 public class MySimplelogAdvisor implements CallAroundAdvisor, StreamAroundAdvisor {
 
+    private static final Logger logger = LoggerFactory.getLogger(SimpleLoggerAdvisor.class);
+
     @Override
     public String getName() {
         return this.getClass().getSimpleName();
@@ -15,17 +17,17 @@ public class MySimplelogAdvisor implements CallAroundAdvisor, StreamAroundAdviso
 
     @Override
     public int getOrder() {
-        return 99;
+        return 0;
     }
 
     @Override
     public AdvisedResponse aroundCall(AdvisedRequest advisedRequest, CallAroundAdvisorChain chain) {
 
-        log.debug("BEFORE: {}", advisedRequest);
+        logger.debug("BEFORE: {}", advisedRequest);
 
         AdvisedResponse advisedResponse = chain.nextAroundCall(advisedRequest);
 
-        log.debug("AFTER: {}", advisedResponse);
+        logger.debug("AFTER: {}", advisedResponse);
 
         return advisedResponse;
     }
@@ -33,11 +35,11 @@ public class MySimplelogAdvisor implements CallAroundAdvisor, StreamAroundAdviso
     @Override
     public Flux<AdvisedResponse> aroundStream(AdvisedRequest advisedRequest, StreamAroundAdvisorChain chain) {
 
-        log.debug("BEFORE: {}", advisedRequest);
+        logger.debug("BEFORE: {}", advisedRequest);
 
         Flux<AdvisedResponse> advisedResponses = chain.nextAroundStream(advisedRequest);
 
         return new MessageAggregator().aggregateAdvisedResponse(advisedResponses,
-                advisedResponse -> log.debug("AFTER: {}", advisedResponse));
+                advisedResponse -> logger.debug("AFTER: {}", advisedResponse));
     }
 }

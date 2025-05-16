@@ -12,8 +12,9 @@ import { useRouter } from 'vue-router';
 import { documentRankHandleApi } from "@/api/rag";
 import { fa } from "element-plus/es/locale";
 const router = useRouter();
-let chats = ref<Chat[]>([{
+let chats = ref<ChatWindow[]>([{
     id: 'recallTesting',
+    title: '召回测试',
     messages: [],
     active: true
 }
@@ -36,7 +37,7 @@ const toDownPage = (): void => {
     });
 };
 // 添加信息 HACK 跟随 interface Message  更改
-const addMessage = (chat: Chat, messageData: Message): void => {
+const addMessage = (chat: ChatWindow, messageData: Message): void => {
     chat.messages.push({
         id: Date.now(),
         text: messageData.text,
@@ -216,7 +217,7 @@ const documentRankHandle = async (t: 'good' | 'bad', d: any) => {
 }
 
 // 找到当前的窗口
-const currentChat = (): Chat | any => {
+const currentChat = (): ChatWindow | any => {
     return chats.value.find((c: any) => c.id === currentChatId.value) || { messages: [] };
 };
 // 对话框上面的信息

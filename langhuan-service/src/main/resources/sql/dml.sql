@@ -55,7 +55,7 @@ VALUES (12, 2, 6);
 
 
 INSERT INTO t_prompts (id, content, category, created_at, updated_at, method_name, description)
-VALUES (1, '你是一个AI助手，请回答我提问的问题。要求回答使用markdown格式。', 'default,system', '2025-03-05 09:19:46.000000',
+VALUES (1, '你是一个人工智能，根据用户要求回答问题。要求回答使用markdown格式。回答中不要出现“```markdown ```”的格式信息。', 'default,system', '2025-03-05 09:19:46.000000',
         '2025-03-31 08:23:08.407193', 'AIDEFAULTSYSTEMPROMPT', 'ai系统默认提示词');
 
 INSERT INTO t_prompts (id, content, category, created_at, updated_at, method_name, description)

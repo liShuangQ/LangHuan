@@ -1,8 +1,8 @@
 package com.langhuan.config;
 
 import com.knuddels.jtokkit.api.EncodingType;
-import com.langhuan.advisors.MySimplelogAdvisor;
 import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor;
 import org.springframework.ai.embedding.BatchingStrategy;
 import org.springframework.ai.embedding.TokenCountBatchingStrategy;
 import org.springframework.context.annotation.Bean;
@@ -15,7 +15,7 @@ class AiConfig {
     ChatClient chatClient(ChatClient.Builder builder) {
         return builder
                 .defaultAdvisors(
-                        new MySimplelogAdvisor()
+                        new SimpleLoggerAdvisor()
                 )
                 .build();
     }
