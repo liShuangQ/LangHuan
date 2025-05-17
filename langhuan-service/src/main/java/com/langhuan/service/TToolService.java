@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 * @createDate 2025-01-17 16:52:23
 */
 @Service
-public class TToolServiceImpl extends ServiceImpl<TToolMapper, TTool>{
+public class TToolService extends ServiceImpl<TToolMapper, TTool>{
 
 }
 

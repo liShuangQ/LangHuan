@@ -4,117 +4,161 @@ export default {
 };
 </script>
 <script lang="ts" setup>
-import { http } from "@/plugins/axios";
-import axios, { CancelToken } from "axios";
-import { CancelTokenSource } from "axios/index";
-import { ElMessage } from "element-plus";
-import { chatServiceTypeOption } from "./config"
-import aimodel from "@/store/aimodel"
-import { documentRankHandleApi } from "@/api/rag";
-import { useRouter } from 'vue-router';
+// 导入必要的依赖和模块
+import { http } from "@/plugins/axios";              // 导入HTTP请求工具
+import axios, { CancelToken } from "axios";          // 导入Axios及其取消令牌功能
+import { CancelTokenSource } from "axios/index";      // 导入取消令牌源类型
+import { ElMessage } from "element-plus";            // 导入Element Plus的消息提示组件
+import { chatServiceTypeOption } from "./config"     // 导入聊天服务类型选项配置
+import aimodel from "@/store/aimodel"                // 导入AI模型状态管理
+import { documentRankHandleApi } from "@/api/rag";   // 导入文档评分处理API
+import { useRouter } from 'vue-router';              // 导入Vue路由器
+import { generateUUID } from '@/utils/uuid'                // 导入UUID生成工具
+
+// 初始化路由和状态变量
 const router = useRouter();
+// 判断当前是否在聊天页面
 const nowIsChat = router.currentRoute.value.path.includes('chat')
+// 聊天窗口列表
 let chats = ref<ChatWindow[]>([]);
+// 聊天服务类型，默认为'/chat'
 let chatServiceType = ref<string>('/chat');
+// 输入消息文本
 let inputMessageText = ref<string>('');
+// 输入提示文本
 let inputPromptText = ref<string>('');
+// 当前聊天ID
 let currentChatId = ref<string>();
+// 是否正在输入中
 let isTyping = ref<boolean>(false);
+// Axios取消令牌，用于取消请求
 let axiosCancel: CancelTokenSource | null = null;
+// 是否启用RAG(检索增强生成)功能
 let ragEnabled = ref<boolean>(true)
+// 是否启用工具功能
 let toolEnabled = ref<boolean>(false)
+// 当前选择的RAG组
 let ragGroup = ref<string>('')
+// RAG组选项列表
 let ragGroupOption = ref<{ label: string, value: string }[]>([])
+// 当前选择的工具组
 let toolGroup = ref<string>('')
+// 工具组选项列表
 let toolGroupOption = ref<{ label: string, value: string }[]>([])
+// AI选项对话框是否可见
 let aiOptionVisible = ref<boolean>(false)
+// 聊天模型选项列表
 let chatModelOption = ref<{ label: string, value: string }[]>([])
+// 当前选择的聊天模型名称
 let chatModelName = ref<string>('')
+// RAG文档对话框是否可见
 let aiRagDocumentVisible = ref<boolean>(false)
+// RAG文档数据
 let aiRagDocumentData = ref<any[]>([])
+// 基础项目名称
 const BASE_PROJECT_NAME = computed(() => {
     return process.env.BASE_PROJECT_NAME as string
 })
+
 // 添加滚动到最新的消息
 const toDownPage = (): void => {
     nextTick(() => {
+        // 获取聊天窗口DOM元素
         const chatWindow = document.querySelector('.flex-1.overflow-y-auto.p-4.space-y-4');
         if (chatWindow) {
+            // 将滚动条滚动到底部，显示最新消息
             chatWindow.scrollTop = chatWindow.scrollHeight;
         }
     });
 };
-// 添加信息 HACK 跟随 interface Message  更改 !!!
+
+// 添加信息到聊天窗口 HACK 跟随 interface Message 更改 !!!
 // 同时将信息添加到数据库
 const addMessage = (chat: ChatWindow, messageData: Message): void => {
+    // 向聊天窗口添加新消息
     chat.messages.push({
-        id: Date.now(),
-        time: Date.now(),
-        text: messageData.text,
-        recommend: messageData?.recommend ?? [],
-        rag: messageData?.rag ?? [],
-        isStart: messageData?.isStart ?? false,
-        isUser: messageData.isUser,
-        useLlm: toRaw(chatModelName.value),
-        topInfo: getChatTopInfo(messageData.isUser)
+        id: Date.now(),                                  // 使用当前时间戳作为消息ID
+        time: Date.now(),                               // 消息时间
+        text: messageData.text,                         // 消息文本内容
+        recommend: messageData?.recommend ?? [],        // 推荐回复列表，如果没有则为空数组
+        rag: messageData?.rag ?? [],                    // RAG检索结果，如果没有则为空数组
+        isStart: messageData?.isStart ?? false,         // 是否是开始消息
+        isUser: messageData.isUser,                     // 是否是用户发送的消息
+        useLlm: toRaw(chatModelName.value),             // 使用的LLM模型名称
+        topInfo: getChatTopInfo(messageData.isUser)     // 获取消息顶部信息（时间和模型）
     });
+    // 设置输入状态 - 如果是用户消息，表示正在等待AI回复
     isTyping.value = messageData.isUser
+    // 滚动到最新消息
     toDownPage()
 }
-// 发送信息
+
+// 发送消息函数
 const sendMessage = (recommend = null): void => {
+    // 检查是否选择了模型
     if (!chatModelName.value) {
         ElMessage.error('请选择模型。')
         return
     }
+    // 检查是否正在等待回复
     if (isTyping.value) {
         ElMessage.error('请等待回复完成。')
         return
     }
+    // 如果是点击推荐问题，则将推荐内容填入输入框
     if (recommend) {
         inputMessageText.value = recommend;
     }
+    // 查找当前聊天窗口
     const chat = chats.value.find(c => c.id === currentChatId.value);
+    // 确保输入不为空且找到了聊天窗口
     if (inputMessageText.value.trim() && chat) {
-        // 判断当前对话窗口是不是第一次提问问题
+        // 判断当前对话窗口是不是第一次提问问题，如果是则将问题设为标题
         if ((chat?.messages ?? []).length === 1) {
             chat.title = inputMessageText.value;
         }
+        // 添加用户消息到聊天窗口
         addMessage(chat, {
             text: inputMessageText.value,
             isUser: true,
             topInfo: getChatTopInfo(true)
         })
+        // 保存输入文本副本并清空输入框
         const inputTextCopy = inputMessageText.value;
         inputMessageText.value = '';
+        // 创建取消令牌，用于取消请求
         axiosCancel = axios.CancelToken.source();
+        // 发送HTTP请求到后端API
         http.request<any>({
-            url: chatServiceType.value + '/chat',
-            method: 'post',
-            q_spinning: false,
-            cancelToken: axiosCancel.token,
+            url: chatServiceType.value + '/chat',        // 请求URL，根据选择的聊天服务类型
+            method: 'post',                             // 请求方法
+            q_spinning: false,                          // 不显示加载动画
+            cancelToken: axiosCancel.token,             // 取消令牌
             data: {
-                id: chat.id,
-                p: inputPromptText.value,
-                q: inputTextCopy,
-                isRag: ragEnabled.value,
-                groupId: ragGroup.value,
-                isFunction: toolEnabled.value,
-                modelName: chatModelName.value
+                id: chat.id,                            // 聊天ID
+                p: inputPromptText.value,               // 提示词
+                q: inputTextCopy,                       // 用户问题
+                isRag: ragEnabled.value,                // 是否启用RAG
+                groupId: ragGroup.value,                // RAG组ID
+                isFunction: toolEnabled.value,          // 是否启用函数调用
+                modelName: chatModelName.value          // 模型名称
             }
         }).then((res) => {
+            // 请求成功
             if (res.code === 200) {
                 try {
+                    // 尝试解析推荐回复（可能是JSON字符串）
                     addMessage(chat,
                         {
-                            text: res.data.chat,
-                            recommend: res.data.recommend && (JSON.parse(res.data.recommend)?.desc ?? []),
-                            rag: res.data?.rag ?? [],
-                            isUser: false,
-                            topInfo: getChatTopInfo(false)
+                            text: res.data.chat,                                             // AI回复文本
+                            recommend: res.data.recommend && (JSON.parse(res.data.recommend)?.desc ?? []), // 推荐问题列表
+                            rag: res.data?.rag ?? [],                                        // RAG检索结果
+                            isUser: false,                                                   // 非用户消息（AI消息）
+                            topInfo: getChatTopInfo(false)                                   // 消息顶部信息
                         }
                     )
                 } catch (error) {
+                    // 如果JSON解析失败，直接使用原始数据
                     addMessage(chat,
                         {
                             text: res.data.chat,
@@ -126,6 +170,7 @@ const sendMessage = (recommend = null): void => {
                     )
                 }
             } else {
+                // 请求返回错误码
                 addMessage(chat,
                     {
                         text: "回答出现错误，请换种方式提问。",
@@ -136,6 +181,7 @@ const sendMessage = (recommend = null): void => {
                 )
             }
         }).catch(error => {
+            // 请求被取消
             if (error.code === "ERR_CANCELED") {
                 addMessage(chat,
                     {
@@ -146,6 +192,7 @@ const sendMessage = (recommend = null): void => {
                     }
                 )
             } else {
+                // 其他错误
                 console.warn(error, 'error');
                 addMessage(chat,
                     {
@@ -160,145 +207,178 @@ const sendMessage = (recommend = null): void => {
 
     }
 };
-// 优化替换提示词到输入框
+// 优化替换提示词到输入框 - 使用AI优化用户输入的提示词
 const optimizePromptWords = (): void => {
+    // 发送请求获取优化后的提示词
     http.request<any>({
-        url: '/chat/getPrompt',
-        method: 'post',
-        q_spinning: true,
+        url: '/chat/getPrompt',           // 获取提示词的API端点
+        method: 'post',                  // 请求方法
+        q_spinning: true,                // 显示加载动画
         data: {
-            q: inputMessageText.value
+            q: inputMessageText.value     // 发送当前输入框中的文本
         }
     }).then((res) => {
+        // 如果请求成功，用优化后的提示词替换输入框内容
         if (res.code === 200) {
             inputMessageText.value = res.data
         }
     })
 }
-// 获取Rag文件组
+
+// 获取RAG文件组列表 - 检索增强生成的文件组选项
 const getRagGroupOptionList = (): Promise<any> => {
     return http.request<any>({
-        url: '/rag/file-group/getEnum',
-        method: 'post',
-        q_spinning: true,
-        data: {},
+        url: '/rag/file-group/getEnum',   // 获取RAG文件组枚举的API端点
+        method: 'post',                  // 请求方法
+        q_spinning: true,                // 显示加载动画
+        data: {},                        // 无需传递数据
     }).then((res) => {
         if (res.code === 200) {
+            // 将返回的数据转换为选项格式
             ragGroupOption.value = res.data.map((e: any) => {
                 return {
-                    label: e.groupName,
-                    value: e.id
+                    label: e.groupName,    // 显示名称
+                    value: e.id            // 选项值
                 }
             })
+            // 默认选择第一个选项
             ragGroup.value = ragGroupOption.value[0].value
         }
     })
 }
-// 停止当前对话
+
+// 停止当前对话 - 取消正在进行的请求
 const messageStop = (): void => {
     if (axiosCancel) {
+        // 如果存在取消令牌，则取消请求
         axiosCancel.cancel();
     }
 }
-// 保存对话记忆
+
+// 保存对话记忆 - 将当前对话保存到服务器
 const saveChatMemory = () => {
     return http.request<any>({
-        url: '/chat/saveChatMemory',
-        method: 'post',
-        q_spinning: true,
+        url: '/chat/saveChatMemory',     // 保存对话记忆的API端点
+        method: 'post',                  // 请求方法
+        q_spinning: true,                // 显示加载动画
         data: {
-            id: currentChatId.value,
+            id: currentChatId.value,      // 当前对话ID
         }
     }).then((res: any) => {
+        // 显示成功消息
         ElMessage.success(res.data)
     })
 
 };
-// 清空对话记忆 删除对话框
+
+// 清空对话记忆并删除对话框
 const clearChatMemory = (id = ''): void => {
     http.request<any>({
-        url: '/chat/clearChatMemory',
-        method: 'post',
-        q_spinning: true,
+        url: '/chat/clearChatMemory',    // 清除对话记忆的API端点
+        method: 'post',                  // 请求方法
+        q_spinning: true,                // 显示加载动画
         data: {
-            id: id,
+            id: id,                       // 要清除的对话ID
         }
     }).then((res: any) => {
+        // 从聊天列表中移除该对话
         chats.value = chats.value.filter(c => c.id !== id);
 
+        // 获取最后一个对话的ID，如果没有则为false
         const lastId = chats.value[chats.value.length - 1]?.id ?? false;
         if (lastId) {
+            // 如果还有其他对话，切换到最后一个对话
             switchChat(false, lastId);
         } else {
+            // 如果没有对话了，创建一个新对话
             startNewChat()
         }
+        // 显示成功消息
         ElMessage.success(res.data)
     })
 };
 
 // 开始一个新的对话
 const startNewChat = (): void => {
-    const newChatId = 'chat' + Date.now();
+    // 创建唯一的对话ID
+    const newChatId = generateUUID();
+    // 设置当前对话ID
     currentChatId.value = newChatId;
+    // 将新对话添加到对话列表
     chats.value.push({
         id: newChatId,
         title: '新对话',
         messages: [],
         active: false
     });
+    // 查找新创建的对话
     const chat = chats.value.find(c => c.id === currentChatId.value);
+    // 如果找到对话，添加欢迎消息
     chat && addMessage(chat, {
         text: '很高兴见到你！我可以帮你写代码、读文件、写作各种创意内容，请把你的任务交给我吧~',
-        recommend: ['你是谁？', '你能做些什么？'],
-        isStart: true,
-        rag: [],
-        isUser: false,
-        topInfo: getChatTopInfo(false)
+        recommend: ['你是谁？', '你能做些什么？'],  // 推荐问题
+        isStart: true,                             // 标记为开始消息
+        rag: [],                                   // 无RAG结果
+        isUser: false,                             // 非用户消息（AI消息）
+        topInfo: getChatTopInfo(false)             // 获取消息顶部信息
     })
 };
-// 设置对话窗口。 切换 找记录
+
+// 切换对话窗口并加载对话历史
 const switchChat = async (isGetMemory: boolean, chatId: string) => {
+    // 如果当前已经是这个对话，则不做任何操作
     if (currentChatId.value === chatId) {
         return;
     }
+    // 设置当前对话ID
     currentChatId.value = chatId;
+    // 如果需要获取记忆，则从服务器加载对话历史
     isGetMemory && await http.request<any>({
-        url: '/chat/getChatMemory',
-        method: 'post',
-        q_spinning: true,
+        url: '/chat/getChatMemory',      // 获取对话记忆的API端点
+        method: 'post',                  // 请求方法
+        q_spinning: true,                // 显示加载动画
         data: {
-            id: currentChatId.value,
+            id: currentChatId.value,      // 当前对话ID
         }
     }).then((res: any) => {
         if (res.code === 200) {
+            // 找到当前对话
             let chat = chats.value.find(c => c.id === currentChatId.value);
+            // 设置对话标题为倒数第二条消息的内容（通常是用户的最后一个问题）
             chat!.title = res.data[res.data.length - 2].text
+            // 清空消息列表，准备重新加载
             chat!.messages = []
             if (chat) {
+                // 遍历返回的消息数据，添加到对话中
                 res.data.forEach((e: any) => {
                     addMessage(chat, {
-                        text: e.text,
-                        recommend: [],
-                        rag: [],
-                        isUser: e.messageType === 'USER',
-                        topInfo: ''
+                        text: e.text,                     // 消息文本
+                        recommend: [],                    // 无推荐问题
+                        rag: [],                          // 无RAG结果
+                        isUser: e.messageType === 'USER', // 根据消息类型判断是否为用户消息
+                        topInfo: ''                       // 无顶部信息
                     })
                 })
             }
         }
     })
+    // 滚动到最新消息
     toDownPage()
 };
-// 找到当前的窗口
+
+// 获取当前活跃的聊天窗口
 const currentChat = (): ChatWindow | any => {
+    // 查找当前ID对应的聊天窗口，如果没有则返回空对象
     return chats.value.find(c => c.id === currentChatId.value) || { messages: [] };
 };
-// 对话框上面的信息
+
+// 获取消息顶部的时间和模型信息
 const getChatTopInfo = (isUser: boolean): string => {
+    // 获取当前日期时间的格式化字符串
     const getCurrentDateTime = (): string => {
         const now = new Date();
         const year = now.getFullYear();
-        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const month = String(now.getMonth() + 1).padStart(2, '0'); // 月份从0开始，需要+1
         const day = String(now.getDate()).padStart(2, '0');
         const hours = String(now.getHours()).padStart(2, '0');
         const minutes = String(now.getMinutes()).padStart(2, '0');
@@ -306,110 +386,144 @@ const getChatTopInfo = (isUser: boolean): string => {
         return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
     };
 
+    // 用户消息只显示时间，AI消息显示模型名称和时间
     return isUser ? `${getCurrentDateTime()}` : `${toRaw(chatModelName.value)}：      ${getCurrentDateTime()}`
 };
-// rag按钮变化
+
+// RAG功能启用状态变化处理
 const ragEnabledChange = (e: any): void => {
+    // 清空当前选择的RAG组
     ragGroup.value = ''
 }
-// 当前选择智能体的改变
+
+// 聊天服务类型变化处理
 const chatServiceTypeChange = (e: any): void => {
+    // 如果选择了'/onlyRag'服务类型，自动启用RAG功能
     if (e === '/onlyRag') {
         ragEnabled.value = true
     }
 }
-// 打开引用的文档
+
+// 打开RAG引用文档查看对话框
 const openRagDocumentView = (rag: any[]) => {
+    // 设置文档数据
     aiRagDocumentData.value = rag
+    // 显示文档对话框
     aiRagDocumentVisible.value = true
 }
-// 文档的点踩机制
+
+// 文档评分处理（点赞/点踩）
 const documentRankHandle = async (t: 'good' | 'bad', d: any) => {
+    // 调用API进行评分
     const res: any = await documentRankHandleApi(d.id, d.metadata.rank, t)
     if (res.code === 200) {
+        // 显示成功消息
         ElMessage.success(res.data)
     }
 }
-let feedbackVisible = ref<boolean>(false);
-let feedbackText = ref<string>('');
-let feedbackCache = ref<any>();
-// 打开反馈
+// 反馈相关状态变量
+let feedbackVisible = ref<boolean>(false);   // 反馈对话框是否可见
+let feedbackText = ref<string>('');          // 反馈文本内容
+let feedbackCache = ref<any>();              // 缓存当前反馈的消息和类型
+
+// 打开反馈对话框 - 用于用户对AI回复进行评价
 const chatFeedback = (message: Message, type: string) => {
+    // 显示反馈对话框
     feedbackVisible.value = true;
+    // 清空反馈文本
     feedbackText.value = '';
+    // 缓存消息对象和反馈类型（like或dislike）
     feedbackCache.value = { ...message, type: type };
 }
-// 提交反馈逻辑
+
+// 提交用户反馈到服务器
 const submitFeedback = () => {
+    // 注释掉的代码是验证反馈内容不能为空的逻辑
     // if (feedbackText.value.trim() === '') {
     //     ElMessage.error('请输入反馈内容');
     //     return;
     // }
 
+    // 获取当前聊天窗口的所有消息
     const nowChat = currentChat().messages
+    // 找到被反馈消息的索引
     const nowMessageIndex = nowChat.findIndex((item: any) => item.id === feedbackCache.value?.id);
+    // 获取用户的问题（通常是反馈消息的前一条）
     const question = nowChat[nowMessageIndex - 1]?.text;
+    // 获取AI的回答（当前被反馈的消息）
     const answer = nowChat[nowMessageIndex]?.text;
 
+    // 发送反馈到服务器
     http.request<any>({
-        url: '/chatFeedback/add',
-        method: 'post',
-        q_spinning: true,
-        q_contentType: 'json',
+        url: '/chatFeedback/add',           // 添加反馈的API端点
+        method: 'post',                    // 请求方法
+        q_spinning: true,                  // 显示加载动画
+        q_contentType: 'json',             // 内容类型为JSON
         data: {
-            questionId: feedbackCache.value?.id,
-            questionContent: question,
-            answerContent: answer,
-            interaction: feedbackCache.value?.type ?? 'dislike',
-            knowledgeBaseIds: feedbackCache.value?.rag?.map((e: any) => e.id).join(','),
-            suggestion: feedbackText.value,
+            questionId: feedbackCache.value?.id,                                      // 问题ID
+            questionContent: question,                                                 // 问题内容
+            answerContent: answer,                                                     // 回答内容
+            interaction: feedbackCache.value?.type ?? 'dislike',                       // 交互类型（喜欢/不喜欢）
+            knowledgeBaseIds: feedbackCache.value?.rag?.map((e: any) => e.id).join(','), // 相关知识库IDs
+            suggestion: feedbackText.value,                                           // 用户建议文本
         },
 
     }).then((res) => {
         if (res.code === 200) {
+            // 请求成功，关闭对话框并清空状态
             feedbackVisible.value = false;
             feedbackText.value = '';
             feedbackCache.value = void 0;
+            // 显示成功消息
             ElMessage.success('反馈已提交，谢谢！');
         }
     }).catch((error) => {
+        // 请求失败，显示错误消息
         ElMessage.error('提交反馈失败，请重试。');
     });
-
-
 }
-// 初始化对话记忆
+
+// 初始化对话记忆 - 从服务器加载已有的对话窗口
 const initChatMemory = async () => {
+    // 获取所有保存的对话窗口ID
     const chatWindows = await http.request<any>({
-        url: '/chat/getChatMemoryWindows',
-        method: 'post',
-        q_spinning: true,
+        url: '/chat/getChatMemoryWindows',  // 获取对话窗口列表的API端点
+        method: 'post',                     // 请求方法
+        q_spinning: true,                   // 显示加载动画
     })
     if (chatWindows.data.length > 0) {
+        // 如果有保存的对话窗口
         for (let index = 0; index < chatWindows.data.length; index++) {
             const e = chatWindows.data[index];
+            // 添加对话窗口到列表
             chats.value.push({
-                id: e,
-                title: '新对话',
-                messages: [],
-                active: false
+                id: e,                        // 对话ID
+                title: '新对话',              // 默认标题
+                messages: [],                 // 空消息列表
+                active: false                 // 非活跃状态
             });
+            // 切换到该对话并加载历史记录
             await switchChat(true, e)
         }
     } else {
+        // 如果没有保存的对话窗口，创建一个新对话
         startNewChat()
+        // 切换到新创建的对话
         await switchChat(false, chats.value[0].id)
     }
-
-
 }
 
-// 初始化执行
+// 组件初始化执行
 nextTick(async () => {
+    // 设置AI模型选项
     await aimodel().setModelOptions()
+    // 获取模型选项列表
     chatModelOption.value = toRaw(aimodel().getModelOptions()) as any
+    // 默认选择第一个模型
     chatModelName.value = chatModelOption.value[0].value
+    // 获取RAG文件组选项列表
     getRagGroupOptionList()
+    // 初始化对话记忆
     await initChatMemory()
 })
 

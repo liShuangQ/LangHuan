@@ -1,10 +1,13 @@
 package com.langhuan.serviceai;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.langhuan.common.BusinessException;
 import com.langhuan.common.Constant;
 import com.langhuan.functionTools.RestRequestTools;
+import com.langhuan.model.domain.TUserChatWindow;
 import com.langhuan.model.pojo.ChatModelResult;
 import com.langhuan.service.TPromptsService;
+import com.langhuan.service.TUserChatWindowService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
@@ -32,10 +35,13 @@ public class ChatService {
 
     @Autowired
     JdbcChatMemoryRepository chatMemoryRepository;
-    ChatClient chatClient;
+    @Autowired
     RagService ragService;
-    ChatMemory chatMemory;
+    @Autowired
+    TUserChatWindowService userChatWindowService;
 
+    ChatClient chatClient;
+    ChatMemory chatMemory;
 
     public ChatService(ChatClient.Builder chatClientBuilder, RagService ragService) {
         this.ragService = ragService;
@@ -133,7 +139,11 @@ public class ChatService {
 
     public List<String> getChatMemoryWindows() {
         log.info("ChatMemory-get-windows");
-        return chatMemoryRepository.findConversationIds();
+        List<TUserChatWindow> list = userChatWindowService.list(
+                new LambdaQueryWrapper<TUserChatWindow>().eq(TUserChatWindow::getUserId, SecurityContextHolder.getContext().getAuthentication().getName())
+        );
+
+        return list.stream().map(TUserChatWindow::getConversationId).toList();
     }
 
 
@@ -145,20 +155,34 @@ public class ChatService {
     public void initChatMemory(String id) {
         log.info("ChatMemory-init: {}", id);
         List<Message> byConversationId = chatMemoryRepository.findByConversationId(id);
+        // 不知道为啥 内存中在存入的时候，非得拼用户id。这里拼接用户是为了配合内存中存储默认会带用户的情况，但是实际前端使用的是不带用户的，这样添加后在下面读取的时候可以更好的配合新的内存进行读取
+        // 规则就是操作内存对象的时候，需要带用户id。操作数据库直接用对话id即可。
         chatMemory.add(SecurityContextHolder.getContext().getAuthentication().getName() + '_' + id, byConversationId);
     }
 
     public String saveChatMemory(String id) {
         log.info("ChatMemory-save: {}", id);
-        // 不知道为啥 内存中非得拼用户id。 内存中是有 用户_ 的，所以这里拼上，实际存储存储不带用户的，这样后面拿都不耽误
-        List<Message> messages = chatMemory.get(SecurityContextHolder.getContext().getAuthentication().getName() + '_' + id);
+        String user_id = SecurityContextHolder.getContext().getAuthentication().getName();
+        long count = userChatWindowService.count(new LambdaQueryWrapper<TUserChatWindow>().eq(TUserChatWindow::getConversationId, id));
+        if (count == 0) {
+            userChatWindowService.save(new TUserChatWindow() {{
+                setUserId(user_id);
+                setConversationId(id);
+            }});
+        }
+        //  内存中是有 用户_ 的，所以这里拼上，实际存储存储不带用户的
+        List<Message> messages = chatMemory.get(user_id + '_' + id);
         chatMemoryRepository.saveAll(id, messages);
         return "保存成功";
     }
 
     public String clearChatMemory(String id) {
         log.info("ChatMemory-clear: {}", id);
+        // 清空内存 HACK 这里可能产生无用内存
         chatMemory.clear(SecurityContextHolder.getContext().getAuthentication().getName() + '_' + id);
+        // 删除窗口表
+        userChatWindowService.remove(new LambdaQueryWrapper<TUserChatWindow>().eq(TUserChatWindow::getConversationId, id));
+        // 清空对话记录
         chatMemoryRepository.deleteByConversationId(id);
         return "清除成功";
     }
