@@ -1,5 +1,6 @@
 <template>
     <div class="rag-upload-container">
+        <div v-if="feedbackTipText" class=" text-red-500 mb-2">{{ feedbackTipText }}</div>
         <el-steps :active="activeStep" finish-status="success" simple>
             <el-step title="输入文字" />
             <el-step title="插入向量库" />
@@ -27,6 +28,13 @@ import { ref, computed, nextTick } from 'vue'
 import Step1 from './Step1.vue'
 import Step2 from './Step2.vue'
 import stepData from './stepData'
+import { useRouter } from 'vue-router';
+const router = useRouter();
+let feedbackTipText = ref<string>('')
+const { query } = router.currentRoute.value
+if (query.tipText) {
+    feedbackTipText.value = query.tipText as string;
+}
 
 
 const activeStep = ref(0)

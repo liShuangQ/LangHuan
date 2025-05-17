@@ -36,7 +36,7 @@ public class UserController {
         return Result.success(TUserService.register(user));
     }
 
-    @PreAuthorize("hasRole('/user/manager')")
+    @PreAuthorize("hasAuthority('/user/manager')")
     @PostMapping("/change")
     public Result change(@RequestBody TUser user) throws AuthorizationDeniedException {
         return Result.success(TUserService.change(user));
@@ -66,7 +66,7 @@ public class UserController {
         return Result.success(TUserService.getUserPageList(name, username, gender, enabled, pageNum, pageSize));
     }
 
-    @PreAuthorize("hasRole('/user/manager')")
+    @PreAuthorize("hasAuthority('/user/manager')")
     @PostMapping("/delete")
     public Result delete(@RequestParam(name = "id", required = true) Integer id) throws AuthorizationDeniedException {
         Boolean delete = TUserService.delete(id);
@@ -102,7 +102,7 @@ public class UserController {
 
     //@PreAuthorize("hasAuthority('/user/list')")
     //@PreAuthorize("hasAnyRole('admin', 'normal')")
-//    @PreAuthorize("hasRole('/user/manager')") //具有xx权限才支持这个接口
+//    @PreAuthorize("hasRole('/user/manager')")
     @GetMapping("/logout")
     public Result logout(HttpServletRequest request, HttpServletResponse response) {
         // 退出登录

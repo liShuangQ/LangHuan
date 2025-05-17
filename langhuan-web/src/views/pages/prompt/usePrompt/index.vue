@@ -2,7 +2,8 @@
 
     <div class="box-border p-3 bg-white">
         <div class="mb-2">
-            <el-button type="primary" @click="addAndChangeFormShowFun('add')">新增</el-button>
+            <el-button @click="addAndChangeFormShowFun('add')">新增</el-button>
+            <el-button type="primary" @click="refreshPrompt()">立即生效</el-button>
         </div>
         <div class="ml-1">
             <ElementFormC ref="formComRef" :formConfig="formConfig" :formItemConfig="formItemConfig"
@@ -113,9 +114,6 @@ const getUserPageList = () => {
         console.log(err)
     })
 };
-nextTick(() => {
-    getUserPageList()
-})
 
 const addAndChangeFormComRef = ref<FormDefineExpose>();
 let addAndChangeFormVisible = ref(false)
@@ -214,6 +212,21 @@ const addAndChangeFormShowFun = async (t: string, d: any = null) => {
         addAndChangeFormVisible.value = false
     }
 }
+
+const refreshPrompt = () => {
+    http.request<any>({
+        url: '/prompts/usePrompt/refresh',
+        method: 'post',
+        q_spinning: true,
+        data: {},
+    }).then(res => {
+        ElMessage.success(res.data)
+    })
+}
+
+nextTick(() => {
+    getUserPageList()
+})
 </script>
 
 <style scoped></style>

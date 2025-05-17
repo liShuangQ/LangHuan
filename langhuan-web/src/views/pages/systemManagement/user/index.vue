@@ -28,17 +28,7 @@
 
 
         <el-dialog v-model="addAndChangeFormVisible" :title="addAndChangeFormDialogTit" width="800">
-            <ElementFormC ref="addAndChangeFormComRef" :formConfig="addAndChangeFormConfig"
-                :formItemConfig="addAndChangeFormItemConfig" @handle="addAndChangeFormHandle">
-            </ElementFormC>
-            <template #footer>
-                <div class="dialog-footer">
-                    <el-button @click="addAndChangeFormShowFun('close')">取消</el-button>
-                    <el-button type="primary" @click="addAndChangeFormShowFun('save')">
-                        确定
-                    </el-button>
-                </div>
-            </template>
+            <signUp ref="signUpRef" @handle="signUpHandle"></signUp>
         </el-dialog>
 
 
@@ -81,20 +71,14 @@ import {
     tableConfig,
     tableData,
 } from "./tableConfig";
-import {
-    addAndChangeFormConfig,
-    addAndChangeFormItemConfig
-} from "./addAndChangeformConfig";
 import dayjs from "dayjs";
 import { CheckboxValueType, ElMessageBox } from "element-plus";
-
+import signUp from "./signUp.vue";
 const formComRef = ref<FormDefineExpose>();
 const tableComRef = ref<TableDefineExpose>();
+const signUpRef = ref<any>();
 
 const formHandle = (type: string, key: string, data: any, other: any) => {
-    console.log(type, key, data, other);
-};
-const addAndChangeFormHandle = (type: string, key: string, data: any, other: any) => {
     console.log(type, key, data, other);
 };
 
@@ -130,7 +114,6 @@ nextTick(() => {
     getUserPageList()
 })
 
-const addAndChangeFormComRef = ref<FormDefineExpose>();
 let addAndChangeFormVisible = ref(false)
 let addAndChangeFormDialogTit = ref("")
 let relevancyVisible = ref(false)
@@ -139,41 +122,30 @@ const isIndeterminate = ref(true)
 const checkedRoles = ref<string[]>([])
 const roles = ref<{ role_name: string, role_id: string }[]>([])
 let nowUser: any = null;
+const signUpHandle = (t: string, d: any = null) => {
+    if (t === 'saveEnd') {
+        addAndChangeFormVisible.value = false
+        getUserPageList()
+    }
+    if (t === 'close') {
+        addAndChangeFormDialogTit.value = ''
+        addAndChangeFormVisible.value = false
+    }
+}
 const addAndChangeFormShowFun = async (t: string, d: any = null) => {
     if (t === 'add') {
         addAndChangeFormDialogTit.value = '新增用户信息'
         addAndChangeFormVisible.value = true
         nextTick(() => {
-            addAndChangeFormComRef.value!.resetForm()
-            addAndChangeFormComRef.value!.setFormOption([
-                {
-                    key: 'username',
-                    disabled: false
-                }
-            ])
+            signUpRef.value!.handleFun('add', d)
         })
+
     }
     if (t === 'change') {
         addAndChangeFormDialogTit.value = '修改用户信息'
         addAndChangeFormVisible.value = true
         nextTick(() => {
-            addAndChangeFormComRef.value!.resetForm()
-            addAndChangeFormComRef.value!.setFormOption(Object.entries(d).map(([k, v]) => {
-                return {
-                    key: k,
-                    value: String(v)
-                }
-            }))
-            addAndChangeFormComRef.value!.setFormOption([
-                {
-                    key: 'username',
-                    disabled: true
-                },
-                {
-                    key: 'password',
-                    value: ""
-                }
-            ])
+            signUpRef.value!.handleFun('change', d)
         })
     }
     if (t === 'delete') {
@@ -241,45 +213,6 @@ const addAndChangeFormShowFun = async (t: string, d: any = null) => {
             })
             handleCheckedCitiesChange(checkedRoles.value)
         })
-    }
-    if (t === 'save') {
-        let url = ''
-        if (addAndChangeFormDialogTit.value === '新增用户信息') {
-            url = '/user/register'
-        }
-        if (addAndChangeFormDialogTit.value === '修改用户信息') {
-            url = '/user/change'
-        }
-        addAndChangeFormComRef
-            .value!.submitForm()
-            .then((res) => {
-                let sd: any = addAndChangeFormComRef.value!.getFromValue()
-                http.request<any>({
-                    url: url,
-                    method: 'post',
-                    q_spinning: true,
-                    q_contentType: 'json',
-                    data: sd,
-                }).then(res => {
-                    if (res.code === 200) {
-                        ElMessage.success('操作成功')
-                        addAndChangeFormVisible.value = false
-                        getUserPageList()
-                    }
-                })
-            })
-            .catch((rej: any) => {
-                console.log(rej, "失败");
-                // Object.keys(rej).forEach((k) => {
-                //     rej[k].forEach((e: any) => {
-                //         ElMessage.warning(e.message);
-                //     });
-                // });
-            });
-    }
-    if (t === 'close') {
-        addAndChangeFormDialogTit.value = ''
-        addAndChangeFormVisible.value = false
     }
 }
 

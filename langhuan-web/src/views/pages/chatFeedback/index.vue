@@ -18,15 +18,16 @@
                 <template #content-interaction="props">
                     <el-tag v-if="props.row.interaction === 'like'" type="success">{{ props.row.interaction }}</el-tag>
                     <el-tag v-if="props.row.interaction === 'dislike'" type="warning">{{ props.row.interaction
-                    }}</el-tag>
+                        }}</el-tag>
                     <el-tag v-if="props.row.interaction === 'end'" type="info">{{ props.row.interaction
-                    }}</el-tag>
+                        }}</el-tag>
                 </template>
                 <template #content-knowledgeBaseIds="props">
                     <el-button link type="primary" @click="openDocumentIds(props.row)">知识库片段
                     </el-button>
                 </template>
                 <template #content-buttonSlot="props">
+                    <el-button type="primary" link @click="tableBtnHandle('addText', props.row)">添加文字</el-button>
                     <el-button type="primary" link @click="tableBtnHandle('end', props.row)">标记完成</el-button>
                     <el-button link :disabled="true" type="primary" @click="tableBtnHandle('del', props.row)">删除
                     </el-button>
@@ -84,6 +85,7 @@ import {
 import dayjs from "dayjs";
 import { CheckboxValueType, ElMessage, ElMessageBox } from "element-plus";
 import { nextTick, ref } from "vue";
+import router from "@/router";
 const formComRef = ref<FormDefineExpose>();
 const tableComRef = ref<TableDefineExpose>();
 let documentIdsVisible = ref(false)
@@ -124,7 +126,6 @@ const getUserPageList = () => {
         console.log(err)
     })
 };
-
 
 const openDocumentIds = (row: any) => {
     documentIdsData.value = []
@@ -176,6 +177,14 @@ const documentHandle = (type: string, index: number, item: any) => {
     }
 }
 const tableBtnHandle = (type: string, row: any) => {
+    if (type === 'addText') {
+        router.push({
+            path: "/pages/rag/addDocuments",
+            query: {
+                tipText: `问题内容：${row.questionContent}    附加建议：${row.suggestion}`,
+            }
+        })
+    }
     if (type === 'end') {
         ElMessageBox.confirm('是否完成该条记录?', '提示', {
             type: 'warning',

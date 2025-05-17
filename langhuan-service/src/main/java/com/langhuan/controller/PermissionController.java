@@ -21,7 +21,7 @@ public class PermissionController {
         return Result.success(TPermissionService.add(role));
     }
 
-    @PreAuthorize("hasRole('/user/manager')")
+    @PreAuthorize("hasAuthority('/user/manager')")
     @PostMapping("/delete")
     public Result delete(@RequestParam(name = "id", required = true) Integer id) throws AuthorizationDeniedException {
         Boolean delete = TPermissionService.delete(id);
@@ -31,7 +31,7 @@ public class PermissionController {
         return Result.success("删除成功");
     }
 
-    @PreAuthorize("hasRole('/user/manager')")
+    @PreAuthorize("hasAuthority('/user/manager')")
     @PostMapping("/change")
     public Result change(@RequestBody TPermission role) throws AuthorizationDeniedException {
         return Result.success(TPermissionService.change(role));

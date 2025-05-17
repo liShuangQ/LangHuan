@@ -2,9 +2,9 @@
     <div>
         <!--        <el-config-provider :locale="'zhLocale'">-->
         <router-view v-slot="{ Component }">
-            <keep-alive>
+            <!-- <keep-alive> -->
                 <component :is="Component" />
-            </keep-alive>
+            <!-- </keep-alive> -->
         </router-view>
         <!--        </el-config-provider>-->
     </div>

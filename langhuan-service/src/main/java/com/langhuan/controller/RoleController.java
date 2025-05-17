@@ -26,7 +26,7 @@ public class RoleController {
         return Result.success(TRoleService.add(role));
     }
 
-    @PreAuthorize("hasRole('/user/manager')")
+    @PreAuthorize("hasAuthority('/user/manager')")
     @PostMapping("/delete")
     public Result delete(@RequestParam(name = "id", required = true) Integer id) throws AuthorizationDeniedException {
         Boolean delete = TRoleService.delete(id);
@@ -36,7 +36,7 @@ public class RoleController {
         return Result.success("删除成功");
     }
 
-    @PreAuthorize("hasRole('/user/manager')")
+    @PreAuthorize("hasAuthority('/user/manager')")
     @PostMapping("/change")
     public Result change(@RequestBody TRole role) throws AuthorizationDeniedException {
         return Result.success(TRoleService.change(role));

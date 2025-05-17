@@ -24,9 +24,9 @@
                 <el-main style="padding: 8px;overflow: hidden;height: calc(100vh - 75px)">
                     <router-view v-slot="{ Component }" class="h-full w-full bg-white overflow-auto">
                         <Transition appear enter-active-class="animate__animated animate__fadeIn">
-                            <keep-alive>
+                            <!-- <keep-alive> -->
                                 <component :key="$route.fullPath" :is="Component" v-if="refreshPageValue" />
-                            </keep-alive>
+                            <!-- </keep-alive> -->
                         </Transition>
                     </router-view>
                 </el-main>
