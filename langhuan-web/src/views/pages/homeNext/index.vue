@@ -17,7 +17,6 @@ import { generateUUID } from '@/utils/uuid'                // 导入UUID生成�
 
 // 初始化路由和状态变量
 const router = useRouter();
-// 判断当前是否在聊天页面
 const nowIsChat = router.currentRoute.value.path.includes('chat')
 // 聊天窗口列表
 let chats = ref<ChatWindow[]>([]);
@@ -535,7 +534,7 @@ nextTick(async () => {
         : 'h-full w-full bg-white flex gap-4 relative'">
 
         <!-- 对话窗口列表 -->
-        <div v-if="!nowIsChat" :class="[
+        <div :class="[
             'w-64 bg-white rounded-lg shadow-lg p-4 transition-transform duration-300',
             'fixed md:static h-full] z-40',
         ]">
@@ -560,13 +559,13 @@ nextTick(async () => {
                 </li>
             </ul>
             <!--                            {{ message.text }}-->
-            <div class="mt-4 absolute bottom-4 left-2 bg-white w-60">
+            <!-- <div class="mt-4 absolute bottom-4 left-2 bg-white w-60">
                 <el-button @click="aiOptionVisible = true" class="w-full !bg-blue-500 hover:!bg-green-600">
                     <span class="font-medium text-white">
                         设置
                     </span>
                 </el-button>
-            </div>
+            </div> -->
         </div>
 
         <!-- 对话窗口 -->

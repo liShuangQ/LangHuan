@@ -16,8 +16,6 @@ public class Constant {
     public static final String DEFAULT_RAG_SPLIT_PATTERN = "[;；]+\\s*";
     // ai系统默认提示词数据库定时刷新时间
     public static final int AIDEFAULTSYSTEMPROMPTRECTIME = 1000 * 60 * 60 * 2;
-    // ai系统默认提示词数据库定时刷新时间
-    public static final int CHATMEMORYRETRIEVESIZE = 20;
     // ai系统默认提示词
     public static final String AINULLDEFAULTSYSTEMPROMPT = "你是一个人工智能，请根据要求回答用户的问题。";
     // ai系统默认安全顾问 （后期考虑放数据库）

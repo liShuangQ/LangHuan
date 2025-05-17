@@ -31,7 +31,6 @@ public class PromptsController {
     public Result saveTPrompts(@RequestBody TPrompts tPrompts) {
         boolean b = tPromptsService.saveTPrompts(tPrompts);
         return b ? Result.success("操作成功") : Result.error("操作失败");
-
     }
 
     // 删除
@@ -46,6 +45,13 @@ public class PromptsController {
     public Result updateTPrompts(@RequestBody TPrompts tPrompts) {
         boolean b = tPromptsService.updateTPrompts(tPrompts);
         return b ? Result.success("操作成功") : Result.error("操作失败");
+    }
+
+    // 刷新提示词
+    @PostMapping("/usePrompt/refresh")
+    public Result refreshTPrompts() {
+        tPromptsService.cacheTPrompts();
+        return Result.success("生效成功");
     }
 
     // 分页查询并支持模糊搜索
