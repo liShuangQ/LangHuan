@@ -6,13 +6,13 @@
         <div class="body-bg min-h-screen pt-12 md:pt-20 pb-6 px-2 md:px-0" style="font-family: 'Lato', sans-serif">
             <header class="max-w-lg mx-auto">
                 <a href="#">
-                    <h1 class="text-4xl font-bold text-white text-center">VueAdmin</h1>
+                    <h1 class="text-4xl font-bold text-white text-center">{{ BASE_PROJECT_NAME }}</h1>
                 </a>
             </header>
 
             <main class="bg-white max-w-lg mx-auto p-8 md:p-12 my-10 rounded-lg shadow-2xl">
                 <section>
-                    <h3 class="font-bold text-2xl">Welcome to VueAdmin</h3>
+                    <h3 class="font-bold text-2xl">Welcome to {{ BASE_PROJECT_NAME }}</h3>
                     <p class="text-gray-600 pt-2">Sign in to your account.</p>
                 </section>
 
@@ -69,6 +69,10 @@ export default {
 <script setup lang="ts">
 import user from "@/store/user";
 import signUp from "@/views/pages/systemManagement/user/signUp.vue";
+// 基础项目名称
+const BASE_PROJECT_NAME = computed(() => {
+    return process.env.BASE_PROJECT_NAME as string
+})
 const userData = ref<any>({
     username: "",
     password: "",
