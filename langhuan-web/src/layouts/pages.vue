@@ -25,7 +25,7 @@
                     <router-view v-slot="{ Component }" class="h-full w-full bg-white overflow-auto">
                         <Transition appear enter-active-class="animate__animated animate__fadeIn">
                             <!-- <keep-alive> -->
-                                <component :key="$route.fullPath" :is="Component" v-if="refreshPageValue" />
+                            <component :key="$route.fullPath" :is="Component" v-if="refreshPageValue" />
                             <!-- </keep-alive> -->
                         </Transition>
                     </router-view>
@@ -41,6 +41,7 @@ export default {
     route: {
         meta: {
             auth: true,
+            admin: true
         },
     },
 };

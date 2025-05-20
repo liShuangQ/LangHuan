@@ -257,7 +257,7 @@ const changeCheckHandle = (t = 'open', d: any) => {
                     ...changeCheckCancel.metadata,
                     id: Number(changeCheckCancel.metadata.fileId),
                     fileGroupId: Number(changeCheckCancel.metadata.groupId),
-                    fileName: Number(changeCheckCancel.metadata.filename),
+                    fileName: changeCheckCancel.metadata.filename,
                 },
                 documentId: String(changeCheckCancel.metadata.id),
                 documents: changeCheckValue.value
@@ -400,7 +400,7 @@ nextTick(async () => {
             请开启新的对话
         </div>
         <el-dialog v-model="changeCheckVisible" title="文本修改" width="500">
-            <el-input v-model="changeCheckValue" placeholder="Please input" show-word-limit type="textarea" />
+            <el-input v-model="changeCheckValue" placeholder="Please input" show-word-limit type="textarea" :rows="7" />
             <template #footer>
                 <div class="dialog-footer">
                     <el-button type="primary" @click="changeCheckHandle('save', null)">

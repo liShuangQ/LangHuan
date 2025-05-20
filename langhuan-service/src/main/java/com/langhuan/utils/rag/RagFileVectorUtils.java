@@ -88,6 +88,8 @@ public class RagFileVectorUtils {
         }
         String documentText = String.join("\n", documentLines);
 
+        documentText = documentText.replaceAll("source: Invalid source URI: InputStream resource [resource loaded through InputStream] cannot be resolved to URL", "");
+
         List<String> apply = null;
 
         // TODO 当大文档时候的性能优化

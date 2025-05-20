@@ -181,7 +181,7 @@ const tableBtnHandle = (type: string, row: any) => {
         router.push({
             path: "/pages/rag/addDocuments",
             query: {
-                tipText: `问题内容：${row.questionContent}    附加建议：${row.suggestion}`,
+                tipText: `问题内容：${row.questionContent} ； 附加建议：${row.suggestion}`,
             }
         })
     }

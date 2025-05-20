@@ -8,7 +8,8 @@ export interface PagesMenu {
 
 const menu: PagesMenu[] = [
     {
-        path: "/pages/homeNext",
+        // path: "/pages/homeNext",
+        path: "/admin",
         faPath: [],
         title: "主页",
         icon: "HomeFilled",

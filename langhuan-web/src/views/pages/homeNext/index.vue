@@ -14,7 +14,8 @@ import aimodel from "@/store/aimodel"                // 导入AI模型状态管�
 import { documentRankHandleApi } from "@/api/rag";   // 导入文档评分处理API
 import { useRouter } from 'vue-router';              // 导入Vue路由器
 import { generateUUID } from '@/utils/uuid'                // 导入UUID生成工具
-
+import user from "@/store/user";
+const userStore = user()
 // 初始化路由和状态变量
 const router = useRouter();
 const nowIsChat = router.currentRoute.value.path.includes('chat')
@@ -559,13 +560,18 @@ nextTick(async () => {
                 </li>
             </ul>
             <!--                            {{ message.text }}-->
-            <!-- <div class="mt-4 absolute bottom-4 left-2 bg-white w-60">
-                <el-button @click="aiOptionVisible = true" class="w-full !bg-blue-500 hover:!bg-green-600">
+            <div class="mt-4 absolute bottom-4 left-2 bg-white w-60">
+                <!-- <el-button @click="aiOptionVisible = true" class="w-full !bg-blue-500 hover:!bg-green-600">
                     <span class="font-medium text-white">
                         设置
                     </span>
+                </el-button> -->
+                <el-button v-if="nowIsChat" @click="userStore.userLogOut()" class="w-full !bg-blue-500 hover:!bg-green-600">
+                    <span class="font-medium text-white" >
+                        登出
+                    </span>
                 </el-button>
-            </div> -->
+            </div>
         </div>
 
         <!-- 对话窗口 -->
