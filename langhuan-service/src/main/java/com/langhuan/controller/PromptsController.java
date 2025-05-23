@@ -5,6 +5,8 @@ import com.langhuan.common.Result;
 import com.langhuan.model.domain.TPrompts;
 import com.langhuan.service.TPromptsService;
 import com.langhuan.serviceai.ChatService;
+
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -21,12 +23,14 @@ public class PromptsController {
 
     // 提示词分类的枚举
     // NOTE：这里后续可能改动很小，直接在程序中定义死即可
+    @PreAuthorize("hasAuthority('/prompts/usePrompt/query')")
     @PostMapping("/usePrompt/getCategoryEnum")
     public Result getCategoryEnum(@RequestBody TPrompts tPrompts) {
         return Result.success(Constant.CATEGORYENUM);
     }
 
     // 新增
+    @PreAuthorize("hasAuthority('/prompts/usePrompt/add')")
     @PostMapping("/usePrompt/add")
     public Result saveTPrompts(@RequestBody TPrompts tPrompts) {
         boolean b = tPromptsService.saveTPrompts(tPrompts);
@@ -34,6 +38,7 @@ public class PromptsController {
     }
 
     // 删除
+    @PreAuthorize("hasAuthority('/prompts/usePrompt/delete')")
     @PostMapping("/usePrompt/delete")
     public Result removeTPromptsById(@RequestParam Integer id) {
         boolean b = tPromptsService.removeTPromptsById(id);
@@ -41,6 +46,7 @@ public class PromptsController {
     }
 
     // 修改
+    @PreAuthorize("hasAuthority('/prompts/usePrompt/update')")
     @PostMapping("/usePrompt/update")
     public Result updateTPrompts(@RequestBody TPrompts tPrompts) {
         boolean b = tPromptsService.updateTPrompts(tPrompts);
@@ -48,6 +54,7 @@ public class PromptsController {
     }
 
     // 刷新提示词
+    @PreAuthorize("hasAuthority('/prompts/usePrompt/refresh')")
     @PostMapping("/usePrompt/refresh")
     public Result refreshTPrompts() {
         tPromptsService.cacheTPrompts();
@@ -55,6 +62,7 @@ public class PromptsController {
     }
 
     // 分页查询并支持模糊搜索
+    @PreAuthorize("hasAuthority('/prompts/usePrompt/query')")
     @PostMapping("/usePrompt/query")
     public Result getTPromptsByPage(@RequestParam(defaultValue = "1") int pageNum,
                                     @RequestParam(defaultValue = "10") int pageSize,

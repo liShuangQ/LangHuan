@@ -38,7 +38,11 @@ class Guard {
                 if (to.meta.guest && this.getToken()) {
                     return from;
                 }
-                if (to.meta.admin && !toRaw(this.userStore.isAdmin)) {
+                if (
+                    to.meta.admin &&
+                    this.userStore.info &&
+                    !toRaw(this.userStore.isAdmin)
+                ) {
                     ElMessage.warning("当前无权限访问！");
                     return from;
                 }

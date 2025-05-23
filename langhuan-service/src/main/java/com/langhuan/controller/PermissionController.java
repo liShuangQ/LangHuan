@@ -16,12 +16,13 @@ public class PermissionController {
         this.TPermissionService = TPermissionService;
     }
 
+    @PreAuthorize("hasAuthority('/permission/add')")
     @PostMapping("/add")
     public Result add(@RequestBody TPermission role) {
         return Result.success(TPermissionService.add(role));
     }
 
-    @PreAuthorize("hasAuthority('/user/manager')")
+    @PreAuthorize("hasAuthority('/permission/delete')")
     @PostMapping("/delete")
     public Result delete(@RequestParam(name = "id", required = true) Integer id) throws AuthorizationDeniedException {
         Boolean delete = TPermissionService.delete(id);
@@ -31,12 +32,13 @@ public class PermissionController {
         return Result.success("删除成功");
     }
 
-    @PreAuthorize("hasAuthority('/user/manager')")
+    @PreAuthorize("hasAuthority('/permission/change')")
     @PostMapping("/change")
     public Result change(@RequestBody TPermission role) throws AuthorizationDeniedException {
         return Result.success(TPermissionService.change(role));
     }
 
+    @PreAuthorize("hasAuthority('/permission/list')")
     @PostMapping("/getPageList")
     public Result getPageList(
             @RequestParam(name = "name", required = false, defaultValue = "") String name,

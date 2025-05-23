@@ -29,7 +29,7 @@
                 <template #content-buttonSlot="props">
                     <el-button type="primary" link @click="tableBtnHandle('addText', props.row)">添加文字</el-button>
                     <el-button type="primary" link @click="tableBtnHandle('end', props.row)">标记完成</el-button>
-                    <el-button link :disabled="true" type="primary" @click="tableBtnHandle('del', props.row)">删除
+                    <el-button link type="primary" @click="tableBtnHandle('del', props.row)">删除
                     </el-button>
                 </template>
             </ElementTableC>

@@ -82,7 +82,7 @@
                             <div class=" float-right">
                                 <el-button type="primary" link
                                     @click="documentHandle('edit', index, item)">修改</el-button>
-                                <el-button type="primary" link :disabled="true"
+                                <el-button type="primary" link
                                     @click="documentHandle('delete', index, item)">删除</el-button>
                             </div>
                         </div>

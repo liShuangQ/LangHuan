@@ -8,6 +8,7 @@ import com.langhuan.model.domain.TChatFeedback;
 import com.langhuan.service.TChatFeedbackService;
 import com.langhuan.serviceai.RagService;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,6 +24,7 @@ public class ChatFeedbackController {
         this.ragService = ragService;
     }
 
+    // @PreAuthorize("hasAuthority('/chatFeedback/add')")
     @PostMapping(path = "/add")
     public Result add(
             @RequestBody TChatFeedback chatFeedback) {
@@ -30,6 +32,7 @@ public class ChatFeedbackController {
         return Result.success(tChatFeedbackService.save(chatFeedback));
     }
 
+    @PreAuthorize("hasAuthority('/chatFeedback/delete')")
     @PostMapping(path = "/delete")
     public Result delete(
             @RequestParam(name = "id", required = true) Integer id) {
@@ -41,6 +44,7 @@ public class ChatFeedbackController {
         }
     }
 
+    @PreAuthorize("hasAuthority('/chatFeedback/search')")
     @PostMapping(path = "/search")
     public Result search(
             @RequestParam(name = "userId", required = false) String userId,
@@ -60,6 +64,7 @@ public class ChatFeedbackController {
                 ));
     }
 
+    @PreAuthorize("hasAuthority('/chatFeedback/changeDocumentTextByString')")
     @PostMapping(path = "/changeDocumentTextByString")
     public Result changeDocumentTextByString(
             @RequestParam(name = "document", required = false) String document,
@@ -68,12 +73,14 @@ public class ChatFeedbackController {
                 document, documentId));
     }
 
+    @PreAuthorize("hasAuthority('/chatFeedback/queryDocumentsByIds')")
     @PostMapping(path = "/queryDocumentsByIds")
     public Result queryDocumentsByIds(
             @RequestParam(name = "fileIds", required = false) String fileIds) {
         return Result.success(ragService.queryDocumentsByIds(fileIds));
     }
 
+    @PreAuthorize("hasAuthority('/chatFeedback/changeInteractionToEnd')")
     @PostMapping(path = "/changeInteractionToEnd")
     public Result changeInteractionToEnd(
             @RequestParam(name = "id", required = false) Integer id) {

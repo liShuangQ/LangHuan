@@ -515,6 +515,10 @@ const initChatMemory = async () => {
 
 // 组件初始化执行
 nextTick(async () => {
+    if (userStore.isAdmin) {
+        router.push('/admin')
+        return;
+    }
     // 设置AI模型选项
     await aimodel().setModelOptions()
     // 获取模型选项列表
@@ -566,8 +570,9 @@ nextTick(async () => {
                         设置
                     </span>
                 </el-button> -->
-                <el-button v-if="nowIsChat" @click="userStore.userLogOut()" class="w-full !bg-blue-500 hover:!bg-green-600">
-                    <span class="font-medium text-white" >
+                <el-button v-if="nowIsChat" @click="userStore.userLogOut()"
+                    class="w-full !bg-blue-500 hover:!bg-green-600">
+                    <span class="font-medium text-white">
                         登出
                     </span>
                 </el-button>

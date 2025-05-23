@@ -47,14 +47,20 @@
         </el-dialog>
 
         <el-dialog v-model="relevancyVisible" :title="addAndChangeFormDialogTit" width="800">
-            <el-checkbox v-model="checkAll" :indeterminate="isIndeterminate" @change="handleCheckAllChange">
-                Check all
-            </el-checkbox>
-            <el-checkbox-group v-model="checkedPermissions" @change="handleCheckedCitiesChange">
-                <el-checkbox v-for="item in permissions" :key="item.permission_id" :label="item.permission_id" :value="item.permission_id">
-                    {{ item.permission_name }}
-                </el-checkbox>
-            </el-checkbox-group>
+            <div v-for="permissions in allPermissions" :key="permissions.parent">
+                <div class=" text-base"> {{ permissions.parent }}
+                    <el-button type="text" @click="allPermissionsCheckAll(permissions)">
+                        {{ '切换全选' }}
+                    </el-button>
+                </div>
+
+                <el-checkbox-group v-model="permissions.checkedPermissions">
+                    <el-checkbox v-for="item in permissions.children" :key="item.permission_id"
+                        :label="item.permission_id" :value="item.permission_id">
+                        {{ item.permission_name }}
+                    </el-checkbox>
+                </el-checkbox-group>
+            </div>
             <template #footer>
                 <div class="dialog-footer">
                     <el-button @click="relevancyShowFun('close')">取消</el-button>
@@ -136,10 +142,7 @@ const addAndChangeFormComRef = ref<FormDefineExpose>();
 let addAndChangeFormVisible = ref(false)
 let addAndChangeFormDialogTit = ref("")
 let relevancyVisible = ref(false)
-const checkAll = ref(false)
-const isIndeterminate = ref(true)
-const checkedPermissions = ref<string[]>([])
-const permissions = ref<{ permission_name: string, permission_id: string }[]>([])
+const allPermissions = ref<{ parent: string, checkAll: boolean, checkedPermissions: any, children: { permission_name: string, permission_id: string }[] }[]>()
 let nowRole: any = null;
 const addAndChangeFormShowFun = async (t: string, d: any = null) => {
     if (t === 'add') {
@@ -213,20 +216,37 @@ const addAndChangeFormShowFun = async (t: string, d: any = null) => {
 
     }
     if (t === 'permission') {
+
+        addAndChangeFormDialogTit.value = '关联权限'
         nowRole = d
         relevancyVisible.value = true
-        checkedPermissions.value = []
-        permissions.value = []
+        allPermissions.value = []
         await nextTick(async () => {
             await http.request<any>({
-                url: '/role/getRolePermission',
+                url: '/permission/getPageList',
                 method: 'post',
                 q_spinning: true,
                 q_contentType: 'form',
-                data: {},
+                data: {
+                    pageNum: 1,
+                    pageSize: 100000
+                },
             }).then(res => {
                 if (res.code === 200) {
-                    permissions.value = res.data
+                    const parents = res.data.records.filter((e: any) => e.parentId === 0)
+                    allPermissions.value = parents.map((e: any) => {
+                        return {
+                            parent: e.name,
+                            checkAll: false,
+                            checkedPermissions: ref([]),
+                            children: res.data.records.filter((e1: any) => e1.parentId === e.id).map((e1: any) => {
+                                return {
+                                    permission_name: e1.name,
+                                    permission_id: e1.id
+                                }
+                            })
+                        }
+                    })
                 }
             })
             await http.request<any>({
@@ -239,10 +259,13 @@ const addAndChangeFormShowFun = async (t: string, d: any = null) => {
                 },
             }).then(res => {
                 if (res.code === 200) {
-                    checkedPermissions.value = res.data.map((e: any) => e.permission_id)
+                    allPermissions.value?.forEach((e) => {
+                        e.checkedPermissions = ref(e.children.map((e1: any) => {
+                            return res.data.find((e2: any) => e2.permission_id === e1.permission_id)?.permission_id ?? ''
+                        }))
+                    })
                 }
             })
-            handleCheckedCitiesChange(checkedPermissions.value)
         })
     }
     if (t === 'save') {
@@ -288,17 +311,9 @@ const addAndChangeFormShowFun = async (t: string, d: any = null) => {
     }
 }
 
-const handleCheckAllChange = (val: boolean | CheckboxValueType) => {
-    checkedPermissions.value = val ? permissions.value.map(e => e.permission_id) : []
-    isIndeterminate.value = false
-}
-const handleCheckedCitiesChange = (value: string[] | CheckboxValueType[]) => {
-    const checkedCount = value.length
-    checkAll.value = checkedCount === permissions.value.length
-    isIndeterminate.value = checkedCount > 0 && checkedCount < permissions.value.length
-}
 const relevancyShowFun = (t: string, d: any = null) => {
-    if (t === 'save') {
+    const allChecked = allPermissions.value?.map((e) => toRaw(e.checkedPermissions)).filter(e => e.length !== 0).flat(1).filter(e => e !== '')
+    if (allChecked && t === 'save') {
         http.request<any>({
             url: '/role/relevancyRoles',
             method: 'post',
@@ -306,7 +321,7 @@ const relevancyShowFun = (t: string, d: any = null) => {
             q_contentType: 'form',
             data: {
                 id: nowRole.id,
-                permissionIds: checkedPermissions.value.join(',')
+                permissionIds: allChecked.join(',')
             },
         }).then(res => {
             if (res.code === 200) {
@@ -319,6 +334,10 @@ const relevancyShowFun = (t: string, d: any = null) => {
     if (t === 'close') {
         relevancyVisible.value = false
     }
+}
+const allPermissionsCheckAll = (e: any) => {
+    e.checkAll = !e.checkAll
+    e.checkedPermissions = e.checkAll ? e.children.map((e1: any) => e1.permission_id) : []
 }
 </script>
 

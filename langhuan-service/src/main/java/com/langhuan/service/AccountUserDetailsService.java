@@ -48,7 +48,6 @@ public class AccountUserDetailsService implements UserDetailsService {
         // @PreAuthorize配合@EnableMethodSecurity(prePostEnabled = true)使用
         // @PreAuthorize("hasAuthority('/user/list')")
         // @PreAuthorize("hasAnyRole('admin', 'normal')")
-        // @PreAuthorize("hasRole('/user/manager1')") //具有xx权限才支持这个接口
         List<TPermission> permissions = TUserService.getPermissionByUsername(username);
         String authority = "";
         if (CollectionUtils.isNotEmpty(permissions)) {

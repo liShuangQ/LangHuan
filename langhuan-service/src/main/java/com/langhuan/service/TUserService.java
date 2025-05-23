@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.langhuan.common.BusinessException;
+import com.langhuan.common.Constant;
 import com.langhuan.model.domain.TPermission;
 import com.langhuan.model.domain.TRolePermission;
 import com.langhuan.model.domain.TUser;
@@ -44,7 +45,8 @@ public class TUserService extends ServiceImpl<TUserMapper, TUser> {
     private final CacheService cacheService;
 
     // 构造方法，注入必要的服务和映射器
-    public TUserService(TUserRoleService TUserRoleService, TRolePermissionService TRolePermissionService, TPermissionService TPermissionService, JwtUtil jwtUtil, JdbcTemplate dao, CacheService cacheService) {
+    public TUserService(TUserRoleService TUserRoleService, TRolePermissionService TRolePermissionService,
+            TPermissionService TPermissionService, JwtUtil jwtUtil, JdbcTemplate dao, CacheService cacheService) {
         this.TUserRoleService = TUserRoleService;
         this.TRolePermissionService = TRolePermissionService;
         this.TPermissionService = TPermissionService;
@@ -83,7 +85,8 @@ public class TUserService extends ServiceImpl<TUserMapper, TUser> {
         List<TPermission> permissions = new ArrayList<>();
         if (null != user) {
             // 获取用户的角色列表
-            List<TUserRole> userRoles = TUserRoleService.list(new LambdaQueryWrapper<TUserRole>().eq(TUserRole::getUserId, user.getId()));
+            List<TUserRole> userRoles = TUserRoleService
+                    .list(new LambdaQueryWrapper<TUserRole>().eq(TUserRole::getUserId, user.getId()));
             if (CollectionUtils.isNotEmpty(userRoles)) {
                 // 提取角色ID列表
                 List<Integer> roleIds = new ArrayList<>();
@@ -91,7 +94,8 @@ public class TUserService extends ServiceImpl<TUserMapper, TUser> {
                     roleIds.add(userRole.getRoleId());
                 });
                 // 获取角色对应的权限列表
-                List<TRolePermission> rolePermissions = TRolePermissionService.list(new LambdaQueryWrapper<TRolePermission>().in(TRolePermission::getRoleId, roleIds));
+                List<TRolePermission> rolePermissions = TRolePermissionService
+                        .list(new LambdaQueryWrapper<TRolePermission>().in(TRolePermission::getRoleId, roleIds));
                 if (CollectionUtils.isNotEmpty(rolePermissions)) {
                     // 提取权限ID列表
                     List<Integer> permissionIds = new ArrayList<>();
@@ -99,7 +103,8 @@ public class TUserService extends ServiceImpl<TUserMapper, TUser> {
                         permissionIds.add(rolePermission.getPermissionId());
                     });
                     // 根据权限ID列表查询权限信息
-                    permissions = TPermissionService.list(new LambdaQueryWrapper<TPermission>().in(TPermission::getId, permissionIds));
+                    permissions = TPermissionService
+                            .list(new LambdaQueryWrapper<TPermission>().in(TPermission::getId, permissionIds));
                 }
             }
         }
@@ -132,9 +137,9 @@ public class TUserService extends ServiceImpl<TUserMapper, TUser> {
         if (user == null) {
             throw new BusinessException("用户名不存在");
         }
-        // HACK: 兼容初始创建的两个用户, 极大隐患
-        if (user.getId().equals(1) || user.getId().equals(2)) {
-            if (!user.getPassword().equals(password)) {
+        // HACK: 针对admin单独处理
+        if (user.getUsername().equals("admin")) {
+            if (!password.equals(Constant.ADMIN_PASSWORD)) {
                 throw new BusinessException("用户名或密码错误");
             }
         } else {
@@ -150,7 +155,8 @@ public class TUserService extends ServiceImpl<TUserMapper, TUser> {
         map.put("token", token);
 
         log.info("用户 {} 登录成功,更新时间", username);
-        super.update(new LambdaUpdateWrapper<TUser>().set(TUser::getLastLoginTime, new Date()).eq(TUser::getUsername, username));
+        super.update(new LambdaUpdateWrapper<TUser>().set(TUser::getLastLoginTime, new Date()).eq(TUser::getUsername,
+                username));
         return map;
     }
 
@@ -170,7 +176,7 @@ public class TUserService extends ServiceImpl<TUserMapper, TUser> {
         return map;
     }
 
-    //数据库事务 出现异常回滚
+    // 数据库事务 出现异常回滚
     @Transactional(rollbackFor = Exception.class)
     public Boolean delete(Integer userId) {
         TUser user = super.getById(userId);
@@ -185,14 +191,14 @@ public class TUserService extends ServiceImpl<TUserMapper, TUser> {
         return super.removeById(userId);
     }
 
-    public Page<TUser> getUserPageList(String name, String username, Integer gender, Integer enabled, int pageNum, int pageSize) {
+    public Page<TUser> getUserPageList(String name, String username, Integer gender, Integer enabled, int pageNum,
+            int pageSize) {
         Page<TUser> userPage = super.page(new Page<>(pageNum, pageSize),
                 new LambdaQueryWrapper<TUser>()
                         .like(!name.isEmpty(), TUser::getName, name)
                         .like(!username.isEmpty(), TUser::getUsername, username)
                         .eq(gender != null, TUser::getGender, gender)
-                        .eq(enabled != null, TUser::getEnabled, enabled)
-        );
+                        .eq(enabled != null, TUser::getEnabled, enabled));
         for (TUser record : userPage.getRecords()) {
             record.setPassword(null);
         }
@@ -224,6 +230,9 @@ public class TUserService extends ServiceImpl<TUserMapper, TUser> {
 
     @Transactional(rollbackFor = Exception.class)
     public void relevancyRoles(Integer userId, List<Integer> roleIds) {
+        if (userId.equals(1) && !roleIds.contains(1)) {
+            throw new BusinessException("超级管理员不能修改");
+        }
         TUserRoleService.remove(new LambdaQueryWrapper<TUserRole>().eq(TUserRole::getUserId, userId));
         List<TUserRole> userRoles = new ArrayList<>();
         roleIds.forEach(roleId -> {

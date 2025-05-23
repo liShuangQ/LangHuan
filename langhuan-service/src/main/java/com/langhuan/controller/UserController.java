@@ -31,12 +31,13 @@ public class UserController {
         this.TUserService = TUserService;
     }
 
+    @PreAuthorize("hasAuthority('/user/register')")
     @PostMapping("/register")
     public Result register(@RequestBody TUser user) {
         return Result.success(TUserService.register(user));
     }
 
-    @PreAuthorize("hasAuthority('/user/manager')")
+    @PreAuthorize("hasAuthority('/user/change')")
     @PostMapping("/change")
     public Result change(@RequestBody TUser user) throws AuthorizationDeniedException {
         return Result.success(TUserService.change(user));
@@ -47,12 +48,14 @@ public class UserController {
         return Result.success(TUserService.login(userLoginDTO, response));
     }
 
+    // @PreAuthorize("hasAuthority('/user/info/view')")
     @PostMapping("/getUserInfoByToken")
     public Result getUserInfoByToken(
     ) {
         return Result.success(TUserService.getUserInfoByToken());
     }
 
+    @PreAuthorize("hasAuthority('/user/list')")
     @PostMapping("/getUserPageList")
     public Result getUserPageList(
             @RequestParam(name = "name", required = false, defaultValue = "") String name,
@@ -66,9 +69,12 @@ public class UserController {
         return Result.success(TUserService.getUserPageList(name, username, gender, enabled, pageNum, pageSize));
     }
 
-    @PreAuthorize("hasAuthority('/user/manager')")
+    @PreAuthorize("hasAuthority('/user/delete')")
     @PostMapping("/delete")
     public Result delete(@RequestParam(name = "id", required = true) Integer id) throws AuthorizationDeniedException {
+        if (id == 1) {
+            return Result.error("管理员用户无法删除");
+        }
         Boolean delete = TUserService.delete(id);
         if (!delete) {
             return Result.error("删除失败");
@@ -76,11 +82,13 @@ public class UserController {
         return Result.success("删除成功");
     }
 
+    @PreAuthorize("hasAuthority('/user/roles/view')")
     @PostMapping("/getUserRoles")
     public Result getUserRoles(@RequestParam(name = "id", required = false) Integer id) {
         return Result.success(TUserService.getUserRoles(id));
     }
 
+    @PreAuthorize("hasAuthority('/user/roles/edit')")
     @PostMapping("/relevancyRoles")
     public Result relevancyRoles(
             @RequestParam(name = "id", required = true) Integer id,
@@ -102,7 +110,6 @@ public class UserController {
 
     //@PreAuthorize("hasAuthority('/user/list')")
     //@PreAuthorize("hasAnyRole('admin', 'normal')")
-//    @PreAuthorize("hasRole('/user/manager')")
     @GetMapping("/logout")
     public Result logout(HttpServletRequest request, HttpServletResponse response) {
         // 退出登录

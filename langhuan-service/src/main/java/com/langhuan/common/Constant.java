@@ -6,6 +6,8 @@ import java.util.Map;
 public class Constant {
     // JWT密钥，用于签名和验证token，需要足够长以确保安全性
     public static final String SECRET = "dGhpcyBpcyBhIGJhc2U2NCBrZXkgd2l0aCBmb3IgZnJvbSBzZWN1cmUgcmluZw==";
+    // ADMIN的默认管理员账号的密码（明文）
+    public static final String ADMIN_PASSWORD = "asb#1234";
     // Token过期时间，单位为分钟
     public static final long EXPIRE = 60 * 24 * 24;
     // HTTP请求头中的token字段名
