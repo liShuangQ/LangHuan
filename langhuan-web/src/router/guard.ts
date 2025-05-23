@@ -38,14 +38,14 @@ class Guard {
                 if (to.meta.guest && this.getToken()) {
                     return from;
                 }
-                if (
-                    to.meta.admin &&
-                    this.userStore.info &&
-                    !toRaw(this.userStore.isAdmin)
-                ) {
-                    ElMessage.warning("当前无权限访问！");
-                    return from;
-                }
+                // if (
+                //     to.meta.admin &&
+                //     this.userStore.info &&
+                //     !toRaw(this.userStore.isAdmin)
+                // ) {
+                //     ElMessage.warning("当前无权限访问！");
+                //     return from;
+                // }
 
                 // 获取用户信息 （登陆和获取接口分开）
                 if (this.getToken() && !this.userStore.info) {
