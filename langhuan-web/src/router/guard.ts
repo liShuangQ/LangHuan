@@ -4,7 +4,7 @@ import { toRaw } from "vue";
 import { store } from "@/utils";
 import { fifterPagesRouter } from "@/router/config/fifter";
 import menu from "@/router/menu";
-
+import { ElMessage } from "element-plus";
 class Guard {
     private userStore;
 

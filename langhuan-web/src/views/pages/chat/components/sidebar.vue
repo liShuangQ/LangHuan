@@ -26,57 +26,15 @@ const BASE_PROJECT_NAME = computed(() => {
     return process.env.BASE_PROJECT_NAME as string
 })
 type ActionType = 'new-chat' | 'chat' | 'discover' | 'logout' | 'delete';
-interface SidebarButton {
-    type: ActionType;
-    icon: string;
-    active?: boolean;
-}
-
-const sidebarButtons = [
-    {
-        type: 'new-chat',
-        icon: `<path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-              <path d="M8 9h8"></path>
-              <path d="M8 13h6"></path>
-              <path d="M12.01 18.594l-4.01 2.406v-3h-2a3 3 0 0 1 -3 -3v-8a3 3 0 0 1 3 -3h12a3 3 0 0 1 3 3v5.5"></path>
-              <path d="M16 19h6"></path>
-              <path d="M19 16v6"></path>`
-    },
-    {
-        type: 'chat',
-        icon: `<path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-              <path d="M21 14l-3 -3h-7a1 1 0 0 1 -1 -1v-6a1 1 0 0 1 1 -1h9a1 1 0 0 1 1 1v10"></path>
-              <path d="M14 15v2a1 1 0 0 1 -1 1h-7l-3 3v-10a1 1 0 0 1 1 -1h2"></path>`,
-        active: true
-    },
-    {
-        type: 'discover',
-        icon: `<path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-              <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"></path>
-              <path d="M21 21l-6 -6"></path>`
-    },
-    {
-        type: 'settings',
-        icon: ` <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-        <path
-          d="M19.875 6.27a2.225 2.225 0 0 1 1.125 1.948v7.284c0 .809 -.443 1.555 -1.158 1.948l-6.75 4.27a2.269 2.269 0 0 1 -2.184 0l-6.75 -4.27a2.225 2.225 0 0 1 -1.158 -1.948v-7.285c0 -.809 .443 -1.554 1.158 -1.947l6.75 -3.98a2.33 2.33 0 0 1 2.25 0l6.75 3.98h-.033z"
-        ></path>
-        <path d="M12 12m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0"></path>`
-    },
-    {
-        type: 'logout',
-        icon: `<path d="M904.832 512.192l-252.352 252.352-60.352-60.352 149.376-149.312h-408.96V469.568h408.96L592.128 320.192l60.352-60.288 252.352 252.288z m-487.04-320H204.48v640h213.312v85.376H119.168V106.88h298.624v85.312z" p-id="5144" fill="currentColor"></path>`
-    }
-] as SidebarButton[];
 
 const searchQuery = ref('');
 
 const filteredChatList = computed(() => {
     const query = searchQuery.value.toLowerCase().trim();
     if (!query) return props.chatList;
-    
-    return props.chatList.filter(chat => 
-        chat.title.toLowerCase().includes(query) || 
+
+    return props.chatList.filter(chat =>
+        chat.title.toLowerCase().includes(query) ||
         chat.date.toLowerCase().includes(query)
     );
 });
@@ -98,20 +56,46 @@ const filteredChatList = computed(() => {
             </a>
 
             <!-- Navigation Buttons -->
-            <a v-for="btn in sidebarButtons" :key="btn.type" href="#" @click.prevent="handleAction(btn.type)" :class="[
-                'rounded-lg p-1.5 transition-colors duration-200 focus:outline-none',
-                btn.active
-                    ? 'bg-blue-100 text-blue-600 dark:bg-slate-800 dark:text-blue-600'
-                    : 'text-slate-500 hover:bg-slate-200 dark:text-slate-400 dark:hover:bg-slate-800'
-            ]">
-                <svg xmlns="http://www.w3.org/2000/svg" :class="['h-6 w-6', { 'icon': btn.type === 'logout' }]"
-                    :viewBox="btn.type === 'logout' ? '0 0 1024 1024' : '0 0 24 24'"
-                    :stroke-width="btn.type === 'logout' ? '0' : '2'"
-                    :stroke="btn.type === 'logout' ? 'none' : 'currentColor'" fill="none" stroke-linecap="round"
-                    stroke-linejoin="round" v-html="btn.icon">
+            <a href="#" @click.prevent="handleAction('new-chat')" class="rounded-lg p-1.5 transition-colors duration-200 focus:outline-none text-slate-500 hover:bg-slate-200 dark:text-slate-400 dark:hover:bg-slate-800">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                    <path d="M8 9h8"></path>
+                    <path d="M8 13h6"></path>
+                    <path d="M12.01 18.594l-4.01 2.406v-3h-2a3 3 0 0 1 -3 -3v-8a3 3 0 0 1 3 -3h12a3 3 0 0 1 3 3v5.5"></path>
+                    <path d="M16 19h6"></path>
+                    <path d="M19 16v6"></path>
                 </svg>
             </a>
 
+            <a href="#" @click.prevent="handleAction('barChat')" class="rounded-lg p-1.5 transition-colors duration-200 focus:outline-none bg-blue-100 text-blue-600 dark:bg-slate-800 dark:text-blue-600">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                    <path d="M21 14l-3 -3h-7a1 1 0 0 1 -1 -1v-6a1 1 0 0 1 1 -1h9a1 1 0 0 1 1 1v10"></path>
+                    <path d="M14 15v2a1 1 0 0 1 -1 1h-7l-3 3v-10a1 1 0 0 1 1 -1h2"></path>
+                </svg>
+            </a>
+
+            <!-- <a href="#" @click.prevent="handleAction('discover')" class="rounded-lg p-1.5 transition-colors duration-200 focus:outline-none text-slate-500 hover:bg-slate-200 dark:text-slate-400 dark:hover:bg-slate-800">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                    <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"></path>
+                    <path d="M21 21l-6 -6"></path>
+                </svg>
+            </a> -->
+
+            <a href="#" @click.prevent="handleAction('settings')" class="rounded-lg p-1.5 transition-colors duration-200 focus:outline-none text-slate-500 hover:bg-slate-200 dark:text-slate-400 dark:hover:bg-slate-800">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                    <path d="M19.875 6.27a2.225 2.225 0 0 1 1.125 1.948v7.284c0 .809 -.443 1.555 -1.158 1.948l-6.75 4.27a2.269 2.269 0 0 1 -2.184 0l-6.75 -4.27a2.225 2.225 0 0 1 -1.158 -1.948v-7.285c0 -.809 .443 -1.554 1.158 -1.947l6.75 -3.98a2.33 2.33 0 0 1 2.25 0l6.75 3.98h-.033z"></path>
+                    <path d="M12 12m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0"></path>
+                </svg>
+            </a>
+
+            <a href="#" @click.prevent="handleAction('logout')" class="rounded-lg p-1.5 transition-colors duration-200 focus:outline-none text-slate-500 hover:bg-slate-200 dark:text-slate-400 dark:hover:bg-slate-800">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 icon" viewBox="0 0 1024 1024" stroke-width="0" stroke="none" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M904.832 512.192l-252.352 252.352-60.352-60.352 149.376-149.312h-408.96V469.568h408.96L592.128 320.192l60.352-60.288 252.352 252.288z m-487.04-320H204.48v640h213.312v85.376H119.168V106.88h298.624v85.312z" p-id="5144" fill="currentColor"></path>
+                </svg>
+            </a>
         </div>
         <!-- Second Column -->
         <div class="h-screen w-52 overflow-y-auto bg-slate-50 py-8 dark:bg-slate-900 sm:w-60">
@@ -128,7 +112,7 @@ const filteredChatList = computed(() => {
                 <form @submit.prevent>
                     <label for="search-chats" class="sr-only">Search chats</label>
                     <div class="relative">
-                        <input id="search-chats" 
+                        <input id="search-chats"
                                type="text"
                                v-model="searchQuery"
                                class="w-full rounded-lg border border-slate-300 bg-slate-50 p-3 pr-10 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
@@ -152,8 +136,8 @@ const filteredChatList = computed(() => {
                     </div>
                 </form>
 
-                <div v-for="chat in filteredChatList" 
-                     :key="chat.id" 
+                <div v-for="chat in filteredChatList"
+                     :key="chat.id"
                      :class="[
                          'group flex w-full items-center justify-between gap-y-2 rounded-lg px-3 py-2 text-left transition-colors duration-200 focus:outline-none',
                          chat.active ? 'bg-slate-200 dark:bg-slate-800' : 'hover:bg-slate-200 dark:hover:bg-slate-800'

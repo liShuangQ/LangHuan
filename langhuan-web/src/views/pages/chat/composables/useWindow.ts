@@ -2,7 +2,6 @@ import { ref } from "vue";
 import * as api from "../api";
 import { generateUUID } from "@/utils/uuid";
 import type { ChatWindow } from "../types";
-import { el } from "element-plus/es/locale";
 
 export function useWindow() {
     const chatList = ref<ChatWindow[]>([]);

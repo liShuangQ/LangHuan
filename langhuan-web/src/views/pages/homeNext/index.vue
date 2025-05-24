@@ -523,7 +523,7 @@ nextTick(async () => {
     // 设置AI模型选项
     await aimodel().setModelOptions()
     // 获取模型选项列表
-    chatModelOption.value = toRaw(aimodel().getModelOptions()) as any
+    chatModelOption.value = toRaw(await aimodel().getModelOptions()) as any
     // 默认选择第一个模型
     chatModelName.value = chatModelOption.value[0].value
     // 获取RAG文件组选项列表
