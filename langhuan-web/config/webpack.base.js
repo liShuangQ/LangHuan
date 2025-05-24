@@ -6,7 +6,7 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const path = require("path");
 const AutoImport = require('unplugin-auto-import/webpack')
 const AutoComponents = require('unplugin-vue-components/webpack')
-const {ElementPlusResolver} = require('unplugin-vue-components/resolvers')
+// const {ElementPlusResolver} = require('unplugin-vue-components/resolvers')
 const webpack = require("webpack");
 const dotenv = require('dotenv');
 const DotenvWebpack = require('dotenv-webpack');
@@ -91,12 +91,12 @@ module.exports = {
         }),
         new VueLoaderPlugin(),
         AutoImport({
-            resolvers: [ElementPlusResolver()],
+            resolvers: [],
             imports: ["vue", "vue-router"],
             dts: "types/auto-imports.d.ts",
         }),
         AutoComponents({
-            resolvers: [ElementPlusResolver()],
+            resolvers: [],
             dts: 'types/components.d.ts'
         }),
         new DotenvWebpack({

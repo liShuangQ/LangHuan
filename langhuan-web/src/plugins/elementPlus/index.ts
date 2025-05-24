@@ -5,7 +5,7 @@ import zhCn from 'element-plus/es/locale/lang/zh-cn'
 
 
 
-export function setupIcons(app: App) {
+export function setupElementAndIcons(app: App) {
     app.use(ElementPlus, {
         locale: zhCn,
     })
