@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ref, computed } from 'vue'
 
 interface ChatItem {
     id: string;
@@ -11,7 +12,7 @@ interface EmitEvent {
     (event: 'action', type: ActionType, payload?: any): void;
 }
 
-defineProps<{
+const props = defineProps<{
     chatList: ChatItem[];
 }>();
 
@@ -67,13 +68,25 @@ const sidebarButtons = [
         icon: `<path d="M904.832 512.192l-252.352 252.352-60.352-60.352 149.376-149.312h-408.96V469.568h408.96L592.128 320.192l60.352-60.288 252.352 252.288z m-487.04-320H204.48v640h213.312v85.376H119.168V106.88h298.624v85.312z" p-id="5144" fill="currentColor"></path>`
     }
 ] as SidebarButton[];
+
+const searchQuery = ref('');
+
+const filteredChatList = computed(() => {
+    const query = searchQuery.value.toLowerCase().trim();
+    if (!query) return props.chatList;
+    
+    return props.chatList.filter(chat => 
+        chat.title.toLowerCase().includes(query) || 
+        chat.date.toLowerCase().includes(query)
+    );
+});
 </script>
 
 <template>
     <aside class="flex">
         <!-- First Column -->
         <div
-            class="flex h-screen w-12 flex-col items-center space-y-8 border-r border-slate-300 bg-slate-50 py-8 dark:border-slate-700 dark:bg-slate-900 sm:w-16">
+            class="flex h-full w-full flex-col items-center space-y-8 border-r border-slate-300 bg-slate-50 py-8 dark:border-slate-700 dark:bg-slate-900 sm:w-16">
             <!-- Logo -->
             <a href="#" class="mb-1">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-blue-600" fill="currentColor"
@@ -112,12 +125,14 @@ const sidebarButtons = [
             </div>
 
             <div class="mx-2 mt-8 space-y-4">
-                <form>
-                    <label for="chat-input" class="sr-only">Search chats</label>
+                <form @submit.prevent>
+                    <label for="search-chats" class="sr-only">Search chats</label>
                     <div class="relative">
-                        <input id="search-chats" type="text"
-                            class="w-full rounded-lg border border-slate-300 bg-slate-50 p-3 pr-10 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
-                            placeholder="Search chats" rows="1" required />
+                        <input id="search-chats" 
+                               type="text"
+                               v-model="searchQuery"
+                               class="w-full rounded-lg border border-slate-300 bg-slate-50 p-3 pr-10 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
+                               placeholder="Search chats"/>
                         <button type="submit"
                             class="absolute bottom-2 right-2.5 rounded-lg p-2 text-sm text-slate-500 hover:text-blue-700 focus:outline-none sm:text-base">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" aria-hidden="true"
@@ -137,31 +152,31 @@ const sidebarButtons = [
                     </div>
                 </form>
 
-                <button v-for="chat in chatList" :key="chat.id" :class="[
-        'group flex w-full items-center justify-between gap-y-2 rounded-lg px-3 py-2 text-left transition-colors duration-200 focus:outline-none',
-        chat.active ? 'bg-slate-200 dark:bg-slate-800' : 'hover:bg-slate-200 dark:hover:bg-slate-800'
-    ]">
-                    <div @click="handleAction('chat', chat.id)">
+                <div v-for="chat in filteredChatList" 
+                     :key="chat.id" 
+                     :class="[
+                         'group flex w-full items-center justify-between gap-y-2 rounded-lg px-3 py-2 text-left transition-colors duration-200 focus:outline-none',
+                         chat.active ? 'bg-slate-200 dark:bg-slate-800' : 'hover:bg-slate-200 dark:hover:bg-slate-800'
+                     ]">
+                    <div class="flex-1 cursor-pointer" @click="handleAction('chat', chat.id)">
                         <h1 class="text-sm font-medium capitalize text-slate-700 dark:text-slate-200">
                             {{ chat.title }}
                         </h1>
                         <p class="text-xs text-slate-500 dark:text-slate-400">{{ chat.date }}</p>
                     </div>
-                    <button
-            @click.stop="handleAction('delete', chat.id)"
-            class="hidden rounded p-1 hover:bg-red-500 hover:text-white group-hover:block"
-        >
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" stroke-width="2"
-                stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                <path d="M4 7h16"/>
-                <path d="M10 11l0 6"/>
-                <path d="M14 11l0 6"/>
-                <path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12"/>
-                <path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3"/>
-            </svg>
-        </button>
-                </button>
+                    <button @click.stop="handleAction('delete', chat.id)"
+                        class="hidden rounded p-1 hover:bg-red-500 hover:text-white group-hover:block">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" stroke-width="2"
+                            stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                            <path d="M4 7h16" />
+                            <path d="M10 11l0 6" />
+                            <path d="M14 11l0 6" />
+                            <path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" />
+                            <path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" />
+                        </svg>
+                    </button>
+                </div>
             </div>
         </div>
     </aside>

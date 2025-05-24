@@ -89,6 +89,33 @@ export function useChat() {
             timestamp: "",
         }));
     };
+    const optimizePrompt = async (message: string) => {
+        const res = await api.optimizePromptWords(message);
+        return res.data;
+    };
+
+    const handleMessageAction = async (type: string, msg: Message) => {
+        if (type === 'like' || type === 'dislike') {
+            console.log(msg,'msgmsgmsg');
+
+            // TODO rag等
+            await api.submitFeedback({
+                questionId: msg.id,
+                questionContent: lastMessageContent,
+                answerContent: msg.content,
+                interaction: type,
+                knowledgeBaseIds: '',
+                suggestion: ''
+            }).then(() => {
+                ElMessage({
+                    message: '感谢您的反馈',
+                    type: 'success',
+                });
+            });
+        } else if (type === 'copy') {
+            navigator.clipboard.writeText(msg.content);
+        }
+    };
 
     return {
         messages,
@@ -96,5 +123,7 @@ export function useChat() {
         sendMessage,
         saveMemory,
         loadMessages,
+        optimizePrompt,
+        handleMessageAction
     };
 }

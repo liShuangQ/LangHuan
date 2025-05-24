@@ -52,6 +52,14 @@ export function useWindow() {
         await loadWindows();
     };
 
+    const updateWindowName = async (id: string, name: string) => {
+        const window = chatList.value.find((w) => w.id === id);
+        if (window) {
+            window.title = name;
+            await api.setChatMemoryWindowsName(id, name);
+        }
+    };
+
     return {
         chatList,
         currentWindowId,
@@ -59,5 +67,6 @@ export function useWindow() {
         selectWindow,
         loadWindows,
         deleteWindow,
+        updateWindowName,
     };
 }

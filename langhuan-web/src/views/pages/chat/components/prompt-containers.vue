@@ -25,7 +25,10 @@ const suggestions = [
 
 const messageInput = ref('');
 const messageContainer = ref<HTMLDivElement | null>(null);
-
+const getMessageInput = () => messageInput.value;
+const setMessageInput = (value: string) => {
+    messageInput.value = value;
+};
 const handleSubmit = (e: Event) => {
     e.preventDefault();
     if (!props.canSend || !messageInput.value.trim()) return;
@@ -49,6 +52,8 @@ watch(() => props.messages, () => {
 
 // 暴露给父组件的方法
 defineExpose({
+    getMessageInput,
+    setMessageInput,
     clearInput: () => {
         messageInput.value = '';
     }
@@ -57,7 +62,7 @@ defineExpose({
 
 <template>
     <!-- Prompt Messages Container - Modify the height according to your need -->
-    <div class="flex h-[97vh] w-full flex-col">
+    <div class="flex h-full w-full flex-col">
         <!-- Prompt Messages -->
         <div ref="messageContainer"
             class="flex-1 overflow-y-auto rounded-xl bg-slate-200 p-4 text-sm leading-6 text-slate-900 dark:bg-slate-800 dark:text-slate-300 sm:text-base sm:leading-7">
@@ -75,9 +80,9 @@ defineExpose({
                     </div>
                 </div>
                 <!-- 操作按钮部分 -->
-                <div class="mb-2 flex w-full flex-row justify-end gap-x-2 text-slate-500">
-                    <div v-if="msg.sender === 'assistant'">
-                        <button class="hover:text-blue-600">
+                <div class="mb-2 w-full ">
+                    <div v-if="msg.sender === 'assistant'" class="flex flex-row justify-end gap-x-2 text-slate-500">
+                        <button @click="$emit('action', 'like', msg)" class="hover:text-blue-600">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" stroke-width="2"
                                 stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                 <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
@@ -86,7 +91,7 @@ defineExpose({
                                 </path>
                             </svg>
                         </button>
-                        <button class="hover:text-blue-600" type="button">
+                        <button @click="$emit('action', 'dislike', msg)" class="hover:text-blue-600" type="button">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" stroke-width="2"
                                 stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                 <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
@@ -95,7 +100,7 @@ defineExpose({
                                 </path>
                             </svg>
                         </button>
-                        <button class="hover:text-blue-600" type="button">
+                        <button @click="$emit('action', 'copy', msg)" class="hover:text-blue-600" type="button">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" stroke-width="2"
                                 stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                 <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>

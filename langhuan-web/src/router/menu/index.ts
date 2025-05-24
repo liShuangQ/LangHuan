@@ -14,6 +14,12 @@ const menu: PagesMenu[] = [
         title: "主页",
         icon: "HomeFilled",
     },
+    {
+        path: "/pages/homeNext",
+        faPath: [],
+        title: "主页-旧",
+        icon: "HomeFilled",
+    },
     // {
     //     path: "/pages/aiUtopia",
     //     faPath: [],
