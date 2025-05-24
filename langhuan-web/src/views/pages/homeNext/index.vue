@@ -263,6 +263,7 @@ const saveChatMemory = () => {
         q_spinning: true,                // 显示加载动画
         data: {
             id: currentChatId.value,      // 当前对话ID
+            name:'1'
         }
     }).then((res: any) => {
         // 显示成功消息
@@ -497,13 +498,13 @@ const initChatMemory = async () => {
             const e = chatWindows.data[index];
             // 添加对话窗口到列表
             chats.value.push({
-                id: e,                        // 对话ID
-                title: '新对话',              // 默认标题
+                id: e.conversationId,                        // 对话ID
+                title: e.conversationName,              // 默认标题
                 messages: [],                 // 空消息列表
                 active: false                 // 非活跃状态
             });
             // 切换到该对话并加载历史记录
-            await switchChat(true, e)
+            await switchChat(true, e.conversationId)
         }
     } else {
         // 如果没有保存的对话窗口，创建一个新对话
@@ -515,10 +516,10 @@ const initChatMemory = async () => {
 
 // 组件初始化执行
 nextTick(async () => {
-    if (userStore.isAdmin) {
-        router.push('/admin')
-        return;
-    }
+    // if (userStore.isAdmin) {
+    //     router.push('/admin')
+    //     return;
+    // }
     // 设置AI模型选项
     await aimodel().setModelOptions()
     // 获取模型选项列表

@@ -8,6 +8,15 @@ export const routes: RouteRecordRaw[] = [
     {
         name: "chat",
         path: "/chat",
+        // component: () => import("@/views/pages/homeNext/index.vue"),
+        component: () => import("@/views/pages/chat/index.vue"),
+        meta: {
+            auth: true,
+        },
+    },
+        {
+        name: "chatOld",
+        path: "/chatOld",
         component: () => import("@/views/pages/homeNext/index.vue"),
         meta: {
             auth: true,

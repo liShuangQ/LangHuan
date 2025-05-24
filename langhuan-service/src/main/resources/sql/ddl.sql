@@ -194,6 +194,7 @@ CREATE TABLE t_user_chat_window (
                                   id SERIAL PRIMARY KEY,                   -- 自增主键
                                   user_id VARCHAR(36) NOT NULL,           -- 用户id
                                   conversation_id VARCHAR(36) NOT NULL,   -- 对话记忆id
+                                  conversation_name VARCHAR(36) NOT NULL,   -- 对话记忆id
                                   created_time TIMESTAMP DEFAULT NOW()    -- 创建时间
 );
 

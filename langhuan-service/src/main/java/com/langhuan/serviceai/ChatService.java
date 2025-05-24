@@ -1,6 +1,7 @@
 package com.langhuan.serviceai;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.langhuan.common.BusinessException;
 import com.langhuan.common.Constant;
 import com.langhuan.functionTools.RestRequestTools;
@@ -136,14 +137,20 @@ public class ChatService {
         return chatModelResult;
     }
 
+    public Boolean setChatMemoryWindowsName(String conversationId, String conversationName) {
+        log.info("ChatMemory-set-windows-name");
+        return userChatWindowService.update(new LambdaUpdateWrapper<TUserChatWindow>()
+                .eq(TUserChatWindow::getConversationId, conversationId)
+                .set(TUserChatWindow::getConversationName, conversationName));
+    }
 
-    public List<String> getChatMemoryWindows() {
+    public List<TUserChatWindow> getChatMemoryWindows() {
         log.info("ChatMemory-get-windows");
         List<TUserChatWindow> list = userChatWindowService.list(
                 new LambdaQueryWrapper<TUserChatWindow>().eq(TUserChatWindow::getUserId, SecurityContextHolder.getContext().getAuthentication().getName())
         );
 
-        return list.stream().map(TUserChatWindow::getConversationId).toList();
+        return list;
     }
 
 
@@ -160,13 +167,14 @@ public class ChatService {
         chatMemory.add(SecurityContextHolder.getContext().getAuthentication().getName() + '_' + id, byConversationId);
     }
 
-    public String saveChatMemory(String id) {
+    public String saveChatMemory(String id, String windowName) {
         log.info("ChatMemory-save: {}", id);
         String user_id = SecurityContextHolder.getContext().getAuthentication().getName();
         long count = userChatWindowService.count(new LambdaQueryWrapper<TUserChatWindow>().eq(TUserChatWindow::getConversationId, id));
         if (count == 0) {
             userChatWindowService.save(new TUserChatWindow() {{
                 setUserId(user_id);
+                setConversationName(windowName);
                 setConversationId(id);
             }});
         }

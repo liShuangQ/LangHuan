@@ -4,7 +4,7 @@ import router from "@/router";
 import menuData, { PagesMenu } from "@/router/menu";
 import menu from "@/store/menu";
 import { http } from "@/plugins/axios";
-
+import { ElMessage } from "element-plus";
 export default defineStore("user", {
     state: (): { info: any | null; isAdmin: boolean } => {
         return {

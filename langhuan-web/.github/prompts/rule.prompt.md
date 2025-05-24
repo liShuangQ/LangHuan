@@ -1,5 +1,6 @@
 # 使用vue3+ts，写vue3时要使用setup语法
 # ui组件库为elementplus，同时也可以使用tailwindcss
+# 注意根据不同的功能块或样式块划分不同的组件
 # 接口请求的封装方法为下面方法，
 ```js
         const res = await http.request<any>({
@@ -19,3 +20,4 @@
             }
         })
 ```
+

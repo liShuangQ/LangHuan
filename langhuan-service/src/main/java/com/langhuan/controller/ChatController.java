@@ -101,6 +101,14 @@ public class ChatController {
         return Result.success(chatGeneralAssistanceService.optimizePromptWords(q));
     }
 
+    @PostMapping("/chat/setChatMemoryWindowsName")
+    public Result setChatMemoryWindowsName(
+            @RequestParam(name = "id", required = true) String id,
+            @RequestParam(name = "name", required = true) String name
+    ) {
+        return Result.success(chatService.setChatMemoryWindowsName(id, name));
+    }
+
     @PostMapping("/chat/getChatMemoryWindows")
     public Result getChatMemoryWindows() {
         return Result.success(chatService.getChatMemoryWindows());
@@ -113,8 +121,9 @@ public class ChatController {
     }
 
     @PostMapping("/chat/saveChatMemory")
-    public Result saveChatMemory(@RequestParam String id) {
-        return Result.success(chatService.saveChatMemory(id));
+    public Result saveChatMemory(@RequestParam String id,
+                                 @RequestParam String name) {
+        return Result.success(chatService.saveChatMemory(id, name));
     }
 
     @PostMapping("/chat/clearChatMemory")

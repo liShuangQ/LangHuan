@@ -31,6 +31,11 @@ public class TUserChatWindow {
     /**
      * 
      */
+    private String conversationName;
+
+    /**
+     * 
+     */
     private Date createdTime;
 
     @Override
@@ -48,6 +53,7 @@ public class TUserChatWindow {
         return (this.getId() == null ? other.getId() == null : this.getId().equals(other.getId()))
             && (this.getUserId() == null ? other.getUserId() == null : this.getUserId().equals(other.getUserId()))
             && (this.getConversationId() == null ? other.getConversationId() == null : this.getConversationId().equals(other.getConversationId()))
+            && (this.getConversationName() == null ? other.getConversationName() == null : this.getConversationName().equals(other.getConversationName()))
             && (this.getCreatedTime() == null ? other.getCreatedTime() == null : this.getCreatedTime().equals(other.getCreatedTime()));
     }
 
@@ -58,6 +64,7 @@ public class TUserChatWindow {
         result = prime * result + ((getId() == null) ? 0 : getId().hashCode());
         result = prime * result + ((getUserId() == null) ? 0 : getUserId().hashCode());
         result = prime * result + ((getConversationId() == null) ? 0 : getConversationId().hashCode());
+        result = prime * result + ((getConversationName() == null) ? 0 : getConversationName().hashCode());
         result = prime * result + ((getCreatedTime() == null) ? 0 : getCreatedTime().hashCode());
         return result;
     }
@@ -71,6 +78,7 @@ public class TUserChatWindow {
         sb.append(", id=").append(id);
         sb.append(", userId=").append(userId);
         sb.append(", conversationId=").append(conversationId);
+        sb.append(", conversationName=").append(conversationName);
         sb.append(", createdTime=").append(createdTime);
         sb.append("]");
         return sb.toString();
