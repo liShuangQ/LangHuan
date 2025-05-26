@@ -29,7 +29,7 @@ export let formItemConfig: FormItemConfigs = [
         },
         {
             value: "",
-            key: "fileGroupId",
+            key: "fileGroupName",
             type: "input",
             label: "文件组",
             col: 5,

@@ -35,11 +35,11 @@ export let tableColumnConfig = ref<TableColumnConfig[]>([
         prop: 'fileDesc',
         width: 'auto',
     },
-    {
-        label: '文件组ID',
-        prop: 'fileGroupId',
-        width: 'auto',
-    },
+    // {
+    //     label: '文件组ID',
+    //     prop: 'fileGroupId',
+    //     width: 'auto',
+    // },
     {
         label: '文件组',
         prop: 'fileGroupName',

@@ -15,8 +15,8 @@ spring:
         size: 10
   datasource:
     url: jdbc:postgresql://localhost:5432/postgres
-    username: 1
-    password: 1
+    username: postgres
+    password: postgres
     driver-class-name: org.postgresql.Driver
   application:
     name: aiAgent
@@ -30,16 +30,16 @@ spring:
           jdbc:
             initialize-schema: never
     openai:
-      base-url: http://10.1.1.11:1/ #oneapi 转换
-      api-key: 11
+      base-url: https://api.deepseek.com
+      api-key: sk-34765353089e4e5e89a185dcd78bd141
       chat:
         options:
-          model: qwen-turbo
+          model: deepseek-chat
       embedding:
         options:
-          model: text-embedding-v3
-        base-url: http://10.1.1.1:1/
-        api-key: 22
+          model: mxbai-embed-large:latest
+        base-url: localhost:11434
+        api-key:
     vectorstore:
       pgvector:
         remove-existing-vector-store-table: false

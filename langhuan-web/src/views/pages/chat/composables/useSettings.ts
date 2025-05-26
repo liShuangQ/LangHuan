@@ -4,7 +4,7 @@ import aimodel from "@/store/aimodel";
 import * as api from "../api";
 
 export function useSettings() {
-    const showSettings = ref(false);
+    const showSettings = ref(true);
     const settings = ref<ChatSettings>({
         modelName: "",
         promptTemplate: "",
@@ -14,8 +14,7 @@ export function useSettings() {
     const availableModels = ref();
 
     const ragGroups = ref<RagGroup[]>([]);
-
-    const toggleSettings = async () => {
+    const getSetInfo = async () => {
         availableModels.value = await aimodel().getModelOptions();
         if (settings.value.modelName === "") {
             settings.value.modelName = availableModels.value[0].value;
@@ -27,6 +26,10 @@ export function useSettings() {
             }));
             ragGroups.value.unshift({ id: "", name: "无" });
         });
+    };
+    getSetInfo();
+
+    const toggleSettings = async () => {
         showSettings.value = !showSettings.value;
     };
 

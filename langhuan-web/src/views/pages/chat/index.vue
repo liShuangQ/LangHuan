@@ -72,8 +72,13 @@ onMounted(async () => {
         :class="nowIsChat ? ['flex', 'h-screen', 'w-full', 'min-w-0', 'overflow-hidden'] : ['flex', 'h-full', 'w-full', 'min-w-0', 'overflow-hidden']">
         <Sidebar :chat-list="chatList" @action="handleSidebarAction" />
         <div class="min-w-0 flex-1 h-full">
-            <PromptContainers ref="PromptContainersRef" :messages="messages" :can-send="canSend"
-                @send-message="(msg: any) => handleSendMessage(currentWindowId, msg)" @action="handlePromptAction" />
+            <PromptContainers
+                ref="PromptContainersRef"
+                :messages="messages"
+                :can-send="canSend"
+                :has-windows="chatList.length > 0"
+                @send-message="(msg: any) => handleSendMessage(currentWindowId, msg)"
+                @action="handlePromptAction" />
         </div>
         <SettingsSidebar v-if="showSettings" v-model="settings" :available-models="availableModels"
             :rag-groups="ragGroups" @close="toggleSettings" />
