@@ -30,16 +30,16 @@ spring:
           jdbc:
             initialize-schema: never
     openai:
-      base-url: https://api.deepseek.com
+      base-url: localhost:11434
       api-key: 111
       chat:
         options:
-          model: deepseek-chat
+          model: qwen2.5:3b
       embedding:
         options:
           model: mxbai-embed-large:latest
         base-url: localhost:11434
-        api-key:
+        api-key: 111
     vectorstore:
       pgvector:
         remove-existing-vector-store-table: false
