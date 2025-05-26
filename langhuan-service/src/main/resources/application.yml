@@ -31,7 +31,7 @@ spring:
             initialize-schema: never
     openai:
       base-url: https://api.deepseek.com
-      api-key: sk-34765353089e4e5e89a185dcd78bd141
+      api-key: 111
       chat:
         options:
           model: deepseek-chat
