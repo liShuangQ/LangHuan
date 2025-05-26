@@ -24,8 +24,7 @@
                 <template #content-buttonSlot="props">
                     <el-button link type="primary" @click="addAndChangeFormShowFun('change', props.row)">修改
                     </el-button>
-                    <el-button link type="primary"
-                        @click="addAndChangeFormShowFun('delete', props.row)">删除
+                    <el-button link type="primary" @click="addAndChangeFormShowFun('delete', props.row)">删除
                     </el-button>
                     <el-button link type="primary" @click="addAndChangeFormShowFun('fileRecallTesting', props.row)">文件召回
                     </el-button>
@@ -74,29 +73,45 @@
             </template>
         </el-dialog>
         <el-dialog v-model="documentNumVisible" :title="'文档列表'" width="900">
-            <div class="h-[70vh] overflow-y-scroll">
-                <div v-for="(item, index) in documentNumData" :key="index" class="mb-4">
-                    <div v-if="!item.isEditing">
-                        <div>
-                            <div style="white-space: pre-wrap">{{ item.content }}</div>
-                            <div class=" float-right">
-                                <el-button type="primary" link
-                                    @click="documentHandle('edit', index, item)">修改</el-button>
-                                <el-button type="primary" link
-                                    @click="documentHandle('delete', index, item)">删除</el-button>
+            <div class="flex flex-col h-[70vh]">
+                <el-form :model="documentQueryForm" size="default" inline>
+                    <el-form-item label="内容查询">
+                        <el-input style="width: 500px;" v-model="documentQueryForm.content" placeholder="输入查询内容"
+                            clearable />
+                    </el-form-item>
+                    <el-form-item>
+                        <el-button type="primary" @click="handleDocumentQuery">查询</el-button>
+                    </el-form-item>
+                </el-form>
+                <div class="flex-1 overflow-y-scroll">
+                    <div v-for="(item, index) in documentNumData" :key="index" class="mb-4">
+                        <div v-if="!item.isEditing">
+                            <div>
+                                <div style="white-space: pre-wrap">{{ item.content }}</div>
+                                <div class=" float-right">
+                                    <el-button type="primary" link
+                                        @click="documentHandle('edit', index, item)">修改</el-button>
+                                    <el-button type="primary" link
+                                        @click="documentHandle('delete', index, item)">删除</el-button>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div v-else>
-                        <el-input v-model="item.tempContent" type="textarea" :rows="7" class="mb-2" />
-                        <div class="flex justify-end gap-2">
-                            <el-button size="small" @click="documentHandle('cancel', index, item)">取消</el-button>
-                            <el-button size="small" type="primary"
-                                @click="documentHandle('save', index, item)">确定</el-button>
+                        <div v-else>
+                            <el-input v-model="item.tempContent" type="textarea" :rows="7" class="mb-2" />
+                            <div class="flex justify-end gap-2">
+                                <el-button size="small" @click="documentHandle('cancel', index, item)">取消</el-button>
+                                <el-button size="small" type="primary"
+                                    @click="documentHandle('save', index, item)">确定</el-button>
+                            </div>
                         </div>
+                        <el-divider />
                     </div>
-                    <el-divider />
                 </div>
+                <el-pagination v-model:current-page="documentPagination.pageNum" class="mt-2"
+                    v-model:page-size="documentPagination.pageSize" :background="true"
+                    :layout="'total, sizes, prev, pager, next, jumper'" :page-sizes="[10, 20]" :small="true"
+                    :total="Number(documentPagination.total)" @size-change="handleDocumentPageChange"
+                    @current-change="handleDocumentPageChange" />
             </div>
         </el-dialog>
     </div>
@@ -197,6 +212,14 @@ let addAndChangeFormDialogTit = ref("")
 let relevancyVisible = ref(false)
 let documentNumVisible = ref(false)
 let documentNumData = ref<any>([])
+const documentQueryForm = reactive({
+    content: ''
+})
+const documentPagination = reactive({
+    pageNum: 1,
+    pageSize: 10,
+    total: 0
+})
 const checkAll = ref(false)
 const isIndeterminate = ref(true)
 const checkedRoles = ref<string[]>([])
@@ -385,25 +408,46 @@ const relevancyShowFun = (t: string, d: any = null) => {
 }
 const openDocumentNum = (row: any) => {
     nowRow = JSON.parse(JSON.stringify(row))
+    documentQueryForm.content = ''
+    documentPagination.total = 0
+    documentPagination.pageNum = 1
+    documentPagination.pageSize = 10
+    fetchDocuments()
+}
+
+const fetchDocuments = () => {
     http.request<any>({
         url: '/rag/file/queryDocumentsByFileId',
         method: 'post',
         q_spinning: true,
         q_contentType: 'form',
         data: {
-            fileId: row.id,
+            fileId: nowRow.id,
+            content: documentQueryForm.content,
+            pageNum: documentPagination.pageNum,
+            pageSize: documentPagination.pageSize
         },
     }).then(res => {
         documentNumVisible.value = true
         nextTick(() => {
-            documentNumData.value = res.data.map((e: any) => ({
+            documentNumData.value = res.data.list.map((e: any) => ({
                 id: e.id,
                 content: e.content,
                 isEditing: false,
                 tempContent: e.content
             }))
+            documentPagination.total = res.data.count
         })
     })
+}
+
+const handleDocumentQuery = () => {
+    documentPagination.pageNum = 1
+    fetchDocuments()
+}
+
+const handleDocumentPageChange = () => {
+    fetchDocuments()
 }
 const documentHandle = (type: string, index: number, item: any) => {
     if (type === 'edit') {

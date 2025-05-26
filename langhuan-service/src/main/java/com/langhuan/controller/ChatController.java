@@ -32,9 +32,9 @@ public class ChatController {
     @Value("${spring.ai.openai.chat.options.model}")
     private String defaultModelName;
     @Value("${spring.ai.openai.base-url}")
-    private String oneApiUrl;
+    private String openApiUrl;
     @Value("${spring.ai.openai.api-key}")
-    private String oneApiKey;
+    private String openApiKey;
 
     public ChatController(ChatService chatService, ChatGeneralAssistanceService chatGeneralAssistanceService, StanfordChatService stanfordChatService, RagService ragService, EasyChatService easyChatService) {
         this.chatService = chatService;
@@ -159,8 +159,8 @@ public class ChatController {
         HttpResponse<String> response = null;
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(oneApiUrl + "/v1/models"))
-                .header("Authorization", oneApiKey)
+                .uri(URI.create(openApiUrl + "/v1/models"))
+                .header("Authorization", openApiKey)
                 .build();
 
         try {

@@ -30,7 +30,7 @@ spring:
           jdbc:
             initialize-schema: never
     openai:
-      base-url: localhost:11434
+      base-url: http://127.0.0.1:11434
       api-key: 111
       chat:
         options:
@@ -38,7 +38,7 @@ spring:
       embedding:
         options:
           model: mxbai-embed-large:latest
-        base-url: localhost:11434
+        base-url: http://127.0.0.1:11434
         api-key: 111
     vectorstore:
       pgvector:

@@ -41,15 +41,20 @@ public class RagFileController {
             @RequestParam(required = false) String fileGroupName,
             @RequestParam int pageNum,
             @RequestParam int pageSize) {
-        log.info("Querying file with fileName: {}, fileType: {},fileGroupName:{}, page: {}, size: {}", fileName, fileType,
-        fileGroupName, pageNum, pageSize);
+        log.info("Querying file with fileName: {}, fileType: {},fileGroupName:{}, page: {}, size: {}", fileName,
+                fileType,
+                fileGroupName, pageNum, pageSize);
         return Result.success(ragFileService.queryFiles(fileName, fileType, fileGroupName, pageNum, pageSize));
     }
 
     @PreAuthorize("hasAuthority('/rag/file/queryDocumentsByFileId')")
     @PostMapping("/file/queryDocumentsByFileId")
-    public Result queryDocumentsByFileId(@RequestParam(required = true) Integer fileId) {
-        return Result.success(ragService.queryDocumentsByFileId(fileId));
+    public Result queryDocumentsByFileId(
+            @RequestParam(required = true) Integer fileId,
+            @RequestParam String content,
+            @RequestParam int pageNum,
+            @RequestParam int pageSize) {
+        return Result.success(ragService.queryDocumentsByFileId(fileId, content, pageNum, pageSize));
     }
 
     @PreAuthorize("hasAuthority('/rag/file/getFilesByGroupId')")

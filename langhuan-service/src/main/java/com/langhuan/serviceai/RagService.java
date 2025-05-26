@@ -154,12 +154,21 @@ public class RagService {
         return "更新成功";
     }
 
-    public List<Map<String, Object>> queryDocumentsByFileId(Integer fileId) {
+    public Map<String, Object> queryDocumentsByFileId(Integer fileId, String content, int pageNum, int pageSize) {
+        if (fileId == null) {
+            throw new BusinessException("fileId不能为空");
+        }
         log.info("queryDocumentsByFileId: {}", fileId);
         String sql = """
-                        SELECT * FROM vector_store_rag WHERE metadata ->> 'fileId' = ?;
+                        SELECT * FROM vector_store_rag WHERE metadata ->> 'fileId' = ? AND content LIKE ?
+                        LIMIT ? OFFSET ?;
                 """;
-        return baseDao.queryForList(sql, fileId.toString());
+        String count = """
+                        SELECT COUNT(*) FROM vector_store_rag WHERE metadata ->> 'fileId' = ? AND content LIKE ?;
+                """;
+        return Map.of("list",
+                baseDao.queryForList(sql, fileId.toString(), "%" + content + "%", pageSize, (pageNum - 1) * pageSize),
+                "count", baseDao.queryForObject(count, Integer.class, fileId.toString(), "%" + content + "%"));
     }
 
     public List<Map<String, Object>> queryDocumentsByIds(String fileIds) {
