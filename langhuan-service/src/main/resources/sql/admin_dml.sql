@@ -84,6 +84,7 @@ INSERT INTO t_role_permission VALUES (23, 1, 23); -- 超级管理员 授予 查�
 INSERT INTO t_role_permission VALUES (24, 1, 24); -- 超级管理员 授予 查询RAG文件文档权限
 INSERT INTO t_role_permission VALUES (25, 1, 25); -- 超级管理员 授予 查询文件组文件权限
 
+
 -- RAG文件组管理权限
 INSERT INTO t_permission VALUES (26, 'RAG文件组管理', '/rag/file-group/manager', 0); -- 父权限：RAG文件组管理
 INSERT INTO t_permission VALUES (27, '获取文件组枚举', '/rag/file-group/getEnum', 26); -- 获取文件组枚举权限
@@ -154,3 +155,7 @@ INSERT INTO t_role_permission VALUES (51, 1, 51); -- 超级管理员 授予 搜�
 INSERT INTO t_role_permission VALUES (52, 1, 52); -- 超级管理员 授予 修改文档文本权限
 INSERT INTO t_role_permission VALUES (53, 1, 53); -- 超级管理员 授予 查询文档权限
 INSERT INTO t_role_permission VALUES (54, 1, 54); -- 超级管理员 授予 修改交互状态权限
+
+-- 新功能
+INSERT INTO t_permission VALUES (55, '导出RAG文件文档', '/rag/file/generateDocumentStreamByFileId', 21); -- 导出RAG文件文档
+INSERT INTO t_role_permission VALUES (554, 1, 55); -- 超级管理员 授予 导出RAG文件文档

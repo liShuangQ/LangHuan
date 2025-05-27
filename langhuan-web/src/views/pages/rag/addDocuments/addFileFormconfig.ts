@@ -46,7 +46,7 @@ export const formItemConfig = (
                             data: {
                                 fileName: query,
                                 fileType: "",
-                                fileGroupId: "",
+                                fileGroupName: "",
                                 pageNum: 1,
                                 pageSize: 10,
                             },

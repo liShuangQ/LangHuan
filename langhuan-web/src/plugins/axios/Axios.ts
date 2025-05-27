@@ -36,7 +36,7 @@ export default class Axios {
         this.loadingInstance = null;
     }
 
-    public request<T, D = ResponseResult<T>>(
+    public request<T, D = ResponseResult<T>, R = any>(
         config: MyAxiosRequestConfig
     ): Promise<D> {
         return new Promise(async (res, rej): Promise<void> => {
@@ -149,7 +149,7 @@ export default class Axios {
                 //     ElMessage.error(response.data?.message ?? "请求失败。");
                 // }
                 if (
-                    ![200].includes(response.data.code) &&
+                    response.data.code && ![200].includes(response.data.code) &&
                     !response.config.q_baseUrl
                 ) {
                     ElMessage.error(response.data?.message ?? "请求失败。");

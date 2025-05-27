@@ -28,6 +28,8 @@
                     </el-button>
                     <el-button link type="primary" @click="addAndChangeFormShowFun('fileRecallTesting', props.row)">文件召回
                     </el-button>
+                    <el-button link type="primary" @click="addAndChangeFormShowFun('fileExport', props.row)">文件导出
+                    </el-button>
                     <el-button v-if="pageConfig.relation" link type="primary"
                         @click="addAndChangeFormShowFun('relation', props.row)">{{
                             pageConfig.relationBtnName
@@ -74,7 +76,7 @@
         </el-dialog>
         <el-dialog v-model="documentNumVisible" :title="'文档列表'" width="900">
             <div class="flex flex-col h-[70vh]">
-                <el-form :model="documentQueryForm" size="default" inline>
+                <el-form :model="documentQueryForm" size="small" inline>
                     <el-form-item label="内容查询">
                         <el-input style="width: 500px;" v-model="documentQueryForm.content" placeholder="输入查询内容"
                             clearable />
@@ -144,7 +146,7 @@ import { CheckboxValueType, ElMessageBox } from "element-plus";
 import pageConfig from "./pageConfig";
 import { getFileGroupOption } from "../addFile/addFileFormconfig";
 import { useRouter } from 'vue-router';
-
+import { store } from "@/utils";
 const router = useRouter();
 const formComRef = ref<FormDefineExpose>();
 const tableComRef = ref<TableDefineExpose>();
@@ -371,6 +373,30 @@ const addAndChangeFormShowFun = async (t: string, d: any = null) => {
                 groupId: d.fileGroupId
             }
         })
+    }
+    if (t === 'fileExport') {
+        http.request<any>({
+            url: '/rag/file/generateDocumentStreamByFileId',
+            method: 'post',
+            q_spinning: true,
+            q_contentType: 'form',
+            responseType: 'blob',
+            data: {
+                fileId: d.id
+            },
+        }).then((res: any) => {
+            const blob = new Blob([res]);
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = d.fileName.includes('.') ?
+                d.fileName.substring(0, d.fileName.lastIndexOf('.')) + '.txt' :
+                d.fileName + '.txt';
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+        });
     }
 }
 

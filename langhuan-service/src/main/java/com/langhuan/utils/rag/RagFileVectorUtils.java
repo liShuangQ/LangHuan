@@ -2,8 +2,11 @@ package com.langhuan.utils.rag;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.langhuan.common.BusinessException;
+import com.langhuan.common.Constant;
 import com.langhuan.model.domain.TRagFile;
 import com.langhuan.model.pojo.RagMetaData;
+import com.langhuan.service.TRagFileService;
 import com.langhuan.serviceai.ChatGeneralAssistanceService;
 import com.langhuan.utils.rag.splitter.FixedWindowTextSplitter;
 import com.langhuan.utils.rag.splitter.LlmTextSplitter;
@@ -13,6 +16,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.document.Document;
 import org.springframework.ai.reader.tika.TikaDocumentReader;
 import org.springframework.ai.vectorstore.VectorStore;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
@@ -21,6 +29,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
+
+import java.nio.charset.StandardCharsets;
 
 @Slf4j
 @Component
@@ -76,7 +86,7 @@ public class RagFileVectorUtils {
      */
     @SneakyThrows
     public List<String> readAndSplitDocument(MultipartFile file, String splitFileMethod,
-                                             Map<String, Object> methodData) {
+            Map<String, Object> methodData) {
         // 使用TikaDocumentReader读取文件内容
         TikaDocumentReader tikaDocumentReader = new TikaDocumentReader(new InputStreamResource(file.getInputStream()));
         List<Document> documents = tikaDocumentReader.read();
@@ -88,7 +98,9 @@ public class RagFileVectorUtils {
         }
         String documentText = String.join("\n", documentLines);
 
-        documentText = documentText.replaceAll("source: Invalid source URI: InputStream resource [resource loaded through InputStream] cannot be resolved to URL", "");
+        documentText = documentText.replaceAll(
+                "source: Invalid source URI: InputStream resource [resource loaded through InputStream] cannot be resolved to URL",
+                "");
 
         List<String> apply = null;
 
@@ -97,16 +109,19 @@ public class RagFileVectorUtils {
             apply = new FixedWindowTextSplitter((Integer) methodData.get("windowSize")).apply(documentText);
         }
         if (splitFileMethod.equals("PatternTokenTextSplitter")) {
-            apply = new PatternTokenTextSplitter(Pattern.compile((String) methodData.get("splitPattern"))).apply(documentText);
+            apply = new PatternTokenTextSplitter(Pattern.compile((String) methodData.get("splitPattern")))
+                    .apply(documentText);
         }
-//        if (splitFileMethod.equals("SlidingWindowTextSplitter")) {
-//            apply = new SlidingWindowTextSplitter((Integer) methodData.get("windowSize"), (Integer) methodData.get("overlapSize")).apply(documentText);
-//        }
-//        if (splitFileMethod.equals("OpenNLPSentenceSplitter")) {
-//            apply = new OpenNLPSentenceSplitter().apply(documentText);
-//        }
+        // if (splitFileMethod.equals("SlidingWindowTextSplitter")) {
+        // apply = new SlidingWindowTextSplitter((Integer) methodData.get("windowSize"),
+        // (Integer) methodData.get("overlapSize")).apply(documentText);
+        // }
+        // if (splitFileMethod.equals("OpenNLPSentenceSplitter")) {
+        // apply = new OpenNLPSentenceSplitter().apply(documentText);
+        // }
         if (splitFileMethod.equals("LlmTextSplitter")) {
-            apply = new LlmTextSplitter((Integer) methodData.get("windowSize"), (String) methodData.get("modelName"), chatGeneralAssistanceService).apply(documentText);
+            apply = new LlmTextSplitter((Integer) methodData.get("windowSize"), (String) methodData.get("modelName"),
+                    chatGeneralAssistanceService).apply(documentText);
         }
 
         return apply;
@@ -120,7 +135,7 @@ public class RagFileVectorUtils {
      * @param metadata  元数据
      */
     public Boolean writeDocumentsToVectorStore(List<String> documents, RagMetaData metadata,
-                                               VectorStore vectorStore) {
+            VectorStore vectorStore) {
         try {
             List<List<Document>> documentsListBatch = new ArrayList<>();
             ObjectMapper objectMapper = new ObjectMapper();
@@ -147,6 +162,27 @@ public class RagFileVectorUtils {
             log.error("writeDocumentsToVectorStore error", e);
             return false;
         }
+    }
+
+    /**
+     * 生成文档流
+     * 
+     * @param documents 分割后的文档块列表
+     * @return 文档内容输入流资源
+     */
+    @SneakyThrows
+    public InputStreamResource generateDocumentStreamByFileId(List<String> documentContents) {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        try (Writer writer = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8)) {
+            for (String content : documentContents) {
+                writer.write(content);
+                writer.write(System.lineSeparator());
+                writer.write(Constant.DEFAULT_RAG_EXPORT_SPLIT);
+                writer.write(System.lineSeparator());
+            }
+            writer.flush();
+        }
+        return new InputStreamResource(new ByteArrayInputStream(outputStream.toByteArray()));
     }
 
 }

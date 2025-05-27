@@ -7,6 +7,11 @@ import com.langhuan.service.TRagFileService;
 import com.langhuan.serviceai.RagService;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.IOException;
+
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -63,6 +68,22 @@ public class RagFileController {
             @RequestParam(required = true) String groupId) {
         return Result.success(ragFileService.list(
                 new LambdaQueryWrapper<TRagFile>().eq(TRagFile::getFileGroupId, groupId)));
+    }
+
+    @PreAuthorize("hasAuthority('/rag/file/generateDocumentStreamByFileId')")
+    @PostMapping("/file/generateDocumentStreamByFileId")
+    public ResponseEntity<byte[]> generateDocumentStreamByFileId(@RequestParam(required = true) Integer fileId) {
+        InputStreamResource resource = ragFileService.generateDocumentStreamByFileId(fileId);
+        try {
+            byte[] bytes = resource.getInputStream().readAllBytes();
+            return ResponseEntity.ok()
+                    .header("Content-Type", "text/plain;charset=UTF-8")
+                    .header("Content-Disposition", "attachment; filename=document.txt")
+                    .body(bytes);
+        } catch (IOException e) {
+            log.error("Error reading input stream", e);
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
 }

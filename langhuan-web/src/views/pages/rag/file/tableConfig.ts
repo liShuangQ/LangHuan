@@ -59,7 +59,7 @@ export let tableColumnConfig = ref<TableColumnConfig[]>([
         label: '操作',
         prop: 'buttonSlot',
         contentSlot: true,
-        width: '180',
+        width: '270',
     }
 ])
 export let tableConfig = ref<TableConfig>({

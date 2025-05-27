@@ -8,7 +8,7 @@
                     <el-radio border label="FixedWindowTextSplitter">固定窗口切分</el-radio>
                     <el-radio border label="PatternTokenTextSplitter">正则切分</el-radio>
                     <!-- <el-radio border label="OpenNLPSentenceSplitter">NLP切分</el-radio> -->
-                    <el-radio border label="LlmTextSplitter">大模型切分</el-radio>
+                    <!-- <el-radio border label="LlmTextSplitter">大模型切分</el-radio> -->
                 </el-radio-group>
             </div>
             <!-- ---------- -->
@@ -70,7 +70,7 @@ const methodData = ref<any>({
         windowSize: 200
     },
     PatternTokenTextSplitter: {
-        splitPattern: "[;；]+\\s*"
+        splitPattern: "(?:={6})\\s*"
     },
     OpenNLPSentenceSplitter: {
 
