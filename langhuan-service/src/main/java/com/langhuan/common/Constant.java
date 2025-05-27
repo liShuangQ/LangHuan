@@ -16,6 +16,8 @@ public class Constant {
     public static final String[] URL_WHITELIST = {"/favicon.ico", "/user/login", "/user/register", "/service/user/login", "/service/user/register", "/test/*"};
     // ai的rag默认拆分规则
     public static final String DEFAULT_RAG_SPLIT_PATTERN = "[;；]+\\s*";
+    // ai的单id最大记忆消息数
+    public static final int MESSAGEWINDOWCHATMEMORYMAX = 10;
     // ai系统默认提示词数据库定时刷新时间
     public static final int AIDEFAULTSYSTEMPROMPTRECTIME = 1000 * 60 * 60 * 2;
     // ai系统默认提示词
