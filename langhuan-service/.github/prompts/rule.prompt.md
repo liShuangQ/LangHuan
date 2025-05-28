@@ -1,6 +1,7 @@
 ---
 mode: 'edit'
 ---
+
 ## 技术栈
 框架: Spring Boot 3.4.1, Spring AI
 数据库: PostgreSQL, MyBatis-Plus
@@ -30,7 +31,7 @@ AI 集成: OpenAI 模型，PGVector 向量存储
 ### MyBatis-Plus 使用:
 - 优先使用 Wrapper 构造条件查询
 - 避免编写复杂 SQL，使用 MyBatis-Plus 提供的方法
-- 复杂查询使用 XML 映射文件
+- 复杂查询使用 JdbcTemplate
 
 ### 事务管理:
 - 使用 @Transactional 注解管理事务
