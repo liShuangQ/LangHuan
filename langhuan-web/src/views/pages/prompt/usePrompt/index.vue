@@ -20,10 +20,9 @@
             <ElementTableC ref="tableComRef" :paginationConfig="paginationConfig" :tableColumnConfig="tableColumnConfig"
                 :tableConfig="tableConfig" :tableData="tableData" @handle="tableHandle">
                 <template #content-buttonSlot="props">
-                    <el-button link type="primary" :disabled="props.row.category.indexOf('system') !== -1"
-                        @click="addAndChangeFormShowFun('change', props.row)">修改</el-button>
-                    <el-button link type="primary" :disabled="props.row.category.indexOf('system') !== -1"
-                        @click="addAndChangeFormShowFun('delete', props.row)">删除</el-button>
+                    <!-- :disabled="props.row.category.indexOf('system') !== -1" -->
+                    <el-button link type="primary" @click="addAndChangeFormShowFun('change', props.row)">修改</el-button>
+                    <el-button link type="primary" @click="addAndChangeFormShowFun('delete', props.row)">删除</el-button>
                 </template>
             </ElementTableC>
         </div>

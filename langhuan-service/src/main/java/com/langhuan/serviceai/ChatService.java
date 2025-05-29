@@ -79,17 +79,22 @@ public class ChatService {
 
     public ChatModelResult isRagChat(String id, String p, String q, String groupId, String modelName,
             ToolCallback[] tools) {
+        String AIDEFAULTQUESTIONANSWERADVISORRPROMPT = TPromptsService
+                .getCachedTPromptsByMethodName("AIDEFAULTQUESTIONANSWERADVISORRPROMPT");
+        if (AIDEFAULTQUESTIONANSWERADVISORRPROMPT == null) {
+            AIDEFAULTQUESTIONANSWERADVISORRPROMPT = Constant.AIDEFAULTQUESTIONANSWERADVISORRPROMPT;
+        }
         // 自带方法 不好做排序
         // QuestionAnswerAdvisor questionAnswerAdvisor = groupId.isEmpty()
-        // ? new QuestionAnswerAdvisor(VectorStoreConfig,
-        // SearchRequest.builder().topK(Constant.WITHTOPK)
-        // .similarityThreshold(Constant.WITHSIMILARITYTHRESHOLD).build(),
-        // Constant.AIDEFAULTQUESTIONANSWERADVISORRPROMPT)
-        // : new QuestionAnswerAdvisor(VectorStoreConfig,
-        // SearchRequest.builder().topK(c)
-        // .filterExpression("groupId == '" + groupId + "'")//设置过滤条件
-        // .similarityThreshold(Constant.WITHSIMILARITYTHRESHOLD).build(),
-        // Constant.AIDEFAULTQUESTIONANSWERADVISORRPROMPT);
+        //         ? new QuestionAnswerAdvisor(VectorStoreConfig,
+        //                 SearchRequest.builder().topK(Constant.WITHTOPK)
+        //                         .similarityThreshold(Constant.WITHSIMILARITYTHRESHOLD).build(),
+        //                 AIDEFAULTQUESTIONANSWERADVISORRPROMPT)
+        //         : new QuestionAnswerAdvisor(VectorStoreConfig,
+        //                 SearchRequest.builder().topK(c)
+        //                         .filterExpression("groupId == '" + groupId + "'")// 设置过滤条件
+        //                         .similarityThreshold(Constant.WITHSIMILARITYTHRESHOLD).build(),
+        //                 AIDEFAULTQUESTIONANSWERADVISORRPROMPT);
 
         // 使用排序后的结果手动喂给ai
         List<Document> documentList = ragService.ragSearch(q, groupId, "");
@@ -97,8 +102,9 @@ public class ChatService {
         for (Document document : documentList) {
             ragContents.append(document.getText()).append(";").append("\n");
         }
-        String ragPrompt = Constant.AIDEFAULTQUESTIONANSWERADVISORRPROMPT.replace("{question_answer_context}",
-                ragContents.toString());
+        String ragPrompt = AIDEFAULTQUESTIONANSWERADVISORRPROMPT
+                .replace("{question_answer_context}",
+                        ragContents.toString());
         String chat = this.chatClient.prompt(
                 new Prompt(
                         ragPrompt + "\n" + p,

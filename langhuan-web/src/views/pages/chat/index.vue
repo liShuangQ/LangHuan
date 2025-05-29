@@ -1,3 +1,8 @@
+<script lang="ts">
+export default {
+    auto: true,
+};
+</script>
 <script setup lang="ts">
 import { onMounted } from 'vue'
 import Sidebar from './components/sidebar.vue'
@@ -11,9 +16,9 @@ const { messages, canSend, sendMessage, saveMemory, loadMessages, optimizePrompt
 const { chatList, currentWindowId, createWindow, selectWindow, loadWindows, deleteWindow, updateWindowName } = useWindow()
 const { showSettings, settings, availableModels, ragGroups, toggleSettings, getChatParams } = useSettings()
 const PromptContainersRef = ref<InstanceType<typeof PromptContainers> | null>(null)
-import { useRoute } from "vue-router";
 const router = useRouter();
-const nowIsChat = router.currentRoute.value.path.includes('chat')
+const nowIsChat = router.currentRoute.value.path === '/chat'
+
 const handleSidebarAction = async (type: string, payload?: any) => {
     console.log('handleSidebarAction', type, payload);
 
@@ -72,12 +77,8 @@ onMounted(async () => {
         :class="nowIsChat ? ['flex', 'h-screen', 'w-full', 'min-w-0', 'overflow-hidden'] : ['flex', 'h-full', 'w-full', 'min-w-0', 'overflow-hidden']">
         <Sidebar :chat-list="chatList" @action="handleSidebarAction" />
         <div class="min-w-0 flex-1 h-full">
-            <PromptContainers
-                ref="PromptContainersRef"
-                :messages="messages"
-                :can-send="canSend"
-                :has-windows="chatList.length > 0"
-                @send-message="(msg: any) => handleSendMessage(currentWindowId, msg)"
+            <PromptContainers ref="PromptContainersRef" :messages="messages" :can-send="canSend"
+                :has-windows="chatList.length > 0" @send-message="(msg: any) => handleSendMessage(currentWindowId, msg)"
                 @action="handlePromptAction" />
         </div>
         <SettingsSidebar v-if="showSettings" v-model="settings" :available-models="availableModels"

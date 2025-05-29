@@ -8,17 +8,28 @@ export interface PagesMenu {
 
 const menu: PagesMenu[] = [
     {
-        // path: "/pages/homeNext",
         path: "/admin",
         faPath: [],
-        title: "主页",
+        title: "仪表盘",
         icon: "HomeFilled",
     },
     {
-        path: "/pages/homeNext",
+        path: "chats",
         faPath: [],
-        title: "主页-旧",
-        icon: "HomeFilled",
+        title: "对话窗口",
+        icon: "Menu",
+        children: [
+            {
+                title: "对话",
+                path: "/pages/chat",
+                faPath: ["chats"],
+            },
+            {
+                title: "对话-旧",
+                path: "/pages/homeNext",
+                faPath: ["chats"],
+            },
+        ],
     },
     // {
     //     path: "/pages/aiUtopia",

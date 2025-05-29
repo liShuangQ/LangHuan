@@ -32,7 +32,7 @@ export const PagesRouters: RouteRecordRaw[] = [
     {
         name: "admin",
         path: "/admin",
-        component: () => import("@/views/pages/chat/index.vue"),
+        component: () => import("@/views/pages/dashboard/index.vue"),
     },
     {
         name: "404",
