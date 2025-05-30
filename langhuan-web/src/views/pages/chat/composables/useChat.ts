@@ -149,8 +149,12 @@ export function useChat() {
         }
     };
     const documentRank = async (data: any) => {
-        const { type , document } = data;
-        const res: any = await documentRankHandleApi(document.id, document.metadata.rank, type);
+        const { type, document } = data;
+        const res: any = await documentRankHandleApi(
+            document.id,
+            document.metadata.rank,
+            type
+        );
         if (res.code === 200) {
             // 显示成功消息
             ElMessage.success(res.data);
@@ -165,6 +169,6 @@ export function useChat() {
         loadMessages,
         optimizePrompt,
         handleMessageAction,
-        documentRank
+        documentRank,
     };
 }

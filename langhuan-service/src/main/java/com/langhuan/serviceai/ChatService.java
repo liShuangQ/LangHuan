@@ -191,9 +191,13 @@ public class ChatService {
         return "保存成功";
     }
 
+    // HACK 当用户不存窗口，不存对话记录的时候，直接关闭页面，会导致内存中有数据，但是表内没有，下次id也不会被匹配上，导致出现无意义内存占用的情况
+    // 窗口无感知的保存，这样id不会丢，内存id也可以占用上
+    // 想办法从内存中找到所有的id，匹配窗口中是不是有对应id，找时机清空（最好关联用户，比如登陆的时候清空掉内存）（或者简单方式定时清空）。
+
     public String clearChatMemory(String id) {
         log.info("ChatMemory-clear: {}", id);
-        // 清空内存 HACK 这里可能产生无用内存
+        // 清空内存
         chatMemory.clear(SecurityContextHolder.getContext().getAuthentication().getName() + '_' + id);
         // 删除窗口表
         userChatWindowService

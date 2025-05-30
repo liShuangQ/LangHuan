@@ -34,7 +34,7 @@ spring:
       api-key: 111
       chat:
         options:
-          model: qwen2.5:3b
+          model: qwen3:1.7b
       embedding:
         options:
           model: mxbai-embed-large:latest

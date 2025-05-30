@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, nextTick, watch } from 'vue'
+import { ref, nextTick, watch, computed } from 'vue'
 import FeedbackDialog from './feedback-dialog.vue'
 import RagDocumentDialog from './rag-document-dialog.vue'
 
@@ -22,6 +22,54 @@ const emit = defineEmits<{
     (e: 'send-message', message: string): void;
     (e: 'action', type: string, payload?: any): void;
 }>();
+
+// 使用Map来缓存已处理的消息内容，避免重复创建ref
+const messagePartsCache = new Map();
+
+// 处理消息内容，分离思考过程和正常内容
+const processMessageContent = (content: string, messageId: string) => {
+    // 如果已经处理过这条消息，直接返回缓存的结果
+    if (messagePartsCache.has(messageId)) {
+        return messagePartsCache.get(messageId);
+    }
+
+    const thinkRegex = /<think>([\s\S]*?)<\/think>/g;
+    const parts = [];
+    let lastIndex = 0;
+    let match;
+
+    while ((match = thinkRegex.exec(content)) !== null) {
+        // 添加思考过程之前的内容
+        if (match.index > lastIndex) {
+            parts.push({
+                type: 'normal',
+                content: content.slice(lastIndex, match.index)
+            });
+        }
+
+        // 添加思考过程 - 使用ref使其响应式
+        parts.push({
+            type: 'thinking',
+            content: match[1].trim(),
+            isOpen: ref(false) // 使用ref包装使其响应式
+        });
+
+        lastIndex = match.index + match[0].length;
+    }
+
+    // 添加剩余内容
+    if (lastIndex < content.length) {
+        parts.push({
+            type: 'normal',
+            content: content.slice(lastIndex)
+        });
+    }
+
+    const result = parts.length > 0 ? parts : [{ type: 'normal', content }];
+    // 缓存结果
+    messagePartsCache.set(messageId, result);
+    return result;
+};
 
 const suggestions = [
     { id: 'saveMemory', text: '保存记录' },
@@ -98,8 +146,9 @@ const handleRagRank = (type: 'good' | 'bad', document: any) => {
     <div class="flex h-full w-full flex-col">
         <!-- 添加空状态显示 -->
         <div v-if="!hasWindows" class="flex-1 flex flex-col items-center justify-center text-slate-500">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mb-4" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor" fill="none">
-                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mb-4" viewBox="0 0 24 24" stroke-width="1"
+                stroke="currentColor" fill="none">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
                 <path d="M8 9h8" />
                 <path d="M8 13h6" />
                 <path d="M12.01 18.594l-4.01 2.406v-3h-2a3 3 0 0 1 -3 -3v-8a3 3 0 0 1 3 -3h12a3 3 0 0 1 3 3v5.5" />
@@ -111,7 +160,8 @@ const handleRagRank = (type: 'good' | 'bad', document: any) => {
         </div>
 
         <!-- 原有的消息列表容器 -->
-        <div v-else ref="messageContainer" class="flex-1 overflow-y-auto rounded-xl bg-slate-200 p-4 text-sm leading-6 text-slate-900 dark:bg-slate-800 dark:text-slate-300 sm:text-base sm:leading-7">
+        <div v-else ref="messageContainer"
+            class="flex-1 overflow-y-auto rounded-xl bg-slate-200 p-4 text-sm leading-6 text-slate-900 dark:bg-slate-800 dark:text-slate-300 sm:text-base sm:leading-7">
             <template v-for="(msg, index) in messages" :key="msg.id">
                 <!-- 消息主体部分 -->
                 <div class="flex flex-row px-2 py-4 sm:px-4">
@@ -127,7 +177,30 @@ const handleRagRank = (type: 'good' | 'bad', document: any) => {
                                 <span>{{ msg.content }}</span>
                                 <span class="loading loading-dots loading-sm"></span>
                             </div>
-                            <v-md-preview v-else :text="msg.content"></v-md-preview>
+                            <div v-else class="w-full">
+                                <template v-for="(part, partIndex) in processMessageContent(msg.content, msg.id)"
+                                    :key="partIndex">
+                                    <!-- 正常内容 -->
+                                    <div v-if="part.type === 'normal'" class="mb-2">
+                                        <v-md-preview :text="part.content"></v-md-preview>
+                                    </div>
+                                    <!-- 思考过程 -->
+                                    <div v-else-if="part.type === 'thinking'"
+                                        class="mb-4 border border-gray-200 rounded-md">
+                                        <div class="flex items-center p-1 bg-gray-100 cursor-pointer"
+                                            @click="part.isOpen.value = !part.isOpen.value">
+                                            <span class="mr-2">💭</span>
+                                            <span class="font-normal text-l">思考过程</span>
+                                            <span class="ml-auto">
+                                                {{ part.isOpen.value ? '▼' : '▶' }}&nbsp;
+                                            </span>
+                                        </div>
+                                        <div v-show="part.isOpen.value" class="p-3 bg-gray-50">
+                                            <pre class="whitespace-pre-wrap text-sm">{{ part.content }}</pre>
+                                        </div>
+                                    </div>
+                                </template>
+                            </div>
                         </template>
                     </div>
                 </div>

@@ -3,4 +3,4 @@
 
 # crontab -l
 # crontab -e
-# 0 2 * * * /scripts/postgres_backup.sh
+# 0 2 * * * xxx/scripts/postgres_backup.sh
