@@ -44,7 +44,8 @@ module.exports = {
         "vue/max-attributes-per-line": "off",
         "vue/valid-v-slot": "off",
         "@typescript-eslint/no-unused-vars": "off",
-
+        "@typescript-eslint/no-var-requires": "off",
+        "import/no-commonjs": "off",
         'vue/no-parsing-error': 'off',         // 禁用解析错误规则
         'vue/no-duplicate-attributes': 'off',  // 禁用重复属性规则
         'vue/no-template-shadow': 'off',         // 禁用模板作用域冲突的警告

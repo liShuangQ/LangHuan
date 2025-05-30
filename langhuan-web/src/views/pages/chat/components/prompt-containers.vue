@@ -136,6 +136,9 @@ const handleRagChecks = (msg: Message) => {
     ragDocuments.value = msg.rag || []
     ragDocumentVisible.value = true
 }
+const userImage = require('../imgs/user.png')
+const assistantImage = require('../imgs/assistant.png')
+
 
 const handleRagRank = (type: 'good' | 'bad', document: any) => {
     emit('action', 'documentRank', { type, document })
@@ -162,11 +165,32 @@ const handleRagRank = (type: 'good' | 'bad', document: any) => {
         <!-- 原有的消息列表容器 -->
         <div v-else ref="messageContainer"
             class="flex-1 overflow-y-auto rounded-xl bg-slate-200 p-4 text-sm leading-6 text-slate-900 dark:bg-slate-800 dark:text-slate-300 sm:text-base sm:leading-7">
+            <!-- 欢迎提示框 - 当有窗口但没有消息时显示 -->
+            <div v-if="messages.length === 0" class="flex flex-col items-center justify-center h-full text-slate-500">
+                <div class="bg-white dark:bg-slate-700 rounded-2xl p-8 shadow-lg max-w-md mx-auto text-center">
+                    <h3 class="text-xl font-semibold text-slate-800 dark:text-slate-200 mb-3">欢迎使用 LangHuan</h3>
+                    <p class="text-slate-600 dark:text-slate-400 mb-6 leading-relaxed">
+                        我是您的AI助手，可以帮助您解答问题、处理任务和进行创意讨论。
+                        请在下方输入您的问题或需求，让我们开始对话吧！
+                    </p>
+                    <div class="flex flex-wrap gap-2 justify-center">
+                        <span
+                            class="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full text-sm">
+                            💡 创意写作
+                        </span>
+                        <span
+                            class="px-3 py-1 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 rounded-full text-sm">
+                            📚 知识问答
+                        </span>
+                    </div>
+                </div>
+            </div>
+
             <template v-for="(msg, index) in messages" :key="msg.id">
                 <!-- 消息主体部分 -->
                 <div class="flex flex-row px-2 py-4 sm:px-4">
                     <img class="mr-2 flex h-8 w-8 rounded-full sm:mr-4"
-                        :src="`https://dummyimage.com/256x256/${msg.sender === 'user' ? '363536' : '354ea1'}/ffffff&text=${msg.sender === 'user' ? 'U' : 'G'}`" />
+                        :src="`${msg.sender === 'user' ? userImage : assistantImage}`" />
                     <div :class="[
                         'flex flex-1 items-center rounded-xl',
                         msg.sender === 'assistant' ? 'bg-slate-50 px-2 py-4 dark:bg-slate-900 sm:px-4' : ''
@@ -190,7 +214,7 @@ const handleRagRank = (type: 'good' | 'bad', document: any) => {
                                         <div class="flex items-center p-1 bg-gray-100 cursor-pointer"
                                             @click="part.isOpen.value = !part.isOpen.value">
                                             <span class="mr-2">💭</span>
-                                            <span class="font-normal text-l">思考过程</span>
+                                            <span class="font-normal text-sm">思考过程</span>
                                             <span class="ml-auto">
                                                 {{ part.isOpen.value ? '▼' : '▶' }}&nbsp;
                                             </span>
