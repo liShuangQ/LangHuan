@@ -3,6 +3,7 @@ package com.langhuan.controller;
 import com.alibaba.fastjson2.JSONObject;
 import com.langhuan.common.Result;
 import com.langhuan.model.pojo.ChatModelResult;
+import com.langhuan.model.pojo.ChatRestOption;
 import com.langhuan.serviceai.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.document.Document;
@@ -28,7 +29,6 @@ public class ChatController {
     private final ChatGeneralAssistanceService chatGeneralAssistanceService;
     private final StanfordChatService stanfordChatService;
     private final RagService ragService;
-    private final EasyChatService easyChatService;
     @Value("${spring.ai.openai.chat.options.model}")
     private String defaultModelName;
     @Value("${spring.ai.openai.base-url}")
@@ -36,12 +36,11 @@ public class ChatController {
     @Value("${spring.ai.openai.api-key}")
     private String openApiKey;
 
-    public ChatController(ChatService chatService, ChatGeneralAssistanceService chatGeneralAssistanceService, StanfordChatService stanfordChatService, RagService ragService, EasyChatService easyChatService) {
+    public ChatController(ChatService chatService, ChatGeneralAssistanceService chatGeneralAssistanceService, StanfordChatService stanfordChatService, RagService ragService ) {
         this.chatService = chatService;
         this.chatGeneralAssistanceService = chatGeneralAssistanceService;
         this.stanfordChatService = stanfordChatService;
         this.ragService = ragService;
-        this.easyChatService = easyChatService;
     }
 
     //    NOTE:Flux<String>会和Security的拦截器冲突，所以要设置白名单  "/chat/chatFlux"
@@ -60,7 +59,16 @@ public class ChatController {
             modelName = defaultModelName;
         }
 
-        ChatModelResult chatModelResult = chatService.chat(id, p, q, isRag, groupId, isFunction, modelName);
+        ChatRestOption chatRestOption = new ChatRestOption();
+        chatRestOption.setChatId(id);
+        chatRestOption.setPrompt(p);
+        chatRestOption.setQuestion(q);
+        chatRestOption.setIsRag(isRag);
+        chatRestOption.setRagGroupId(groupId);
+        chatRestOption.setIsFunction(isFunction);
+        chatRestOption.setModelName(modelName);
+
+        ChatModelResult chatModelResult = chatService.chat(chatRestOption);
 
         String chat = chatModelResult.getChat();
         if (chat.startsWith("***tools***")) {
@@ -87,7 +95,7 @@ public class ChatController {
             modelName = defaultModelName;
         }
 
-        String chat = easyChatService.chat(p, q, modelName);
+        String chat = chatGeneralAssistanceService.easyChat(p, q, modelName);
         return Result.success(Map.of(
                 "chat", chat,
 //                "recommend", chatGeneralAssistanceService.otherQuestionsRecommended(q)

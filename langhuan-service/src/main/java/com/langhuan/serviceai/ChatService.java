@@ -7,6 +7,7 @@ import com.langhuan.common.Constant;
 import com.langhuan.functionTools.RestRequestTools;
 import com.langhuan.model.domain.TUserChatWindow;
 import com.langhuan.model.pojo.ChatModelResult;
+import com.langhuan.model.pojo.ChatRestOption;
 import com.langhuan.service.TPromptsService;
 import com.langhuan.service.TUserChatWindowService;
 import lombok.extern.slf4j.Slf4j;
@@ -61,15 +62,22 @@ public class ChatService {
                 .build();
     }
 
-    public ChatModelResult chat(String id, String p, String q, Boolean isRag, String groupId, Boolean isFunction,
-            String modelName) {
-        ToolCallback[] tools = isFunction ? ToolCallbacks.from(new RestRequestTools()) : ToolCallbacks.from();
+    /**
+     * 聊天服务主方法
+     * @param chatRestOption 聊天请求选项对象
+     * @return 聊天结果
+     */
+    public ChatModelResult chat(ChatRestOption chatRestOption) {
+        ToolCallback[] tools = chatRestOption.getIsFunction() ? ToolCallbacks.from(new RestRequestTools()) : ToolCallbacks.from();
 
         try {
-            if (isRag) {
-                return this.isRagChat(id, p, q, groupId, modelName, tools);
+            if (chatRestOption.getIsRag()) {
+                return this.isRagChat(chatRestOption.getChatId(), chatRestOption.getPrompt(), 
+                        chatRestOption.getQuestion(), chatRestOption.getRagGroupId(), 
+                        chatRestOption.getModelName(), tools);
             } else {
-                return this.noRagChat(id, p, q, modelName, tools);
+                return this.noRagChat(chatRestOption.getChatId(), chatRestOption.getPrompt(), 
+                        chatRestOption.getQuestion(), chatRestOption.getModelName(), tools);
             }
         } catch (Exception e) {
             log.error("advisor-error: {}", e.getMessage());
