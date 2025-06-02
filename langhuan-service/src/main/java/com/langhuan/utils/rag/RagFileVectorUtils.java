@@ -100,7 +100,7 @@ public class RagFileVectorUtils {
 
         documentText = documentText.replaceAll(
                 "source: Invalid source URI: InputStream resource [resource loaded through InputStream] cannot be resolved to URL",
-                "");
+                "");        
 
         List<String> apply = null;
 

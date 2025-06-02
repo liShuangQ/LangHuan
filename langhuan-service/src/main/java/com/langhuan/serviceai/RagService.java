@@ -1,7 +1,9 @@
 package com.langhuan.serviceai;
 
 import cn.hutool.core.util.IdUtil;
-import com.alibaba.fastjson2.JSONObject;
+import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
+
 import com.langhuan.common.BusinessException;
 import com.langhuan.common.Constant;
 import com.langhuan.config.VectorStoreConfig;
@@ -62,10 +64,10 @@ public class RagService {
         List<Map<String, Object>> queryForList = baseDao.queryForList(seqsql, documentId);
         PGobject pgObject = (PGobject) queryForList.get(0).get("metadata");
         String string = pgObject.getValue(); // 提取 JSON 字符串
-        JSONObject object = JSONObject.parseObject(string);
-        String fileName = object.getString("filename");
-        String fileId = object.getString("fileId");
-        String groupId = object.getString("groupId");
+        JSONObject object = JSONUtil.parseObj(string);
+        String fileName = object.getStr("filename");
+        String fileId = object.getStr("fileId");
+        String groupId = object.getStr("groupId");
 
         String delsql = "DELETE FROM vector_store_rag WHERE id = ?::uuid";
         baseDao.update(delsql, documentId);
@@ -202,15 +204,15 @@ public class RagService {
         try {
             if (groupId.isEmpty()) {
                 searchDocuments = ragVectorStore.similaritySearch(
-                        SearchRequest.builder().query(q).topK(Constant.WITHTOPK)
-                                .similarityThreshold(Constant.WITHSIMILARITYTHRESHOLD).build() // 单独设置多一些
+                        SearchRequest.builder().query(q).topK(Constant.RAGWITHTOPK)
+                                .similarityThreshold(Constant.RAGWITHSIMILARITYTHRESHOLD).build() // 单独设置多一些
                 );
             } else {
                 // HACK:一个组下有相同的文件ID再用 groupId == '" + groupId + "' AND
                 String sql = fileId.isEmpty() ? "groupId == '" + groupId + "'" : "fileId == '" + fileId + "'";
                 searchDocuments = ragVectorStore.similaritySearch(
-                        SearchRequest.builder().query(q).topK(Constant.WITHTOPK)
-                                .similarityThreshold(Constant.WITHSIMILARITYTHRESHOLD)
+                        SearchRequest.builder().query(q).topK(Constant.RAGWITHTOPK)
+                                .similarityThreshold(Constant.RAGWITHSIMILARITYTHRESHOLD)
                                 .filterExpression(sql)// 设置过滤条件
                                 .build());
             }

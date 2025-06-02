@@ -1,8 +1,9 @@
 package com.langhuan.utils.rag.splitter;
 
-import com.alibaba.fastjson2.JSONArray;
-import com.alibaba.fastjson2.JSONObject;
 import com.langhuan.serviceai.ChatGeneralAssistanceService;
+
+import cn.hutool.json.JSONArray;
+import cn.hutool.json.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
@@ -30,8 +31,7 @@ public class LlmTextSplitter {
             String llmOutString = this.chatGeneralAssistanceService.llmTextSplitter(modelName, chunk);
             llmOutString = llmOutString.replace("```json", "");
             llmOutString = llmOutString.replace("```", "");
-            JSONArray content = JSONObject.parseObject(llmOutString).getJSONArray("content");
-            JSONObject.parseObject(llmOutString).getJSONArray("content");
+            JSONArray content = JSONUtil.parseObj(llmOutString).getJSONArray("content");
             List<String> list = content.stream()
                     .map(Object::toString)
                     .toList();

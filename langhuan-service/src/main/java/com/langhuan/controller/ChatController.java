@@ -1,10 +1,11 @@
 package com.langhuan.controller;
 
-import com.alibaba.fastjson2.JSONObject;
 import com.langhuan.common.Result;
 import com.langhuan.model.pojo.ChatModelResult;
 import com.langhuan.model.pojo.ChatRestOption;
 import com.langhuan.serviceai.*;
+
+import cn.hutool.json.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.document.Document;
 import org.springframework.beans.factory.annotation.Value;
@@ -173,7 +174,7 @@ public class ChatController {
 
         try {
             response = client.send(request, HttpResponse.BodyHandlers.ofString());
-            return Result.success(JSONObject.parseObject(response.body()));
+            return Result.success(JSONUtil.parseObj(response.body()));
 
         } catch (Exception e) {
             log.error("获取模型列表失败", e);

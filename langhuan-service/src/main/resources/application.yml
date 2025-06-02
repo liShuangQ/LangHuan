@@ -43,7 +43,10 @@ spring:
     vectorstore:
       pgvector:
         remove-existing-vector-store-table: false
-
+rerank:
+  base-url: http://127.0.0.1:11434
+  api-key: 111
+  model: gte-rerank-v2
 logging:
   level:
     org:

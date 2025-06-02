@@ -95,13 +95,13 @@ public class ChatService {
         // 自带方法 不好做排序
         // QuestionAnswerAdvisor questionAnswerAdvisor = groupId.isEmpty()
         //         ? new QuestionAnswerAdvisor(VectorStoreConfig,
-        //                 SearchRequest.builder().topK(Constant.WITHTOPK)
-        //                         .similarityThreshold(Constant.WITHSIMILARITYTHRESHOLD).build(),
+        //                 SearchRequest.builder().topK(Constant.RAGWITHTOPK)
+        //                         .similarityThreshold(Constant.RAGWITHSIMILARITYTHRESHOLD).build(),
         //                 AIDEFAULTQUESTIONANSWERADVISORRPROMPT)
         //         : new QuestionAnswerAdvisor(VectorStoreConfig,
         //                 SearchRequest.builder().topK(c)
         //                         .filterExpression("groupId == '" + groupId + "'")// 设置过滤条件
-        //                         .similarityThreshold(Constant.WITHSIMILARITYTHRESHOLD).build(),
+        //                         .similarityThreshold(Constant.RAGWITHSIMILARITYTHRESHOLD).build(),
         //                 AIDEFAULTQUESTIONANSWERADVISORRPROMPT);
 
         // 使用排序后的结果手动喂给ai
