@@ -235,7 +235,9 @@ public class RagService {
             throw new BusinessException("查询失败");
         }
         // 在得分最高的结果中，取前RAGRANKTOPN个结果给下面
-        searchDocuments = searchDocuments.subList(0, Constant.RAGRANKTOPN);
+        if (searchDocuments.size() > Constant.RAGRANKTOPN) {
+            searchDocuments = searchDocuments.subList(0, Constant.RAGRANKTOPN);
+        }
         // rerank模型重排
         if (isReRank) {
             searchDocuments = reRankModelService.chat(q, searchDocuments);
@@ -247,7 +249,11 @@ public class RagService {
             return rank2.compareTo(rank1);
         });
         // 最后结果一定是LLM_RAG_TOPN的数量
-        return searchDocuments.subList(0, Constant.LLM_RAG_TOPN);
+        if (searchDocuments.size() > Constant.LLM_RAG_TOPN) {
+            return searchDocuments.subList(0, Constant.LLM_RAG_TOPN);
+        } else {
+            return searchDocuments;
+        }
     }
 
 }
