@@ -31,6 +31,7 @@ export interface ChatSettings {
         id: string;
         name: string;
     } | null;
+    isReRank: boolean;
 }
 
 export interface RagGroup {

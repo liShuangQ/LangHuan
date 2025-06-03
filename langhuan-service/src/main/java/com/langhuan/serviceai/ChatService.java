@@ -64,19 +64,21 @@ public class ChatService {
 
     /**
      * 聊天服务主方法
+     * 
      * @param chatRestOption 聊天请求选项对象
      * @return 聊天结果
      */
     public ChatModelResult chat(ChatRestOption chatRestOption) {
-        ToolCallback[] tools = chatRestOption.getIsFunction() ? ToolCallbacks.from(new RestRequestTools()) : ToolCallbacks.from();
+        ToolCallback[] tools = chatRestOption.getIsFunction() ? ToolCallbacks.from(new RestRequestTools())
+                : ToolCallbacks.from();
 
         try {
             if (chatRestOption.getIsRag()) {
-                return this.isRagChat(chatRestOption.getChatId(), chatRestOption.getPrompt(), 
-                        chatRestOption.getQuestion(), chatRestOption.getRagGroupId(), 
-                        chatRestOption.getModelName(), tools);
+                return this.isRagChat(chatRestOption.getChatId(), chatRestOption.getPrompt(),
+                        chatRestOption.getQuestion(), chatRestOption.getRagGroupId(),
+                        chatRestOption.getModelName(), chatRestOption.getIsReRank(), tools);
             } else {
-                return this.noRagChat(chatRestOption.getChatId(), chatRestOption.getPrompt(), 
+                return this.noRagChat(chatRestOption.getChatId(), chatRestOption.getPrompt(),
                         chatRestOption.getQuestion(), chatRestOption.getModelName(), tools);
             }
         } catch (Exception e) {
@@ -85,27 +87,16 @@ public class ChatService {
         }
     }
 
-    public ChatModelResult isRagChat(String id, String p, String q, String groupId, String modelName,
-            ToolCallback[] tools) {
+    public ChatModelResult isRagChat(String id, String p, String q, String groupId, String modelName,Boolean isReRank,
+            ToolCallback[] tools) throws Exception {
         String AIDEFAULTQUESTIONANSWERADVISORRPROMPT = TPromptsService
                 .getCachedTPromptsByMethodName("AIDEFAULTQUESTIONANSWERADVISORRPROMPT");
         if (AIDEFAULTQUESTIONANSWERADVISORRPROMPT == null) {
             AIDEFAULTQUESTIONANSWERADVISORRPROMPT = Constant.AIDEFAULTQUESTIONANSWERADVISORRPROMPT;
         }
-        // 自带方法 不好做排序
-        // QuestionAnswerAdvisor questionAnswerAdvisor = groupId.isEmpty()
-        //         ? new QuestionAnswerAdvisor(VectorStoreConfig,
-        //                 SearchRequest.builder().topK(Constant.RAGWITHTOPK)
-        //                         .similarityThreshold(Constant.RAGWITHSIMILARITYTHRESHOLD).build(),
-        //                 AIDEFAULTQUESTIONANSWERADVISORRPROMPT)
-        //         : new QuestionAnswerAdvisor(VectorStoreConfig,
-        //                 SearchRequest.builder().topK(c)
-        //                         .filterExpression("groupId == '" + groupId + "'")// 设置过滤条件
-        //                         .similarityThreshold(Constant.RAGWITHSIMILARITYTHRESHOLD).build(),
-        //                 AIDEFAULTQUESTIONANSWERADVISORRPROMPT);
 
         // 使用排序后的结果手动喂给ai
-        List<Document> documentList = ragService.ragSearch(q, groupId, "");
+        List<Document> documentList = ragService.ragSearch(q, groupId, "",isReRank);
         StringBuilder ragContents = new StringBuilder();
         for (Document document : documentList) {
             ragContents.append(document.getText()).append(";").append("\n");
@@ -121,7 +112,6 @@ public class ChatService {
                                 .build()))
                 .user(q)
                 .system(TPromptsService.getCachedTPromptsByMethodName("ChatService"))
-                // .advisors(questionAnswerAdvisor) // 官方的rag方法
                 .advisors(a -> a.param(chatMemory.CONVERSATION_ID, id))
                 .toolCallbacks(tools)
                 .call().content();

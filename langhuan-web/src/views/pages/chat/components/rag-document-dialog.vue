@@ -24,16 +24,24 @@ const handleRank = (type: 'good' | 'bad', document: any) => {
                 <div class="mb-4">
                     {{ item.text }}
                 </div>
-                <div class="flex justify-start items-center gap-1">
-                    <el-tag>排名：{{ item.metadata.rank }}</el-tag>
-                    <el-tag>距离：{{ item.metadata.distance }}</el-tag>
-                    <el-tag>文件名：{{ item.metadata.filename }}</el-tag>
-                    <el-icon style="font-size: 18px;margin: 0 4px; cursor: pointer;" @click="handleRank('good', item)">
-                        <Top />
-                    </el-icon>
-                    <el-icon style="font-size: 18px; cursor: pointer;" @click="handleRank('bad', item)">
-                        <Bottom />
-                    </el-icon>
+                <div>
+                    <div class="flex justify-start items-center gap-1 mb-1">
+                        <el-tag>手工排名：{{ item.metadata.rank }}</el-tag>
+                        <el-tag v-if="item.metadata.relevance_score">ReRank距离：{{ item.metadata.relevance_score
+                        }}</el-tag>
+                        <el-tag>RAG得分：{{ item.score }}</el-tag>
+                        <el-tag>向量距离：{{ item.metadata.distance }}</el-tag>
+                    </div>
+                    <div class="flex justify-start items-center gap-1">
+                        <el-tag>文件名：{{ item.metadata.filename }}</el-tag>
+                        <el-icon style="font-size: 18px;margin: 0 4px; cursor: pointer;"
+                            @click="handleRank('good', item)">
+                            <Top />
+                        </el-icon>
+                        <el-icon style="font-size: 18px; cursor: pointer;" @click="handleRank('bad', item)">
+                            <Bottom />
+                        </el-icon>
+                    </div>
                 </div>
                 <el-divider />
             </div>

@@ -34,9 +34,22 @@ const ragGroup = computed({
     get: () => props.modelValue.ragGroup?.id || '',
     set: (value) => {
         const selectedGroup = props.ragGroups.find(g => g.id === value)
-        emit('update:modelValue', { ...props.modelValue, ragGroup: selectedGroup || null })
+        const newSettings = { ...props.modelValue, ragGroup: selectedGroup || null }
+        // 当选择"无"时，自动关闭ReRank
+        if (!value) {
+            newSettings.isReRank = false
+        }
+        emit('update:modelValue', newSettings)
     }
 })
+
+const isReRank = computed({
+    get: () => props.modelValue.isReRank,
+    set: (value) => emit('update:modelValue', { ...props.modelValue, isReRank: value })
+})
+
+// 计算ReRank开关是否应该被禁用
+const isReRankDisabled = computed(() => !props.modelValue.ragGroup?.id)
 </script>
 
 <template>
@@ -65,15 +78,15 @@ const ragGroup = computed({
                     </el-select>
                 </div>
 
-                <!-- 提示词模板 -->
+                <!-- 提示词 -->
                 <div>
-                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 pb-1">提示词模板</label>
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 pb-1">提示词</label>
                     <el-input
                         v-model="promptTemplate"
                         type="textarea"
                         size="small"
                         :rows="3"
-                        placeholder="输入提示词模板..."
+                        placeholder="输入提示词..."
                     />
                 </div>
 
@@ -93,6 +106,21 @@ const ragGroup = computed({
                             :value="group.id"
                         />
                     </el-select>
+                </div>
+
+                <!-- ReRank模型开关 -->
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 pb-1">启用ReRank模型</label>
+                    <el-switch
+                        v-model="isReRank"
+                        size="small"
+                        active-text="开启"
+                        inactive-text="关闭"
+                        :disabled="isReRankDisabled"
+                    />
+                    <div v-if="isReRankDisabled" class="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                        需要选择RAG文档组才能启用ReRank模型
+                    </div>
                 </div>
             </div>
         </div>

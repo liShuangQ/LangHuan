@@ -4,7 +4,7 @@
 数据库: PostgreSQL, MyBatis-Plus
 AI 集成: OpenAI 模型，PGVector 向量存储
 安全认证: JWT
-工具库: Hutool, FastJSON, Lombok
+工具库: Hutool, Lombok
 
 ## Java 编码规范
 ### 命名约定:

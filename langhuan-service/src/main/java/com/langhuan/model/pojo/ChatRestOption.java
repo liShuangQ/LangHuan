@@ -9,6 +9,7 @@ public class ChatRestOption {
     String question;
     Boolean isRag;
     String ragGroupId;
+    Boolean isReRank;
     Boolean isFunction;
     String modelName;
 }

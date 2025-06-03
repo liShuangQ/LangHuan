@@ -1,25 +1,60 @@
 package com.langhuan.serviceai;
 
+import java.lang.annotation.Documented;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.ai.document.Document;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
+import com.langhuan.common.Constant;
+import com.langhuan.model.pojo.GteReRankResult;
+import com.langhuan.model.pojo.GteReRankResult.Result;
 import com.langhuan.utils.http.PostRequestUtils;
 
 import cn.hutool.json.JSONUtil;
 
+@Service
 public class ReRankModelService {
-    @Value("${rerank.base_url}")
+    @Value("${rerank.base-url}")
     private String base_url;
     @Value("${rerank.api-key}")
     private String api_key;
-    @Value("${rerank.model")
+    @Value("${rerank.model}")
     private String model;
 
-    public String chat(String query, List<String> documentList) throws Exception {
-        String jsonData = JSONUtil.toJsonStr(Map.of("query", query, "documentList", documentList));
+    public List<Document> chat(String query, List<Document> documentList) throws Exception {
+        List<Document> rankResult = new ArrayList<>();
+        List<String> documentListStr = documentList.stream().map(Document::getText).toList();
+        if (model.indexOf("gte") >= 0) {
+            GteReRankResult gte = gte(query, documentListStr);
+            List<Result> results = gte.getOutput().getResults();
+            for (Result result : results) {
+                Document document = documentList.get(result.getIndex());
+                document.getMetadata().put("relevance_score", result.getRelevance_score());
+                rankResult.add(document);
+            }
+        }
+        return rankResult;
+    }
+
+    public GteReRankResult gte(String query, List<String> documentList) throws Exception {
+        String jsonData = JSONUtil.toJsonStr(
+                Map.of(
+                        "model", model,
+                        "input", Map.of(
+                                "query", query,
+                                "documents", documentList),
+                        "parameters", Map.of(
+                                "return_documents", true,
+                                "top_n", Constant.RAGRERANKTOPN)));
         String out = PostRequestUtils.sendPostRequest(base_url, jsonData, Map.of("Authorization", "Bearer " + api_key));
-        return out;
+
+        // 解析JSON响应并转换为ReRankResult对象
+        GteReRankResult reRankResult = JSONUtil.toBean(out, GteReRankResult.class);
+
+        return reRankResult;
     }
 }

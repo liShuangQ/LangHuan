@@ -1,5 +1,6 @@
 package com.langhuan.controller;
 
+import com.langhuan.common.Constant;
 import com.langhuan.common.Result;
 import com.langhuan.model.pojo.ChatModelResult;
 import com.langhuan.model.pojo.ChatRestOption;
@@ -37,23 +38,24 @@ public class ChatController {
     @Value("${spring.ai.openai.api-key}")
     private String openApiKey;
 
-    public ChatController(ChatService chatService, ChatGeneralAssistanceService chatGeneralAssistanceService, StanfordChatService stanfordChatService, RagService ragService ) {
+    public ChatController(ChatService chatService, ChatGeneralAssistanceService chatGeneralAssistanceService,
+            StanfordChatService stanfordChatService, RagService ragService) {
         this.chatService = chatService;
         this.chatGeneralAssistanceService = chatGeneralAssistanceService;
         this.stanfordChatService = stanfordChatService;
         this.ragService = ragService;
     }
 
-    //    NOTE:Flux<String>会和Security的拦截器冲突，所以要设置白名单  "/chat/chatFlux"
+    // NOTE:Flux<String>会和Security的拦截器冲突，所以要设置白名单 "/chat/chatFlux"
     @PostMapping("/chat/chat")
     public Result chat(@RequestParam(name = "id", required = true) String id,
-                       @RequestParam(name = "p", required = true, defaultValue = ".") String p,
-                       @RequestParam(name = "q", required = true) String q,
-                       @RequestParam(name = "isRag", required = true) Boolean isRag,
-                       @RequestParam(name = "groupId", required = true, defaultValue = "") String groupId,
-                       @RequestParam(name = "isFunction", required = true) Boolean isFunction,
-                       @RequestParam(name = "modelName", required = true, defaultValue = "") String modelName
-    ) {
+            @RequestParam(name = "p", required = true, defaultValue = ".") String p,
+            @RequestParam(name = "q", required = true) String q,
+            @RequestParam(name = "isRag", required = true) Boolean isRag,
+            @RequestParam(name = "isReRank", required = true) Boolean isReRank,
+            @RequestParam(name = "groupId", required = true, defaultValue = "") String groupId,
+            @RequestParam(name = "isFunction", required = true) Boolean isFunction,
+            @RequestParam(name = "modelName", required = true, defaultValue = "") String modelName) {
         id = SecurityContextHolder.getContext().getAuthentication().getName() + "_" + id;
 
         if (modelName.isEmpty()) {
@@ -65,6 +67,7 @@ public class ChatController {
         chatRestOption.setPrompt(p);
         chatRestOption.setQuestion(q);
         chatRestOption.setIsRag(isRag);
+        chatRestOption.setIsReRank(isReRank);
         chatRestOption.setRagGroupId(groupId);
         chatRestOption.setIsFunction(isFunction);
         chatRestOption.setModelName(modelName);
@@ -80,9 +83,8 @@ public class ChatController {
         return Result.success(Map.of(
                 "chat", chat,
                 "rag", chatModelResult.getRag(),
-//                "recommend", chatGeneralAssistanceService.otherQuestionsRecommended(q)
-                "recommend", List.of()
-        ));
+                // "recommend", chatGeneralAssistanceService.otherQuestionsRecommended(q)
+                "recommend", List.of()));
     }
 
     @PostMapping("/chat/easyChat")
@@ -99,9 +101,8 @@ public class ChatController {
         String chat = chatGeneralAssistanceService.easyChat(p, q, modelName);
         return Result.success(Map.of(
                 "chat", chat,
-//                "recommend", chatGeneralAssistanceService.otherQuestionsRecommended(q)
-                "recommend", List.of()
-        ));
+                // "recommend", chatGeneralAssistanceService.otherQuestionsRecommended(q)
+                "recommend", List.of()));
     }
 
     @PostMapping("/chat/getPrompt")
@@ -113,8 +114,7 @@ public class ChatController {
     @PostMapping("/chat/setChatMemoryWindowsName")
     public Result setChatMemoryWindowsName(
             @RequestParam(name = "id", required = true) String id,
-            @RequestParam(name = "name", required = true) String name
-    ) {
+            @RequestParam(name = "name", required = true) String name) {
         return Result.success(chatService.setChatMemoryWindowsName(id, name));
     }
 
@@ -131,7 +131,7 @@ public class ChatController {
 
     @PostMapping("/chat/saveChatMemory")
     public Result saveChatMemory(@RequestParam String id,
-                                 @RequestParam String name) {
+            @RequestParam String name) {
         return Result.success(chatService.saveChatMemory(id, name));
     }
 
@@ -142,14 +142,13 @@ public class ChatController {
 
     @PostMapping("/onlyRag/chat")
     public Result onlyRagChat(@RequestParam(name = "id", required = true) String id,
-                              @RequestParam(name = "p", required = true, defaultValue = ".") String p,
-                              @RequestParam(name = "q", required = true) String q,
-                              @RequestParam(name = "isRag", required = true) Boolean isRag,
-                              @RequestParam(name = "groupId", required = true, defaultValue = "") String groupId,
-                              @RequestParam(name = "isFunction", required = true) Boolean isFunction
-    ) {
+            @RequestParam(name = "p", required = true, defaultValue = ".") String p,
+            @RequestParam(name = "q", required = true) String q,
+            @RequestParam(name = "isRag", required = true) Boolean isRag,
+            @RequestParam(name = "groupId", required = true, defaultValue = "") String groupId,
+            @RequestParam(name = "isFunction", required = true) Boolean isFunction) throws Exception {
 
-        List<Document> documentList = ragService.ragSearch(q, groupId, "");
+        List<Document> documentList = ragService.ragSearch(q, groupId, "", Constant.ISRAGRERANK);
         StringBuilder contents = new StringBuilder();
         int i = 0;
         for (Document document : documentList) {
@@ -158,10 +157,9 @@ public class ChatController {
         }
         return Result.success(Map.of(
                 "chat", contents.toString()
-//                "recommend", chatGeneralAssistanceService.otherQuestionsRecommended(q)
+        // "recommend", chatGeneralAssistanceService.otherQuestionsRecommended(q)
         ));
     }
-
 
     @PostMapping("/chatModel/getModelList")
     public Result getModelList() throws IOException {
@@ -188,8 +186,7 @@ public class ChatController {
             @RequestParam(name = "id", required = true) String id,
             @RequestParam(name = "p", required = true, defaultValue = ".") String p,
             @RequestParam(name = "q", required = true) String q,
-            @RequestParam(name = "modelName", required = true, defaultValue = "") String modelName
-    ) {
+            @RequestParam(name = "modelName", required = true, defaultValue = "") String modelName) {
         return Result.success(stanfordChatService.chat(id, p, q, modelName));
     }
 }

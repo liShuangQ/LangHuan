@@ -8,20 +8,22 @@ import com.langhuan.common.BusinessException;
 import com.langhuan.common.Constant;
 import com.langhuan.config.VectorStoreConfig;
 import com.langhuan.model.domain.TRagFile;
+import com.langhuan.model.pojo.GteReRankResult;
 import com.langhuan.service.TRagFileService;
+import com.langhuan.serviceai.ReRankModelService;
 import com.langhuan.utils.rag.RagFileVectorUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.postgresql.util.PGobject;
 import org.springframework.ai.document.Document;
 import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -33,14 +35,15 @@ public class RagService {
     private final TRagFileService ragFileService;
     private final JdbcTemplate baseDao;
     private final VectorStore ragVectorStore;
+    private final ReRankModelService reRankModelService;
 
-    @Autowired
     public RagService(RagFileVectorUtils ragFileVectorUtils, TRagFileService ragFileService, JdbcTemplate jdbcTemplate,
-            VectorStoreConfig vectorStoreConfig) {
+            VectorStoreConfig vectorStoreConfig, ReRankModelService reRankModelService) {
         this.ragFileVectorUtils = ragFileVectorUtils;
         this.ragFileService = ragFileService;
         this.baseDao = jdbcTemplate;
         this.ragVectorStore = vectorStoreConfig.ragVectorStore();
+        this.reRankModelService = reRankModelService;
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -199,8 +202,19 @@ public class RagService {
         return baseDao.queryForList(sql, params);
     }
 
-    public List<Document> ragSearch(String q, String groupId, String fileId) {
-        List<Document> searchDocuments = null;
+    /**
+     * 排序方式：匹配度得分 → rerank 模型距离 → 手工标记排名
+     * 
+     * @param q
+     * @param groupId
+     * @param fileId
+     * @param isReRank
+     * @return
+     * @throws Exception
+     */
+    public List<Document> ragSearch(String q, String groupId, String fileId, Boolean isReRank) throws Exception {
+        isReRank = isReRank == null ? Constant.ISRAGRERANK : isReRank;
+        List<Document> searchDocuments = new ArrayList<>();
         try {
             if (groupId.isEmpty()) {
                 searchDocuments = ragVectorStore.similaritySearch(
@@ -220,13 +234,20 @@ public class RagService {
             log.error("ragSearch error: {}", e.getMessage());
             throw new BusinessException("查询失败");
         }
-        // 排序rank
+        // 在得分最高的结果中，取前RAGRANKTOPN个结果给下面
+        searchDocuments = searchDocuments.subList(0, Constant.RAGRANKTOPN);
+        // rerank模型重排
+        if (isReRank) {
+            searchDocuments = reRankModelService.chat(q, searchDocuments);
+        }
+        // 按手工标记排序
         searchDocuments.sort((o1, o2) -> {
             Integer rank1 = (int) o1.getMetadata().get("rank");
             Integer rank2 = (int) o2.getMetadata().get("rank");
             return rank2.compareTo(rank1);
         });
-        return searchDocuments;
+        // 最后结果一定是LLM_RAG_TOPN的数量
+        return searchDocuments.subList(0, Constant.LLM_RAG_TOPN);
     }
 
 }

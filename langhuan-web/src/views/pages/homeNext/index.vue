@@ -139,6 +139,7 @@ const sendMessage = (recommend = null): void => {
                 p: inputPromptText.value,               // 提示词
                 q: inputTextCopy,                       // 用户问题
                 isRag: ragEnabled.value,                // 是否启用RAG
+                isReRank: false,                // 是否启用rerank
                 groupId: ragGroup.value,                // RAG组ID
                 isFunction: toolEnabled.value,          // 是否启用函数调用
                 modelName: chatModelName.value          // 模型名称

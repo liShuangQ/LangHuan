@@ -43,6 +43,7 @@ export function useChat() {
                     p: "",
                     q: message,
                     isRag: false,
+                    isReRank: false,
                     groupId: "",
                     isFunction: false,
                     modelName: "",

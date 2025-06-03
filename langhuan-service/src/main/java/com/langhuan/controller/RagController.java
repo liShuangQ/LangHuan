@@ -1,5 +1,6 @@
 package com.langhuan.controller;
 
+import com.langhuan.common.Constant;
 import com.langhuan.common.Result;
 import com.langhuan.model.domain.TRagFile;
 import com.langhuan.model.pojo.RagChangeDocumentsReq;
@@ -74,9 +75,9 @@ public class RagController {
     public Result recallTesting(
             @RequestParam(name = "q", required = true) String q,
             @RequestParam(name = "groupId", required = true) String groupId,
-            @RequestParam(name = "fileId", required = true) String fileId) {
+            @RequestParam(name = "fileId", required = true) String fileId) throws Exception {
         List<Map<String, Object>> out = new ArrayList<>();
-        List<Document> documentList = ragService.ragSearch(q, groupId, fileId);
+        List<Document> documentList = ragService.ragSearch(q, groupId, fileId, Constant.ISRAGRERANK);
         for (Document document : documentList) {
             out.add(Map.of(
                     "id", document.getId(),

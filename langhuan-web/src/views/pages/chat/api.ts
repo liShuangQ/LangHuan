@@ -12,6 +12,7 @@ export const sendChatMessage = (
         p: string;
         q: string;
         isRag: boolean;
+        isReRank: boolean;
         groupId: string;
         isFunction: boolean;
         modelName: string;

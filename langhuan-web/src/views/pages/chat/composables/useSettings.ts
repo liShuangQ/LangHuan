@@ -9,6 +9,7 @@ export function useSettings() {
         modelName: "",
         promptTemplate: "",
         ragGroup: null,
+        isReRank: false,
     });
 
     const availableModels = ref();
@@ -38,6 +39,7 @@ export function useSettings() {
         p: settings.value.promptTemplate,
         isRag: !!settings.value.ragGroup?.id,
         groupId: settings.value.ragGroup?.id || "",
+        isReRank: settings.value.isReRank,
     }));
 
     return {
