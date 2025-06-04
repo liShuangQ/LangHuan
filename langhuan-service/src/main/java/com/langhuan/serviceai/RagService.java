@@ -182,7 +182,9 @@ public class RagService {
         if (fileIdsArray.length > 10) {
             throw new BusinessException("fileId数量不能超过10");
         }
-        StringBuilder sqlBuilder = new StringBuilder("SELECT * FROM vector_store_rag WHERE id IN (");
+
+        StringBuilder sqlBuilder = new StringBuilder(
+                "SELECT vs.id,vs.content,fg.group_name AS groupName,vs.metadata->>'filename' AS filename FROM vector_store_rag vs LEFT JOIN t_rag_file_group fg ON vs.metadata->>'groupId' = CAST(fg.id AS TEXT) WHERE vs.id IN (");
         for (int i = 0; i < fileIdsArray.length; i++) {
             sqlBuilder.append("?::uuid");
             if (i < fileIdsArray.length - 1) {
@@ -197,7 +199,11 @@ public class RagService {
         }
         // 执行查询
         log.info("queryDocumentsByFileIds: {}", fileIds);
-        return baseDao.queryForList(sql, params);
+        List<Map<String, Object>> queryForList = baseDao.queryForList(sql, params);
+        queryForList.forEach(map -> {
+            map.put("metadata", map.get("metadata"));
+        });
+        return queryForList;
     }
 
     /**

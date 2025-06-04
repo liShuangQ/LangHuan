@@ -22,6 +22,7 @@ const init = () => {
     } else {
         emit('setNextDisabled', false)
     }
+
 }
 
 watch(() => documentData.value, (newValue, oldValue) => {
@@ -41,7 +42,10 @@ const exportData = () => {
 const addDocument = () => {
     documentData.value.push('')
 }
-defineExpose({ init, exportData, addDocument })
+const cacheDocument = (t: string[]) => {
+    documentData.value = t
+}
+defineExpose({ init, exportData, addDocument, cacheDocument })
 </script>
 
 <style scoped>

@@ -56,6 +56,10 @@
                                 @click="documentHandle('save', index, item)">确定</el-button>
                         </div>
                     </div>
+                    <div class=" flex gap-1 mt-2">
+                        <el-tag>文件名：{{ item.filename }}</el-tag>
+                        <el-tag>文件组：{{ item.groupname }}</el-tag>
+                    </div>
                     <el-divider />
                 </div>
             </div>
@@ -141,10 +145,9 @@ const openDocumentIds = (row: any) => {
         documentIdsVisible.value = true
         nextTick(() => {
             documentIdsData.value = res.data.map((e: any) => ({
-                id: e.id,
-                content: e.content,
                 isEditing: false,
-                tempContent: e.content
+                tempContent: e.content,
+                ...e
             }))
         })
     })
