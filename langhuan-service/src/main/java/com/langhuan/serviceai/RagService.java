@@ -8,9 +8,7 @@ import com.langhuan.common.BusinessException;
 import com.langhuan.common.Constant;
 import com.langhuan.config.VectorStoreConfig;
 import com.langhuan.model.domain.TRagFile;
-import com.langhuan.model.pojo.GteReRankResult;
 import com.langhuan.service.TRagFileService;
-import com.langhuan.serviceai.ReRankModelService;
 import com.langhuan.utils.rag.RagFileVectorUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.postgresql.util.PGobject;
@@ -47,7 +45,7 @@ public class RagService {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public String changeDocumentText(String documents, String documentId, TRagFile ragFile) {
+    public String changeDocumentText(String documents, String documentId, TRagFile ragFile) throws Exception {
         log.info("Updating changeDocumentText: {},documentId: {},documents: {}", ragFile, documentId, documents);
         String sql = "DELETE FROM vector_store_rag WHERE id = ?::uuid";
         baseDao.update(sql, documentId);
@@ -60,7 +58,7 @@ public class RagService {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public String changeDocumentTextByString(String documents, String documentId) {
+    public String changeDocumentTextByString(String documents, String documentId) throws Exception {
         log.info("Updating changeDocumentTextByString: {}, documentId: {}, documents: {}", documentId, documents);
 
         String seqsql = "SELECT * FROM vector_store_rag WHERE id = ?::uuid";
@@ -99,7 +97,7 @@ public class RagService {
         return ragFileVectorUtils.readAndSplitDocument(file, splitFileMethod, methodData);
     }
 
-    public String writeDocumentsToVectorStore(List<String> documents, TRagFile ragFile) {
+    public String writeDocumentsToVectorStore(List<String> documents, TRagFile ragFile) throws Exception {
         log.info("writeDocumentsToVectorStore: {}", ragFile);
         boolean b = ragFile.getId() == null || ragFile.getId() == 0 || ragFile.getId().toString().isEmpty();
         if (b) {

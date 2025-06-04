@@ -2,11 +2,9 @@ package com.langhuan.utils.rag;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.langhuan.common.BusinessException;
 import com.langhuan.common.Constant;
 import com.langhuan.model.domain.TRagFile;
 import com.langhuan.model.pojo.RagMetaData;
-import com.langhuan.service.TRagFileService;
 import com.langhuan.serviceai.ChatGeneralAssistanceService;
 import com.langhuan.utils.rag.splitter.FixedWindowTextSplitter;
 import com.langhuan.utils.rag.splitter.LlmTextSplitter;
@@ -24,12 +22,12 @@ import java.io.Writer;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
-
+import com.langhuan.common.BusinessException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map;
 import java.util.regex.Pattern;
-
 import java.nio.charset.StandardCharsets;
 
 @Slf4j
@@ -98,9 +96,14 @@ public class RagFileVectorUtils {
         }
         String documentText = String.join("\n", documentLines);
 
-        documentText = documentText.replaceAll(
-                "source: Invalid source URI: InputStream resource [resource loaded through InputStream] cannot be resolved to URL",
-                "");        
+        System.out.println("documentText: " + documentText);
+
+        // 移除Tika读取时产生的无效源URI信息
+        if (documentText != null && documentText.contains("source: Invalid source URI")) {
+            documentText = documentText.replaceAll(
+                    "(?m)^\\s*source: Invalid source URI: InputStream resource \\[resource loaded through InputStream\\] cannot be resolved to URL\\s*$",
+                    "").trim();
+        }
 
         List<String> apply = null;
 
@@ -133,6 +136,7 @@ public class RagFileVectorUtils {
      *
      * @param documents 分割后的文档块列表
      * @param metadata  元数据
+     * @throws BusinessException
      */
     public Boolean writeDocumentsToVectorStore(List<String> documents, RagMetaData metadata,
             VectorStore vectorStore) {
@@ -156,11 +160,12 @@ public class RagFileVectorUtils {
                 }
             } catch (Exception e) {
                 log.error("writeDocumentsToVectorStore documentsList.add error", e);
+                throw new BusinessException(e.getMessage());
             }
             return true;
         } catch (Exception e) {
             log.error("writeDocumentsToVectorStore error", e);
-            return false;
+            throw new BusinessException(e.getMessage());
         }
     }
 

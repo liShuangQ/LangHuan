@@ -46,7 +46,7 @@ public class RagController {
     @PreAuthorize("hasAuthority('/rag/writeDocumentsToVectorStore')")
     @PostMapping("/rag/writeDocumentsToVectorStore")
     public Result writeDocumentsToVectorStore(
-            @RequestBody RagWriteDocumentsReq ragWriteDocumentsReq) {
+            @RequestBody RagWriteDocumentsReq ragWriteDocumentsReq) throws Exception {
         if (Integer.parseInt(ragWriteDocumentsReq.getRagFile().getDocumentNum()) >= 1000) {
             return Result.error("切分数量已达上限");
         }
@@ -98,7 +98,7 @@ public class RagController {
     @PreAuthorize("hasAuthority('/rag/changeDocumentText')")
     @PostMapping("/rag/changeDocumentText")
     public Result changeDocumentText(
-            @RequestBody RagChangeDocumentsReq ragChangeDocumentsReq) {
+            @RequestBody RagChangeDocumentsReq ragChangeDocumentsReq) throws Exception {
         return Result.success(ragService.changeDocumentText(ragChangeDocumentsReq.getDocuments(),
                 ragChangeDocumentsReq.getDocumentId(),
                 ragChangeDocumentsReq.getRagFile()));

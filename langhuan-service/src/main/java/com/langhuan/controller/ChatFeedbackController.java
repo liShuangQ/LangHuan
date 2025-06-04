@@ -68,7 +68,7 @@ public class ChatFeedbackController {
     @PostMapping(path = "/changeDocumentTextByString")
     public Result changeDocumentTextByString(
             @RequestParam(name = "document", required = false) String document,
-            @RequestParam(name = "documentId", required = false) String documentId) {
+            @RequestParam(name = "documentId", required = false) String documentId) throws Exception {
         return Result.success(ragService.changeDocumentTextByString(
                 document, documentId));
     }
