@@ -57,6 +57,7 @@ export default class Axios {
                     config.headers &&
                         (config.headers["Content-Type"] = "application/json");
                 }
+
                 const response: AxiosResponse<D, any> =
                     await this.instance.request<D>(config);
                 //处理直接返回数据
@@ -130,6 +131,7 @@ export default class Axios {
                     ...config.headers,
                     ...config.q_headers,
                 };
+
                 return config;
             },
             (error) => {
@@ -149,7 +151,8 @@ export default class Axios {
                 //     ElMessage.error(response.data?.message ?? "请求失败。");
                 // }
                 if (
-                    response.data.code && ![200].includes(response.data.code) &&
+                    response.data.code &&
+                    ![200].includes(response.data.code) &&
                     !response.config.q_baseUrl
                 ) {
                     ElMessage.error(response.data?.message ?? "请求失败。");

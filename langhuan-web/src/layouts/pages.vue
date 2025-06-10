@@ -9,7 +9,8 @@
                     :style="{ display: fullScreenValue ? 'none' : 'block', height: 'max-content', padding: '0' }">
                     <div class="h-[40px] flex justify-between items-center bg-white mb-2">
                         <Breadcrumb></Breadcrumb>
-                        <BarUtil @pageFullScreen="pageFullScreen" @refreshPage="refreshPage"></BarUtil>
+                        <BarUtil @pageFullScreen="pageFullScreen" @refreshPage="refreshPage">
+                        </BarUtil>
                     </div>
                     <div class="flex items-center justify-between ml-1">
                         <div>

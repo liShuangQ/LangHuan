@@ -209,3 +209,38 @@ CREATE TABLE IF NOT EXISTS SPRING_AI_CHAT_MEMORY (
 
 CREATE INDEX IF NOT EXISTS SPRING_AI_CHAT_MEMORY_CONVERSATION_ID_TIMESTAMP_IDX
     ON SPRING_AI_CHAT_MEMORY(conversation_id, "timestamp");
+
+
+-- 系统通知
+CREATE TABLE t_notifications (
+    id SERIAL PRIMARY KEY,
+    user_id VARCHAR(255),  
+    template_id VARCHAR(255),  
+    title TEXT NOT NULL,
+    content TEXT NOT NULL,
+    notification_level VARCHAR(20) NOT NULL CHECK (notification_level IN ('info', 'warning', 'error', 'critical')),
+    notification_type VARCHAR(30) NOT NULL CHECK (notification_type IN ('system', 'reminder', 'alert', 'message', 'update')),
+    is_read BOOLEAN NOT NULL DEFAULT FALSE,
+    is_archived BOOLEAN NOT NULL DEFAULT FALSE,
+    reference_id VARCHAR(255),
+    reference_type VARCHAR(30),
+    expires_at TIMESTAMP WITH TIME ZONE,
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+
+COMMENT ON TABLE t_notifications IS '系统通知表，用于存储发送给用户的各类通知信息';
+
+COMMENT ON COLUMN t_notifications.id IS '通知唯一标识，使用UUID确保全局唯一性';
+COMMENT ON COLUMN t_notifications.user_id IS '接收通知的用户ID，关联到users表。为空就为全局通知';
+COMMENT ON COLUMN t_notifications.template_id IS '';
+COMMENT ON COLUMN t_notifications.title IS '通知标题，简要描述通知内容';
+COMMENT ON COLUMN t_notifications.content IS '通知详细内容，支持HTML格式';
+COMMENT ON COLUMN t_notifications.notification_level IS '通知级别，分为info(信息)、warning(警告)、error(错误)、critical(严重)';
+COMMENT ON COLUMN t_notifications.notification_type IS '通知类型，分为system(系统)、reminder(提醒)、alert(警报)、message(消息)、update(更新)';
+COMMENT ON COLUMN t_notifications.is_read IS '通知读取状态，true表示已读，false表示未读';
+COMMENT ON COLUMN t_notifications.is_archived IS '通知归档状态，true表示已归档(用户手动隐藏)，false表示未归档';
+COMMENT ON COLUMN t_notifications.reference_id IS '关联业务对象ID，如订单ID、任务ID等，用于业务对象关联';
+COMMENT ON COLUMN t_notifications.reference_type IS '关联业务对象类型，如order、task等，与reference_id配合使用';
+COMMENT ON COLUMN t_notifications.expires_at IS '通知过期时间，超过此时间的通知将被视为无效';
+COMMENT ON COLUMN t_notifications.created_at IS '通知创建时间戳，自动记录通知创建时间';

@@ -138,6 +138,16 @@ const menu: PagesMenu[] = [
                 faPath: ["system"],
             },
             {
+                title: "系统通知",
+                path: "/pages/systemManagement/message",
+                faPath: ["system"],
+            },
+            {
+                title: "系统通知呈现",
+                path: "/pages/systemManagement/messageShow",
+                faPath: ["system"],
+            },
+            {
                 title: "用户管理",
                 path: "/pages/systemManagement/user",
                 faPath: ["system"],

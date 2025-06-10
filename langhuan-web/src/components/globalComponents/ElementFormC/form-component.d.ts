@@ -144,7 +144,7 @@ interface InputConfig {
 
 interface SelectConfig {
     option?: {
-        value: string;
+        value: any;
         label: string;
         disabled?: boolean;
     }[];

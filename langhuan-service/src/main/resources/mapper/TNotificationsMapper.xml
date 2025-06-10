@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.langhuan.model.mapper.TNotificationsMapper">
+
+    <resultMap id="BaseResultMap" type="com.langhuan.model.domain.TNotifications">
+            <id property="id" column="id" jdbcType="INTEGER"/>
+            <result property="userId" column="user_id" jdbcType="VARCHAR"/>
+            <result property="templateId" column="template_id" jdbcType="VARCHAR"/>
+            <result property="title" column="title" jdbcType="VARCHAR"/>
+            <result property="content" column="content" jdbcType="VARCHAR"/>
+            <result property="notificationLevel" column="notification_level" jdbcType="VARCHAR"/>
+            <result property="notificationType" column="notification_type" jdbcType="VARCHAR"/>
+            <result property="isRead" column="is_read" jdbcType="BOOLEAN"/>
+            <result property="isArchived" column="is_archived" jdbcType="BOOLEAN"/>
+            <result property="referenceId" column="reference_id" jdbcType="VARCHAR"/>
+            <result property="referenceType" column="reference_type" jdbcType="VARCHAR"/>
+            <result property="expiresAt" column="expires_at" jdbcType="TIMESTAMP"/>
+            <result property="createdAt" column="created_at" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,user_id,template_id,
+        title,content,notification_level,
+        notification_type,is_read,is_archived,
+        reference_id,reference_type,expires_at,
+        created_at
+    </sql>
+</mapper>

@@ -179,6 +179,51 @@ const documentHandle = (type: string, index: number, item: any) => {
         })
     }
 }
+const sendSystemMessage = (row: any) => {
+    console.log(row,'rowrowrowrow');
+
+    ElMessageBox.confirm('是否给该用户自动发送系统通知?', '提示', {
+        type: 'warning',
+        showCancelButton: true,
+        cancelButtonText: '取消',
+        confirmButtonText: '确定',
+    }).then(() => {
+        http
+            .request<any>({
+                url: "/notifications/create",
+                method: "post",
+                q_spinning: true,
+                q_contentType: "json",
+                data: {
+                    title: "问题修复：" + row.questionContent,
+                    content: `您的建议: ${row.questionContent} 当前已被标记修改完成
+                        提出时间：${row.interactionTime}
+                        感谢您的反馈
+                        `,
+                    notificationLevel: 'info',
+                    notificationType: 'update',
+                    referenceId: '',
+                    referenceType: '',
+                    expiresAt: dayjs().add(1, 'day').format('YYYY-MM-DD HH:mm:ss'),
+                },
+                params: {
+                    userIds: row.userId,
+                },
+            })
+            .then((res) => {
+                if (res.code === 200) {
+                    ElMessage.success("创建通知成功");
+                } else {
+                    ElMessage.error(res.message || "创建通知失败");
+                }
+            })
+            .catch((err) => {
+                console.log(err);
+                ElMessage.error("创建通知失败");
+            });
+    })
+
+}
 const tableBtnHandle = (type: string, row: any) => {
     if (type === 'addText') {
         router.push({
@@ -206,6 +251,7 @@ const tableBtnHandle = (type: string, row: any) => {
                 if (res.code === 200) {
                     ElMessage.success(res.data)
                     getUserPageList()
+                    sendSystemMessage(row)
                 }
             })
         })

@@ -159,3 +159,22 @@ INSERT INTO t_role_permission VALUES (54, 1, 54); -- 超级管理员 授予 修�
 -- 新功能
 INSERT INTO t_permission VALUES (55, '导出RAG文件文档', '/rag/file/generateDocumentStreamByFileId', 21); -- 导出RAG文件文档
 INSERT INTO t_role_permission VALUES (554, 1, 55); -- 超级管理员 授予 导出RAG文件文档
+
+-- 系统通知管理权限
+INSERT INTO t_permission VALUES (56, '系统通知管理', '/notifications/manager', 0); -- 父权限：系统通知管理
+INSERT INTO t_permission VALUES (57, '创建通知', '/notifications/create', 56); -- 创建通知权限
+INSERT INTO t_permission VALUES (58, '删除通知', '/notifications/delete', 56); -- 删除通知权限（支持单个和批量）
+INSERT INTO t_permission VALUES (59, '归档通知', '/notifications/archive', 56); -- 归档通知权限（支持单个和批量）
+INSERT INTO t_permission VALUES (60, '标记已读', '/notifications/markRead', 56); -- 标记通知已读权限
+INSERT INTO t_permission VALUES (61, '查看通知列表', '/notifications/list', 56); -- 查看通知列表权限
+INSERT INTO t_permission VALUES (62, '通知统计', '/notifications/statistics', 56); -- 通知统计权限
+INSERT INTO t_permission VALUES (63, '管理员查看所有通知', '/notifications/admin/list', 56); -- 管理员查看所有通知权限
+
+INSERT INTO t_role_permission VALUES (56, 1, 56); -- 超级管理员 授予 系统通知管理权限
+INSERT INTO t_role_permission VALUES (57, 1, 57); -- 超级管理员 授予 创建通知权限
+INSERT INTO t_role_permission VALUES (58, 1, 58); -- 超级管理员 授予 删除通知权限
+INSERT INTO t_role_permission VALUES (59, 1, 59); -- 超级管理员 授予 归档通知权限
+INSERT INTO t_role_permission VALUES (60, 1, 60); -- 超级管理员 授予 标记已读权限
+INSERT INTO t_role_permission VALUES (61, 1, 61); -- 超级管理员 授予 查看通知列表权限
+INSERT INTO t_role_permission VALUES (62, 1, 62); -- 超级管理员 授予 通知统计权限
+INSERT INTO t_role_permission VALUES (63, 1, 63); -- 超级管理员 授予 管理员查看所有通知权限

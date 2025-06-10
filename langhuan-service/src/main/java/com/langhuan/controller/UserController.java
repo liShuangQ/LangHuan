@@ -62,12 +62,13 @@ public class UserController {
             @RequestParam(name = "username", required = false, defaultValue = "") String username,
             @RequestParam(name = "gender", required = false) Integer gender,
             @RequestParam(name = "enabled", required = false) Integer enabled,
-            @RequestParam(name = "pageNum", required = false, defaultValue = "1") int pageNum,
-            @RequestParam(name = "pageSize", required = false, defaultValue = "10") int pageSize
+            @RequestParam(name = "pageNum", required = true, defaultValue = "1") int pageNum,
+            @RequestParam(name = "pageSize", required = true, defaultValue = "10") int pageSize
     ) {
 
         return Result.success(TUserService.getUserPageList(name, username, gender, enabled, pageNum, pageSize));
     }
+    
 
     @PreAuthorize("hasAuthority('/user/delete')")
     @PostMapping("/delete")

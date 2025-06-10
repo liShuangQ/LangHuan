@@ -20,6 +20,9 @@ spring:
     driver-class-name: org.postgresql.Driver
   application:
     name: aiAgent
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
   # 基础属性配置
   ai:
     chat:
