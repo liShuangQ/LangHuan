@@ -357,9 +357,8 @@ const statistics = ref<Statistics>({
     info: 0
 })
 
-// 当前用户ID (这里需要从用户状态管理中获取)
-const currentUserId = user().info.user.username // 临时硬编码，实际应该从store或其他地方获取
-
+// 当前用户ID
+const currentUserId = user().info.user.username
 // 设置级别筛选
 const setLevelFilter = (level: string) => {
     filterForm.notificationLevel = level
@@ -482,6 +481,9 @@ const loadStatistics = async () => {
     }
 }
 
+// 定义事件发射
+const emit = defineEmits(['unread-count-changed'])
+
 // 标记为已读
 const markAsRead = async (id: number) => {
     try {
@@ -506,6 +508,8 @@ const markAsRead = async (id: number) => {
             // 重新加载统计信息
             loadStatistics()
             loadNotifications()
+            // 通知父组件更新未读消息数量
+            emit('unread-count-changed')
         } else {
             ElMessage.error(response.message || '标记已读失败')
         }

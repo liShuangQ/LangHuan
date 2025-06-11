@@ -18,9 +18,9 @@
                 <template #content-interaction="props">
                     <el-tag v-if="props.row.interaction === 'like'" type="success">{{ props.row.interaction }}</el-tag>
                     <el-tag v-if="props.row.interaction === 'dislike'" type="warning">{{ props.row.interaction
-                        }}</el-tag>
+                    }}</el-tag>
                     <el-tag v-if="props.row.interaction === 'end'" type="info">{{ props.row.interaction
-                        }}</el-tag>
+                    }}</el-tag>
                 </template>
                 <template #content-knowledgeBaseIds="props">
                     <el-button link type="primary" @click="openDocumentIds(props.row)">知识库片段
@@ -180,14 +180,18 @@ const documentHandle = (type: string, index: number, item: any) => {
     }
 }
 const sendSystemMessage = (row: any) => {
-    console.log(row,'rowrowrowrow');
-
-    ElMessageBox.confirm('是否给该用户自动发送系统通知?', '提示', {
-        type: 'warning',
-        showCancelButton: true,
+    ElMessageBox.prompt('请输入修复内容:', '发送系统通知', {
+        confirmButtonText: '发送',
         cancelButtonText: '取消',
-        confirmButtonText: '确定',
-    }).then(() => {
+        inputType: 'textarea',
+        inputPlaceholder: '请输入内容描述...',
+        inputValidator: (value) => {
+            if (!value || value.trim() === '') {
+                return '修复内容不能为空';
+            }
+            return true;
+        }
+    }).then(({ value }) => {
         http
             .request<any>({
                 url: "/notifications/create",
@@ -198,7 +202,10 @@ const sendSystemMessage = (row: any) => {
                     title: "问题修复：" + row.questionContent,
                     content: `您的建议: ${row.questionContent} 当前已被标记修改完成
                         提出时间：${row.interactionTime}
-                        感谢您的反馈
+                        修复内容：${value},
+
+
+                        感谢您的反馈。
                         `,
                     notificationLevel: 'info',
                     notificationType: 'update',
@@ -221,7 +228,9 @@ const sendSystemMessage = (row: any) => {
                 console.log(err);
                 ElMessage.error("创建通知失败");
             });
-    })
+    }).catch(() => {
+        // 用户取消输入
+    });
 
 }
 const tableBtnHandle = (type: string, row: any) => {

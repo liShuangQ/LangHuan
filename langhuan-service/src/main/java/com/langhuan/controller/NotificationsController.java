@@ -20,7 +20,7 @@ import java.util.List;
 /**
  * 系统通知控制器
  * 提供通知的创建、删除、归档、标记完成、查询等功能
- * 
+ *
  * @author lishuangqi
  * @description 系统通知管理控制器，支持个人通知和全局通知
  */
@@ -39,7 +39,7 @@ public class NotificationsController {
      * 创建通知
      * 支持创建个人通知（指定用户ID）或全局通知（用户ID为空）
      * 可以批量创建多个用户的通知
-     * 
+     *
      * @param notification 通知信息
      * @param userIds      用户ID列表，为空时创建全局通知
      * @return 创建结果
@@ -52,13 +52,13 @@ public class NotificationsController {
         try {
             List<String> idList = Arrays.stream(userIds.split(","))
                     .map(String::trim)
-                    .collect(Collectors.toList());
+                    .toList();
             // 设置创建时间
             notification.setCreatedAt(new Date());
             // 设置默认状态
             notification.setIsRead(false);
             notification.setIsArchived(false);
-            if (idList == null  || idList.isEmpty() || idList.get(0).isEmpty()) {
+            if (idList.isEmpty() || idList.get(0).isEmpty()) {
                 // 创建全局通知，user_id为空，全局都是默认已读
                 notification.setUserId(null);
                 notification.setIsRead(true);
@@ -100,7 +100,7 @@ public class NotificationsController {
      * - 传入通知ID列表进行删除，使用逗号分隔的字符串形式
      * - 支持单个删除（传入一个ID）或批量删除（传入多个ID，用逗号分隔）
      * - 删除后通知将从数据库中永久移除
-     * 
+     *
      * @param ids 通知ID列表，逗号分隔的字符串
      * @return 删除结果
      */
@@ -134,7 +134,7 @@ public class NotificationsController {
      * - 传入通知ID列表进行归档，使用逗号分隔的字符串形式
      * - 支持单个归档（传入一个ID）或批量归档（传入多个ID，用逗号分隔）
      * - 归档后的通知不会在普通列表中显示，但仍保留在数据库中
-     * 
+     *
      * @param ids 通知ID列表，逗号分隔的字符串
      * @return 归档结果
      */
@@ -172,7 +172,7 @@ public class NotificationsController {
      * - 传入通知ID进行已读标记
      * - 只有个人通知可以标记为已读
      * - 全局通知无法标记已读状态
-     * 
+     *
      * @param id 通知ID
      * @return 标记结果
      */
@@ -196,7 +196,7 @@ public class NotificationsController {
      * 获取用户通知列表
      * 返回指定用户的个人通知和全局通知，按通知级别排序
      * 排序优先级：critical > error > warning > info
-     * 
+     *
      * @param userId            用户ID
      * @param includeRead       是否包含已读通知
      * @param notificationLevel 通知级别过滤
@@ -254,7 +254,7 @@ public class NotificationsController {
     /**
      * 获取通知统计信息
      * 返回用户的未读通知数量统计
-     * 
+     *
      * @param userId 用户ID
      * @return 统计信息
      */
@@ -303,9 +303,36 @@ public class NotificationsController {
     }
 
     /**
+     * 获取个人未读通知数量
+     * 返回指定用户的个人未读通知数量（不包含全局通知）
+     *
+     * @param userId 用户ID
+     * @return 未读数量
+     */
+//    @PreAuthorize("hasAuthority('/notifications/statistics')")
+    @PostMapping("/getPersonalUnreadCount")
+    public Result<Long> getPersonalUnreadCount(@RequestParam(name = "userId", required = true) String userId) {
+        try {
+            LambdaQueryWrapper<TNotifications> queryWrapper = new LambdaQueryWrapper<>();
+            // 查询条件：个人未读通知 + 未归档 + 未过期
+            queryWrapper.eq(TNotifications::getUserId, userId)
+                    .eq(TNotifications::getIsRead, false)
+                    .eq(TNotifications::getIsArchived, false)
+                    .and(wrapper -> wrapper.isNull(TNotifications::getExpiresAt)
+                            .or()
+                            .gt(TNotifications::getExpiresAt, new Date()));
+
+            long count = notificationsService.count(queryWrapper);
+            return Result.success(count);
+        } catch (Exception e) {
+            return Result.error("获取未读数量失败: " + e.getMessage());
+        }
+    }
+
+    /**
      * 获取所有通知列表（管理员功能）
      * 管理员可以查看所有通知，支持多条件筛选
-     * 
+     *
      * @param userId            用户ID过滤
      * @param notificationLevel 通知级别过滤
      * @param notificationType  通知类型过滤
