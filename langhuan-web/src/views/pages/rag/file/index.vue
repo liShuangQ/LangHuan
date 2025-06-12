@@ -146,7 +146,6 @@ import { CheckboxValueType, ElMessageBox } from "element-plus";
 import pageConfig from "./pageConfig";
 import { getFileGroupOption } from "../addFile/addFileFormconfig";
 import { useRouter } from 'vue-router';
-import { store } from "@/utils";
 const router = useRouter();
 const formComRef = ref<FormDefineExpose>();
 const tableComRef = ref<TableDefineExpose>();

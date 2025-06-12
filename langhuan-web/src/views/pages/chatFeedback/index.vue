@@ -180,14 +180,14 @@ const documentHandle = (type: string, index: number, item: any) => {
     }
 }
 const sendSystemMessage = (row: any) => {
-    ElMessageBox.prompt('请输入修复内容:', '发送系统通知', {
+    ElMessageBox.prompt('请输入内容:', '发送通知', {
         confirmButtonText: '发送',
         cancelButtonText: '取消',
         inputType: 'textarea',
         inputPlaceholder: '请输入内容描述...',
         inputValidator: (value) => {
             if (!value || value.trim() === '') {
-                return '修复内容不能为空';
+                return '内容不能为空';
             }
             return true;
         }
@@ -203,8 +203,7 @@ const sendSystemMessage = (row: any) => {
                     content: `您的建议: ${row.questionContent} 当前已被标记修改完成
                         提出时间：${row.interactionTime}
                         修复内容：${value},
-
-
+                        
                         感谢您的反馈。
                         `,
                     notificationLevel: 'info',

@@ -27,6 +27,7 @@ export default class Axios {
     private lastTime: number;
     private throttleTime: number;
     private loadingInstance: any;
+    private isHandling401: boolean; // 添加401处理标志位
 
     constructor(config: MyAxiosRequestConfig) {
         this.instance = axios.create(config);
@@ -34,6 +35,7 @@ export default class Axios {
         this.lastTime = 0;
         this.throttleTime = 2000;
         this.loadingInstance = null;
+        this.isHandling401 = false; // 初始化401处理标志位
     }
 
     public request<T, D = ResponseResult<T>, R = any>(
@@ -163,19 +165,28 @@ export default class Axios {
             (error) => {
                 this.loadingInstance && this.loadingInstance.close();
                 console.log(error);
-                if (!(error.code === "ERR_CANCELED")) {
-                    ElMessage.error("请求失败，请联系管理员。");
-                }
+
                 // 超出 2xx 范围的状态码都会触发该函数。
-                // switch (error.response.status) {
-                // case 'Throttling':
-                //     break;
-                // case 401:
-                //     break;
-                // case 422:
-                //     break;
-                // default:
-                // }
+                switch (error.response.status) {
+                    // case 'Throttling':
+                    //     break;
+                    case 401:
+                        if (!this.isHandling401) {
+                            ElMessage.warning("登录已过期，请重新登录。");
+                            this.isHandling401 = true;
+                            setTimeout(() => {
+                                localStorage.removeItem(
+                                    process.env.TOKEN_KEY as string
+                                );
+                                window.location.href = "/";
+                            }, 1500);
+                        }
+                        break;
+                    // case 422:
+                    //     break;
+                    default:
+                        ElMessage.error("请求失败，请联系管理员。");
+                }
                 return Promise.reject(error);
             }
         );

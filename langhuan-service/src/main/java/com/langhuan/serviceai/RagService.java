@@ -3,7 +3,6 @@ package com.langhuan.serviceai;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
-
 import com.langhuan.common.BusinessException;
 import com.langhuan.common.Constant;
 import com.langhuan.config.VectorStoreConfig;
@@ -206,19 +205,9 @@ public class RagService {
         return queryForList;
     }
 
-    /**
-     * 排序方式：匹配度得分 → rerank 模型距离 → 手工标记排名
-     * 
-     * @param q
-     * @param groupId
-     * @param fileId
-     * @param isReRank
-     * @return
-     * @throws Exception
-     */
     public List<Document> ragSearch(String q, String groupId, String fileId, Boolean isReRank) throws Exception {
-        isReRank = isReRank == null ? Constant.ISRAGRERANK : isReRank;
         List<Document> searchDocuments = new ArrayList<>();
+        isReRank = isReRank == null ? Constant.ISRAGRERANK : isReRank;
         try {
             if (groupId.isEmpty()) {
                 searchDocuments = ragVectorStore.similaritySearch(
@@ -238,13 +227,27 @@ public class RagService {
             log.error("ragSearch error: {}", e.getMessage());
             throw new BusinessException("查询失败");
         }
+        if ("numFilter".equals(Constant.RAGRANKMODULETYPE)) {
+            searchDocuments = rank_numFilter(searchDocuments, q, isReRank);
+        }
+        if ("linearWeighting".equals(Constant.RAGRANKMODULETYPE)) {
+            searchDocuments = rank_linearWeighting(searchDocuments, q, isReRank);
+        }
+        // 最后结果一定是LLM_RAG_TOPN的数量
+        return searchDocuments.subList(0, Math.min(Constant.LLM_RAG_TOPN, searchDocuments.size()));
+    }
+
+    /**
+     * 匹配度得分 → rerank 模型距离 → 手工标记排名
+     */
+    public List<Document> rank_numFilter(List<Document> searchDocuments, String q, Boolean isReRank) throws Exception {
         // 在得分最高的结果中，取前RAGRANKTOPN个结果给下面
-        if (searchDocuments.size() > Constant.RAGRANKTOPN) {
-            searchDocuments = searchDocuments.subList(0, Constant.RAGRANKTOPN);
+        if (searchDocuments.size() > Constant.NUMFILTER[0]) {
+            searchDocuments = searchDocuments.subList(0, Constant.LLM_RAG_TOPN);
         }
         // rerank模型重排
         if (isReRank) {
-            searchDocuments = reRankModelService.chat(q, searchDocuments);
+            searchDocuments = reRankModelService.chat(q, searchDocuments, Constant.NUMFILTER[1]);
         }
         // 按手工标记排序
         searchDocuments.sort((o1, o2) -> {
@@ -252,11 +255,104 @@ public class RagService {
             Integer rank2 = (int) o2.getMetadata().get("rank");
             return rank2.compareTo(rank1);
         });
-        // 最后结果一定是LLM_RAG_TOPN的数量
-        if (searchDocuments.size() > Constant.LLM_RAG_TOPN) {
-            return searchDocuments.subList(0, Constant.LLM_RAG_TOPN);
+        return searchDocuments;
+    }
+
+    /**
+     * 线性加权法
+     */
+    public List<Document> rank_linearWeighting(List<Document> searchDocuments, String q, Boolean isReRank)
+            throws Exception {
+        if (isReRank) {
+            searchDocuments = reRankModelService.chat(q, searchDocuments, searchDocuments.size());
+            // 修正归一化排名存储类型
+            for (Document doc : searchDocuments) {
+                int rank = (int) doc.getMetadata().get("rank");
+                doc.getMetadata().put("normalizationRank", rank * 0.01);
+            }
         } else {
-            return searchDocuments;
+            // 手工排名归一化指标 加入没relevance_score的情况
+            for (Document doc : searchDocuments) {
+                int rank = (int) doc.getMetadata().get("rank");
+                doc.getMetadata().put("normalizationRank", rank * 0.01);
+                doc.getMetadata().put("relevance_score", 1);
+            }
+        }
+
+        // score（Double类型） -> spring ai的得分 searchDocuments.get(0).get("score");
+        // distance（Float类型） -> 数据库向量距离
+        // searchDocuments.get(0).getMetadata().get("distance")
+        // relevance_score（Double类型） -> rerank模型距离
+        // searchDocuments.get(0).getMetadata().get("relevance_score")
+        // normalizationRank（Double类型） -> 手工排名
+        // searchDocuments.get(0).getMetadata().get("normalizationRank")
+
+        // 线性加权法计算综合得分
+        // LINEARWEIGHTING = {数据库向量距离，spring ai得分，rerank模型距离，手工排名}
+        for (Document doc : searchDocuments) {
+            // 获取各项指标值，安全地处理类型转换
+            Object scoreObj = doc.getScore();
+            Object distanceObj = doc.getMetadata().get("distance");
+            Object rerankScoreObj = doc.getMetadata().get("relevance_score");
+            Object normalizedRankObj = doc.getMetadata().get("normalizationRank");
+
+            // 安全转换为Double类型，处理可能的Integer、Float等类型
+            Double springAiScore = convertToDouble(scoreObj, 0.0);
+            Double vectorDistance = convertToDouble(distanceObj, 1.0);
+            Double rerankScore = convertToDouble(rerankScoreObj, 1.0);
+            Double normalizedRank = convertToDouble(normalizedRankObj, 0.0);
+
+            // 向量距离需要转换为相似度（距离越小，相似度越高）
+            // 这里使用 1 / (1 + distance) 进行转换，确保值在0-1之间
+            double distanceSimilarity = 1.0 / (1.0 + vectorDistance);
+
+            // 线性加权计算综合得分
+            // 权重顺序：{数据库向量距离，spring ai得分，rerank模型距离，手工排名}
+            double weightedScore = Constant.LINEARWEIGHTING[0] * distanceSimilarity +
+                    Constant.LINEARWEIGHTING[1] * springAiScore +
+                    Constant.LINEARWEIGHTING[2] * rerankScore +
+                    Constant.LINEARWEIGHTING[3] * normalizedRank;
+
+            // 将计算出的综合得分存储到metadata中
+            doc.getMetadata().put("weightedScore", weightedScore);
+        }
+
+        // 根据综合得分降序排序
+        searchDocuments.sort((doc1, doc2) -> {
+            Double score1 = (Double) doc1.getMetadata().get("weightedScore");
+            Double score2 = (Double) doc2.getMetadata().get("weightedScore");
+            return Double.compare(score2, score1); // 降序排序
+        });
+
+        return searchDocuments;
+    }
+
+    /**
+     * 安全地将Object转换为Double类型
+     * 处理Integer、Float、Double等数值类型的转换
+     *
+     * @param obj          待转换的对象
+     * @param defaultValue 默认值
+     * @return 转换后的Double值
+     */
+    private Double convertToDouble(Object obj, Double defaultValue) {
+        if (obj == null) {
+            return defaultValue;
+        }
+
+        if (obj instanceof Double) {
+            return (Double) obj;
+        } else if (obj instanceof Integer) {
+            return ((Integer) obj).doubleValue();
+        } else if (obj instanceof Float) {
+            return ((Float) obj).doubleValue();
+        } else if (obj instanceof Long) {
+            return ((Long) obj).doubleValue();
+        } else if (obj instanceof Number) {
+            return ((Number) obj).doubleValue();
+        } else {
+            log.warn("无法转换类型 {} 为Double，使用默认值 {}", obj.getClass().getSimpleName(), defaultValue);
+            return defaultValue;
         }
     }
 

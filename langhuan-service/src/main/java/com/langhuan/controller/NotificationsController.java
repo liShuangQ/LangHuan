@@ -177,7 +177,7 @@ public class NotificationsController {
      * @return 标记结果
      */
     @PostMapping("/mark-read")
-    @PreAuthorize("hasAuthority('/notifications/markRead')")
+//    @PreAuthorize("hasAuthority('/notifications/markRead')")
     public Result<String> markNotificationAsRead(@RequestParam Integer id) {
         if (id == null) {
             return Result.error("通知ID不能为空");

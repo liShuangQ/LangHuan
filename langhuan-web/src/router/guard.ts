@@ -50,7 +50,7 @@ class Guard {
                 // 获取用户信息 （登陆和获取接口分开）
                 if (this.getToken() && !this.userStore.info) {
                     // 设置用户信息 菜单等设置在user的pinia中进行
-                    await this.userStore.getUserInfo(this.getToken());
+                    await this.userStore.getUserInfo(this.getToken() as string);
                     if (process.env.AFTER_MENU === "true") {
                         // 后台权限菜单 （适应变换的用户信息所以any）
                         fifterPagesRouter(

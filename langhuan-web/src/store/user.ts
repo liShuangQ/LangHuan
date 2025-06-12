@@ -35,10 +35,7 @@ export default defineStore("user", {
                     if (res.code === 200) {
                         ElMessage.success("登陆成功");
                         const token = res.data.token;
-                        store.set(process.env.TOKEN_KEY as string, {
-                            expire: 60 * 24 * 24,
-                            token,
-                        });
+                        store.set(token);
                         await router.push({ path: "/" });
                     }
                 })
@@ -90,7 +87,7 @@ export default defineStore("user", {
             await http
                 .request<any>({
                     url: "/user/logout",
-                    method: "get",
+                    method: "post",
                     q_spinning: true,
                     data: {},
                 })
@@ -100,7 +97,7 @@ export default defineStore("user", {
                         localStorage.removeItem(
                             process.env.TOKEN_KEY as string
                         );
-                        router.push({ name: "login" });
+                        router.replace({ name: "login" });
                     }
                 })
                 .catch((err) => {

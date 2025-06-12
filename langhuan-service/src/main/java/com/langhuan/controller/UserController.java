@@ -111,7 +111,7 @@ public class UserController {
 
     //@PreAuthorize("hasAuthority('/user/list')")
     //@PreAuthorize("hasAnyRole('admin', 'normal')")
-    @GetMapping("/logout")
+    @PostMapping("/logout")
     public Result logout(HttpServletRequest request, HttpServletResponse response) {
         // 退出登录
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();

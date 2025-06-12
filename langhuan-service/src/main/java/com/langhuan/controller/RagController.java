@@ -1,5 +1,7 @@
 package com.langhuan.controller;
 
+import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
 import com.langhuan.common.Constant;
 import com.langhuan.common.Result;
 import com.langhuan.model.domain.TRagFile;
@@ -7,10 +9,6 @@ import com.langhuan.model.pojo.RagChangeDocumentsReq;
 import com.langhuan.model.pojo.RagDeleteDocumentsReq;
 import com.langhuan.model.pojo.RagWriteDocumentsReq;
 import com.langhuan.serviceai.RagService;
-
-import cn.hutool.json.JSONObject;
-import cn.hutool.json.JSONUtil;
-
 import org.springframework.ai.document.Document;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -92,6 +90,9 @@ public class RagController {
     public Result changeDocumentsRank(
             @RequestParam(name = "id", required = true) String id,
             @RequestParam(name = "rank", required = true) int rank) {
+        if (rank < 0 || rank > 100) {
+            return Result.error("Rank需在0到100之间");
+        }
         return Result.success(ragService.changeDocumentsRank(id, rank));
     }
 
