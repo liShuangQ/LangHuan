@@ -9,7 +9,7 @@ public class Constant {
     // ADMIN的默认管理员账号的密码（明文）
     public static final String ADMIN_PASSWORD = "asb#1234";
     // Token过期时间，单位为分钟
-    public static final long EXPIRE = 1;
+    public static final long EXPIRE = 60 * 24 * 7;
     // HTTP请求头中的token字段名
     public static final String HEADER = "Authorization";
     // 访问白名单
