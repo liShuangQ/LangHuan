@@ -168,7 +168,7 @@ const handleRagRank = (type: 'good' | 'bad', document: any) => {
             <!-- 欢迎提示框 - 当有窗口但没有消息时显示 -->
             <div v-if="messages.length === 0" class="flex flex-col items-center justify-center h-full text-slate-500">
                 <div class="bg-white dark:bg-slate-700 rounded-2xl p-8 shadow-lg max-w-md mx-auto text-center">
-                    <h3 class="text-xl font-semibold text-slate-800 dark:text-slate-200 mb-3">欢迎使用 LangHuan</h3>
+                    <h3 class="text-xl font-semibold text-slate-800 dark:text-slate-200 mb-3">欢迎使用</h3>
                     <p class="text-slate-600 dark:text-slate-400 mb-6 leading-relaxed">
                         我是您的AI助手，可以帮助您解答问题、处理任务和进行创意讨论。
                         请在下方输入您的问题或需求，让我们开始对话吧！
