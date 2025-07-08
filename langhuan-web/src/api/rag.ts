@@ -9,6 +9,7 @@ export const documentRankHandleApi = (
         url: "/rag/changeDocumentsRank",
         method: "post",
         q_spinning: true,
+        q_throttle: true,
         data: {
             id: id,
             rank: type === "good" ? nowRank + 1 : nowRank - 1,

@@ -1,21 +1,14 @@
 package com.langhuan.controller;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
-import java.util.stream.Collectors;
-import java.util.Arrays;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.langhuan.common.Result;
 import com.langhuan.model.domain.TNotifications;
-import com.langhuan.service.TNotificationsService;
+import com.langhuan.service.NotificationsService;
 
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Date;
-import java.util.List;
 
 /**
  * 系统通知控制器
@@ -29,9 +22,9 @@ import java.util.List;
 @Slf4j
 public class NotificationsController {
 
-    private final TNotificationsService notificationsService;
+    private final NotificationsService notificationsService;
 
-    public NotificationsController(TNotificationsService notificationsService) {
+    public NotificationsController(NotificationsService notificationsService) {
         this.notificationsService = notificationsService;
     }
 
@@ -50,45 +43,8 @@ public class NotificationsController {
             @RequestBody TNotifications notification,
             @RequestParam(name = "userIds", required = false) String userIds) {
         try {
-            List<String> idList = Arrays.stream(userIds.split(","))
-                    .map(String::trim)
-                    .toList();
-            // 设置创建时间
-            notification.setCreatedAt(new Date());
-            // 设置默认状态
-            notification.setIsRead(false);
-            notification.setIsArchived(false);
-            if (idList.isEmpty() || idList.get(0).isEmpty()) {
-                // 创建全局通知，user_id为空，全局都是默认已读
-                notification.setUserId(null);
-                notification.setIsRead(true);
-                notificationsService.save(notification);
-                return Result.success("全局通知创建成功");
-            } else {
-                // 创建个人通知，为每个用户创建一条记录
-                int successCount = 0;
-                for (String userId : idList) {
-                    TNotifications userNotification = new TNotifications();
-                    // 复制通知内容
-                    userNotification.setUserId(userId);
-                    userNotification.setTemplateId(notification.getTemplateId());
-                    userNotification.setTitle(notification.getTitle());
-                    userNotification.setContent(notification.getContent());
-                    userNotification.setNotificationLevel(notification.getNotificationLevel());
-                    userNotification.setNotificationType(notification.getNotificationType());
-                    userNotification.setIsRead(false);
-                    userNotification.setIsArchived(false);
-                    userNotification.setReferenceId(notification.getReferenceId());
-                    userNotification.setReferenceType(notification.getReferenceType());
-                    userNotification.setExpiresAt(notification.getExpiresAt());
-                    userNotification.setCreatedAt(new Date());
-
-                    if (notificationsService.save(userNotification)) {
-                        successCount++;
-                    }
-                }
-                return Result.success(String.format("成功创建 %d 条个人通知", successCount));
-            }
+            String result = notificationsService.createNotification(notification, userIds);
+            return Result.success(result);
         } catch (Exception e) {
             return Result.error("创建通知失败: " + e.getMessage());
         }
@@ -112,16 +68,7 @@ public class NotificationsController {
         }
 
         try {
-            List<Integer> idList = Arrays.stream(ids.split(","))
-                    .map(String::trim)
-                    .map(Integer::parseInt)
-                    .collect(Collectors.toList());
-
-            if (idList.isEmpty()) {
-                return Result.error("通知ID不能为空");
-            }
-
-            boolean success = notificationsService.removeByIds(idList);
+            boolean success = notificationsService.deleteNotifications(ids);
             return success ? Result.success("删除成功") : Result.error("删除失败");
         } catch (NumberFormatException e) {
             return Result.error("通知ID格式错误");
@@ -146,20 +93,7 @@ public class NotificationsController {
         }
 
         try {
-            List<Integer> idList = Arrays.stream(ids.split(","))
-                    .map(String::trim)
-                    .map(Integer::parseInt)
-                    .collect(Collectors.toList());
-
-            if (idList.isEmpty()) {
-                return Result.error("通知ID不能为空");
-            }
-
-            LambdaUpdateWrapper<TNotifications> updateWrapper = new LambdaUpdateWrapper<>();
-            updateWrapper.in(TNotifications::getId, idList)
-                    .set(TNotifications::getIsArchived, true);
-
-            boolean success = notificationsService.update(updateWrapper);
+            boolean success = notificationsService.archiveNotifications(ids);
             return success ? Result.success("归档成功") : Result.error("归档失败");
         } catch (NumberFormatException e) {
             return Result.error("通知ID格式错误");
@@ -183,12 +117,7 @@ public class NotificationsController {
             return Result.error("通知ID不能为空");
         }
 
-        LambdaUpdateWrapper<TNotifications> updateWrapper = new LambdaUpdateWrapper<>();
-        updateWrapper.eq(TNotifications::getId, id)
-                .isNotNull(TNotifications::getUserId) // 只有个人通知可以标记已读
-                .set(TNotifications::getIsRead, true);
-
-        boolean success = notificationsService.update(updateWrapper);
+        boolean success = notificationsService.markNotificationAsRead(id);
         return success ? Result.success("标记已读成功") : Result.error("标记已读失败或该通知为全局通知");
     }
 
@@ -215,36 +144,8 @@ public class NotificationsController {
             @RequestParam(name = "pageNum", required = false, defaultValue = "1") int pageNum,
             @RequestParam(name = "pageSize", required = false, defaultValue = "10") int pageSize) {
         try {
-            Page<TNotifications> page = new Page<>(pageNum, pageSize);
-            LambdaQueryWrapper<TNotifications> queryWrapper = new LambdaQueryWrapper<>();
-            queryWrapper.and(
-                    wrapper -> wrapper.eq(TNotifications::getUserId, userId).or().isNull(TNotifications::getUserId).or()
-                            .eq(TNotifications::getUserId, ""))
-                    .eq(includeRead != null, TNotifications::getIsRead, includeRead)
-                    .eq(TNotifications::getIsArchived, false)
-                    .eq(notificationLevel != null, TNotifications::getNotificationLevel, notificationLevel)
-                    .eq(notificationType != null, TNotifications::getNotificationType, notificationType)
-                    .and(wrapper -> wrapper.isNull(TNotifications::getExpiresAt).or()
-                            .gt(TNotifications::getExpiresAt, new Date()))
-                    .last("ORDER BY " +
-
-                            "CASE " +
-                            "WHEN user_id = '" + userId + "' AND is_read = false THEN 1 " + // 个人未读
-                            "WHEN user_id IS NULL OR user_id = '' THEN 2 " + // 系统通知
-                            "WHEN user_id = '" + userId + "' AND is_read = true THEN 3 " + // 个人已读
-                            "ELSE 4 " +
-                            "END, " +
-
-                            "CASE " +
-                            "WHEN notification_level = 'critical' THEN 1 " +
-                            "WHEN notification_level = 'warning' THEN 2 " +
-                            "WHEN notification_level = 'error' THEN 3 " +
-                            "WHEN notification_level = 'info' THEN 4 " +
-                            "ELSE 5 " +
-                            "END, " +
-                            "created_at DESC");
-
-            Page<TNotifications> result = notificationsService.page(page, queryWrapper);
+            Page<TNotifications> result = notificationsService.getUserNotifications(
+                    userId, includeRead, notificationLevel, notificationType, pageNum, pageSize);
             return Result.success(result);
         } catch (Exception e) {
             return Result.error("获取通知列表失败: " + e.getMessage());
@@ -262,41 +163,8 @@ public class NotificationsController {
     @PostMapping("/getStatistics")
     public Result getNotificationStatistics(@RequestParam(name = "userId", required = true) String userId) {
         try {
-            LambdaQueryWrapper<TNotifications> queryWrapper = new LambdaQueryWrapper<>();
-
-            // 查询条件：个人通知或全局通知
-            queryWrapper.and(
-                    wrapper -> wrapper.eq(TNotifications::getUserId, userId).or().isNull(TNotifications::getUserId).or()
-                            .eq(TNotifications::getUserId, ""))
-                    .eq(TNotifications::getIsArchived, false)
-                    .and(wrapper -> wrapper.isNull(TNotifications::getExpiresAt).or()
-                            .gt(TNotifications::getExpiresAt, new Date()));
-
-            // 一次性查询所有符合条件的通知
-            List<TNotifications> notifications = notificationsService.list(queryWrapper);
-
-            // 在代码中统计各级别数量
-            long unreadCount = notifications.size();
-            long criticalCount = notifications.stream()
-                    .filter(n -> "critical".equals(n.getNotificationLevel()))
-                    .count();
-            long errorCount = notifications.stream()
-                    .filter(n -> "error".equals(n.getNotificationLevel()))
-                    .count();
-            long warningCount = notifications.stream()
-                    .filter(n -> "warning".equals(n.getNotificationLevel()))
-                    .count();
-            long infoCount = notifications.stream()
-                    .filter(n -> "info".equals(n.getNotificationLevel()))
-                    .count();
-
-            return Result.success(new Object() {
-                public final long totalUnread = unreadCount;
-                public final long critical = criticalCount;
-                public final long error = errorCount;
-                public final long warning = warningCount;
-                public final long info = infoCount;
-            });
+            Object statistics = notificationsService.getNotificationStatistics(userId);
+            return Result.success(statistics);
         } catch (Exception e) {
             return Result.error("获取通知统计失败: " + e.getMessage());
         }
@@ -313,16 +181,7 @@ public class NotificationsController {
     @PostMapping("/getPersonalUnreadCount")
     public Result<Long> getPersonalUnreadCount(@RequestParam(name = "userId", required = true) String userId) {
         try {
-            LambdaQueryWrapper<TNotifications> queryWrapper = new LambdaQueryWrapper<>();
-            // 查询条件：个人未读通知 + 未归档 + 未过期
-            queryWrapper.eq(TNotifications::getUserId, userId)
-                    .eq(TNotifications::getIsRead, false)
-                    .eq(TNotifications::getIsArchived, false)
-                    .and(wrapper -> wrapper.isNull(TNotifications::getExpiresAt)
-                            .or()
-                            .gt(TNotifications::getExpiresAt, new Date()));
-
-            long count = notificationsService.count(queryWrapper);
+            long count = notificationsService.getPersonalUnreadCount(userId);
             return Result.success(count);
         } catch (Exception e) {
             return Result.error("获取未读数量失败: " + e.getMessage());
@@ -353,20 +212,8 @@ public class NotificationsController {
             @RequestParam(name = "pageNum", required = false, defaultValue = "1") int pageNum,
             @RequestParam(name = "pageSize", required = false, defaultValue = "10") int pageSize) {
         try {
-            Page<TNotifications> page = new Page<>(pageNum, pageSize);
-            LambdaQueryWrapper<TNotifications> queryWrapper = new LambdaQueryWrapper<TNotifications>()
-                    .eq(userId != null && !userId.isEmpty(), TNotifications::getUserId, userId)
-                    .eq(notificationLevel != null && !notificationLevel.isEmpty(), TNotifications::getNotificationLevel,
-                            notificationLevel)
-                    .eq(notificationType != null && !notificationType.isEmpty(), TNotifications::getNotificationType,
-                            notificationType)
-                    .eq(isRead != null, TNotifications::getIsRead, isRead)
-                    .eq(isArchived != null, TNotifications::getIsArchived, isArchived)
-                    .orderByAsc(TNotifications::getIsRead)
-                    .orderByAsc(TNotifications::getIsArchived)
-                    .orderByDesc(TNotifications::getCreatedAt);
-
-            Page<TNotifications> result = notificationsService.page(page, queryWrapper);
+            Page<TNotifications> result = notificationsService.getAllNotifications(
+                    userId, notificationLevel, notificationType, isRead, isArchived, pageNum, pageSize);
             return Result.success(result);
         } catch (Exception e) {
             return Result.error("获取所有通知列表失败: " + e.getMessage());

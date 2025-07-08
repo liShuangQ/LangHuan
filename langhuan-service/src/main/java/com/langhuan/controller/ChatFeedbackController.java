@@ -1,8 +1,6 @@
 package com.langhuan.controller;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.langhuan.common.Result;
 import com.langhuan.model.domain.TChatFeedback;
 import com.langhuan.service.TChatFeedbackService;
@@ -51,17 +49,7 @@ public class ChatFeedbackController {
             @RequestParam(name = "interaction", required = false) String interaction,
             @RequestParam(name = "pageNum", required = false, defaultValue = "1") int pageNum,
             @RequestParam(name = "pageSize", required = false, defaultValue = "10") int pageSize) {
-        return Result.success(tChatFeedbackService.page(
-            new Page<>(pageNum, pageSize),
-            new LambdaQueryWrapper<TChatFeedback>()
-                .like(userId != null && !userId.isEmpty(), TChatFeedback::getUserId, userId)
-                .eq(interaction != null && !interaction.isEmpty(), TChatFeedback::getInteraction, interaction)
-                .last("ORDER BY CASE interaction " +
-                      "WHEN 'dislike' THEN 1 " +
-                      "WHEN 'like' THEN 2 " +
-                      "WHEN 'end' THEN 3 " +
-                      "ELSE 4 END, interaction_time DESC")
-                ));
+        return Result.success(tChatFeedbackService.chatFeedbackSearch(userId, interaction, pageNum, pageSize));
     }
 
     @PreAuthorize("hasAuthority('/chatFeedback/changeDocumentTextByString')")
