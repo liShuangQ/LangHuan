@@ -162,6 +162,11 @@ const menu: PagesMenu[] = [
                 path: "/pages/systemManagement/permission",
                 faPath: ["system"],
             },
+            {
+                title: "操作日志",
+                path: "/pages/systemManagement/requestLog",
+                faPath: ["system"],
+            },
         ],
     },
     // {

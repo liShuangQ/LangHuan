@@ -1,5 +1,6 @@
 package com.langhuan.controller;
 
+import com.langhuan.common.ApiLog;
 import com.langhuan.common.Constant;
 import com.langhuan.common.Result;
 import com.langhuan.model.pojo.ChatModelResult;
@@ -47,6 +48,7 @@ public class ChatController {
     }
 
     // NOTE:Flux<String>会和Security的拦截器冲突，所以要设置白名单 "/chat/chatFlux"
+    @ApiLog(apiName = "聊天", description = "聊天", logResponse = true, logRequest = true)
     @PostMapping("/chat/chat")
     public Result chat(@RequestParam(name = "id", required = true) String id,
             @RequestParam(name = "p", required = true, defaultValue = ".") String p,

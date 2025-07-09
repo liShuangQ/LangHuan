@@ -12,12 +12,14 @@ alwaysApply: true
 - 创建Web服务时，采用RESTful API设计模式。其中服务全部使用@PostMapping注解（即全部使用post请求，接口名使用 xx/search，xx/delete，xx/updata/, xx/add 等方式来区分）。
 - 按照驼峰命名法（camelCase）使用具有描述性的方法名和变量名。
 - 构建Spring Boot应用程序的结构，包括控制器、服务、仓库、模型和配置。
+- 服务类（Service）直接编写即可，无需写接口类。
 
 注释要求:
 - 类和方法必须包含 Javadoc 注释
 - 复杂逻辑代码块需要行注释
 - 公共 API 必须有清晰的使用说明
-
+- 无需编写独立的功能使用文档
+  
 Spring Boot特定要求
 - 使用Spring Boot启动器进行项目的快速搭建和依赖管理。
 - 正确使用注解（如@SpringBootApplication、@RestController、@Service）。

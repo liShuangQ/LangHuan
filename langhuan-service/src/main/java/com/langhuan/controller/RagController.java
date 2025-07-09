@@ -2,6 +2,8 @@ package com.langhuan.controller;
 
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
+
+import com.langhuan.common.ApiLog;
 import com.langhuan.common.Constant;
 import com.langhuan.common.Result;
 import com.langhuan.model.domain.TRagFile;
@@ -41,6 +43,7 @@ public class RagController {
         return Result.success(list);
     }
 
+    @ApiLog(apiName = "RAG写入向量库", description = "将文档写入向量库", logResponse = true, logRequest = true)
     @PreAuthorize("hasAuthority('/rag/writeDocumentsToVectorStore')")
     @PostMapping("/rag/writeDocumentsToVectorStore")
     public Result writeDocumentsToVectorStore(
@@ -54,6 +57,7 @@ public class RagController {
 
     }
 
+    @ApiLog(apiName = "RAG删除文件和文档", description = "根据文件ID删除文件和文档", logResponse = true, logRequest = true)
     @PreAuthorize("hasAuthority('/rag/deleteFileAndDocuments')")
     @PostMapping("/rag/deleteFileAndDocuments")
     public Result deleteFileAndDocuments(
@@ -61,6 +65,7 @@ public class RagController {
         return Result.success(ragService.deleteFileAndDocuments(fileId));
     }
 
+    @ApiLog(apiName = "RAG修改文件和文档", description = "修改文件和文档", logResponse = true, logRequest = true)
     @PreAuthorize("hasAuthority('/rag/changeFileAndDocuments')")
     @PostMapping("/rag/changeFileAndDocuments")
     public Result changeFileAndDocuments(
@@ -85,6 +90,7 @@ public class RagController {
         return Result.success(out);
     }
 
+    @ApiLog(apiName = "RAG修改文档排序", description = "修改文档排序", logResponse = true, logRequest = true)
     @PreAuthorize("hasAuthority('/rag/changeDocumentsRank')")
     @PostMapping("/rag/changeDocumentsRank")
     public Result changeDocumentsRank(
@@ -96,6 +102,7 @@ public class RagController {
         return Result.success(ragService.changeDocumentsRank(id, rank));
     }
 
+    @ApiLog(apiName = "RAG修改文档文本", description = "修改文档文本", logResponse = true, logRequest = true)
     @PreAuthorize("hasAuthority('/rag/changeDocumentText')")
     @PostMapping("/rag/changeDocumentText")
     public Result changeDocumentText(
@@ -105,6 +112,7 @@ public class RagController {
                 ragChangeDocumentsReq.getRagFile()));
     }
 
+    @ApiLog(apiName = "RAG删除文档文本", description = "删除文档文本", logResponse = true, logRequest = true)
     @PreAuthorize("hasAuthority('/rag/deleteDocumentText')")
     @PostMapping("/rag/deleteDocumentText")
     public Result deleteDocumentText(

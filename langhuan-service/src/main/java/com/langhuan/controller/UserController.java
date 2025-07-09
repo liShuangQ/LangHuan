@@ -1,5 +1,6 @@
 package com.langhuan.controller;
 
+import com.langhuan.common.ApiLog;
 import com.langhuan.common.Result;
 import com.langhuan.model.domain.TUser;
 import com.langhuan.model.dto.UserLoginDTO;
@@ -70,6 +71,7 @@ public class UserController {
     }
     
 
+    @ApiLog(apiName = "删除用户", description = "根据用户ID删除用户信息")
     @PreAuthorize("hasAuthority('/user/delete')")
     @PostMapping("/delete")
     public Result delete(@RequestParam(name = "id", required = true) Integer id) throws AuthorizationDeniedException {

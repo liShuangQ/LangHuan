@@ -1,6 +1,7 @@
 package com.langhuan.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.langhuan.common.ApiLog;
 import com.langhuan.common.Result;
 import com.langhuan.model.domain.TRagFile;
 import com.langhuan.service.TRagFileService;
@@ -31,6 +32,7 @@ public class RagFileController {
         this.ragService = ragService;
     }
 
+    @ApiLog(apiName = "RAG删除文件", description = "根据文件ID删除文件", logResponse = true, logRequest = true)
     @PreAuthorize("hasAuthority('/rag/file/delete')")
     @PostMapping("/file/delete")
     public Result deleteFile(@RequestParam Long id) {
