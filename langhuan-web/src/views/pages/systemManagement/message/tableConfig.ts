@@ -118,7 +118,7 @@ export let tableData = ref<any[]>([]);
 export let paginationConfig = ref<PaginationConfig>({
   total: 0,
   currentPage: 1,
-  pageSize: 10,
+  pageSize: 20,
   layout: "total, sizes, prev, pager, next, jumper",
   background: true,
 });

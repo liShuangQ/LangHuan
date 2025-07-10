@@ -76,4 +76,16 @@ public class DashboardController {
         return Result.success(dashboardService.getUserStats());
     }
 
+    /**
+     * 获取使用情况统计
+     * 包括总提问次数、本周各用户提问统计等
+     * 统计信息包含：用户名、提问次数、有效回答数、无效回答数、问题反馈数
+     * 
+     * @return 使用情况统计结果
+     */
+    @PostMapping("/usageStats")
+    public Result<Map<String, Object>> getUsageStats() {
+        return Result.success(dashboardService.getUsageStats());
+    }
+
 }

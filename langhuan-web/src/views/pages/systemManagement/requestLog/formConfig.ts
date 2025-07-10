@@ -1,32 +1,49 @@
-import { FormConfig, FormItemConfigs } from "@/components/globalComponents/ElementFormC/form-component"
+import {
+    FormConfig,
+    FormItemConfigs,
+} from "@/components/globalComponents/ElementFormC/form-component";
 
 export let formConfig: FormConfig = {
-    size: 'default',
-    showMessage: true
-}
+    size: "default",
+    showMessage: true,
+};
 
 export let formItemConfig: FormItemConfigs = [
     [
         {
-            value: '',
-            key: 'apiName',
-            type: 'input',
-            label: '接口名称',
-            col: 6,
+            value: "",
+            key: "apiName",
+            type: "input",
+            label: "接口名称",
+            col: 5,
             clearable: true,
-            placeholder: '请输入接口名称'
+            placeholder: "请输入接口名称",
         },
         {
-            value: '',
-            key: 'username',
-            type: 'input',
-            label: '用户名',
-            col: 6,
+            value: "",
+            key: "username",
+            type: "input",
+            label: "用户名",
+            col: 5,
             clearable: true,
-            placeholder: '请输入用户名'
+            placeholder: "请输入用户名",
         },
         {
-            col: 12,
+            value: [],
+            key: "timeRange",
+            type: "datePicker",
+            label: "创建时间",
+            elem: "datetimerange",
+            col: 10,
+            format: "YYYY-MM-DD HH:mm:ss",
+            valueFormat: "YYYY-MM-DD HH:mm:ss",
+            placeholder: "请选择时间范围",
+            rangeSeparator: "至",
+            startPlaceholder: "开始时间",
+            endPlaceholder: "结束时间",
+        },
+        {
+            col: 4,
             key: "button",
             type: "custom",
         },
@@ -62,20 +79,4 @@ export let formItemConfig: FormItemConfigs = [
     //         ]
     //     }
     // ],
-    // [
-    //     {
-    //         value: [],
-    //         key: 'timeRange',
-    //         type: 'datePicker',
-    //         label: '创建时间',
-    //         elem: 'datetimerange',
-    //         col: 12,
-    //         format: "YYYY-MM-DD HH:mm:ss",
-    //         valueFormat: "YYYY-MM-DD HH:mm:ss",
-    //         placeholder: '请选择时间范围',
-    //         rangeSeparator: '至',
-    //         startPlaceholder: '开始时间',
-    //         endPlaceholder: '结束时间'
-    //     }
-    // ]
-]
+];

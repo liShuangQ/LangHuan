@@ -344,7 +344,7 @@ const filterForm = reactive({
 // 分页数据
 const pagination = reactive({
     pageNum: 1,
-    pageSize: 10,
+    pageSize: 20,
     total: 0
 })
 

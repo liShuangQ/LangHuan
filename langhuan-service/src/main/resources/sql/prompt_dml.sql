@@ -659,3 +659,25 @@ VALUES
       'AIDEFAULTQUESTIONANSWERADVISORRPROMPT',
       'RAG问答顾问提示词'
    );
+
+
+INSERT INTO
+   t_prompts (
+      id,
+      content,
+      category,
+      created_at,
+      updated_at,
+      method_name,
+      description
+   )
+VALUES
+   (
+      13,
+      '{user_prompt}',
+      'default,system',
+      '2025-05-29 00:57:00.287',
+      '2025-05-29 00:57:00.287',
+      'AINULLDEFAULTUSERPROMPT',
+      'ai系统默认用户级别提示词，注意要带有{user_prompt}，并且{user_prompt}要替换为当前用户提示提示词。务必注意上下文语境'
+   );

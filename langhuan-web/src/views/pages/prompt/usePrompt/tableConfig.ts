@@ -62,7 +62,7 @@ export let tableConfig = ref<TableConfig>({
 export let tableData = ref<any[]>([]);
 export let paginationConfig = ref<PaginationConfig>({
     currentPage: 1,
-    pageSize: 10,
+    pageSize: 20,
     total: 0,
     background: true,
 });

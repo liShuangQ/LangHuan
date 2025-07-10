@@ -46,9 +46,7 @@
         <!-- 数据表格 -->
         <div class="h-[630px]">
             <ElementTableC ref="tableRef" :paginationConfig="paginationConfig" :tableColumnConfig="tableColumnConfig"
-                :tableConfig="tableConfig" :tableData="tableData" @handle="tableHandle"
-                @selection-change="handleSelectionChange" @size-change="handleSizeChange"
-                @current-change="handleCurrentChange">
+                :tableConfig="tableConfig" :tableData="tableData" @handle="tableHandle">
                 <!-- HTTP方法插槽 -->
                 <template #content-httpMethod="scope">
                     <el-tag :type="getHttpMethodType(scope.row.httpMethod) as any" size="small">
@@ -137,11 +135,11 @@
                     <el-descriptions-item label="请求IP">{{ currentDetailRow.requestIp }}</el-descriptions-item>
                     <el-descriptions-item label="执行时长">{{ currentDetailRow.executionTime }}ms</el-descriptions-item>
                     <el-descriptions-item label="创建时间">{{ formatDateTime(currentDetailRow.createTime)
-                    }}</el-descriptions-item>
+                        }}</el-descriptions-item>
                     <el-descriptions-item label="接口说明" :span="2">{{ currentDetailRow.apiDescription || '无'
-                    }}</el-descriptions-item>
+                        }}</el-descriptions-item>
                     <el-descriptions-item label="错误信息" :span="2">{{ currentDetailRow.errorMessage || '无'
-                    }}</el-descriptions-item>
+                        }}</el-descriptions-item>
                 </el-descriptions>
 
                 <div class="mt-4">
@@ -255,19 +253,6 @@ const handleReset = () => {
     loadData();
 };
 
-const handleSelectionChange = (selection: any[]) => {
-    selectedRows.value = selection;
-};
-
-const handleSizeChange = (size: number) => {
-    paginationConfig.value.pageSize = size;
-    loadData();
-};
-
-const handleCurrentChange = (current: number) => {
-    paginationConfig.value.currentPage = current;
-    loadData();
-};
 
 const handleViewDetail = (row: any) => {
     currentDetailRow.value = row;
@@ -365,8 +350,8 @@ const getHttpMethodType = (method: string) => {
 };
 
 const getExecutionTimeClass = (time: number) => {
-    if (time < 100) return 'text-green-600';
-    if (time < 500) return 'text-orange-600';
+    if (time < 3000) return 'text-green-600';
+    if (time < 5000) return 'text-orange-600';
     return 'text-red-600';
 };
 
@@ -390,6 +375,12 @@ const formHandle = (type: string, key: string, data: any, other: any) => {
 
 const tableHandle = (type: string, data: any, key: string) => {
     // 表格事件处理
+    if (type === 'selection') {
+        selectedRows.value = data;
+    }
+    if (type === "handleCurrentChange" || type === "handleSizeChange") {
+        loadData();
+    }
 };
 </script>
 

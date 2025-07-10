@@ -8,7 +8,7 @@ export const pageConfig = {
         showSelection: true,
         showExpand: true,
         showIndex: true,
-        defaultPageSize: 10,
+        defaultPageSize: 20,
         pageSizes: [10, 20, 50, 100]
     },
 

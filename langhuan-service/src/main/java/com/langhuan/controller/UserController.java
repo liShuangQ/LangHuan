@@ -32,7 +32,7 @@ public class UserController {
         this.TUserService = TUserService;
     }
 
-    @PreAuthorize("hasAuthority('/user/register')")
+    // @PreAuthorize("hasAuthority('/user/register')")
     @PostMapping("/register")
     public Result register(@RequestBody TUser user) {
         return Result.success(TUserService.register(user));

@@ -71,15 +71,22 @@ public class ChatService {
     public ChatModelResult chat(ChatRestOption chatRestOption) {
         ToolCallback[] tools = chatRestOption.getIsFunction() ? ToolCallbacks.from(new RestRequestTools())
                 : ToolCallbacks.from();
+        String AINULLDEFAULTUSERPROMPT = TPromptsService
+                .getCachedTPromptsByMethodName("AINULLDEFAULTUSERPROMPT");
+        if (AINULLDEFAULTUSERPROMPT == null) {
+            AINULLDEFAULTUSERPROMPT = Constant.AINULLDEFAULTUSERPROMPT;
+        }
+        String userPrompt = AINULLDEFAULTUSERPROMPT.replace("{user_prompt}",
+                chatRestOption.getQuestion());
 
         try {
             if (chatRestOption.getIsRag()) {
                 return this.isRagChat(chatRestOption.getChatId(), chatRestOption.getPrompt(),
-                        chatRestOption.getQuestion(), chatRestOption.getRagGroupId(),
+                        userPrompt, chatRestOption.getRagGroupId(),
                         chatRestOption.getModelName(), chatRestOption.getIsReRank(), tools);
             } else {
                 return this.noRagChat(chatRestOption.getChatId(), chatRestOption.getPrompt(),
-                        chatRestOption.getQuestion(), chatRestOption.getModelName(), tools);
+                        userPrompt, chatRestOption.getModelName(), tools);
             }
         } catch (Exception e) {
             log.error("advisor-error: {}", e.getMessage());
@@ -87,7 +94,7 @@ public class ChatService {
         }
     }
 
-    public ChatModelResult isRagChat(String id, String p, String q, String groupId, String modelName,Boolean isReRank,
+    public ChatModelResult isRagChat(String id, String p, String q, String groupId, String modelName, Boolean isReRank,
             ToolCallback[] tools) throws Exception {
         String AIDEFAULTQUESTIONANSWERADVISORRPROMPT = TPromptsService
                 .getCachedTPromptsByMethodName("AIDEFAULTQUESTIONANSWERADVISORRPROMPT");
@@ -96,7 +103,7 @@ public class ChatService {
         }
 
         // 使用排序后的结果手动喂给ai
-        List<Document> documentList = ragService.ragSearch(q, groupId, "",isReRank);
+        List<Document> documentList = ragService.ragSearch(q, groupId, "", isReRank);
         StringBuilder ragContents = new StringBuilder();
         for (Document document : documentList) {
             ragContents.append(document.getText()).append(";").append("\n");

@@ -43,7 +43,7 @@ public class RagController {
         return Result.success(list);
     }
 
-    @ApiLog(apiName = "RAG写入向量库", description = "将文档写入向量库", logResponse = true, logRequest = true)
+    @ApiLog(apiName = "RAG写入向量库", description = "将文档写入向量库", logResponse = true, logRequest = false)
     @PreAuthorize("hasAuthority('/rag/writeDocumentsToVectorStore')")
     @PostMapping("/rag/writeDocumentsToVectorStore")
     public Result writeDocumentsToVectorStore(
