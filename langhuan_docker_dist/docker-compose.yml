@@ -1,0 +1,41 @@
+networks:
+  langhuan-net:
+    driver: bridge
+
+services:
+  web:
+    build: ./langhuan-web
+    ports:
+      - "9088:9088"
+    networks:
+      - langhuan-net
+    depends_on:
+      - app
+
+  app:
+    build: ./langhuan-service
+    ports:
+      - "9077:9077"
+    depends_on:
+      - db
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/postgres
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+    networks:
+      - langhuan-net
+
+  db:
+    image: pgvector/pgvector:pg17
+    restart: always
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data
+      - ./sql:/docker-entrypoint-initdb.d
+
+    networks:
+      - langhuan-net
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
