@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
+import com.langhuan.utils.DateTimeUtils;
 import java.time.LocalDateTime;
 import java.util.Map;
 
@@ -123,7 +124,7 @@ public class ApiLogController {
     @ApiLog(apiName = "清理历史日志", description = "清理指定天数之前的接口调用日志")
     @PostMapping("/clean")
     public Result<Integer> cleanHistory(@RequestParam(defaultValue = "30") Integer days) {
-        LocalDateTime cutoffTime = LocalDateTime.now().minusDays(days);
+        LocalDateTime cutoffTime = DateTimeUtils.now().minusDays(days);
         QueryWrapper<TApiLog> queryWrapper = new QueryWrapper<>();
         queryWrapper.lt("create_time", cutoffTime);
         

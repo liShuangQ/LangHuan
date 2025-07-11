@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import lombok.extern.slf4j.Slf4j;
 
+import com.langhuan.utils.DateTimeUtils;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -148,7 +149,7 @@ public class DashboardService {
      */
     public Map<String, Object> getUsageStats() {
         // 计算本周开始时间（周一00:00:00）
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = DateTimeUtils.now();
         LocalDateTime startOfWeek = now.truncatedTo(ChronoUnit.DAYS)
                 .minusDays(now.getDayOfWeek().getValue() - 1);
         

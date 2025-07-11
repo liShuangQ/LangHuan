@@ -3,6 +3,7 @@ package com.langhuan.functionTools;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.tool.annotation.Tool;
 import org.springframework.ai.tool.annotation.ToolParam;
+import com.langhuan.utils.DateTimeUtils;
 import org.springframework.context.i18n.LocaleContextHolder;
 
 import java.time.LocalDateTime;
@@ -20,7 +21,7 @@ public class DateTimeToolsD {
     @Tool(description = "获取用户时区中的当前日期和时间", returnDirect = true)
     String getCurrentDateTime() {
         log.info("调用工具：" + "getCurrentDateTime");
-        return LocalDateTime.now().atZone(LocaleContextHolder.getTimeZone().toZoneId()).toString();
+        return DateTimeUtils.now().atZone(LocaleContextHolder.getTimeZone().toZoneId()).toString();
     }
 
     //    @ToolParam

@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
+import com.langhuan.utils.DateTimeUtils;
 import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -33,11 +34,11 @@ public class JwtUtil {
     public String generateToken(String username) {
         SecretKey signingKey = Keys.hmacShaKeyFor(SECRET.getBytes(StandardCharsets.UTF_8));
         // 过期时间
-        LocalDateTime tokenExpirationTime = LocalDateTime.now().plusMinutes(EXPIRE);
+        LocalDateTime tokenExpirationTime = DateTimeUtils.now().plusMinutes(EXPIRE);
         return Jwts.builder()
                 .signWith(signingKey, Jwts.SIG.HS512)
                 .header().add("typ", "JWT").and()
-                .issuedAt(Timestamp.valueOf(LocalDateTime.now()))
+                .issuedAt(Timestamp.valueOf(DateTimeUtils.now()))
                 .subject(username)
                 .expiration(Timestamp.valueOf(tokenExpirationTime))
                 .claims(Map.of("username", username))

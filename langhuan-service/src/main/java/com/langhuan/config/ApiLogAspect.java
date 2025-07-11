@@ -18,6 +18,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import com.langhuan.utils.DateTimeUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -123,8 +124,8 @@ public class ApiLogAspect {
             setRequestParams(logEntity, joinPoint);
         }
 
-        logEntity.setCreateTime(LocalDateTime.now());
-        logEntity.setUpdateTime(LocalDateTime.now());
+        logEntity.setCreateTime(DateTimeUtils.now());
+        logEntity.setUpdateTime(DateTimeUtils.now());
 
         return logEntity;
     }
@@ -146,7 +147,7 @@ public class ApiLogAspect {
         logEntity.setExecutionTime(executionTime);
         logEntity.setIsSuccess(isSuccess);
         logEntity.setErrorMessage(errorMessage);
-        logEntity.setUpdateTime(LocalDateTime.now());
+        logEntity.setUpdateTime(DateTimeUtils.now());
 
         // 设置响应参数
         if (apiLog.logResponse() && Objects.nonNull(result)) {
