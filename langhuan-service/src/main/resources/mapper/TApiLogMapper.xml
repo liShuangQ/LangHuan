@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.langhuan.model.mapper.TApiLogMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.langhuan.model.domain.TApiLog">
+        <id column="id" property="id" />
+        <result column="api_name" property="apiName" />
+        <result column="api_url" property="apiUrl" />
+        <result column="api_description" property="apiDescription" />
+        <result column="http_method" property="httpMethod" />
+        <result column="user_id" property="userId" />
+        <result column="username" property="username" />
+        <result column="request_ip" property="requestIp" />
+        <result column="request_params" property="requestParams" />
+        <result column="response_data" property="responseData" />
+        <result column="execution_time" property="executionTime" />
+        <result column="is_success" property="isSuccess" />
+        <result column="error_message" property="errorMessage" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, api_name, api_url, api_description, http_method, user_id, username, 
+        request_ip, request_params, response_data, execution_time, is_success, 
+        error_message, create_time, update_time
+    </sql>
+
+</mapper> 

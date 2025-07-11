@@ -1,0 +1,60 @@
+server:
+  port: 9077
+  servlet:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+spring:
+  task:
+    scheduling:
+      pool:
+        size: 10
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+  application:
+    name: aiAgent
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+  # 基础属性配置
+  ai:
+    chat:
+      client:
+        enabled: true
+      memory:
+        repository:
+          jdbc:
+            initialize-schema: never
+    openai:
+      base-url: http://127.0.0.1:11434
+      api-key: 111
+      chat:
+        options:
+          model: qwen3:1.7b
+      embedding:
+        options:
+          model: mxbai-embed-large:latest
+        base-url: http://127.0.0.1:11434
+        api-key: 111
+    vectorstore:
+      pgvector:
+        remove-existing-vector-store-table: false
+rerank:
+  base-url: http://127.0.0.1:11434
+  api-key: 111
+  model: gte-rerank-v2
+logging:
+  level:
+    org:
+      springframework:
+        ai:
+          chat:
+            client:
+              advisor: DEBUG
