@@ -5,12 +5,12 @@ import {
 } from "@/components/globalComponents/ElementTableC/table-component";
 
 export let tableColumnConfig = ref<TableColumnConfig[]>([
-    {
-        label: 'ID',
-        prop: 'id',
-        width: 80,
-        sortable: true
-    },
+    // {
+    //     label: 'ID',
+    //     prop: 'id',
+    //     width: 80,
+    //     sortable: true
+    // },
     {
         label: '接口信息',
         prop: 'apiInfo',
@@ -38,7 +38,7 @@ export let tableColumnConfig = ref<TableColumnConfig[]>([
         children: [
             {
                 label: '用户名',
-                prop: 'username',
+                prop: 'userName',
             },
             {
                 label: '请求IP',

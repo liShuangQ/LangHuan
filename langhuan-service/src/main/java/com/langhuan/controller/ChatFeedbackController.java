@@ -45,11 +45,11 @@ public class ChatFeedbackController {
     @PreAuthorize("hasAuthority('/chatFeedback/search')")
     @PostMapping(path = "/search")
     public Result search(
-            @RequestParam(name = "userId", required = false) String userId,
+            @RequestParam(name = "username", required = false) String username,
             @RequestParam(name = "interaction", required = false) String interaction,
             @RequestParam(name = "pageNum", required = false, defaultValue = "1") int pageNum,
             @RequestParam(name = "pageSize", required = false, defaultValue = "10") int pageSize) {
-        return Result.success(tChatFeedbackService.chatFeedbackSearch(userId, interaction, pageNum, pageSize));
+        return Result.success(tChatFeedbackService.chatFeedbackSearch(username, interaction, pageNum, pageSize));
     }
 
     @PreAuthorize("hasAuthority('/chatFeedback/changeDocumentTextByString')")

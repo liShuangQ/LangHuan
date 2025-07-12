@@ -124,6 +124,16 @@ const menu: PagesMenu[] = [
                 path: "/pages/chatFeedback",
                 faPath: ["dailyOperation"],
             },
+            {
+                title: "系统通知",
+                path: "/pages/systemManagement/message",
+                faPath: ["system"],
+            },
+            {
+                title: "操作日志",
+                path: "/pages/systemManagement/requestLog",
+                faPath: ["system"],
+            },
         ],
     },
     {
@@ -137,16 +147,11 @@ const menu: PagesMenu[] = [
                 path: "/pages/systemManagement/routeView",
                 faPath: ["system"],
             },
-            {
-                title: "系统通知",
-                path: "/pages/systemManagement/message",
-                faPath: ["system"],
-            },
-            {
-                title: "系统通知呈现",
-                path: "/pages/systemManagement/messageShow",
-                faPath: ["system"],
-            },
+            // {
+            //     title: "系统通知呈现",
+            //     path: "/pages/systemManagement/messageShow",
+            //     faPath: ["system"],
+            // },
             {
                 title: "用户管理",
                 path: "/pages/systemManagement/user",
@@ -160,11 +165,6 @@ const menu: PagesMenu[] = [
             {
                 title: "权限管理",
                 path: "/pages/systemManagement/permission",
-                faPath: ["system"],
-            },
-            {
-                title: "操作日志",
-                path: "/pages/systemManagement/requestLog",
                 faPath: ["system"],
             },
         ],

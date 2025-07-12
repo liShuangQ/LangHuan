@@ -14,12 +14,12 @@ export let formItemConfig: FormItemConfigs = [
   [
     {
       value: "",
-      key: "userId",
+      key: "username",
       type: "input",
-      label: "用户ID",
+      label: "用户名",
       col: 6,
       clearable: true,
-      placeholder: "请输入用户ID",
+      placeholder: "请输入用户名",
     },
     {
       value: "",

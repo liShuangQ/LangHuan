@@ -68,8 +68,8 @@ export let tableColumnConfig = ref<TableColumnConfig[]>([
     width: "100",
   },
   {
-    label: "用户ID",
-    prop: "userId",
+    label: "用户名",
+    prop: "userName",
     width: "120",
   },
   {

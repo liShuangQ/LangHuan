@@ -7,12 +7,13 @@ import com.langhuan.common.ApiLog;
 import com.langhuan.common.Result;
 import com.langhuan.model.domain.TApiLog;
 import com.langhuan.service.TApiLogService;
+import com.langhuan.utils.date.DateTimeUtils;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
-import com.langhuan.utils.DateTimeUtils;
 import java.time.LocalDateTime;
 import java.util.Map;
 
@@ -41,7 +42,7 @@ public class ApiLogController {
      * @return 分页结果
      */
     @PostMapping("/search")
-    public Result<IPage<TApiLog>> search(
+    public Result<IPage<Map<String, Object>>> search(
             @RequestParam(defaultValue = "1") Long current,
             @RequestParam(defaultValue = "10") Long size,
             @RequestParam(required = false) String apiName,
@@ -49,28 +50,8 @@ public class ApiLogController {
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startTime,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endTime) {
 
-        Page<TApiLog> page = new Page<>(current, size);
-        QueryWrapper<TApiLog> queryWrapper = new QueryWrapper<>();
-
-        // 条件查询
-        if (apiName != null && !apiName.trim().isEmpty()) {
-            queryWrapper.like("api_name", apiName);
-        }
-        if (username != null && !username.trim().isEmpty()) {
-            queryWrapper.like("username", username);
-        }
-        if (startTime != null) {
-            queryWrapper.ge("create_time", startTime);
-        }
-        if (endTime != null) {
-            queryWrapper.le("create_time", endTime);
-        }
-
-        // 按创建时间降序排列
-        queryWrapper.orderByDesc("create_time");
-
-        IPage<TApiLog> result = apiLogService.page(page, queryWrapper);
-        return Result.success(result);
+        return Result.success(
+                apiLogService.search(apiName, username, startTime, endTime, current.intValue(), size.intValue()));
     }
 
     /**
@@ -85,8 +66,7 @@ public class ApiLogController {
         return Result.success(Map.of(
                 "totalCount", apiLogService.count(),
                 "successRate", "95.5%",
-                "avgResponseTime", "120ms"
-        ));
+                "avgResponseTime", "120ms"));
     }
 
     /**
@@ -127,10 +107,10 @@ public class ApiLogController {
         LocalDateTime cutoffTime = DateTimeUtils.now().minusDays(days);
         QueryWrapper<TApiLog> queryWrapper = new QueryWrapper<>();
         queryWrapper.lt("create_time", cutoffTime);
-        
+
         int count = (int) apiLogService.count(queryWrapper);
         boolean result = apiLogService.remove(queryWrapper);
-        
+
         return result ? Result.success(count) : Result.error("清理失败");
     }
-} 
+}

@@ -13,7 +13,7 @@ export let formItemConfig: FormItemConfigs = [
     [
         {
             value: "",
-            key: "userId",
+            key: "username",
             type: "input",
             label: "用户名",
             col: 7,

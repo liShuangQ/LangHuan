@@ -52,7 +52,7 @@ export let tableColumnConfig = ref<TableColumnConfig[]>([
     },
     {
         label: '创建人',
-        prop: 'uploadedBy',
+        prop: 'userName',
         width: 'auto',
     },
     {

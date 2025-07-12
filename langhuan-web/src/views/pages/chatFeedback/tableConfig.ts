@@ -11,7 +11,7 @@ export let tableColumnConfig = ref<TableColumnConfig[]>([
     // },
     {
         label: "用户",
-        prop: "userId",
+        prop: "userName",
         width: "auto",
     },
 

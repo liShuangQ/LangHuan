@@ -111,7 +111,7 @@ public class NotificationsController {
      * @return 标记结果
      */
     @PostMapping("/mark-read")
-//    @PreAuthorize("hasAuthority('/notifications/markRead')")
+    // @PreAuthorize("hasAuthority('/notifications/markRead')")
     public Result<String> markNotificationAsRead(@RequestParam Integer id) {
         if (id == null) {
             return Result.error("通知ID不能为空");
@@ -177,7 +177,7 @@ public class NotificationsController {
      * @param userId 用户ID
      * @return 未读数量
      */
-//    @PreAuthorize("hasAuthority('/notifications/statistics')")
+    // @PreAuthorize("hasAuthority('/notifications/statistics')")
     @PostMapping("/getPersonalUnreadCount")
     public Result<Long> getPersonalUnreadCount(@RequestParam(name = "userId", required = true) String userId) {
         try {
@@ -204,7 +204,7 @@ public class NotificationsController {
     @PreAuthorize("hasAuthority('/notifications/admin/list')")
     @PostMapping("/admin/getAllNotifications")
     public Result getAllNotifications(
-            @RequestParam(name = "userId", required = false) String userId,
+            @RequestParam(name = "username", required = false) String username,
             @RequestParam(name = "notificationLevel", required = false) String notificationLevel,
             @RequestParam(name = "notificationType", required = false) String notificationType,
             @RequestParam(name = "isRead", required = false) Boolean isRead,
@@ -212,9 +212,8 @@ public class NotificationsController {
             @RequestParam(name = "pageNum", required = false, defaultValue = "1") int pageNum,
             @RequestParam(name = "pageSize", required = false, defaultValue = "10") int pageSize) {
         try {
-            Page<TNotifications> result = notificationsService.getAllNotifications(
-                    userId, notificationLevel, notificationType, isRead, isArchived, pageNum, pageSize);
-            return Result.success(result);
+            return Result.success(notificationsService.getAllNotifications(
+                username, notificationLevel, notificationType, isRead, isArchived, pageNum, pageSize));
         } catch (Exception e) {
             return Result.error("获取所有通知列表失败: " + e.getMessage());
         }

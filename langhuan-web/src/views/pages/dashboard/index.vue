@@ -11,6 +11,7 @@ import { ElMessage } from 'element-plus'
 // 定义接口数据类型
 interface UserStat {
     userId: number
+    name: string
     username: string
     questionCount: number
     validAnswerCount: number
@@ -495,7 +496,7 @@ onMounted(() => {
                                             <el-icon class="text-gray-400 mr-2">
                                                 <User />
                                             </el-icon>
-                                            <span class="font-medium text-gray-900">{{ user.username }}</span>
+                                            <span class="font-medium text-gray-900">{{ user.name }}</span>
                                         </div>
                                     </td>
                                     <td class="px-4 py-3 text-center border-b">
