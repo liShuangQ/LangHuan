@@ -157,13 +157,10 @@ public class DashboardService {
         LocalDateTime startOfWeek = now.truncatedTo(ChronoUnit.DAYS)
                 .minusDays(now.getDayOfWeek().getValue() - 1);
 
-        // 查询所有聊天接口调用记录
-        List<TApiLog> chatLogs = tApiLogService.list(
+        // 统计总提问次数
+        long totalQuestions = tApiLogService.count(
                 new LambdaQueryWrapper<TApiLog>()
                         .eq(TApiLog::getApiUrl, "/chat/chat"));
-
-        // 统计总提问次数
-        long totalQuestions = chatLogs.size();
 
         // 查询本周的聊天记录
         List<TApiLog> weekChatLogs = tApiLogService.list(
