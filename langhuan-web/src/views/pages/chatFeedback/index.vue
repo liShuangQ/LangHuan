@@ -18,9 +18,9 @@
                 <template #content-interaction="props">
                     <el-tag v-if="props.row.interaction === 'like'" type="success">{{ props.row.interaction }}</el-tag>
                     <el-tag v-if="props.row.interaction === 'dislike'" type="warning">{{ props.row.interaction
-                    }}</el-tag>
+                        }}</el-tag>
                     <el-tag v-if="props.row.interaction === 'end'" type="info">{{ props.row.interaction
-                    }}</el-tag>
+                        }}</el-tag>
                 </template>
                 <template #content-knowledgeBaseIds="props">
                     <el-button link type="primary" @click="openDocumentIds(props.row)">知识库片段
@@ -28,7 +28,8 @@
                 </template>
                 <template #content-buttonSlot="props">
                     <el-button type="primary" link @click="tableBtnHandle('addText', props.row)">添加文字</el-button>
-                    <el-button type="primary" link @click="tableBtnHandle('end', props.row)">标记完成</el-button>
+                    <el-button type="primary" link @click="tableBtnHandle('end', props.row)"
+                        :disabled="props.row.interaction === 'end' || props.row.interaction === 'like'">标记完成</el-button>
                     <el-button link type="primary" @click="tableBtnHandle('del', props.row)">删除
                     </el-button>
                 </template>
@@ -203,7 +204,7 @@ const sendSystemMessage = (row: any) => {
                     content: `您的建议: ${row.questionContent} 当前已被标记修改完成
                         提出时间：${row.interactionTime}
                         修复内容：${value},
-                        
+
                         感谢您的反馈。
                         `,
                     notificationLevel: 'info',

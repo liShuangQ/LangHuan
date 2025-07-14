@@ -9,7 +9,7 @@ import lombok.Data;
  * 
  * @TableName t_chat_feedback
  */
-@TableName(value ="t_chat_feedback")
+@TableName(value = "t_chat_feedback")
 @Data
 public class TChatFeedback {
     /**
@@ -63,6 +63,26 @@ public class TChatFeedback {
      */
     private String suggestion;
 
+    /**
+     * 
+     */
+    private String usePrompt;
+
+    /**
+     * 
+     */
+    private String useModel;
+
+    /**
+     * 
+     */
+    private String useFileGroupId;
+
+    /**
+     * 
+     */
+    private Boolean useRank;
+
     @Override
     public boolean equals(Object that) {
         if (this == that) {
@@ -76,15 +96,31 @@ public class TChatFeedback {
         }
         TChatFeedback other = (TChatFeedback) that;
         return (this.getId() == null ? other.getId() == null : this.getId().equals(other.getId()))
-            && (this.getUserId() == null ? other.getUserId() == null : this.getUserId().equals(other.getUserId()))
-            && (this.getUserInfo() == null ? other.getUserInfo() == null : this.getUserInfo().equals(other.getUserInfo()))
-            && (this.getQuestionId() == null ? other.getQuestionId() == null : this.getQuestionId().equals(other.getQuestionId()))
-            && (this.getQuestionContent() == null ? other.getQuestionContent() == null : this.getQuestionContent().equals(other.getQuestionContent()))
-            && (this.getAnswerContent() == null ? other.getAnswerContent() == null : this.getAnswerContent().equals(other.getAnswerContent()))
-            && (this.getInteraction() == null ? other.getInteraction() == null : this.getInteraction().equals(other.getInteraction()))
-            && (this.getInteractionTime() == null ? other.getInteractionTime() == null : this.getInteractionTime().equals(other.getInteractionTime()))
-            && (this.getKnowledgeBaseIds() == null ? other.getKnowledgeBaseIds() == null : this.getKnowledgeBaseIds().equals(other.getKnowledgeBaseIds()))
-            && (this.getSuggestion() == null ? other.getSuggestion() == null : this.getSuggestion().equals(other.getSuggestion()));
+                && (this.getUserId() == null ? other.getUserId() == null : this.getUserId().equals(other.getUserId()))
+                && (this.getUserInfo() == null ? other.getUserInfo() == null
+                        : this.getUserInfo().equals(other.getUserInfo()))
+                && (this.getQuestionId() == null ? other.getQuestionId() == null
+                        : this.getQuestionId().equals(other.getQuestionId()))
+                && (this.getQuestionContent() == null ? other.getQuestionContent() == null
+                        : this.getQuestionContent().equals(other.getQuestionContent()))
+                && (this.getAnswerContent() == null ? other.getAnswerContent() == null
+                        : this.getAnswerContent().equals(other.getAnswerContent()))
+                && (this.getInteraction() == null ? other.getInteraction() == null
+                        : this.getInteraction().equals(other.getInteraction()))
+                && (this.getInteractionTime() == null ? other.getInteractionTime() == null
+                        : this.getInteractionTime().equals(other.getInteractionTime()))
+                && (this.getKnowledgeBaseIds() == null ? other.getKnowledgeBaseIds() == null
+                        : this.getKnowledgeBaseIds().equals(other.getKnowledgeBaseIds()))
+                && (this.getSuggestion() == null ? other.getSuggestion() == null
+                        : this.getSuggestion().equals(other.getSuggestion()))
+                && (this.getUsePrompt() == null ? other.getUsePrompt() == null
+                        : this.getUsePrompt().equals(other.getUsePrompt()))
+                && (this.getUseModel() == null ? other.getUseModel() == null
+                        : this.getUseModel().equals(other.getUseModel()))
+                && (this.getUseFileGroupId() == null ? other.getUseFileGroupId() == null
+                        : this.getUseFileGroupId().equals(other.getUseFileGroupId()))
+                && (this.getUseRank() == null ? other.getUseRank() == null
+                        : this.getUseRank().equals(other.getUseRank()));
     }
 
     @Override
@@ -101,6 +137,10 @@ public class TChatFeedback {
         result = prime * result + ((getInteractionTime() == null) ? 0 : getInteractionTime().hashCode());
         result = prime * result + ((getKnowledgeBaseIds() == null) ? 0 : getKnowledgeBaseIds().hashCode());
         result = prime * result + ((getSuggestion() == null) ? 0 : getSuggestion().hashCode());
+        result = prime * result + ((getUsePrompt() == null) ? 0 : getUsePrompt().hashCode());
+        result = prime * result + ((getUseModel() == null) ? 0 : getUseModel().hashCode());
+        result = prime * result + ((getUseFileGroupId() == null) ? 0 : getUseFileGroupId().hashCode());
+        result = prime * result + ((getUseRank() == null) ? 0 : getUseRank().hashCode());
         return result;
     }
 
@@ -120,6 +160,10 @@ public class TChatFeedback {
         sb.append(", interactionTime=").append(interactionTime);
         sb.append(", knowledgeBaseIds=").append(knowledgeBaseIds);
         sb.append(", suggestion=").append(suggestion);
+        sb.append(", usePrompt=").append(usePrompt);
+        sb.append(", useModel=").append(useModel);
+        sb.append(", useFileGroupId=").append(useFileGroupId);
+        sb.append(", useRank=").append(useRank);
         sb.append("]");
         return sb.toString();
     }

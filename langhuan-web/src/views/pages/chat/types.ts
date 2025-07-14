@@ -38,3 +38,16 @@ export interface RagGroup {
     id: string;
     name: string;
 }
+
+export interface ChatFeedback {
+    questionId: string;
+    questionContent: string;
+    answerContent: string;
+    interaction: string;
+    knowledgeBaseIds: string;
+    suggestion: string;
+    usePrompt: string;
+    useModel: string;
+    useRank: boolean;
+    useFileGroupId: string;
+}

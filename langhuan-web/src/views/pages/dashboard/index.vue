@@ -28,12 +28,18 @@ interface UsageStatsData {
     weekQuestions: number
     weekValidAnswers: number
     weekTotalFeedbacks: number
+    totalFeedbackCount: number
+    totalValidAnswers: number
     userStats: UserStat[]
+    feedbackTypeStats: {
+        "like": number,
+        "dislike": number,
+        "end": number
+    }
 }
 
 // 定义响应式数据
 const loading = ref(false)
-const feedbackStats = ref<any>({})
 const promptsStats = ref<any>({})
 const fileGroupStats = ref<any>({})
 const fileStats = ref<any>({})
@@ -46,6 +52,13 @@ const usageData = ref<UsageStatsData>({
     weekQuestions: 0,
     weekValidAnswers: 0,
     weekTotalFeedbacks: 0,
+    totalValidAnswers: 0,
+    totalFeedbackCount: 0,
+    feedbackTypeStats: {
+        "like": 0,
+        "dislike": 0,
+        "end": 0
+    },
     userStats: []
 })
 
@@ -84,22 +97,6 @@ const weekStartTimeFormatted = computed(() => {
         day: 'numeric'
     })
 })
-// 获取反馈统计数据
-const getFeedbackStats = async () => {
-    try {
-        const res = await http.request<any>({
-            url: '/dashboard/feedbackStats',
-            method: 'post',
-            q_spinning: false,
-            q_contentType: 'json'
-        })
-        if (res.code === 200) {
-            feedbackStats.value = res.data
-        }
-    } catch (error) {
-        console.error('获取反馈统计失败:', error)
-    }
-}
 
 // 获取提示词统计数据
 const getPromptsStats = async () => {
@@ -195,11 +192,10 @@ const loadAllStats = async () => {
     loading.value = true
     try {
         await Promise.all([
-            getFeedbackStats(),
             getPromptsStats(),
             getFileGroupStats(),
             getFileStats(),
-            getUserStats(),
+            // getUserStats(),
             getUsageStats()
         ])
     } catch (error) {
@@ -258,35 +254,144 @@ onMounted(() => {
             </el-button>
         </div>
 
-        <!-- 使用情况统计区域 -->
+
+        <!-- 使用情况统计-总体情况 -->
+        <div>
+            <div class="mb-6">
+                <h2 class="text-2xl font-bold text-gray-800 mb-2">使用情况统计</h2>
+            </div>
+            <!-- 使用情况统计卡片-总体情况 -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 mb-8">
+                <!-- 历史总提问卡片 -->
+                <div class="stats-card bg-white rounded-lg shadow-md p-6 border-l-4 border-green-500">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-700 mb-2">历史总提问</h3>
+                            <p class="text-3xl font-bold text-green-600">{{ usageData.totalQuestions.toLocaleString() }}
+                            </p>
+                            <p class="text-sm text-gray-500 mt-1">累计提问次数</p>
+                        </div>
+                        <div class="text-green-500">
+                            <el-icon size="32">
+                                <ChatLineRound />
+                            </el-icon>
+                        </div>
+                    </div>
+                </div>
+                <!-- 历史总有效回答卡片 -->
+                <div class="stats-card bg-white rounded-lg shadow-md p-6 border-l-4 border-purple-500">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-700 mb-2">历史有效回答</h3>
+                            <p class="text-3xl font-bold text-purple-600">{{
+                                usageData.totalValidAnswers.toLocaleString() }}</p>
+                            <p class="text-sm text-gray-500 mt-1">累计有效回答次数</p>
+                        </div>
+                        <div class="text-purple-500">
+                            <el-icon size="32"><Select /></el-icon>
+                        </div>
+                    </div>
+                </div>
+                <!-- 文件组统计卡片 -->
+                <div class="stats-card bg-white rounded-lg shadow-md p-6 border-l-4 border-blue-500">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-700 mb-2">文件组统计</h3>
+                            <p class="text-3xl font-bold text-blue-600">{{ fileGroupStats.totalCount || 0 }}</p>
+                            <p class="text-sm text-gray-500 mt-1">总文件组数</p>
+                        </div>
+                        <div class="text-blue-500">
+                            <i class="el-icon-folder text-4xl"></i>
+                        </div>
+                    </div>
+                </div>
+                <!-- 历史问题反馈卡片 -->
+                <div class="stats-card bg-white rounded-lg shadow-md p-6 border-l-4 border-orange-500">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-700 mb-2">历史问题反馈</h3>
+                            <p class="text-3xl font-bold text-orange-600">{{ usageData.totalFeedbackCount }}</p>
+                            <p class="text-sm text-gray-500 mt-1">累计反馈总数</p>
+                        </div>
+                        <div class="text-orange-500">
+                            <el-icon size="32">
+                                <MessageBox />
+                            </el-icon>
+                        </div>
+                    </div>
+                </div>
+                <!-- 反馈统计卡片 -->
+                <div class="stats-card bg-white rounded-lg shadow-md p-6 border-l-4 border-green-500">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-700 mb-2">历史反馈类别统计</h3>
+                        </div>
+                        <div class="text-green-500">
+                            <i class="el-icon-chat-dot-round text-4xl"></i>
+                        </div>
+                    </div>
+                    <div class="mt-4 grid grid-cols-3 gap-2 text-base">
+                        <div class="text-center">
+                            <p class="font-semibold text-green-600">{{ usageData.feedbackTypeStats.like }}</p>
+                            <p class="text-gray-500 text-sm">点赞</p>
+                        </div>
+                        <div class="text-center">
+                            <p class="font-semibold text-red-600">{{ usageData.feedbackTypeStats.dislike }}</p>
+                            <p class="text-gray-500 text-sm">点踩</p>
+                        </div>
+                        <div class="text-center">
+                            <p class="font-semibold text-gray-600">{{ usageData.feedbackTypeStats.end }}</p>
+                            <p class="text-gray-500 text-sm">结束</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 文件详细统计卡片 -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- 文件统计详情 -->
+                <div class="stats-card bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-xl font-semibold text-gray-700 mb-4 flex items-center">
+                        <i class="el-icon-document text-indigo-500 mr-2"></i>
+                        文件统计详情
+                    </h3>
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                            <span class="text-gray-600">文件总数</span>
+                            <span class="font-bold text-indigo-600">{{ fileStats.totalFileCount || 0 }} 个</span>
+                        </div>
+                        <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                            <span class="text-gray-600">文件总大小</span>
+                            <span class="font-bold text-indigo-600">{{ formatFileSize(fileStats.totalFileSize || 0)
+                                }}</span>
+                        </div>
+                        <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                            <span class="text-gray-600">文档切片总数</span>
+                            <span class="font-bold text-indigo-600">{{ fileStats.totalDocumentNum || 0 }} 个</span>
+                        </div>
+                        <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                            <span class="text-gray-600">上传用户数</span>
+                            <span class="font-bold text-indigo-600">{{ fileStats.uniqueUploaderCount || 0 }} 人</span>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+
+        <!-- 使用情况统计-本周情况 -->
         <div class="mt-8 mb-8">
             <!-- 使用情况统计标题 -->
             <div class="mb-6">
-                <h2 class="text-2xl font-bold text-gray-800 mb-2">使用情况统计</h2>
+                <h2 class="text-2xl font-bold text-gray-800 mb-2">本周使用情况统计</h2>
                 <p v-if="weekStartTimeFormatted" class="text-sm text-gray-500 mt-1">
                     统计周期：{{ weekStartTimeFormatted }} 开始的本周
                 </p>
             </div>
 
-            <!-- 使用情况统计卡片 -->
+            <!-- 使用情况统计卡片-本周情况 -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 mb-8">
-                <!-- 历史总提问卡片 -->
-                <div class="stats-card bg-white rounded-lg shadow-md p-6 border-l-4 border-blue-500">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <h3 class="text-lg font-semibold text-gray-700 mb-2">历史总提问</h3>
-                            <p class="text-3xl font-bold text-blue-600">{{ usageData.totalQuestions.toLocaleString() }}
-                            </p>
-                            <p class="text-sm text-gray-500 mt-1">累计提问次数</p>
-                        </div>
-                        <div class="text-blue-500">
-                            <el-icon size="32">
-                                <ChatDotRound />
-                            </el-icon>
-                        </div>
-                    </div>
-                </div>
-
                 <!-- 本周提问卡片 -->
                 <div class="stats-card bg-white rounded-lg shadow-md p-6 border-l-4 border-green-500">
                     <div class="flex items-center justify-between">
@@ -348,31 +453,33 @@ onMounted(() => {
                         </div>
                     </div>
                 </div>
+
+                <!-- 本周整体有效率 -->
+                <div class="stats-card bg-white rounded-lg shadow-md p-6 border-l-4 border-blue-500">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-700 mb-2">本周整体有效率</h3>
+                            <div class="text-3xl font-bold text-blue-600" :class="{
+                                'text-green-500': weekEffectiveRate >= 90,
+                                'text-yellow-500': weekEffectiveRate >= 70 && weekEffectiveRate < 90,
+                                'text-red-500': weekEffectiveRate < 70
+                            }">
+                                {{ weekEffectiveRate }}%
+                            </div>
+                            <p class="text-sm text-gray-500 mt-1"> 有效回答 {{ usageData.weekValidAnswers }} / 总提问 {{
+                                usageData.weekQuestions }}</p>
+                        </div>
+                        <div class="text-blue-500">
+                            <el-icon size="32">
+                                <TrendCharts />
+                            </el-icon>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- 本周整体有效率和统计概览 -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-                <div class="stats-card bg-white rounded-lg shadow-md p-6">
-                    <h3 class="text-xl font-semibold text-gray-700 mb-4 flex items-center">
-                        <el-icon class="text-indigo-500 mr-2">
-                            <TrendCharts />
-                        </el-icon>
-                        本周整体有效率
-                    </h3>
-                    <div class="text-center h-full flex flex-col items-center justify-center pb-20">
-                        <div class="text-6xl font-bold mb-2" :class="{
-                            'text-green-500': weekEffectiveRate >= 90,
-                            'text-yellow-500': weekEffectiveRate >= 70 && weekEffectiveRate < 90,
-                            'text-red-500': weekEffectiveRate < 70
-                        }">
-                            {{ weekEffectiveRate }}%
-                        </div>
-                        <p class="text-gray-600">
-                            有效回答 {{ usageData.weekValidAnswers }} / 总提问 {{ usageData.weekQuestions }}
-                        </p>
-                    </div>
-                </div>
-
                 <!-- 统计概览 -->
                 <div class="stats-card bg-white rounded-lg shadow-md p-6">
                     <h3 class="text-xl font-semibold text-gray-700 mb-4 flex items-center">
@@ -395,31 +502,31 @@ onMounted(() => {
                                 }} 次
                             </span>
                         </div>
-                                                 <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                             <span class="text-gray-600">反馈率</span>
-                             <span class="font-bold text-purple-600">
-                                 {{ usageData.weekQuestions > 0 ? Math.round((usageData.weekTotalFeedbacks /
-                                 usageData.weekQuestions) * 100) : 0 }}%
-                             </span>
-                         </div>
-                         <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                             <span class="text-gray-600">本周上传文件</span>
-                             <span class="font-bold text-indigo-600">
-                                 {{ weekFileStats.totalFiles }} 个
-                             </span>
-                         </div>
-                         <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                             <span class="text-gray-600">本周文件总大小</span>
-                             <span class="font-bold text-cyan-600">
-                                 {{ formatFileSize(weekFileStats.totalSize) }}
-                             </span>
-                         </div>
-                         <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                             <span class="text-gray-600">本周文档切片</span>
-                             <span class="font-bold text-teal-600">
-                                 {{ weekFileStats.totalDocuments }} 个
-                             </span>
-                         </div>
+                        <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                            <span class="text-gray-600">反馈率</span>
+                            <span class="font-bold text-purple-600">
+                                {{ usageData.weekQuestions > 0 ? Math.round((usageData.weekTotalFeedbacks /
+                                    usageData.weekQuestions) * 100) : 0 }}%
+                            </span>
+                        </div>
+                        <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                            <span class="text-gray-600">本周上传文件</span>
+                            <span class="font-bold text-indigo-600">
+                                {{ weekFileStats.totalFiles }} 个
+                            </span>
+                        </div>
+                        <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                            <span class="text-gray-600">本周文件总大小</span>
+                            <span class="font-bold text-cyan-600">
+                                {{ formatFileSize(weekFileStats.totalSize) }}
+                            </span>
+                        </div>
+                        <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                            <span class="text-gray-600">本周文档切片</span>
+                            <span class="font-bold text-teal-600">
+                                {{ weekFileStats.totalDocuments }} 个
+                            </span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -434,49 +541,49 @@ onMounted(() => {
                             </el-icon>
                             本周用户提问统计
                         </h3>
-                                                 <span class="text-sm text-gray-500">
-                             共 {{ sortedUserStats.length }} 位活跃用户
-                         </span>
+                        <span class="text-sm text-gray-500">
+                            共 {{ sortedUserStats.length }} 位活跃用户
+                        </span>
                     </div>
                 </div>
 
                 <div class="p-6">
-                                         <div v-if="sortedUserStats.length === 0" class="text-center py-12">
+                    <div v-if="sortedUserStats.length === 0" class="text-center py-12">
                         <el-icon size="48" class="text-gray-400 mb-4">
                             <User />
                         </el-icon>
                         <p class="text-gray-500">暂无用户数据</p>
                     </div>
 
-                                                              <div v-else class="overflow-x-auto max-h-96 overflow-y-auto border border-gray-200 rounded-lg">
-                         <table class="w-full table-auto">
-                                                          <thead class="sticky top-0 z-10">
-                                 <tr class="bg-gray-50">
-                                     <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700 border-b">排名</th>
-                                     <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700 border-b">用户名
-                                     </th>
-                                     <th class="px-4 py-3 text-center text-sm font-semibold text-gray-700 border-b">提问次数
-                                     </th>
-                                     <th class="px-4 py-3 text-center text-sm font-semibold text-gray-700 border-b">有效回答数
-                                     </th>
-                                     <th class="px-4 py-3 text-center text-sm font-semibold text-gray-700 border-b">无效回答数
-                                     </th>
-                                     <th class="px-4 py-3 text-center text-sm font-semibold text-gray-700 border-b">反馈次数
-                                     </th>
-                                     <th class="px-4 py-3 text-center text-sm font-semibold text-gray-700 border-b">有效率
-                                     </th>
-                                     <th class="px-4 py-3 text-center text-sm font-semibold text-gray-700 border-b">文件数量
-                                     </th>
-                                     <th class="px-4 py-3 text-center text-sm font-semibold text-gray-700 border-b">文件大小
-                                     </th>
-                                     <th class="px-4 py-3 text-center text-sm font-semibold text-gray-700 border-b">切片数量
-                                     </th>
-                                 </tr>
-                             </thead>
+                    <div v-else class="overflow-x-auto max-h-96 overflow-y-auto border border-gray-200 rounded-lg">
+                        <table class="w-full table-auto">
+                            <thead class="sticky top-0 z-10">
+                                <tr class="bg-gray-50">
+                                    <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700 border-b">排名</th>
+                                    <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700 border-b">用户名
+                                    </th>
+                                    <th class="px-4 py-3 text-center text-sm font-semibold text-gray-700 border-b">提问次数
+                                    </th>
+                                    <th class="px-4 py-3 text-center text-sm font-semibold text-gray-700 border-b">有效回答数
+                                    </th>
+                                    <th class="px-4 py-3 text-center text-sm font-semibold text-gray-700 border-b">无效回答数
+                                    </th>
+                                    <th class="px-4 py-3 text-center text-sm font-semibold text-gray-700 border-b">反馈次数
+                                    </th>
+                                    <th class="px-4 py-3 text-center text-sm font-semibold text-gray-700 border-b">有效率
+                                    </th>
+                                    <th class="px-4 py-3 text-center text-sm font-semibold text-gray-700 border-b">文件数量
+                                    </th>
+                                    <th class="px-4 py-3 text-center text-sm font-semibold text-gray-700 border-b">文件大小
+                                    </th>
+                                    <th class="px-4 py-3 text-center text-sm font-semibold text-gray-700 border-b">切片数量
+                                    </th>
+                                </tr>
+                            </thead>
                             <tbody>
-                                                                 <tr v-for="(user, index) in sortedUserStats" :key="user.userId"
-                                     class="hover:bg-gray-50 transition-colors duration-200"
-                                     :class="{ 'bg-blue-50': index < 3 }">
+                                <tr v-for="(user, index) in sortedUserStats" :key="user.userId"
+                                    class="hover:bg-gray-50 transition-colors duration-200"
+                                    :class="{ 'bg-blue-50': index < 3 }">
                                     <td class="px-4 py-3 border-b">
                                         <div class="flex items-center">
                                             <span
@@ -511,22 +618,23 @@ onMounted(() => {
                                     <td class="px-4 py-3 text-center border-b">
                                         <span class="font-semibold text-purple-600">{{ user.feedbackCount }}</span>
                                     </td>
-                                                                         <td class="px-4 py-3 text-center border-b">
-                                         <el-tag :type="getEffectiveRateType(calculateEffectiveRate(user))" size="small"
-                                             class="font-semibold">
-                                             {{ calculateEffectiveRate(user) }}%
-                                         </el-tag>
-                                     </td>
-                                     <td class="px-4 py-3 text-center border-b">
-                                         <span class="font-semibold text-indigo-600">{{ user.weekFileCount || 0 }}</span>
-                                     </td>
-                                     <td class="px-4 py-3 text-center border-b">
-                                         <span class="font-semibold text-cyan-600">{{ formatFileSize(user.weekFileSize || 0) }}</span>
-                                     </td>
-                                     <td class="px-4 py-3 text-center border-b">
-                                         <span class="font-semibold text-teal-600">{{ user.weekDocumentNum || 0 }}</span>
-                                     </td>
-                                 </tr>
+                                    <td class="px-4 py-3 text-center border-b">
+                                        <el-tag :type="getEffectiveRateType(calculateEffectiveRate(user))" size="small"
+                                            class="font-semibold">
+                                            {{ calculateEffectiveRate(user) }}%
+                                        </el-tag>
+                                    </td>
+                                    <td class="px-4 py-3 text-center border-b">
+                                        <span class="font-semibold text-indigo-600">{{ user.weekFileCount || 0 }}</span>
+                                    </td>
+                                    <td class="px-4 py-3 text-center border-b">
+                                        <span class="font-semibold text-cyan-600">{{ formatFileSize(user.weekFileSize ||
+                                            0) }}</span>
+                                    </td>
+                                    <td class="px-4 py-3 text-center border-b">
+                                        <span class="font-semibold text-teal-600">{{ user.weekDocumentNum || 0 }}</span>
+                                    </td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -534,154 +642,6 @@ onMounted(() => {
             </div>
         </div>
 
-
-        <!-- 统计卡片网格 -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
-            <!-- 用户统计卡片 -->
-            <div class="stats-card bg-white rounded-lg shadow-md p-6 border-l-4 border-blue-500">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <h3 class="text-lg font-semibold text-gray-700 mb-2">用户统计</h3>
-                        <p class="text-3xl font-bold text-blue-600">{{ userStats.totalUserCount || 0 }}</p>
-                        <p class="text-sm text-gray-500 mt-1">总用户数</p>
-                    </div>
-                    <div class="text-blue-500">
-                        <i class="el-icon-user text-4xl"></i>
-                    </div>
-                </div>
-                <div class="mt-4 grid grid-cols-3 gap-2 text-sm">
-                    <div class="text-center">
-                        <p class="font-medium text-blue-600">{{ userStats.maleCount || 0 }}</p>
-                        <p class="text-gray-500">男性</p>
-                    </div>
-                    <div class="text-center">
-                        <p class="font-medium text-pink-600">{{ userStats.femaleCount || 0 }}</p>
-                        <p class="text-gray-500">女性</p>
-                    </div>
-                    <div class="text-center">
-                        <p class="font-medium text-gray-600">{{ userStats.unknownGenderCount || 0 }}</p>
-                        <p class="text-gray-500">未知</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 反馈统计卡片 -->
-            <div class="stats-card bg-white rounded-lg shadow-md p-6 border-l-4 border-green-500">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <h3 class="text-lg font-semibold text-gray-700 mb-2">反馈统计</h3>
-                        <p class="text-3xl font-bold text-green-600">{{ feedbackStats.totalCount || 0 }}</p>
-                        <p class="text-sm text-gray-500 mt-1">总反馈数</p>
-                    </div>
-                    <div class="text-green-500">
-                        <i class="el-icon-chat-dot-round text-4xl"></i>
-                    </div>
-                </div>
-                <div class="mt-4 grid grid-cols-3 gap-2 text-sm">
-                    <div class="text-center">
-                        <p class="font-medium text-green-600">{{ feedbackStats.likeCount || 0 }}</p>
-                        <p class="text-gray-500">点赞</p>
-                    </div>
-                    <div class="text-center">
-                        <p class="font-medium text-red-600">{{ feedbackStats.dislikeCount || 0 }}</p>
-                        <p class="text-gray-500">点踩</p>
-                    </div>
-                    <div class="text-center">
-                        <p class="font-medium text-gray-600">{{ feedbackStats.endCount || 0 }}</p>
-                        <p class="text-gray-500">结束</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 提示词统计卡片 -->
-            <div class="stats-card bg-white rounded-lg shadow-md p-6 border-l-4 border-purple-500">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <h3 class="text-lg font-semibold text-gray-700 mb-2">提示词统计</h3>
-                        <p class="text-3xl font-bold text-purple-600">{{ promptsStats.totalCount || 0 }}</p>
-                        <p class="text-sm text-gray-500 mt-1">总提示词数</p>
-                    </div>
-                    <div class="text-purple-500">
-                        <i class="el-icon-edit text-4xl"></i>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 文件组统计卡片 -->
-            <div class="stats-card bg-white rounded-lg shadow-md p-6 border-l-4 border-orange-500">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <h3 class="text-lg font-semibold text-gray-700 mb-2">文件组统计</h3>
-                        <p class="text-3xl font-bold text-orange-600">{{ fileGroupStats.totalCount || 0 }}</p>
-                        <p class="text-sm text-gray-500 mt-1">总文件组数</p>
-                    </div>
-                    <div class="text-orange-500">
-                        <i class="el-icon-folder text-4xl"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- 文件详细统计卡片 -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <!-- 文件统计详情 -->
-            <div class="stats-card bg-white rounded-lg shadow-md p-6">
-                <h3 class="text-xl font-semibold text-gray-700 mb-4 flex items-center">
-                    <i class="el-icon-document text-indigo-500 mr-2"></i>
-                    文件统计详情
-                </h3>
-                <div class="space-y-4">
-                    <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                        <span class="text-gray-600">文件总数</span>
-                        <span class="font-bold text-indigo-600">{{ fileStats.totalFileCount || 0 }} 个</span>
-                    </div>
-                    <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                        <span class="text-gray-600">文件总大小</span>
-                        <span class="font-bold text-indigo-600">{{ formatFileSize(fileStats.totalFileSize || 0)
-                        }}</span>
-                    </div>
-                    <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                        <span class="text-gray-600">文档切片总数</span>
-                        <span class="font-bold text-indigo-600">{{ fileStats.totalDocumentNum || 0 }} 个</span>
-                    </div>
-                    <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                        <span class="text-gray-600">上传用户数</span>
-                        <span class="font-bold text-indigo-600">{{ fileStats.uniqueUploaderCount || 0 }} 人</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 用户性别分布 -->
-            <div class="stats-card bg-white rounded-lg shadow-md p-6">
-                <h3 class="text-xl font-semibold text-gray-700 mb-4 flex items-center">
-                    <i class="el-icon-pie-chart text-pink-500 mr-2"></i>
-                    用户性别分布
-                </h3>
-                <div class="space-y-4">
-                    <div class="flex justify-between items-center p-3 bg-blue-50 rounded-lg">
-                        <span class="text-gray-600">男性用户</span>
-                        <div class="text-right">
-                            <span class="font-bold text-blue-600">{{ userStats.maleCount || 0 }} 人</span>
-                            <span class="text-sm text-gray-500 ml-2">({{ userStats.maleRatio || 0 }}%)</span>
-                        </div>
-                    </div>
-                    <div class="flex justify-between items-center p-3 bg-pink-50 rounded-lg">
-                        <span class="text-gray-600">女性用户</span>
-                        <div class="text-right">
-                            <span class="font-bold text-pink-600">{{ userStats.femaleCount || 0 }} 人</span>
-                            <span class="text-sm text-gray-500 ml-2">({{ userStats.femaleRatio || 0 }}%)</span>
-                        </div>
-                    </div>
-                    <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                        <span class="text-gray-600">未知性别</span>
-                        <div class="text-right">
-                            <span class="font-bold text-gray-600">{{ userStats.unknownGenderCount || 0 }} 人</span>
-                            <span class="text-sm text-gray-500 ml-2">({{ userStats.unknownRatio || 0 }}%)</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
         <!-- 加载状态 -->
         <div v-if="loading" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div class="bg-white rounded-lg p-6 flex items-center space-x-3">
@@ -744,7 +704,8 @@ tr:last-child td {
 
 /* 表格滚动区域样式 */
 .max-h-96 {
-    max-height: 24rem; /* 384px */
+    max-height: 24rem;
+    /* 384px */
 }
 
 /* 固定表头样式 */

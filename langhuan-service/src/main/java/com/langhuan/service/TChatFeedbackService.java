@@ -46,8 +46,9 @@ public class TChatFeedbackService extends ServiceImpl<TChatFeedbackMapper, TChat
         }
 
         // 构建SQL查询语句
-        String sql = "SELECT cf.*, u.name as user_name FROM t_chat_feedback cf"
+        String sql = "SELECT cf.*, u.name as user_name, rg.group_name as use_file_group_name FROM t_chat_feedback cf"
                 + " LEFT JOIN t_user u ON cf.user_id = u.username"
+                + " LEFT JOIN t_rag_file_group rg ON cf.use_file_group_id = CAST(rg.id AS VARCHAR)"
                 + condition.getWhereClause() +
                 " ORDER BY CASE interaction " +
                 " WHEN 'dislike' THEN 1 " +

@@ -15,12 +15,16 @@
             <result property="interactionTime" column="interaction_time" jdbcType="TIMESTAMP"/>
             <result property="knowledgeBaseIds" column="knowledge_base_ids" jdbcType="VARCHAR"/>
             <result property="suggestion" column="suggestion" jdbcType="VARCHAR"/>
+            <result property="usePrompt" column="use_prompt" jdbcType="VARCHAR"/>
+            <result property="useModel" column="use_model" jdbcType="VARCHAR"/>
+            <result property="useFileGroupId" column="use_file_group_id" jdbcType="VARCHAR"/>
+            <result property="useRank" column="use_rank" jdbcType="BOOLEAN"/>
     </resultMap>
 
     <sql id="Base_Column_List">
         id,user_id,user_info,
         question_id,question_content,answer_content,
         interaction,interaction_time,knowledge_base_ids,
-        suggestion
+        suggestion,use_prompt,use_model,use_file_group_id,use_rank
     </sql>
 </mapper>

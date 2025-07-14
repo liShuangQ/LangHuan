@@ -260,10 +260,10 @@
                             <span class="info-label">过期时间:</span>
                             <span class="info-value">{{ formatDate(selectedNotification.expiresAt) }}</span>
                         </div>
-                        <div v-if="selectedNotification.userId" class="info-item">
+                        <!-- <div v-if="selectedNotification.userId" class="info-item">
                             <span class="info-label">目标用户:</span>
                             <span class="info-value">{{ selectedNotification.userId }}</span>
-                        </div>
+                        </div> -->
                         <div v-if="selectedNotification.referenceId" class="info-item">
                             <span class="info-label">关联ID:</span>
                             <span class="info-value">{{ selectedNotification.referenceId }}</span>

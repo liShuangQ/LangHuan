@@ -52,6 +52,26 @@ export let tableColumnConfig = ref<TableColumnConfig[]>([
         width: "400px",
     },
     {
+        label: "使用提示词",
+        prop: "usePrompt",
+        width: "200px",
+    },
+    {
+        label: "使用模型",
+        prop: "useModel",
+        width: "200px",
+    },
+    {
+        label: "是否开启rerank",
+        prop: "useRank",
+        width: "200px",
+    },
+    {
+        label: "使用文件组",
+        prop: "useFileGroupName",
+        width: "200px",
+    },
+    {
         label: "调用的知识库",
         prop: "knowledgeBaseIds",
         contentSlot: true,

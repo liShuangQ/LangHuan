@@ -186,7 +186,17 @@ CREATE TABLE t_chat_feedback (
                                   knowledge_base_ids VARCHAR(1024) NOT NULL,    -- 所调用的知识库ID数组（例如 '{KB001,KB002}'）
                                   suggestion TEXT                           -- 用户附加建议（可选，用于收集改进意见）
 );
+ALTER TABLE t_chat_feedback
+ADD COLUMN use_prompt TEXT DEFAULT NULL;
 
+ALTER TABLE t_chat_feedback
+ADD COLUMN use_model VARCHAR(255) DEFAULT NULL;
+
+ALTER TABLE t_chat_feedback
+ADD COLUMN use_file_group_id VARCHAR(255) DEFAULT NULL;
+
+ALTER TABLE t_chat_feedback
+ADD COLUMN use_rank BOOLEAN DEFAULT FALSE;
 
 -- 用户对话反馈统计表
 DROP TABLE IF EXISTS t_user_chat_window;

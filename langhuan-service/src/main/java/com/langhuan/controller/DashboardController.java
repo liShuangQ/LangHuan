@@ -23,17 +23,6 @@ public class DashboardController {
     }
 
     /**
-     * 获取反馈统计信息
-     * 包括总数、按类型统计、按用户统计
-     * 
-     * @return 反馈统计结果
-     */
-    @PostMapping("/feedbackStats")
-    public Result<Map<String, Object>> getFeedbackStats() {
-        return Result.success(dashboardService.getFeedbackStats());
-    }
-
-    /**
      * 获取提示词统计信息
      * 
      * @return 提示词统计结果

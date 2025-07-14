@@ -7,6 +7,7 @@ import com.langhuan.model.domain.TRagFile;
 import com.langhuan.model.domain.TUser;
 import com.langhuan.utils.date.DateTimeUtils;
 
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import lombok.extern.slf4j.Slf4j;
@@ -29,37 +30,18 @@ public class DashboardService {
     private final TRagFileService tRagFileService;
     private final TUserService tUserService;
     private final TApiLogService tApiLogService;
+    private final JdbcTemplate jdbcTemplate;
 
     public DashboardService(TChatFeedbackService tChatFeedbackService, TPromptsService tPromptsService,
             TRagFileGroupService tRagFileGroupService, TRagFileService tRagFileService, TUserService tUserService,
-            TApiLogService tApiLogService) {
+            TApiLogService tApiLogService, JdbcTemplate jdbcTemplate) {
         this.tChatFeedbackService = tChatFeedbackService;
         this.tPromptsService = tPromptsService;
         this.tRagFileGroupService = tRagFileGroupService;
         this.tRagFileService = tRagFileService;
         this.tUserService = tUserService;
         this.tApiLogService = tApiLogService;
-    }
-
-    public Map<String, Object> getFeedbackStats() {
-        List<TChatFeedback> allFeedbacks = tChatFeedbackService.list();
-        long totalCount = allFeedbacks.size();
-        Map<String, Long> typeStats = allFeedbacks.stream()
-                .collect(Collectors.groupingBy(
-                        feedback -> feedback.getInteraction() != null ? feedback.getInteraction() : "unknown",
-                        Collectors.counting()));
-        Map<String, Long> userStats = allFeedbacks.stream()
-                .collect(Collectors.groupingBy(
-                        feedback -> feedback.getUserId() != null ? feedback.getUserId() : "unknown",
-                        Collectors.counting()));
-        Map<String, Object> result = new HashMap<>();
-        result.put("totalCount", totalCount);
-        result.put("typeStats", typeStats);
-        result.put("userStats", userStats);
-        result.put("likeCount", typeStats.getOrDefault("like", 0L));
-        result.put("dislikeCount", typeStats.getOrDefault("dislike", 0L));
-        result.put("endCount", typeStats.getOrDefault("end", 0L));
-        return result;
+        this.jdbcTemplate = jdbcTemplate;
     }
 
     public Map<String, Object> getPromptsStats() {
@@ -173,9 +155,6 @@ public class DashboardService {
         Map<String, TUser> userMap = allUsers.stream()
                 .collect(Collectors.toMap(TUser::getUsername, user -> user));
 
-        // 查询所有反馈记录
-        List<TChatFeedback> allFeedbacks = tChatFeedbackService.list();
-
         // 按用户统计
         List<Map<String, Object>> userStats = new ArrayList<>();
 
@@ -185,13 +164,23 @@ public class DashboardService {
                 .collect(Collectors.groupingBy(TApiLog::getUserId, Collectors.counting()));
 
         // 按用户ID分组统计点踩次数
-        Map<String, Long> dislikesByUser = allFeedbacks.stream()
-                .filter(feedback -> "dislike".equals(feedback.getInteraction()))
-                .collect(Collectors.groupingBy(TChatFeedback::getUserId, Collectors.counting()));
+        String dislikeCountSql = "SELECT user_id, COUNT(*) as count FROM t_chat_feedback " +
+                "WHERE interaction = 'dislike' AND interaction_time >= ? " +
+                "GROUP BY user_id";
+        List<Map<String, Object>> dislikeResults = jdbcTemplate.queryForList(dislikeCountSql,
+                java.util.Date.from(startOfWeek.atZone(java.time.ZoneId.systemDefault()).toInstant()));
+        Map<String, Long> dislikesByUser = dislikeResults.stream()
+                .collect(Collectors.toMap(
+                        row -> (String) row.get("user_id"),
+                        row -> ((Number) row.get("count")).longValue()));
 
         // 按用户ID分组统计反馈总数
-        Map<String, Long> feedbacksByUser = allFeedbacks.stream()
-                .collect(Collectors.groupingBy(TChatFeedback::getUserId, Collectors.counting()));
+        String feedbackCountSql = "SELECT user_id, COUNT(*) as count FROM t_chat_feedback GROUP BY user_id";
+        List<Map<String, Object>> feedbackResults = jdbcTemplate.queryForList(feedbackCountSql);
+        Map<String, Long> feedbacksByUser = feedbackResults.stream()
+                .collect(Collectors.toMap(
+                        row -> (String) row.get("user_id"),
+                        row -> ((Number) row.get("count")).longValue()));
 
         // 查询本周的文件上传记录
         java.util.Date weekStartDate = java.util.Date
@@ -340,37 +329,46 @@ public class DashboardService {
         long weekTotalQuestions = weekChatLogs.size();
 
         // 查询本周的反馈记录
-        List<TChatFeedback> weekFeedbacks = allFeedbacks.stream()
-                .filter(feedback -> feedback.getInteractionTime() != null)
-                .filter(feedback -> {
-                    // 将Date转换为LocalDateTime进行比较
-                    java.time.LocalDateTime feedbackTime = feedback.getInteractionTime()
-                            .toInstant()
-                            .atZone(java.time.ZoneId.systemDefault())
-                            .toLocalDateTime();
-                    return feedbackTime.isAfter(startOfWeek) || feedbackTime.isEqual(startOfWeek);
-                })
-                .collect(Collectors.toList());
+        String weekFeedbackCountSql = "SELECT COUNT(*) as count FROM t_chat_feedback " +
+                "WHERE interaction_time >= ?";
+        Long weekTotalFeedbacks = jdbcTemplate.queryForObject(weekFeedbackCountSql, Long.class,
+                java.util.Date.from(startOfWeek.atZone(java.time.ZoneId.systemDefault()).toInstant()));
 
         // 本周总点踩数
-        long weekTotalDislikes = weekFeedbacks.stream()
-                .filter(feedback -> "dislike".equals(feedback.getInteraction()))
-                .count();
+        String weekDislikeCountSql = "SELECT COUNT(*) as count FROM t_chat_feedback " +
+                "WHERE interaction = 'dislike' AND interaction_time >= ?";
+        Long weekTotalDislikes = jdbcTemplate.queryForObject(weekDislikeCountSql, Long.class,
+                java.util.Date.from(startOfWeek.atZone(java.time.ZoneId.systemDefault()).toInstant()));
 
         // 本周总有效回答数 = 本周总提问数 - 本周总点踩数
-        long weekTotalValidAnswers = weekTotalQuestions - weekTotalDislikes;
+        long weekTotalValidAnswers = weekTotalQuestions - (weekTotalDislikes != null ? weekTotalDislikes : 0L);
 
-        // 本周总问题反馈数
-        long weekTotalFeedbacks = weekFeedbacks.size();
+        // 按反馈类型统计反馈信息
+        String feedbackTypeCountSql = "SELECT interaction, COUNT(*) as count FROM t_chat_feedback GROUP BY interaction";
+        List<Map<String, Object>> feedbackTypeResults = jdbcTemplate.queryForList(feedbackTypeCountSql);
+        Map<String, Long> feedbackTypeStats = feedbackTypeResults.stream()
+                .collect(Collectors.toMap(
+                        row -> (String) row.get("interaction"),
+                        row -> ((Number) row.get("count")).longValue()));
+        // 总反馈信息数字统计
+        long totalFeedbackCount = feedbackTypeStats.getOrDefault("like", 0L)
+                + feedbackTypeStats.getOrDefault("dislike", 0L)
+                + feedbackTypeStats.getOrDefault("end", 0L);
+
+        // 总有效回答数
+        long totalValidAnswers = totalQuestions - feedbackTypeStats.getOrDefault("dislike", 0L)
+                - feedbackTypeStats.getOrDefault("end", 0L);
 
         Map<String, Object> result = new HashMap<>();
         result.put("totalQuestions", totalQuestions);
         result.put("weekStartTime", startOfWeek);
         result.put("weekQuestions", weekTotalQuestions);
         result.put("weekValidAnswers", weekTotalValidAnswers);
-        result.put("weekTotalFeedbacks", weekTotalFeedbacks);
+        result.put("weekTotalFeedbacks", weekTotalFeedbacks != null ? weekTotalFeedbacks : 0L);
         result.put("userStats", userStats);
-
+        result.put("totalFeedbackCount", totalFeedbackCount);
+        result.put("feedbackTypeStats", feedbackTypeStats);
+        result.put("totalValidAnswers", totalValidAnswers);
         return result;
     }
 }

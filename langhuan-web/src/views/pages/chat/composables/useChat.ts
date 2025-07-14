@@ -1,7 +1,12 @@
 import { ref } from "vue";
 import * as api from "../api";
 import axios, { CancelTokenSource } from "axios";
-import type { Message, ChatMessage } from "../types";
+import type {
+    Message,
+    ChatMessage,
+    ChatFeedback,
+    ChatSettings,
+} from "../types";
 import { ElMessage } from "element-plus";
 import { data } from "autoprefixer";
 import { documentRankHandleApi } from "@/api/rag";
@@ -118,7 +123,8 @@ export function useChat() {
 
     const handleMessageAction = async (
         type: string,
-        msg: Message & { suggestion?: string }
+        msg: Message & { suggestion?: string },
+        settings: ChatSettings
     ) => {
         if (type === "like" || type === "dislike") {
             if (lastMessageContent === "") {
@@ -138,7 +144,11 @@ export function useChat() {
                         msg.rag?.map((item) => item.id) || []
                     ).join(","),
                     suggestion: msg.suggestion || "",
-                })
+                    usePrompt: settings.promptTemplate || "",
+                    useModel: settings.modelName || "",
+                    useRank: settings.isReRank || false,
+                    useFileGroupId: settings.ragGroup?.id || "",
+                } as ChatFeedback)
                 .then(() => {
                     ElMessage({
                         message: "感谢您的反馈",

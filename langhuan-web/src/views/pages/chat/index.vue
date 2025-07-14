@@ -54,7 +54,7 @@ const handlePromptAction = async (type: string, payload?: any) => {
             PromptContainersRef.value.setMessageInput(await optimizePrompt(PromptContainersRef.value.getMessageInput()))
         }
     } else if (['like', 'dislike', 'copy'].includes(type)) {
-        await handleMessageAction(type, payload)
+        await handleMessageAction(type, payload, settings.value)
     } else if (type === 'documentRank') {
         await documentRank(payload)
     }
