@@ -22,7 +22,13 @@ spring:
     name: aiAgent
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
-    time-zone: GMT+8
+    time-zone: Asia/Shanghai
+  # 全局时区配置
+  jpa:
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: Asia/Shanghai
   # 基础属性配置
   ai:
     chat:
@@ -33,22 +39,22 @@ spring:
           jdbc:
             initialize-schema: never
     openai:
-      base-url: http://10.1.7.155:7701
-      api-key: sk-4Ns69BHaV6quElPSF79243B3A2E440779c1cE9Cb9f8c97Cb
+      base-url: http://127.0.0.1:11434
+      api-key: 111
       chat:
         options:
-          model: qwen-turbo
+          model: qwen3:1.7b
       embedding:
         options:
-          model: text-embedding-v3
-        base-url: http://10.1.7.155:7701
-        api-key: sk-4Ns69BHaV6quElPSF79243B3A2E440779c1cE9Cb9f8c97Cb
+          model: mxbai-embed-large:latest
+        base-url: http://127.0.0.1:11434
+        api-key: 111
     vectorstore:
       pgvector:
         remove-existing-vector-store-table: false
 rerank:
-  base-url: http://10.1.7.155:7701
-  api-key: sk-4Ns69BHaV6quElPSF79243B3A2E440779c1cE9Cb9f8c97Cb
+  base-url: http://127.0.0.1:11434
+  api-key: 111
   model: gte-rerank-v2
 logging:
   level:
