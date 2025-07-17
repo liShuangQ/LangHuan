@@ -71,11 +71,14 @@ public class ChatService {
     public ChatModelResult chat(ChatRestOption chatRestOption) {
         ToolCallback[] tools = chatRestOption.getIsFunction() ? ToolCallbacks.from(new RestRequestTools())
                 : ToolCallbacks.from();
+
         String AINULLDEFAULTUSERPROMPT = TPromptsService
                 .getCachedTPromptsByMethodName("AINULLDEFAULTUSERPROMPT");
+
         if (AINULLDEFAULTUSERPROMPT == null) {
             AINULLDEFAULTUSERPROMPT = Constant.AINULLDEFAULTUSERPROMPT;
         }
+
         String userPrompt = AINULLDEFAULTUSERPROMPT.replace("{user_prompt}",
                 chatRestOption.getQuestion());
 

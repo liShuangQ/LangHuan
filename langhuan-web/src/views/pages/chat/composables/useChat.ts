@@ -148,6 +148,7 @@ export function useChat() {
                     useModel: settings.modelName || "",
                     useRank: settings.isReRank || false,
                     useFileGroupId: settings.ragGroup?.id || "",
+                    useFileGroupName: settings.ragGroup?.name || "",
                 } as ChatFeedback)
                 .then(() => {
                     ElMessage({

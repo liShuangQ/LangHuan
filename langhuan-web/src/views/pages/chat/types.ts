@@ -50,4 +50,5 @@ export interface ChatFeedback {
     useModel: string;
     useRank: boolean;
     useFileGroupId: string;
+    useFileGroupName: string;
 }

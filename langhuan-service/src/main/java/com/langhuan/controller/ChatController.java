@@ -74,6 +74,8 @@ public class ChatController {
         chatRestOption.setIsFunction(isFunction);
         chatRestOption.setModelName(modelName);
 
+        //  系统 system prompt userMessage
+
         ChatModelResult chatModelResult = chatService.chat(chatRestOption);
 
         String chat = chatModelResult.getChat();
