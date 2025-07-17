@@ -228,6 +228,29 @@ public class TUserService extends ServiceImpl<TUserMapper, TUser> {
         }
     }
 
+    public List<Map<String, Object>> getUserRoles(String userName) {
+        StringBuilder sql = new StringBuilder();
+        if (userName != null) {
+            sql.append("""
+                    select
+                        r.id as role_id,
+                        r.name as role_name
+                    from t_user_role ur
+                             left join t_user u on ur.user_id = u.id
+                             left join t_role r on ur.role_id = r.id
+                    where 1 = 1
+                    and u.username = ?
+                    """);
+            return dao.queryForList(sql.toString(), List.of(userName).toArray());
+        } else {
+            sql.append("""
+                        select r.id as role_id, r.name as role_name
+                        from t_role r;
+                    """);
+            return dao.queryForList(sql.toString());
+        }
+    }
+
     @Transactional(rollbackFor = Exception.class)
     public void relevancyRoles(Integer userId, List<Integer> roleIds) {
         if (userId.equals(1) && !roleIds.contains(1)) {

@@ -14,6 +14,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
+import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 @Service
@@ -48,13 +50,28 @@ public class AccountUserDetailsService implements UserDetailsService {
         // @PreAuthorize配合@EnableMethodSecurity(prePostEnabled = true)使用
         // @PreAuthorize("hasAuthority('/user/list')")
         // @PreAuthorize("hasAnyRole('admin', 'normal')")
+        
+        List<String> authorities = new ArrayList<>();
+        
+        // 获取用户权限
         List<TPermission> permissions = TUserService.getPermissionByUsername(username);
-        String authority = "";
         if (CollectionUtils.isNotEmpty(permissions)) {
-            // 当前 url 为权限，权限前加 ROLE_ 开头
-            List<String> urls = permissions.stream().map(TPermission::getUrl).collect(Collectors.toList());
-            authority = StrUtil.join(",", urls);
+            List<String> urls = permissions.stream()
+                .map(TPermission::getUrl)
+                .collect(Collectors.toList());
+            authorities.addAll(urls);
         }
-        return AuthorityUtils.commaSeparatedStringToAuthorityList(authority);
+        
+        // 获取用户角色，并添加ROLE_前缀（使用role_id作为权限标识）
+        List<Map<String, Object>> userRolesMap = TUserService.getUserRoles(username);
+        if (CollectionUtils.isNotEmpty(userRolesMap)) {
+            List<String> roleAuthorities = userRolesMap.stream()
+                .map(map -> "ROLE_" + map.get("role_id").toString())
+                .collect(Collectors.toList());
+            authorities.addAll(roleAuthorities);
+        }
+        
+        return AuthorityUtils.commaSeparatedStringToAuthorityList(
+            StrUtil.join(",", authorities));
     }
 }
