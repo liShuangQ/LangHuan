@@ -211,7 +211,7 @@ const sendSystemMessage = (row: any) => {
                     notificationType: 'update',
                     referenceId: '',
                     referenceType: '',
-                    expiresAt: dayjs().add(1, 'day').format('YYYY-MM-DD HH:mm:ss'),
+                    expiresAt: dayjs().add(365, 'day').format('YYYY-MM-DD HH:mm:ss'),
                 },
                 params: {
                     userIds: row.userId,
