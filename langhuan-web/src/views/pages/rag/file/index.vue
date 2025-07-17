@@ -22,9 +22,11 @@
                     </el-button>
                 </template>
                 <template #content-buttonSlot="props">
-                    <el-button link type="primary" @click="addAndChangeFormShowFun('change', props.row)">修改
+                    <el-button link type="primary" :disabled="props.row.uploadedBy !== userStore.info.user.username"
+                        @click="addAndChangeFormShowFun('change', props.row)">修改
                     </el-button>
-                    <el-button link type="primary" @click="addAndChangeFormShowFun('delete', props.row)">删除
+                    <el-button link type="primary" :disabled="props.row.uploadedBy !== userStore.info.user.username"
+                        @click="addAndChangeFormShowFun('delete', props.row)">删除
                     </el-button>
                     <el-button link type="primary" @click="addAndChangeFormShowFun('fileRecallTesting', props.row)">文件召回
                     </el-button>
@@ -92,8 +94,10 @@
                                 <div style="white-space: pre-wrap">{{ item.content }}</div>
                                 <div class=" float-right">
                                     <el-button type="primary" link
+                                        :disabled="nowRow.uploadedBy !== userStore.info.user.username"
                                         @click="documentHandle('edit', index, item)">修改</el-button>
                                     <el-button type="primary" link
+                                        :disabled="nowRow.uploadedBy !== userStore.info.user.username"
                                         @click="documentHandle('delete', index, item)">删除</el-button>
                                 </div>
                             </div>
@@ -146,6 +150,8 @@ import { CheckboxValueType, ElMessageBox } from "element-plus";
 import pageConfig from "./pageConfig";
 import { getFileGroupOption } from "../addFile/addFileFormconfig";
 import { useRouter } from 'vue-router';
+import useUserStore from "@/store/user";
+const userStore = useUserStore();
 const router = useRouter();
 const formComRef = ref<FormDefineExpose>();
 const tableComRef = ref<TableDefineExpose>();
