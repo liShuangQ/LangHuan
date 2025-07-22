@@ -135,6 +135,34 @@ CREATE TABLE t_rag_file_group
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP -- 创建时间，默认为当前时间
 );
 
+ALTER TABLE t_rag_file_group
+ADD COLUMN visibility VARCHAR(20) NOT NULL DEFAULT 'private' CHECK (visibility IN ('private', 'public'));
+
+DROP TABLE IF EXISTS t_rag_file_group_share;
+CREATE TABLE t_rag_file_group_share
+(
+    id SERIAL PRIMARY KEY,                          -- 自增主键
+    file_group_id INTEGER NOT NULL,                 -- 关联的文件组ID
+    shared_with VARCHAR[255] NOT NULL,                   -- 被分享的用户ID（关联t_user表）
+    can_read BOOLEAN NOT NULL DEFAULT TRUE,         -- 是否有读取权限
+    can_add BOOLEAN NOT NULL DEFAULT FALSE,         -- 是否有添加文件权限
+    can_update BOOLEAN NOT NULL DEFAULT FALSE,      -- 是否有更新权限
+    can_delete BOOLEAN NOT NULL DEFAULT FALSE,      -- 是否有删除权限
+    shared_by VARCHAR[255] NOT NULL,                     -- 分享人ID（关联t_user表）
+    shared_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP  -- 分享时间
+);
+
+-- 添加表和字段注释
+COMMENT ON TABLE t_rag_file_group_share IS '文件组共享权限表';
+COMMENT ON COLUMN t_rag_file_group_share.file_group_id IS '关联的文件组ID';
+COMMENT ON COLUMN t_rag_file_group_share.shared_with IS '被分享的用户ID';
+COMMENT ON COLUMN t_rag_file_group_share.can_read IS '是否有读取权限';
+COMMENT ON COLUMN t_rag_file_group_share.can_add IS '是否有添加文件权限';
+COMMENT ON COLUMN t_rag_file_group_share.can_update IS '是否有更新权限';
+COMMENT ON COLUMN t_rag_file_group_share.can_delete IS '是否有删除权限';
+COMMENT ON COLUMN t_rag_file_group_share.shared_by IS '分享人ID';
+COMMENT ON COLUMN t_rag_file_group_share.shared_at IS '分享时间';
+
 DROP TABLE IF EXISTS t_rag_file;
 CREATE TABLE t_rag_file
 (

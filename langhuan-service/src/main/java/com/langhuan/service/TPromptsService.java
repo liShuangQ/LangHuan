@@ -44,7 +44,7 @@ public class TPromptsService extends ServiceImpl<TPromptsMapper, TPrompts> {
         String content = cachedPrompts.get(method_name);
         if (content == null || content.isEmpty()) {
             log.error("No valid content found for method name {}", method_name);
-            return Constant.AINULLDEFAULTSYSTEMPROMPT;
+            return null;
         }
         return content;
     }

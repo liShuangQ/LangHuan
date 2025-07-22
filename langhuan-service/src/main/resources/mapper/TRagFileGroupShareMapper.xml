@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.langhuan.model.mapper.TRagFileGroupShareMapper">
+
+    <resultMap id="BaseResultMap" type="com.langhuan.model.domain.TRagFileGroupShare">
+            <id property="id" column="id" jdbcType="INTEGER"/>
+            <result property="groupId" column="group_id" jdbcType="INTEGER"/>
+            <result property="userId" column="user_id" jdbcType="VARCHAR"/>
+            <result property="permission" column="permission" jdbcType="VARCHAR"/>
+            <result property="createdAt" column="created_at" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,group_id,user_id,
+        permission,created_at
+    </sql>
+</mapper>

@@ -12,6 +12,7 @@ public class SecurityUtils {
 
     /**
      * 获取当前登录用户的角色ID列表
+     * 
      * @return 角色ID列表
      */
     public static List<String> getCurrentUserRoles() {
@@ -19,7 +20,7 @@ public class SecurityUtils {
         if (authentication == null || !authentication.isAuthenticated()) {
             return List.of();
         }
-        
+
         return authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .filter(auth -> auth.startsWith("ROLE_"))
@@ -29,6 +30,7 @@ public class SecurityUtils {
 
     /**
      * 获取当前登录用户的ID
+     * 
      * @return 用户ID
      */
     public static Integer getCurrentUserId() {
@@ -42,6 +44,7 @@ public class SecurityUtils {
 
     /**
      * 获取当前登录用户的用户名
+     * 
      * @return 用户名
      */
     public static String getCurrentUsername() {
@@ -55,6 +58,7 @@ public class SecurityUtils {
 
     /**
      * 检查当前用户是否有指定角色ID
+     * 
      * @param roleId 角色ID（不需要ROLE_前缀）
      * @return 是否有该角色ID
      */
@@ -65,11 +69,22 @@ public class SecurityUtils {
 
     /**
      * 检查当前用户是否有任意一个指定角色ID
+     * 
      * @param roleIds 角色ID列表（不需要ROLE_前缀）
      * @return 是否有任意一个角色ID
      */
     public static boolean hasAnyRole(String... roleIds) {
         List<String> userRoles = getCurrentUserRoles();
         return List.of(roleIds).stream().anyMatch(userRoles::contains);
+    }
+
+    /**
+     * 检查当前用户是否有管理员角色
+     * 
+     * @return 是否有管理员角色
+     */
+    public static boolean hasAdminRole() {
+        List<String> roles = getCurrentUserRoles();
+        return roles.contains("1");
     }
 }

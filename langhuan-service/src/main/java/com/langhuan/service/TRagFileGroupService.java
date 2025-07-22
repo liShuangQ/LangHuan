@@ -74,11 +74,11 @@ public class TRagFileGroupService extends ServiceImpl<TRagFileGroupMapper, TRagF
                 f.created_by as "createdBy",
                 u.name as "userName"
                 FROM t_rag_file_group f
+                LEFT JOIN t_user u ON f.created_by = u.username
                 """;
         if (whereClause.length() > 0) {
             sql += " WHERE " + whereClause.toString();
         }
-        sql += " LEFT JOIN t_user u ON f.created_by = u.username";
         sql += " ORDER BY f.created_at DESC";
 
         // 执行分页查询

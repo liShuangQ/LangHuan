@@ -57,7 +57,7 @@ public class ChatController {
             @RequestParam(name = "isReRank", required = true) Boolean isReRank,
             @RequestParam(name = "groupId", required = true, defaultValue = "") String groupId,
             @RequestParam(name = "isFunction", required = true) Boolean isFunction,
-            @RequestParam(name = "modelName", required = true, defaultValue = "") String modelName) {
+            @RequestParam(name = "modelName", required = true, defaultValue = "") String modelName) throws Exception {
         id = SecurityContextHolder.getContext().getAuthentication().getName() + "_" + id;
 
         if (modelName.isEmpty()) {
