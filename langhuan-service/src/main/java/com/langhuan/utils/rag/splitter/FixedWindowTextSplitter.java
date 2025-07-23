@@ -4,7 +4,7 @@ package com.langhuan.utils.rag.splitter;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FixedWindowTextSplitter {
+public class FixedWindowTextSplitter implements TextSplitter {
 
     private final int windowSize;
 
@@ -12,6 +12,7 @@ public class FixedWindowTextSplitter {
         this.windowSize = windowSize;
     }
 
+    @Override
     public List<String> apply(String text) {
         List<String> documents = new ArrayList<>();
         int length = text.length();
@@ -21,6 +22,4 @@ public class FixedWindowTextSplitter {
         }
         return documents;
     }
-
-
 }

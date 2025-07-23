@@ -6,9 +6,9 @@ import com.langhuan.common.Constant;
 import com.langhuan.model.domain.TRagFile;
 import com.langhuan.model.pojo.RagMetaData;
 import com.langhuan.serviceai.ChatGeneralAssistanceService;
-import com.langhuan.utils.rag.splitter.FixedWindowTextSplitter;
-import com.langhuan.utils.rag.splitter.LlmTextSplitter;
-import com.langhuan.utils.rag.splitter.PatternTokenTextSplitter;
+import com.langhuan.utils.rag.config.SplitConfig;
+import com.langhuan.utils.rag.factory.SplitterFactory;
+import com.langhuan.utils.rag.splitter.TextSplitter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.document.Document;
@@ -26,8 +26,6 @@ import com.langhuan.common.BusinessException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map;
-import java.util.regex.Pattern;
 import java.nio.charset.StandardCharsets;
 
 @Slf4j
@@ -83,14 +81,13 @@ public class RagFileVectorUtils {
      * @return 分割后的文档块列表
      */
     @SneakyThrows
-    public List<String> readAndSplitDocument(MultipartFile file, String splitFileMethod,
-            Map<String, Object> methodData) {
+    public List<String> readAndSplitDocument(MultipartFile file, SplitConfig splitConfig) {
         // 使用TikaDocumentReader读取文件内容
         TikaDocumentReader tikaDocumentReader = new TikaDocumentReader(new InputStreamResource(file.getInputStream()));
         List<Document> documents = tikaDocumentReader.read();
 
         // 合并所有文档内容为一个字符串
-        List<String> documentLines = new ArrayList<>();
+        /*List<String> documentLines = new ArrayList<>();
         for (Document doc : documents) {
             documentLines.add(doc.getFormattedContent());
         }
@@ -103,9 +100,21 @@ public class RagFileVectorUtils {
             documentText = documentText.replaceAll(
                     "(?m)^\\s*source: Invalid source URI: InputStream resource \\[resource loaded through InputStream\\] cannot be resolved to URL\\s*$",
                     "").trim();
+        }*/
+        StringBuilder documentTextBuilder = new StringBuilder();
+        for (Document doc : documents) {
+            documentTextBuilder.append(doc.getFormattedContent()).append("\n");
+        }
+        String documentText = documentTextBuilder.toString();
+
+        if (documentText.contains("source: Invalid source URI")) {
+            documentText = documentText.replaceAll(
+                    "(?m)^\\s*source: Invalid source URI: InputStream resource \\[resource loaded through InputStream\\] cannot be resolved to URL\\s*$",
+                    "").trim();
         }
 
-        List<String> apply = null;
+
+        /*List<String> apply = null;
 
         // TODO 当大文档时候的性能优化
         if (splitFileMethod.equals("FixedWindowTextSplitter")) {
@@ -127,7 +136,9 @@ public class RagFileVectorUtils {
                     chatGeneralAssistanceService).apply(documentText);
         }
 
-        return apply;
+        return apply;*/
+        TextSplitter splitter = SplitterFactory.createSplitter(splitConfig, chatGeneralAssistanceService);
+        return splitter.apply(documentText);
     }
 
     /**

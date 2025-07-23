@@ -1,8 +1,7 @@
 package com.langhuan.controller;
 
-import cn.hutool.json.JSONObject;
-import cn.hutool.json.JSONUtil;
-
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.langhuan.common.ApiLog;
 import com.langhuan.common.Constant;
 import com.langhuan.common.Result;
@@ -11,6 +10,7 @@ import com.langhuan.model.pojo.RagChangeDocumentsReq;
 import com.langhuan.model.pojo.RagDeleteDocumentsReq;
 import com.langhuan.model.pojo.RagWriteDocumentsReq;
 import com.langhuan.serviceai.RagService;
+import com.langhuan.utils.rag.config.SplitConfig;
 import org.springframework.ai.document.Document;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -38,8 +38,22 @@ public class RagController {
             MultipartFile file,
             String splitFileMethod,
             String methodData) {
-        JSONObject jsonObject = JSONUtil.parseObj(methodData);
+        /*JSONObject jsonObject = JSONUtil.parseObj(methodData);
         List<String> list = ragService.readAndSplitDocument(file, splitFileMethod, jsonObject);
+        return Result.success(list);*/
+        ObjectMapper objectMapper = new ObjectMapper();
+        Map<String, Object> methodDataMap;
+        try {
+            methodDataMap = objectMapper.readValue(methodData, new TypeReference<>() {});
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Invalid methodData JSON format", e);
+        }
+
+        // 封装为 SplitConfig
+        SplitConfig config = new SplitConfig(splitFileMethod, methodDataMap);
+
+        // 调用 Service，保持变量名不变
+        List<String> list = ragService.readAndSplitDocument(file, config);
         return Result.success(list);
     }
 

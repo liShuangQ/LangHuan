@@ -8,7 +8,9 @@ import com.langhuan.common.Constant;
 import com.langhuan.config.VectorStoreConfig;
 import com.langhuan.model.domain.TRagFile;
 import com.langhuan.service.TRagFileService;
+import com.langhuan.utils.rag.EtlPipeline;
 import com.langhuan.utils.rag.RagFileVectorUtils;
+import com.langhuan.utils.rag.config.SplitConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.postgresql.util.PGobject;
 import org.springframework.ai.document.Document;
@@ -28,19 +30,20 @@ import java.util.Map;
 @Slf4j
 public class RagService {
 
-    private final RagFileVectorUtils ragFileVectorUtils;
     private final TRagFileService ragFileService;
     private final JdbcTemplate baseDao;
     private final VectorStore ragVectorStore;
     private final ReRankModelService reRankModelService;
+    private final EtlPipeline etlPipeline;
 
-    public RagService(RagFileVectorUtils ragFileVectorUtils, TRagFileService ragFileService, JdbcTemplate jdbcTemplate,
-            VectorStoreConfig vectorStoreConfig, ReRankModelService reRankModelService) {
-        this.ragFileVectorUtils = ragFileVectorUtils;
+
+    public RagService(TRagFileService ragFileService, JdbcTemplate jdbcTemplate,
+            VectorStoreConfig vectorStoreConfig, ReRankModelService reRankModelService, EtlPipeline etlPipeline) {
         this.ragFileService = ragFileService;
         this.baseDao = jdbcTemplate;
         this.ragVectorStore = vectorStoreConfig.ragVectorStore();
         this.reRankModelService = reRankModelService;
+        this.etlPipeline = etlPipeline;
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -48,7 +51,7 @@ public class RagService {
         log.info("Updating changeDocumentText: {},documentId: {},documents: {}", ragFile, documentId, documents);
         String sql = "DELETE FROM vector_store_rag WHERE id = ?::uuid";
         baseDao.update(sql, documentId);
-        if (ragFileVectorUtils.writeDocumentsToVectorStore(List.of(documents), ragFileVectorUtils.makeMateData(ragFile),
+        if (etlPipeline.writeToVectorStore(List.of(documents), etlPipeline.getMetadataFactory().createMetadata(ragFile),
                 ragVectorStore)) {
             return "更新成功";
         } else {
@@ -71,8 +74,8 @@ public class RagService {
 
         String delsql = "DELETE FROM vector_store_rag WHERE id = ?::uuid";
         baseDao.update(delsql, documentId);
-        if (ragFileVectorUtils.writeDocumentsToVectorStore(List.of(documents),
-                ragFileVectorUtils.makeMateData(fileName, fileId, groupId),
+        if (etlPipeline.writeToVectorStore(List.of(documents),
+                etlPipeline.getMetadataFactory().createMetadata(fileName, fileId, groupId),
                 ragVectorStore)) {
             return "更新成功";
         } else {
@@ -91,9 +94,8 @@ public class RagService {
         return updated ? "删除成功" : "删除失败";
     }
 
-    public List<String> readAndSplitDocument(MultipartFile file, String splitFileMethod,
-            Map<String, Object> methodData) {
-        return ragFileVectorUtils.readAndSplitDocument(file, splitFileMethod, methodData);
+    public List<String> readAndSplitDocument(MultipartFile file, SplitConfig splitConfig) {
+        return etlPipeline.process(file, splitConfig);
     }
 
     public String writeDocumentsToVectorStore(List<String> documents, TRagFile ragFile) throws Exception {
@@ -105,7 +107,7 @@ public class RagService {
         ragFile.setUploadedAt(new java.util.Date());
         ragFile.setUploadedBy(SecurityContextHolder.getContext().getAuthentication().getName());
 
-        if (ragFileVectorUtils.writeDocumentsToVectorStore(documents, ragFileVectorUtils.makeMateData(ragFile),
+        if (etlPipeline.writeToVectorStore(documents, etlPipeline.getMetadataFactory().createMetadata(ragFile),
                 ragVectorStore)) {
             if (b) {
                 log.info("添加到新增文件");

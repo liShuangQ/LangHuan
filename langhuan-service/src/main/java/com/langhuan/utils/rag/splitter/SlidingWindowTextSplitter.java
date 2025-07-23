@@ -3,7 +3,7 @@ package com.langhuan.utils.rag.splitter;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SlidingWindowTextSplitter {
+public class SlidingWindowTextSplitter implements TextSplitter  {
 
     private final int windowSize;
     private final int overlapSize;
@@ -13,6 +13,7 @@ public class SlidingWindowTextSplitter {
         this.overlapSize = overlapSize;
     }
 
+    @Override
     public List<String> apply(String text) {
         List<String> documents = new ArrayList<>();
         int length = text.length();

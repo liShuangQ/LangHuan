@@ -9,6 +9,7 @@ import com.langhuan.model.domain.TRagFile;
 import com.langhuan.model.domain.TRagFileGroup;
 import com.langhuan.model.mapper.TRagFileMapper;
 import com.langhuan.utils.pagination.JdbcPaginationHelper;
+import com.langhuan.utils.rag.EtlPipeline;
 import com.langhuan.utils.rag.RagFileVectorUtils;
 
 import lombok.extern.slf4j.Slf4j;
@@ -31,14 +32,14 @@ import org.springframework.util.StringUtils;
 public class TRagFileService extends ServiceImpl<TRagFileMapper, TRagFile> {
     TRagFileGroupService ragFileGroupService;
     JdbcTemplate baseDao;
-    RagFileVectorUtils ragFileVectorUtils;
+    private final EtlPipeline etlPipeline;
     private final JdbcPaginationHelper paginationHelper;
 
     public TRagFileService(TRagFileGroupService ragFileGroupService, JdbcTemplate jdbcTemplate,
-            RagFileVectorUtils ragFileVectorUtils, JdbcPaginationHelper paginationHelper) {
+            RagFileVectorUtils ragFileVectorUtils, JdbcPaginationHelper paginationHelper, EtlPipeline etlPipeline) {
         this.ragFileGroupService = ragFileGroupService;
         this.baseDao = jdbcTemplate;
-        this.ragFileVectorUtils = ragFileVectorUtils;
+        this.etlPipeline = etlPipeline;
         this.paginationHelper = paginationHelper;
     }
 
@@ -91,7 +92,7 @@ public class TRagFileService extends ServiceImpl<TRagFileMapper, TRagFile> {
         if (queryForList.isEmpty()) {
             throw new BusinessException("未找到相关文档");
         }
-        return ragFileVectorUtils.generateDocumentStreamByFileId(queryForList.stream()
+        return etlPipeline.exportChunks(queryForList.stream()
                 .map(map -> map.get("content").toString())
                 .collect(java.util.stream.Collectors.toList()));
     }

@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
-public class PatternTokenTextSplitter {
+public class PatternTokenTextSplitter implements TextSplitter {
 
     private final Pattern splitPattern;
 
@@ -22,6 +22,7 @@ public class PatternTokenTextSplitter {
      * @param text 待处理的文本内容
      * @return 文本中提取出的Document对象列表，每个Document对象代表一个分割后的句子
      */
+    @Override
     public List<String> apply(String text) {
         // 初始化文档列表，用于存储分割后的句子创建的Document对象
         List<String> documents = new ArrayList<>();

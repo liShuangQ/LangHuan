@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
-public class LlmTextSplitter {
+public class LlmTextSplitter implements TextSplitter {
 
     private final int windowSize;
     private final String modelName;
@@ -22,6 +22,7 @@ public class LlmTextSplitter {
         this.chatGeneralAssistanceService = chatGeneralAssistanceService;
     }
 
+    @Override
     public List<String> apply(String text) {
         List<String> documents = new ArrayList<>();
         int length = text.length();
