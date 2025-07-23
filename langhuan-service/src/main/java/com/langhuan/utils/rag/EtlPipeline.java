@@ -54,12 +54,15 @@ public class EtlPipeline {
         return textTransformer.transform(rawText, splitter);
     }
 
+<<<<<<< HEAD
     public List<String> process(String url, SplitConfig splitConfig) throws Exception {
         String rawText = documentExtractor.extract(url);
         TextSplitter splitter = SplitterFactory.createSplitter(splitConfig, chatGeneralAssistanceService);
         return textTransformer.transform(rawText, splitter);
     }
 
+=======
+>>>>>>> f79417a (feat(RAG): 实现ETL管道重构及组件化)
     public boolean writeToVectorStore(List<String> chunks, Map<String, Object> metadata, VectorStore vectorStore) {
         return vectorStoreLoader.load(chunks, metadata, vectorStore);
     }

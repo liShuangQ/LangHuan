@@ -1,5 +1,6 @@
 package com.langhuan.utils.rag.extractor;
 
+<<<<<<< HEAD
 import com.langhuan.utils.rag.config.SplitConfig;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -9,10 +10,16 @@ import org.jsoup.select.Elements;
 import org.springframework.ai.document.Document;
 import org.springframework.ai.reader.tika.TikaDocumentReader;
 import org.springframework.beans.factory.annotation.Value;
+=======
+import lombok.SneakyThrows;
+import org.springframework.ai.document.Document;
+import org.springframework.ai.reader.tika.TikaDocumentReader;
+>>>>>>> f79417a (feat(RAG): 实现ETL管道重构及组件化)
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
+<<<<<<< HEAD
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -26,16 +33,23 @@ import static com.langhuan.utils.http.GetRequestUtils.sendGetRequest;
 import static org.apache.poi.xdgf.util.Util.sanitizeFilename;
 
 
+=======
+>>>>>>> f79417a (feat(RAG): 实现ETL管道重构及组件化)
 /**
  * @author Afish
  * @date 2025/7/23 13:42
  */
+<<<<<<< HEAD
 @Slf4j
 @Component
 public class DocumentExtractor {
     @Value("${project.folder:}")
     private String downloadDir;
 
+=======
+@Component
+public class DocumentExtractor {
+>>>>>>> f79417a (feat(RAG): 实现ETL管道重构及组件化)
     @SneakyThrows
     public String extract(MultipartFile file) {
         TikaDocumentReader reader = new TikaDocumentReader(new InputStreamResource(file.getInputStream()));
@@ -46,11 +60,15 @@ public class DocumentExtractor {
         }
 
         String content = contentBuilder.toString();
+<<<<<<< HEAD
 
+=======
+>>>>>>> f79417a (feat(RAG): 实现ETL管道重构及组件化)
         if (content.contains("source: Invalid source URI")) {
             content = content.replaceAll(
                     "(?m)^\\s*source: Invalid source URI: InputStream resource.*$", "").trim();
         }
+<<<<<<< HEAD
         return content;
     }
 
@@ -118,4 +136,9 @@ public class DocumentExtractor {
             log.error("Failed to download image: {}", imageUrl, e);
         }
     }
+=======
+
+        return content;
+    }
+>>>>>>> f79417a (feat(RAG): 实现ETL管道重构及组件化)
 }

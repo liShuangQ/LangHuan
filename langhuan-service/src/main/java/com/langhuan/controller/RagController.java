@@ -54,6 +54,7 @@ public class RagController {
 
         // 调用 Service，保持变量名不变
         List<String> list = ragService.readAndSplitDocument(file, config);
+<<<<<<< HEAD
         return Result.success(list);
     }
 
@@ -76,6 +77,8 @@ public class RagController {
 
         // 调用 Service，保持变量名不变
         List<String> list = ragService.readAndSplitDocument(url, config);
+=======
+>>>>>>> f79417a (feat(RAG): 实现ETL管道重构及组件化)
         return Result.success(list);
     }
 
