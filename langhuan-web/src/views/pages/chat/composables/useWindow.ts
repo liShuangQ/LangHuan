@@ -33,10 +33,7 @@ export function useWindow() {
             chatList.value = res.data.map((item: any) => ({
                 id: item.conversationId,
                 title: item.conversationName,
-                date:
-                    item.createdTime.split("T")[0] +
-                    " " +
-                    item.createdTime.split("T")[1].split("+")[0],
+                date: item.createdTime,
                 active: false,
             }));
             selectWindow(res.data[0].conversationId);
