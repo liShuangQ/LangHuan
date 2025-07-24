@@ -4,7 +4,7 @@ import com.langhuan.model.domain.TRagFile;
 import com.langhuan.serviceai.ChatGeneralAssistanceService;
 import com.langhuan.utils.rag.config.SplitConfig;
 import com.langhuan.utils.rag.factory.SplitterFactory;
-import com.langhuan.utils.rag.extractor.DocumentExtractor;
+import com.langhuan.utils.rag.extractor.HtmlDocumentExtractor;
 import com.langhuan.utils.rag.loader.VectorStoreLoader;
 import com.langhuan.utils.rag.metadata.RagMetadataFactory;
 import com.langhuan.utils.rag.splitter.TextSplitter;
@@ -24,7 +24,7 @@ import java.util.Map;
  */
 @Component
 public class EtlPipeline {
-    private final DocumentExtractor documentExtractor;
+    private final HtmlDocumentExtractor documentExtractor;
     private final TextTransformer textTransformer;
     private final VectorStoreLoader vectorStoreLoader;
     @Getter
@@ -33,7 +33,7 @@ public class EtlPipeline {
     private final ChatGeneralAssistanceService chatGeneralAssistanceService;
 
     public EtlPipeline(
-            DocumentExtractor documentExtractor,
+            HtmlDocumentExtractor documentExtractor,
             TextTransformer textTransformer,
             VectorStoreLoader vectorStoreLoader,
             RagMetadataFactory metadataFactory,

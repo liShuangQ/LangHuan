@@ -33,8 +33,8 @@ public class RagController {
     }
 
     @PreAuthorize("hasAuthority('/rag/readAndSplitDocument')")
-    @PostMapping("/rag/readAndSplitDocument")
-    public Result readAndSplitDocument(
+    @PostMapping("/rag/readAndSplitFileDocument")
+    public Result readAndSplitFileDocument(
             MultipartFile file,
             String splitFileMethod,
             String methodData) {
@@ -54,6 +54,28 @@ public class RagController {
 
         // 调用 Service，保持变量名不变
         List<String> list = ragService.readAndSplitDocument(file, config);
+        return Result.success(list);
+    }
+    @PreAuthorize("hasAuthority('/rag/readAndSplitDocument')")
+    @PostMapping("/rag/readAndSplitHtmlDocument")
+    public Result readAndSplitHtmlDocument(
+            String url,
+            String splitFileMethod,
+            String methodData) throws Exception
+            {
+        ObjectMapper objectMapper = new ObjectMapper();
+        Map<String, Object> methodDataMap;
+        try {
+            methodDataMap = objectMapper.readValue(methodData, new TypeReference<>() {});
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Invalid methodData JSON format", e);
+        }
+
+        // 封装为 SplitConfig
+        SplitConfig config = new SplitConfig(splitFileMethod, methodDataMap);
+
+        // 调用 Service，保持变量名不变
+        List<String> list = ragService.readAndSplitDocument(url, config);
         return Result.success(list);
     }
 

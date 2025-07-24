@@ -12,7 +12,10 @@ import org.springframework.web.multipart.MultipartFile;
  * @date 2025/7/23 13:42
  */
 @Component
-public class DocumentExtractor {
+public class HtmlDocumentExtractor {
+    @Value("${project.folder:}")
+    private String downloadDir;
+
     @SneakyThrows
     public String extract(MultipartFile file) {
         TikaDocumentReader reader = new TikaDocumentReader(new InputStreamResource(file.getInputStream()));

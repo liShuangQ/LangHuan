@@ -89,7 +89,7 @@ const getDocument = () => {
     formData.append('splitFileMethod', splitFileMethod.value)
     formData.append('methodData', JSON.stringify(methodData.value[splitFileMethod.value]))
     http.request<any>({
-        url: '/rag/readAndSplitDocument',
+        url: '/rag/readAndSplitFileDocument',
         method: 'post',
         q_spinning: true,
         q_contentType: 'formfile',
