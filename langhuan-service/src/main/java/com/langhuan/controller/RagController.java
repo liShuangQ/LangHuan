@@ -54,31 +54,6 @@ public class RagController {
 
         // 调用 Service，保持变量名不变
         List<String> list = ragService.readAndSplitDocument(file, config);
-<<<<<<< HEAD
-        return Result.success(list);
-    }
-
-    @PostMapping("/rag/readAndSplitHtmlDocument")
-    public Result readAndSplitDocument(
-            String url,
-            String splitFileMethod,
-            String methodData) throws Exception
-            {
-        ObjectMapper objectMapper = new ObjectMapper();
-        Map<String, Object> methodDataMap;
-        try {
-            methodDataMap = objectMapper.readValue(methodData, new TypeReference<>() {});
-        } catch (Exception e) {
-            throw new IllegalArgumentException("Invalid methodData JSON format", e);
-        }
-
-        // 封装为 SplitConfig
-        SplitConfig config = new SplitConfig(splitFileMethod, methodDataMap);
-
-        // 调用 Service，保持变量名不变
-        List<String> list = ragService.readAndSplitDocument(url, config);
-=======
->>>>>>> f79417a (feat(RAG): 实现ETL管道重构及组件化)
         return Result.success(list);
     }
 

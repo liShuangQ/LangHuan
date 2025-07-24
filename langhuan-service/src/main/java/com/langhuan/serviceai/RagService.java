@@ -96,13 +96,6 @@ public class RagService {
 
     public List<String> readAndSplitDocument(MultipartFile file, SplitConfig splitConfig) {
         return etlPipeline.process(file, splitConfig);
-<<<<<<< HEAD
-    }
-
-    public List<String> readAndSplitDocument(String url, SplitConfig splitConfig) throws Exception {
-        return etlPipeline.process(url, splitConfig);
-=======
->>>>>>> f79417a (feat(RAG): 实现ETL管道重构及组件化)
     }
 
     public String writeDocumentsToVectorStore(List<String> documents, TRagFile ragFile) throws Exception {
