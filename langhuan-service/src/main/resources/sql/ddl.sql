@@ -136,20 +136,21 @@ CREATE TABLE t_rag_file_group
 );
 
 ALTER TABLE t_rag_file_group
-ADD COLUMN visibility VARCHAR(20) NOT NULL DEFAULT 'private' CHECK (visibility IN ('private', 'public'));
+ADD COLUMN visibility VARCHAR(20) NOT NULL DEFAULT 'public' CHECK (visibility IN ('private', 'public'));
 
 DROP TABLE IF EXISTS t_rag_file_group_share;
 CREATE TABLE t_rag_file_group_share
 (
     id SERIAL PRIMARY KEY,                          -- 自增主键
     file_group_id INTEGER NOT NULL,                 -- 关联的文件组ID
-    shared_with VARCHAR[255] NOT NULL,                   -- 被分享的用户ID（关联t_user表）
+    shared_with VARCHAR(255) NOT NULL,              -- 被分享的用户ID（关联t_user表）
     can_read BOOLEAN NOT NULL DEFAULT TRUE,         -- 是否有读取权限
     can_add BOOLEAN NOT NULL DEFAULT FALSE,         -- 是否有添加文件权限
     can_update BOOLEAN NOT NULL DEFAULT FALSE,      -- 是否有更新权限
     can_delete BOOLEAN NOT NULL DEFAULT FALSE,      -- 是否有删除权限
-    shared_by VARCHAR[255] NOT NULL,                     -- 分享人ID（关联t_user表）
-    shared_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP  -- 分享时间
+    shared_by VARCHAR(255) NOT NULL,                -- 分享人ID（关联t_user表）
+    shared_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,  -- 分享时间
+    CONSTRAINT uk_file_group_shared_with UNIQUE (file_group_id, shared_with) -- 唯一约束：同一文件组不能重复分享给同一用户
 );
 
 -- 添加表和字段注释

@@ -105,6 +105,8 @@ export const getFileGroupOption = () => {
         method: 'post',
         q_spinning: true,
         q_contentType: 'json',
-        data: {},
+        data: {
+            isRead: false,
+        },
     })
 }

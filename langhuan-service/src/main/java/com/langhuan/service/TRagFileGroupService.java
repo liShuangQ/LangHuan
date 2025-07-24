@@ -7,7 +7,9 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.langhuan.model.domain.TRagFileGroup;
 import com.langhuan.model.mapper.TRagFileGroupMapper;
 import com.langhuan.utils.pagination.JdbcPaginationHelper;
+import com.langhuan.utils.other.SecurityUtils;
 
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import lombok.extern.slf4j.Slf4j;
 
@@ -25,63 +27,200 @@ import java.util.stream.Collectors;
 public class TRagFileGroupService extends ServiceImpl<TRagFileGroupMapper, TRagFileGroup> {
 
     private final JdbcPaginationHelper paginationHelper;
+    private final JdbcTemplate jdbcTemplate;
 
-    public TRagFileGroupService(JdbcPaginationHelper paginationHelper) {
+    public TRagFileGroupService(JdbcPaginationHelper paginationHelper, JdbcTemplate jdbcTemplate) {
         this.paginationHelper = paginationHelper;
+        this.jdbcTemplate = jdbcTemplate;
     }
 
-    public List<Map<String, Object>> getEnum() {
-        List<TRagFileGroup> list = super.list();
-        return list.stream()
-                .map(e -> Map.of("id", (Object) e.getId(), "groupName", (Object) e.getGroupName()))
+    // HACK 和下面的查询的sql相关
+    public List<Map<String, Object>> getEnum(Boolean isRead) {
+        boolean isAdmin = SecurityUtils.hasAdminRole();
+        String currentUser = SecurityUtils.getCurrentUsername();
+        StringBuilder dataSql = new StringBuilder();
+        java.util.List<Object> dataParams = new java.util.ArrayList<>();
+        if (isAdmin) {
+            // 超级管理员查询所有文件组
+            dataSql.append("""
+                    SELECT
+                        fg.id,
+                        fg.group_name as "groupName"
+                    FROM t_rag_file_group fg
+                    LEFT JOIN t_user u ON fg.created_by = u.username
+                    WHERE 1=1
+                    """);
+        } else {
+            // 普通用户查询文件组（公开的 + 自己创建的 + 被分享的）
+            dataSql.append(
+                    """
+                            SELECT DISTINCT
+                                fg.id,
+                                fg.group_name as "groupName"
+                            FROM t_rag_file_group fg
+                            LEFT JOIN t_user u ON fg.created_by = u.username
+                            LEFT JOIN t_rag_file_group_share fgs ON fg.id = fgs.file_group_id AND fgs.shared_with = ?
+                            """);
+            if (isRead) {
+                dataSql.append("AND fgs.can_read = TRUE");
+            }
+            if (!isRead) {
+                dataSql.append("AND fgs.can_update = TRUE OR fgs.can_add = TRUE");
+            }
+
+            dataSql.append("""
+                                              WHERE
+                                fg.visibility = 'public'  -- 公开的文件组
+                                OR fg.created_by = ?      -- 自己创建的文件组
+                                OR fgs.id IS NOT NULL     -- 被分享的文件组
+                    """);
+
+            // 添加CASE语句中的参数（按顺序）
+            dataParams.add(currentUser);
+            dataParams.add(currentUser);
+        }
+
+        List<Map<String, Object>> queryForList = jdbcTemplate.queryForList(dataSql.toString(), dataParams.toArray());
+
+        queryForList.stream()
+                .map(e -> Map.of("id", (Object) e.get("id"), "groupName", (Object) e.get("groupName")))
                 .collect(Collectors.toList());
-
+        return queryForList;
     }
 
-    public IPage<Map<String, Object>> queryFileGroups(String groupName, String groupType, int pageNum, int pageSize) {
-        log.info("queryFileGroups: groupName='{}', groupType='{}', pageNum={}, pageSize={}",
-                groupName, groupType, pageNum, pageSize);
+    /**
+     * 根据权限查询文件组
+     * 超级管理员可以查询所有文件组
+     * 普通用户只能查询公开的、自己创建的和被分享的文件组
+     */
+    public IPage<Map<String, Object>> queryFileGroups(String groupName, String groupType, String visibility,
+            int pageNum, int pageSize) {
+        log.info("queryFileGroups: groupName='{}', groupType='{}', visibility='{}', pageNum={}, pageSize={}",
+                groupName, groupType, visibility, pageNum, pageSize);
 
-        // 构建动态查询条件
-        java.util.List<Object> params = new java.util.ArrayList<>();
-        StringBuilder whereClause = new StringBuilder();
+        String currentUser = SecurityUtils.getCurrentUsername();
+        boolean isAdmin = SecurityUtils.hasAdminRole();
 
-        // 添加groupName条件
-        if (groupName != null && !groupName.trim().isEmpty()) {
-            if (whereClause.length() > 0) {
-                whereClause.append(" AND ");
+        StringBuilder dataSql = new StringBuilder();
+        StringBuilder countSql = new StringBuilder();
+        java.util.List<Object> dataParams = new java.util.ArrayList<>();
+        java.util.List<Object> countParams = new java.util.ArrayList<>();
+
+        if (isAdmin) {
+            // 超级管理员查询所有文件组
+            dataSql.append("""
+                    SELECT
+                        fg.id,
+                        fg.group_name as "groupName",
+                        fg.group_type as "groupType",
+                        fg.group_desc as "groupDesc",
+                        fg.visibility,
+                        fg.created_by as "createdBy",
+                        fg.created_at as "createdAt",
+                        u.name as "userName"
+                    FROM t_rag_file_group fg
+                    LEFT JOIN t_user u ON fg.created_by = u.username
+                    WHERE 1=1
+                    """);
+
+            countSql.append("""
+                    SELECT COUNT(*)
+                    FROM t_rag_file_group fg
+                    WHERE 1=1
+                    """);
+
+            // 构建WHERE条件
+            if (groupName != null && !groupName.trim().isEmpty()) {
+                dataSql.append(" AND fg.group_name LIKE ?");
+                countSql.append(" AND fg.group_name LIKE ?");
+                dataParams.add("%" + groupName + "%");
+                countParams.add("%" + groupName + "%");
             }
-            whereClause.append("f.group_name LIKE ?");
-            params.add("%" + groupName + "%");
-        }
 
-        // 添加groupType条件
-        if (groupType != null && !groupType.trim().isEmpty()) {
-            if (whereClause.length() > 0) {
-                whereClause.append(" AND ");
+            if (groupType != null && !groupType.trim().isEmpty()) {
+                dataSql.append(" AND fg.group_type LIKE ?");
+                countSql.append(" AND fg.group_type LIKE ?");
+                dataParams.add("%" + groupType + "%");
+                countParams.add("%" + groupType + "%");
             }
-            whereClause.append("f.group_type LIKE ?");
-            params.add("%" + groupType + "%");
+
+            if (visibility != null && !visibility.trim().isEmpty()) {
+                dataSql.append(" AND fg.visibility = ?");
+                countSql.append(" AND fg.visibility = ?");
+                dataParams.add(visibility);
+                countParams.add(visibility);
+            }
+
+        } else {
+            // 普通用户查询文件组（公开的 + 自己创建的 + 被分享的）
+            dataSql.append(
+                    """
+                            SELECT DISTINCT
+                                fg.id,
+                                fg.group_name as "groupName",
+                                fg.group_type as "groupType",
+                                fg.group_desc as "groupDesc",
+                                fg.visibility,
+                                fg.created_by as "createdBy",
+                                fg.created_at as "createdAt",
+                                u.name as "userName"
+                            FROM t_rag_file_group fg
+                            LEFT JOIN t_user u ON fg.created_by = u.username
+                            LEFT JOIN t_rag_file_group_share fgs ON fg.id = fgs.file_group_id AND fgs.shared_with = ? AND fgs.can_read = TRUE
+                            WHERE
+                                fg.visibility = 'public'  -- 公开的文件组
+                                OR fg.created_by = ?      -- 自己创建的文件组
+                                OR fgs.id IS NOT NULL     -- 被分享的文件组
+                            """);
+
+            countSql.append(
+                    """
+                            SELECT COUNT(DISTINCT fg.id)
+                            FROM t_rag_file_group fg
+                            LEFT JOIN t_rag_file_group_share fgs ON fg.id = fgs.file_group_id AND fgs.shared_with = ? AND fgs.can_read = TRUE
+                            WHERE
+                                fg.visibility = 'public'  -- 公开的文件组
+                                OR fg.created_by = ?      -- 自己创建的文件组
+                                OR fgs.id IS NOT NULL     -- 被分享的文件组
+                            """);
+
+            // 添加CASE语句中的参数（按顺序）
+            dataParams.add(currentUser); // LEFT JOIN中的shared_with
+            dataParams.add(currentUser); // WHERE中的created_by
+
+            // count查询的参数
+            countParams.add(currentUser); // LEFT JOIN中的shared_with
+            countParams.add(currentUser); // WHERE中的created_by
+
+            // 构建额外的WHERE条件
+            if (groupName != null && !groupName.trim().isEmpty()) {
+                dataSql.append(" AND fg.group_name LIKE ?");
+                countSql.append(" AND fg.group_name LIKE ?");
+                dataParams.add("%" + groupName + "%");
+                countParams.add("%" + groupName + "%");
+            }
+
+            if (groupType != null && !groupType.trim().isEmpty()) {
+                dataSql.append(" AND fg.group_type LIKE ?");
+                countSql.append(" AND fg.group_type LIKE ?");
+                dataParams.add("%" + groupType + "%");
+                countParams.add("%" + groupType + "%");
+            }
+
+            if (visibility != null && !visibility.trim().isEmpty()) {
+                dataSql.append(" AND fg.visibility = ?");
+                countSql.append(" AND fg.visibility = ?");
+                dataParams.add(visibility);
+                countParams.add(visibility);
+            }
         }
 
-        // 构建完整的SQL
-        String sql = """
-                SELECT f.id as id,
-                f.group_name as "groupName",
-                f.group_type as "groupType",
-                f.group_desc as "groupDesc",
-                f.created_at as "createdAt",
-                f.created_by as "createdBy",
-                u.name as "userName"
-                FROM t_rag_file_group f
-                LEFT JOIN t_user u ON f.created_by = u.username
-                """;
-        if (whereClause.length() > 0) {
-            sql += " WHERE " + whereClause.toString();
-        }
-        sql += " ORDER BY f.created_at DESC";
+        dataSql.append(" ORDER BY fg.created_at DESC");
 
         // 执行分页查询
-        return paginationHelper.selectPageForMap(sql, params.toArray(), pageNum, pageSize);
+        return paginationHelper.selectPageForMapWithDifferentParams(
+                dataSql.toString(), countSql.toString(),
+                dataParams.toArray(), countParams.toArray(),
+                pageNum, pageSize);
     }
 }

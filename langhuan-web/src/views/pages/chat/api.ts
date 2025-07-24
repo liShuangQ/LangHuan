@@ -52,7 +52,9 @@ export const getRagGroupOptionList = () => {
         url: "/rag/file-group/getEnum",
         method: "post",
         q_spinning: true,
-        data: {},
+        data: {
+            isRead: true,
+        },
     });
 };
 

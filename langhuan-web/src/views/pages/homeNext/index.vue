@@ -232,7 +232,9 @@ const getRagGroupOptionList = (): Promise<any> => {
         url: '/rag/file-group/getEnum',   // 获取RAG文件组枚举的API端点
         method: 'post',                  // 请求方法
         q_spinning: true,                // 显示加载动画
-        data: {},                        // 无需传递数据
+        data: {
+            isRead: true,
+        },
     }).then((res) => {
         if (res.code === 200) {
             // 将返回的数据转换为选项格式

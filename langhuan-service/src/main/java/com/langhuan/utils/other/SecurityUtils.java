@@ -49,9 +49,8 @@ public class SecurityUtils {
      */
     public static String getCurrentUsername() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.getPrincipal() instanceof AccountUser) {
-            AccountUser user = (AccountUser) authentication.getPrincipal();
-            return user.getUsername();
+        if (authentication != null) {
+            return authentication.getName();
         }
         return null;
     }

@@ -135,6 +135,8 @@ public class RagFileVectorUtils {
             apply = new LlmTextSplitter((Integer) methodData.get("windowSize"), (String) methodData.get("modelName"),
                     chatGeneralAssistanceService).apply(documentText);
         }
+    
+
 
         return apply;*/
         TextSplitter splitter = SplitterFactory.createSplitter(splitConfig, chatGeneralAssistanceService);

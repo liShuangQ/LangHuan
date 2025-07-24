@@ -6,37 +6,57 @@ import java.util.Date;
 import lombok.Data;
 
 /**
- * 文件组共享权限表
+ * 文件组分享表
  * @TableName t_rag_file_group_share
  */
 @TableName(value ="t_rag_file_group_share")
 @Data
 public class TRagFileGroupShare {
     /**
-     * 
+     * 主键ID
      */
     @TableId
     private Integer id;
 
     /**
-     * 
+     * 文件组ID
      */
-    private Integer groupId;
+    private Integer fileGroupId;
 
     /**
-     * 
+     * 被分享的用户名
      */
-    private String userId;
+    private String sharedWith;
 
     /**
-     * 权限类型: VIEW-查看, EDIT-编辑, ADD-添加
+     * 是否可读
      */
-    private String permission;
+    private Boolean canRead;
 
     /**
-     * 
+     * 是否可新增
      */
-    private Date createdAt;
+    private Boolean canAdd;
+
+    /**
+     * 是否可修改
+     */
+    private Boolean canUpdate;
+
+    /**
+     * 是否可删除
+     */
+    private Boolean canDelete;
+
+    /**
+     * 分享人用户名
+     */
+    private String sharedBy;
+
+    /**
+     * 分享时间
+     */
+    private Date sharedAt;
 
     @Override
     public boolean equals(Object that) {
@@ -51,10 +71,14 @@ public class TRagFileGroupShare {
         }
         TRagFileGroupShare other = (TRagFileGroupShare) that;
         return (this.getId() == null ? other.getId() == null : this.getId().equals(other.getId()))
-            && (this.getGroupId() == null ? other.getGroupId() == null : this.getGroupId().equals(other.getGroupId()))
-            && (this.getUserId() == null ? other.getUserId() == null : this.getUserId().equals(other.getUserId()))
-            && (this.getPermission() == null ? other.getPermission() == null : this.getPermission().equals(other.getPermission()))
-            && (this.getCreatedAt() == null ? other.getCreatedAt() == null : this.getCreatedAt().equals(other.getCreatedAt()));
+            && (this.getFileGroupId() == null ? other.getFileGroupId() == null : this.getFileGroupId().equals(other.getFileGroupId()))
+            && (this.getSharedWith() == null ? other.getSharedWith() == null : this.getSharedWith().equals(other.getSharedWith()))
+            && (this.getCanRead() == null ? other.getCanRead() == null : this.getCanRead().equals(other.getCanRead()))
+            && (this.getCanAdd() == null ? other.getCanAdd() == null : this.getCanAdd().equals(other.getCanAdd()))
+            && (this.getCanUpdate() == null ? other.getCanUpdate() == null : this.getCanUpdate().equals(other.getCanUpdate()))
+            && (this.getCanDelete() == null ? other.getCanDelete() == null : this.getCanDelete().equals(other.getCanDelete()))
+            && (this.getSharedBy() == null ? other.getSharedBy() == null : this.getSharedBy().equals(other.getSharedBy()))
+            && (this.getSharedAt() == null ? other.getSharedAt() == null : this.getSharedAt().equals(other.getSharedAt()));
     }
 
     @Override
@@ -62,10 +86,14 @@ public class TRagFileGroupShare {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((getId() == null) ? 0 : getId().hashCode());
-        result = prime * result + ((getGroupId() == null) ? 0 : getGroupId().hashCode());
-        result = prime * result + ((getUserId() == null) ? 0 : getUserId().hashCode());
-        result = prime * result + ((getPermission() == null) ? 0 : getPermission().hashCode());
-        result = prime * result + ((getCreatedAt() == null) ? 0 : getCreatedAt().hashCode());
+        result = prime * result + ((getFileGroupId() == null) ? 0 : getFileGroupId().hashCode());
+        result = prime * result + ((getSharedWith() == null) ? 0 : getSharedWith().hashCode());
+        result = prime * result + ((getCanRead() == null) ? 0 : getCanRead().hashCode());
+        result = prime * result + ((getCanAdd() == null) ? 0 : getCanAdd().hashCode());
+        result = prime * result + ((getCanUpdate() == null) ? 0 : getCanUpdate().hashCode());
+        result = prime * result + ((getCanDelete() == null) ? 0 : getCanDelete().hashCode());
+        result = prime * result + ((getSharedBy() == null) ? 0 : getSharedBy().hashCode());
+        result = prime * result + ((getSharedAt() == null) ? 0 : getSharedAt().hashCode());
         return result;
     }
 
@@ -76,10 +104,14 @@ public class TRagFileGroupShare {
         sb.append(" [");
         sb.append("Hash = ").append(hashCode());
         sb.append(", id=").append(id);
-        sb.append(", groupId=").append(groupId);
-        sb.append(", userId=").append(userId);
-        sb.append(", permission=").append(permission);
-        sb.append(", createdAt=").append(createdAt);
+        sb.append(", fileGroupId=").append(fileGroupId);
+        sb.append(", sharedWith=").append(sharedWith);
+        sb.append(", canRead=").append(canRead);
+        sb.append(", canAdd=").append(canAdd);
+        sb.append(", canUpdate=").append(canUpdate);
+        sb.append(", canDelete=").append(canDelete);
+        sb.append(", sharedBy=").append(sharedBy);
+        sb.append(", sharedAt=").append(sharedAt);
         sb.append("]");
         return sb.toString();
     }

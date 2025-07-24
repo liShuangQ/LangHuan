@@ -37,14 +37,19 @@ public class TRagFileGroup implements Serializable {
 
 
     /**
-     * 
+     * 创建者
      */
     private String createdBy;
 
     /**
-     * 
+     * 创建时间
      */
     private Date createdAt;
+
+    /**
+     * 可见性：private-私有，public-公开
+     */
+    private String visibility;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
@@ -66,7 +71,8 @@ public class TRagFileGroup implements Serializable {
             && (this.getGroupType() == null ? other.getGroupType() == null : this.getGroupType().equals(other.getGroupType()))
             && (this.getGroupDesc() == null ? other.getGroupDesc() == null : this.getGroupDesc().equals(other.getGroupDesc()))
             && (this.getCreatedBy() == null ? other.getCreatedBy() == null : this.getCreatedBy().equals(other.getCreatedBy()))
-            && (this.getCreatedAt() == null ? other.getCreatedAt() == null : this.getCreatedAt().equals(other.getCreatedAt()));
+            && (this.getCreatedAt() == null ? other.getCreatedAt() == null : this.getCreatedAt().equals(other.getCreatedAt()))
+            && (this.getVisibility() == null ? other.getVisibility() == null : this.getVisibility().equals(other.getVisibility()));
     }
 
     @Override
@@ -79,6 +85,7 @@ public class TRagFileGroup implements Serializable {
         result = prime * result + ((getGroupDesc() == null) ? 0 : getGroupDesc().hashCode());
         result = prime * result + ((getCreatedBy() == null) ? 0 : getCreatedBy().hashCode());
         result = prime * result + ((getCreatedAt() == null) ? 0 : getCreatedAt().hashCode());
+        result = prime * result + ((getVisibility() == null) ? 0 : getVisibility().hashCode());
         return result;
     }
 
@@ -94,6 +101,7 @@ public class TRagFileGroup implements Serializable {
         sb.append(", groupDesc=").append(groupDesc);
         sb.append(", createdBy=").append(createdBy);
         sb.append(", createdAt=").append(createdAt);
+        sb.append(", visibility=").append(visibility);
         sb.append(", serialVersionUID=").append(serialVersionUID);
         sb.append("]");
         return sb.toString();

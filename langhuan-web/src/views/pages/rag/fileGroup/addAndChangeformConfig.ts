@@ -51,7 +51,28 @@ export let addAndChangeFormItemConfig: FormItemConfigs = [
             rule: [
                 { required: true, message: "Please input", trigger: "blur" },
             ],
-            textarea:true,
+            textarea: true,
+            col: 24,
+            clearable: true,
+        },
+        {
+            value: "",
+            key: "visibility",
+            type: "radio",
+            option: [
+                {
+                    label: "私有",
+                    value: "private",
+                },
+                {
+                    label: "公开",
+                    value: "public",
+                },
+            ],
+            label: "可见性",
+            rule: [
+                { required: true, message: "Please select", trigger: "change" },
+            ],
             col: 24,
             clearable: true,
         },

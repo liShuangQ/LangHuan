@@ -22,7 +22,7 @@ export const formItemConfig = (
                 type: "input",
                 label: "id",
                 col: 12,
-                show:false,
+                show: false,
             },
             {
                 value: "",
@@ -48,21 +48,21 @@ export const formItemConfig = (
                                 fileType: "",
                                 fileGroupName: "",
                                 pageNum: 1,
-                                pageSize: 20,
+                                pageSize: 100,
                             },
                         })
                             .then((res) => {
                                 formRef.value.setFormOption([
                                     {
                                         key: "fileName",
-                                        option: res.data.records.map(
-                                            (e: any) => {
+                                        option: res.data.records
+                                            .filter((e: any) => e.canAdd)
+                                            .map((e: any) => {
                                                 return {
                                                     value: e.fileName,
                                                     label: e.fileName,
                                                 };
-                                            }
-                                        ),
+                                            }),
                                     },
                                 ]);
                                 fileNowOptionCache.value = res.data.records;
@@ -183,6 +183,8 @@ export const getFileGroupOption = () => {
         method: "post",
         q_spinning: true,
         q_contentType: "json",
-        data: {},
+        data: {
+            isRead: false,
+        },
     });
 };

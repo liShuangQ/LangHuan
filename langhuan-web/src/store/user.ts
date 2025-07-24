@@ -13,6 +13,9 @@ export default defineStore("user", {
         };
     },
     actions: {
+        getAdminAndSelf(username: string) {
+            return this.isAdmin || username === this.info.user.username;
+        },
         //设置用户信息
         setUserInfo(data: object) {
             this.info = data;

@@ -11,7 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.IOException;
 
 import org.springframework.core.io.InputStreamResource;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -51,6 +50,12 @@ public class RagFileController {
         log.info("Querying file with fileName: {}, fileType: {},fileGroupName:{}, page: {}, size: {}", fileName,
                 fileType,
                 fileGroupName, pageNum, pageSize);
+        
+        // 处理空字符串参数
+        fileName = (fileName != null && fileName.trim().isEmpty()) ? null : fileName;
+        fileType = (fileType != null && fileType.trim().isEmpty()) ? null : fileType;
+        fileGroupName = (fileGroupName != null && fileGroupName.trim().isEmpty()) ? null : fileGroupName;
+        
         return Result.success(ragFileService.queryFiles(fileName, fileType, fileGroupName, pageNum, pageSize));
     }
 

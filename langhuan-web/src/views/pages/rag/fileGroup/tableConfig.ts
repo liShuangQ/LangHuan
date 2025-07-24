@@ -25,6 +25,12 @@ export let tableColumnConfig = ref<TableColumnConfig[]>([
         width: 'auto',
     },
     {
+        label: '可见性',
+        prop: 'visibility',
+        contentSlot: true,
+        width: 'auto',
+    },
+    {
         label: '创建用户',
         prop: 'userName',
         width: 'auto',
@@ -38,7 +44,7 @@ export let tableColumnConfig = ref<TableColumnConfig[]>([
         label: '操作',
         prop: 'buttonSlot',
         contentSlot: true,
-        width: '120',
+        width: '240',
     }
 ])
 export let tableConfig = ref<TableConfig>({

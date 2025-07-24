@@ -11,10 +11,11 @@
         <result property="groupDesc" column="group_desc" jdbcType="VARCHAR"/>
         <result property="createdBy" column="created_by" jdbcType="VARCHAR"/>
         <result property="createdAt" column="created_at" jdbcType="TIMESTAMP"/>
+        <result property="visibility" column="visibility" jdbcType="VARCHAR"/>
     </resultMap>
 
     <sql id="Base_Column_List">
         id,group_name,group_type,group_desc,
-        created_by,created_at
+        created_by,created_at,visibility
     </sql>
 </mapper>

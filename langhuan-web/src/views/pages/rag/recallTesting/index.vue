@@ -152,7 +152,9 @@ const getRagGroupOptionList = (): Promise<any> => {
         url: '/rag/file-group/getEnum',
         method: 'post',
         q_spinning: true,
-        data: {},
+        data: {
+            isRead: true,
+        },
     }).then((res) => {
         if (res.code === 200) {
             ragGroupOption.value = res.data.map((e: any) => {

@@ -291,6 +291,7 @@
                                     :key="optionItem.value"
                                     :label="optionItem.label"
                                     :value="optionItem.value"
+                                    :disabled="optionItem.disabled"
                                 >
                                     <template v-if="item.optionCustom">
                                         <slot
@@ -307,6 +308,7 @@
                                 :key="optionItem.value"
                                 :label="optionItem.label"
                                 :value="optionItem.value"
+                                :disabled="optionItem.disabled"
                             >
                                 <template v-if="item.optionCustom">
                                     <slot

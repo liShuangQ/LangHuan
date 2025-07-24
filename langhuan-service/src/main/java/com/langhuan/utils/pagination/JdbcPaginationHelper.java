@@ -142,6 +142,83 @@ public class JdbcPaginationHelper {
     }
 
     /**
+     * 执行分页查询（支持不同的计数参数和数据参数）
+     * 适用于复杂查询，计数查询和数据查询可能需要不同的参数
+     *
+     * @param dataSql     数据查询SQL
+     * @param countSql    计数查询SQL
+     * @param dataParams  数据查询参数
+     * @param countParams 计数查询参数
+     * @param current     当前页码
+     * @param size        每页大小
+     * @return 分页结果
+     */
+    public IPage<Map<String, Object>> selectPageForMapWithDifferentParams(
+            String dataSql, String countSql, Object[] dataParams, Object[] countParams,
+            long current, long size) {
+        
+        // 参数验证
+        if (current < 1) {
+            current = 1;
+        }
+        if (size < 1) {
+            size = 10;
+        }
+
+        // 创建分页对象
+        JdbcPage<Map<String, Object>> page = new JdbcPage<>(current, size);
+
+        try {
+            // 执行计数查询
+            String finalCountSql = StringUtils.hasText(countSql) ? countSql : generateCountSql(dataSql);
+            Object[] finalCountParams = countParams != null ? countParams : dataParams;
+            
+            log.info("执行计数查询SQL: {}", finalCountSql);
+            
+            Long result = jdbcTemplate.queryForObject(finalCountSql, Long.class, finalCountParams);
+            long total = result != null ? result : 0L;
+            page.setTotal(total);
+
+            // 如果总记录数为0，直接返回空结果
+            if (total == 0) {
+                return page;
+            }
+
+            // 计算偏移量
+            long offset = (current - 1) * size;
+
+            // 构建分页查询SQL
+            String paginationSql = buildPaginationSql(dataSql, offset, size);
+
+            // 记录数据查询SQL
+            log.info("执行数据查询SQL: {}", paginationSql);
+
+            // 执行数据查询
+            List<Map<String, Object>> records = jdbcTemplate.query(paginationSql, (rs, rowNum) -> {
+                Map<String, Object> row = new java.util.HashMap<>();
+                int columnCount = rs.getMetaData().getColumnCount();
+                for (int i = 1; i <= columnCount; i++) {
+                    String columnName = rs.getMetaData().getColumnLabel(i);
+                    Object value = rs.getObject(i);
+                    // 转换为驼峰命名
+                    String camelCaseName = convertToCamelCase(columnName);
+                    row.put(camelCaseName, value);
+                }
+                return row;
+            }, dataParams);
+            
+            page.setRecords(records);
+
+        } catch (Exception e) {
+            log.error("分页查询执行失败: dataSql={}, countSql={}, dataParams={}, countParams={}, current={}, size={}", 
+                    dataSql, countSql, dataParams, countParams, current, size, e);
+            throw new RuntimeException("分页查询执行失败", e);
+        }
+
+        return page;
+    }
+
+    /**
      * 执行计数查询
      *
      * @param dataSql  数据查询SQL
