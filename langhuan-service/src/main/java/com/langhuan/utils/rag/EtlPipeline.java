@@ -54,6 +54,12 @@ public class EtlPipeline {
         return textTransformer.transform(rawText, splitter);
     }
 
+    public List<String> process(String url, SplitConfig splitConfig) throws Exception {
+        String rawText = documentExtractor.extract(url);
+        TextSplitter splitter = SplitterFactory.createSplitter(splitConfig, chatGeneralAssistanceService);
+        return textTransformer.transform(rawText, splitter);
+    }
+
     public boolean writeToVectorStore(List<String> chunks, Map<String, Object> metadata, VectorStore vectorStore) {
         return vectorStoreLoader.load(chunks, metadata, vectorStore);
     }

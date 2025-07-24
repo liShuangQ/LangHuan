@@ -5,6 +5,7 @@ import java.util.Map;
 /**
  * 统一参数配置
  */
+
 public class SplitConfig {
     private String splitMethod;
     private Map<String, Object> methodData;

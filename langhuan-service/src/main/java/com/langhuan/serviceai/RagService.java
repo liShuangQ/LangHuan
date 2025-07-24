@@ -98,6 +98,10 @@ public class RagService {
         return etlPipeline.process(file, splitConfig);
     }
 
+    public List<String> readAndSplitDocument(String url, SplitConfig splitConfig) throws Exception {
+        return etlPipeline.process(url, splitConfig);
+    }
+
     public String writeDocumentsToVectorStore(List<String> documents, TRagFile ragFile) throws Exception {
         log.info("writeDocumentsToVectorStore: {}", ragFile);
         boolean b = ragFile.getId() == null || ragFile.getId() == 0 || ragFile.getId().toString().isEmpty();

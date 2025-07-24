@@ -57,6 +57,28 @@ public class RagController {
         return Result.success(list);
     }
 
+    @PostMapping("/rag/readAndSplitHtmlDocument")
+    public Result readAndSplitDocument(
+            String url,
+            String splitFileMethod,
+            String methodData) throws Exception
+            {
+        ObjectMapper objectMapper = new ObjectMapper();
+        Map<String, Object> methodDataMap;
+        try {
+            methodDataMap = objectMapper.readValue(methodData, new TypeReference<>() {});
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Invalid methodData JSON format", e);
+        }
+
+        // 封装为 SplitConfig
+        SplitConfig config = new SplitConfig(splitFileMethod, methodDataMap);
+
+        // 调用 Service，保持变量名不变
+        List<String> list = ragService.readAndSplitDocument(url, config);
+        return Result.success(list);
+    }
+
     @ApiLog(apiName = "RAG写入向量库", description = "将文档写入向量库", logResponse = true, logRequest = false)
     @PreAuthorize("hasAuthority('/rag/writeDocumentsToVectorStore')")
     @PostMapping("/rag/writeDocumentsToVectorStore")
