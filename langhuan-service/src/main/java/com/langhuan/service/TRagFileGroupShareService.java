@@ -2,14 +2,13 @@ package com.langhuan.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.langhuan.dao.TRagFileGroupShareDao;
 import com.langhuan.model.domain.TRagFileGroupShare;
 import com.langhuan.model.mapper.TRagFileGroupShareMapper;
 import com.langhuan.utils.other.SecurityUtils;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -23,10 +22,10 @@ import java.util.Map;
 @Service
 public class TRagFileGroupShareService extends ServiceImpl<TRagFileGroupShareMapper, TRagFileGroupShare> {
 
-    private final JdbcTemplate jdbcTemplate;
+    private final TRagFileGroupShareDao tRagFileGroupShareDao;
 
-    public TRagFileGroupShareService(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+    public TRagFileGroupShareService(TRagFileGroupShareDao tRagFileGroupShareDao) {
+        this.tRagFileGroupShareDao = tRagFileGroupShareDao;
     }
 
     /**
@@ -114,51 +113,14 @@ public class TRagFileGroupShareService extends ServiceImpl<TRagFileGroupShareMap
     }
 
     /**
-     * 获取文件组的分享列表（使用JdbcTemplate联表查询用户名）
+     * 获取文件组的分享列表（委托给Dao层处理）
      * 
      * @param fileGroupId 文件组ID
      * @param sharedWith  被分享的用户名
      * @return 分享列表（包含用户名信息）
      */
     public List<Map<String, Object>> getFileGroupShares(Integer fileGroupId, String sharedWith) {
-        log.info("Getting file group shares: fileGroupId={}, sharedWith={}", fileGroupId, sharedWith);
-        
-        StringBuilder sql = new StringBuilder();
-        List<Object> params = new ArrayList<>();
-        
-        sql.append("""
-                SELECT 
-                    fgs.id,
-                    fgs.file_group_id as "fileGroupId",
-                    fgs.shared_with as "sharedWith",
-                    fgs.can_read as "canRead",
-                    fgs.can_add as "canAdd",
-                    fgs.can_update as "canUpdate",
-                    fgs.can_delete as "canDelete",
-                    fgs.shared_by as "sharedBy",
-                    fgs.shared_at as "sharedAt",
-                    u1.name as "sharedWithUserName",
-                    u2.name as "sharedByUserName"
-                FROM t_rag_file_group_share fgs
-                LEFT JOIN t_user u1 ON fgs.shared_with = u1.username
-                LEFT JOIN t_user u2 ON fgs.shared_by = u2.username
-                WHERE 1=1
-                """);
-        
-        // 动态添加查询条件
-        if (fileGroupId != null) {
-            sql.append(" AND fgs.file_group_id = ?");
-            params.add(fileGroupId);
-        }
-        
-        if (sharedWith != null && !sharedWith.trim().isEmpty()) {
-            sql.append(" AND fgs.shared_with = ?");
-            params.add(sharedWith);
-        }
-        
-        sql.append(" ORDER BY fgs.shared_at DESC");
-        
-        return jdbcTemplate.queryForList(sql.toString(), params.toArray());
+        return tRagFileGroupShareDao.getFileGroupShares(fileGroupId, sharedWith);
     }
 
 }

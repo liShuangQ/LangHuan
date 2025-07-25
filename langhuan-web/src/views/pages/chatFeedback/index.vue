@@ -1,6 +1,6 @@
 <template>
 
-    <div class="box-border p-3 bg-white">
+    <div class="box-border p-3 pb-0 pt-7 bg-white">
         <div class="ml-1">
             <ElementFormC ref="formComRef" :formConfig="formConfig" :formItemConfig="formItemConfig"
                 @handle="formHandle">

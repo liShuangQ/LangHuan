@@ -41,6 +41,8 @@ export function useChat() {
         messages.value.push(userMessage, assistantMessage);
         canSend.value = false;
 
+        console.log(chatParams,'chatParamschatParams');
+
         try {
             const res = await api.sendChatMessage(
                 {

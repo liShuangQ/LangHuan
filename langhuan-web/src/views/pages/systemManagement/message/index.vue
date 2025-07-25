@@ -29,7 +29,7 @@
 
 
         <!-- 通知列表表格 -->
-        <div style="height: calc(100% - 170px)" class="mt-2">
+        <div style="height: calc(100% - 160px)" class="mt-2">
             <ElementTableC ref="tableComRef" :paginationConfig="paginationConfig" :tableColumnConfig="tableColumnConfig"
                 :tableConfig="tableConfig" :tableData="tableData" @handle="tableHandle">
                 <template #content-buttonSlot="props">

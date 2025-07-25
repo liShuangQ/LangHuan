@@ -16,7 +16,7 @@
                 </template>
             </ElementFormC>
         </div>
-        <div style="height: calc(100% - 120px)" class="mt-2">
+        <div style="height: calc(100% - 100px)" class="mt-2">
             <ElementTableC ref="tableComRef" :paginationConfig="paginationConfig" :tableColumnConfig="tableColumnConfig"
                 :tableConfig="tableConfig" :tableData="tableData" @handle="tableHandle">
                 <template #content-buttonSlot="props">
