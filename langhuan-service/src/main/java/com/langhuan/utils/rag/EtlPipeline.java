@@ -37,8 +37,7 @@ public class EtlPipeline {
             VectorStoreLoader vectorStoreLoader,
             RagMetadataFactory metadataFactory,
             DocumentStreamUtils documentStreamUtils,
-            ChatGeneralAssistanceService chatGeneralAssistanceService
-    ) {
+            ChatGeneralAssistanceService chatGeneralAssistanceService) {
         this.documentExtractor = documentExtractor;
         this.textTransformer = textTransformer;
         this.vectorStoreLoader = vectorStoreLoader;
@@ -49,6 +48,17 @@ public class EtlPipeline {
 
     public List<String> process(MultipartFile file, SplitConfig splitConfig) {
         String rawText = documentExtractor.extract(file);
+        TextSplitter splitter = SplitterFactory.createSplitter(splitConfig, chatGeneralAssistanceService);
+        return textTransformer.transform(rawText, splitter);
+    }
+
+    public List<String> process(String text, SplitConfig splitConfig, Boolean isText) {
+        TextSplitter splitter = SplitterFactory.createSplitter(splitConfig, chatGeneralAssistanceService);
+        return textTransformer.transform(text, splitter);
+    }
+
+    public List<String> process(String url, SplitConfig splitConfig) throws Exception {
+        String rawText = documentExtractor.extract(url);
         TextSplitter splitter = SplitterFactory.createSplitter(splitConfig, chatGeneralAssistanceService);
         return textTransformer.transform(rawText, splitter);
     }

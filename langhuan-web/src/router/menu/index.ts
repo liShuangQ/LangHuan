@@ -53,12 +53,12 @@ const menu: PagesMenu[] = [
             {
                 title: "提示词优化",
                 path: "/pages/prompt/promptOptimize",
-                faPath: ["rag"],
+                faPath: ["prompt"],
             },
             {
                 title: "在用提示词",
                 path: "/pages/prompt/usePrompt",
-                faPath: ["rag"],
+                faPath: ["prompt"],
             },
         ],
     },
@@ -79,15 +79,15 @@ const menu: PagesMenu[] = [
                 faPath: ["rag"],
             },
             {
-                title: "添加文字",
-                path: "/pages/rag/addDocuments",
-                faPath: ["rag"],
-            },
-            {
                 title: "添加文件",
-                path: "/pages/rag/addFile",
+                path: "/pages/rag/addRagDocuments",
                 faPath: ["rag"],
             },
+            // {
+            //     title: "添加文字",
+            //     path: "/pages/rag/addDocuments",
+            //     faPath: ["rag"],
+            // },
             {
                 title: "召回标记",
                 path: "/pages/rag/recallTesting",
@@ -127,12 +127,12 @@ const menu: PagesMenu[] = [
             {
                 title: "系统通知",
                 path: "/pages/systemManagement/message",
-                faPath: ["system"],
+                faPath: ["dailyOperation"],
             },
             {
                 title: "操作日志",
                 path: "/pages/systemManagement/requestLog",
-                faPath: ["system"],
+                faPath: ["dailyOperation"],
             },
         ],
     },

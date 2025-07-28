@@ -39,10 +39,10 @@ public class TApiLogService extends ServiceImpl<TApiLogMapper, TApiLog> {
             condition.like("u.name", username);
         }
         if (startTime != null) {
-            condition.ge("created_at", startTime);
+            condition.ge("al.create_time", startTime);
         }
         if (endTime != null) {
-            condition.le("created_at", endTime);
+            condition.le("al.create_time", endTime);
         }
         String sql = "SELECT al.*, u.name as user_name FROM t_api_log al LEFT JOIN t_user u ON al.user_id = u.username"
                 + condition.getWhereClause() + " ORDER BY al.create_time DESC";

@@ -77,6 +77,41 @@ public class TRagFileGroupShareService extends ServiceImpl<TRagFileGroupShareMap
     }
 
     /**
+     * 批量分享文件组给指定用户列表
+     * 
+     * @param fileGroupId 文件组ID
+     * @param sharedWithList 被分享的用户名列表
+     * @param canRead     是否可读
+     * @param canAdd      是否可添加
+     * @param canUpdate   是否可更新
+     * @param canDelete   是否可删除
+     * @return 成功分享的用户数量
+     */
+    public int shareFileGroupBatch(Integer fileGroupId, List<String> sharedWithList,
+            Boolean canRead, Boolean canAdd,
+            Boolean canUpdate, Boolean canDelete) {
+        log.info("Batch sharing file group {} to users {} with permissions: read={}, add={}, update={}, delete={}",
+                fileGroupId, sharedWithList, canRead, canAdd, canUpdate, canDelete);
+
+        if (sharedWithList == null || sharedWithList.isEmpty()) {
+            return 0;
+        }
+
+        int successCount = 0;
+        for (String sharedWith : sharedWithList) {
+            if (sharedWith != null && !sharedWith.trim().isEmpty()) {
+                boolean success = shareFileGroup(fileGroupId, sharedWith.trim(), canRead, canAdd, canUpdate, canDelete);
+                if (success) {
+                    successCount++;
+                }
+            }
+        }
+
+        log.info("Batch sharing completed. Successfully shared to {}/{} users", successCount, sharedWithList.size());
+        return successCount;
+    }
+
+    /**
      * 取消分享文件组（支持单个或批量用户）
      * 
      * @param fileGroupId 文件组ID

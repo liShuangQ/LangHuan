@@ -373,7 +373,7 @@ let nowRow: any = null;
 
 const addAndChangeFormShowFun = async (t: string, d: any = null) => {
     if (t === "add") {
-        router.push("/pages/rag/addFile");
+        router.push("/pages/rag/addRagDocuments");
     }
     if (t === "change") {
         nowRow = d;

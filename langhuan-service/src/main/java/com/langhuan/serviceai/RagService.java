@@ -36,7 +36,6 @@ public class RagService {
     private final ReRankModelService reRankModelService;
     private final EtlPipeline etlPipeline;
 
-
     public RagService(TRagFileService ragFileService, JdbcTemplate jdbcTemplate,
             VectorStoreConfig vectorStoreConfig, ReRankModelService reRankModelService, EtlPipeline etlPipeline) {
         this.ragFileService = ragFileService;
@@ -96,6 +95,13 @@ public class RagService {
 
     public List<String> readAndSplitDocument(MultipartFile file, SplitConfig splitConfig) {
         return etlPipeline.process(file, splitConfig);
+    }
+
+    public List<String> readAndSplitDocument(String url, SplitConfig splitConfig) throws Exception {
+        if (url.startsWith("http")) {
+            return etlPipeline.process(url, splitConfig);
+        }
+        return etlPipeline.process(url, splitConfig, false);
     }
 
     public String writeDocumentsToVectorStore(List<String> documents, TRagFile ragFile) throws Exception {

@@ -66,18 +66,8 @@
                             !userStore.getAdminAndSelf(props.row.createdBy) ||
                             props.row.visibility === 'public'
                         "
-                        @click="addAndChangeFormShowFun('share', props.row)"
-                        >共享</el-button
-                    >
-                    <el-button
-                        link
-                        type="primary"
-                        :disabled="
-                            !userStore.getAdminAndSelf(props.row.createdBy) ||
-                            props.row.visibility === 'public'
-                        "
-                        @click="addAndChangeFormShowFun('unshare', props.row)"
-                        >共享信息</el-button
+                        @click="addAndChangeFormShowFun('shareManage', props.row)"
+                        >共享管理</el-button
                     >
                     <el-button
                         v-if="pageConfig.relation"
@@ -117,23 +107,14 @@
             </template>
         </el-dialog>
 
-        <el-dialog v-model="shareDialogVisible" title="共享配置" width="600">
-            <ShareConfig
-                ref="shareConfigRef"
+        <el-dialog v-model="shareManageDialogVisible" title="共享管理" width="900">
+            <ShareManage
+                ref="shareManageRef"
                 :file-group-id="currentFileGroupId"
-                :original-data="currentFileGroupData"
                 :userStoreInfo="toRaw(userStore.info)"
-                @confirm="handleShareConfirm"
-                @cancel="handleShareCancel"
-            />
-        </el-dialog>
-
-        <el-dialog v-model="unshareDialogVisible" title="共享信息" width="900">
-            <UnshareConfig
-                ref="unshareConfigRef"
-                :file-group-id="currentFileGroupId"
-                @confirm="handleUnshareConfirm"
-                @cancel="handleUnshareCancel"
+                @share-confirm="handleShareConfirm"
+                @unshare-confirm="handleUnshareConfirm"
+                @cancel="handleShareManageCancel"
             />
         </el-dialog>
     </div>
@@ -163,18 +144,15 @@ import dayjs from "dayjs";
 import { CheckboxValueType, ElMessageBox } from "element-plus";
 import pageConfig from "./pageConfig";
 import useUserStore from "@/store/user";
-import ShareConfig from "./share.vue";
-import UnshareConfig from "./unshare.vue";
+import ShareManage from "./shareManage.vue";
 
 const formComRef = ref<FormDefineExpose>();
 const tableComRef = ref<TableDefineExpose>();
-const shareConfigRef = ref<InstanceType<typeof ShareConfig>>();
-const unshareConfigRef = ref<InstanceType<typeof UnshareConfig>>();
+const shareManageRef = ref<InstanceType<typeof ShareManage>>();
 const userStore = useUserStore();
 
-// 共享配置相关状态
-const shareDialogVisible = ref(false);
-const unshareDialogVisible = ref(false);
+// 共享管理相关状态
+const shareManageDialogVisible = ref(false);
 const currentFileGroupId = ref<string | number>("");
 const currentFileGroupData = ref<any>({});
 const formHandle = (type: string, key: string, data: any, other: any) => {
@@ -235,8 +213,7 @@ nextTick(() => {
 // 处理共享配置确认
 const handleShareConfirm = (shareData: any) => {
     // 将共享用户数组转换为逗号分隔的字符串
-    // const sharedWith = shareData.sharedUsers.join(",");
-    const sharedWith = shareData.sharedUsers;
+    const sharedWith = shareData.sharedUsers.join(",");
 
     http.request<any>({
         url: "/rag/file-group/share",
@@ -254,8 +231,8 @@ const handleShareConfirm = (shareData: any) => {
     })
         .then((res) => {
             if (res.code === 200) {
-                ElMessage.success("共享配置保存成功");
-                shareDialogVisible.value = false;
+                ElMessage.success(res.data);
+                shareManageDialogVisible.value = false;
                 getUserPageList();
             }
         })
@@ -265,20 +242,15 @@ const handleShareConfirm = (shareData: any) => {
         });
 };
 
-// 处理共享配置取消
-const handleShareCancel = () => {
-    shareDialogVisible.value = false;
+// 处理共享管理取消
+const handleShareManageCancel = () => {
+    shareManageDialogVisible.value = false;
 };
 
-// 处理共享信息确认
+// 处理取消共享确认
 const handleUnshareConfirm = () => {
-    unshareDialogVisible.value = false;
+    shareManageDialogVisible.value = false;
     getUserPageList(); // 刷新列表
-};
-
-// 处理共享信息取消
-const handleUnshareCancel = () => {
-    unshareDialogVisible.value = false;
 };
 
 const addAndChangeFormComRef = ref<FormDefineExpose>();
@@ -376,25 +348,17 @@ const addAndChangeFormShowFun = async (t: string, d: any = null) => {
         addAndChangeFormDialogTit.value = "";
         addAndChangeFormVisible.value = false;
     }
-    if (t === "share") {
+    if (t === "shareManage") {
         currentFileGroupId.value = d.id;
         currentFileGroupData.value = d;
-        shareDialogVisible.value = true;
+        shareManageDialogVisible.value = true;
         nextTick(() => {
-            shareConfigRef.value!.resetForm({
+            shareManageRef.value?.resetShareForm({
                 canRead: d.canRead || false,
                 canAdd: d.canAdd || false,
                 canUpdate: d.canUpdate || false,
                 canDelete: d.canDelete || false,
             } as any);
-        });
-    }
-
-    if (t === "unshare") {
-        currentFileGroupId.value = d.id;
-        unshareDialogVisible.value = true;
-        nextTick(() => {
-            unshareConfigRef.value?.refreshList();
         });
     }
 };

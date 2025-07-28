@@ -136,7 +136,7 @@ public class RagFileGroupController {
     }
 
     /**
-     * 分享文件组给指定用户
+     * 分享文件组给指定用户（支持单个或多个用户，多个时用逗号分割）
      */
     // @PreAuthorize("hasAuthority('/rag/file-group/share')")
     @PostMapping("/share")
@@ -146,7 +146,7 @@ public class RagFileGroupController {
             @RequestParam(defaultValue = "false") Boolean canAdd,
             @RequestParam(defaultValue = "false") Boolean canUpdate,
             @RequestParam(defaultValue = "false") Boolean canDelete) {
-        log.info("Sharing file group {} to user {} with permissions: read={}, add={}, update={}, delete={}",
+        log.info("Sharing file group {} to users {} with permissions: read={}, add={}, update={}, delete={}",
                 fileGroupId, sharedWith, canRead, canAdd, canUpdate, canDelete);
 
         // 检查文件组是否存在
@@ -163,15 +163,35 @@ public class RagFileGroupController {
             return Result.error("无权限分享此文件组");
         }
 
-        // 不能分享给自己
-        if (currentUser.equals(sharedWith)) {
+        // 解析逗号分隔的用户列表
+        List<String> userList = Arrays.asList(sharedWith.split(","))
+                .stream()
+                .map(String::trim)
+                .filter(user -> !user.isEmpty())
+                .collect(Collectors.toList());
+
+        if (userList.isEmpty()) {
+            return Result.error("分享用户不能为空");
+        }
+
+        // 检查是否包含自己
+        if (userList.contains(currentUser)) {
             return Result.error("不能分享给自己");
         }
 
-        boolean success = ragFileGroupShareService.shareFileGroup(
-                fileGroupId, sharedWith, canRead, canAdd, canUpdate, canDelete);
+        // 执行批量分享
+        int successCount = ragFileGroupShareService.shareFileGroupBatch(
+                fileGroupId, userList, canRead, canAdd, canUpdate, canDelete);
 
-        return success ? Result.success("分享成功") : Result.error("分享失败");
+        if (successCount > 0) {
+            if (userList.size() == 1) {
+                return Result.success("分享成功");
+            } else {
+                return Result.success(String.format("成功分享给%d个用户", successCount));
+            }
+        } else {
+            return Result.error("分享失败");
+        }
     }
 
     /**

@@ -46,7 +46,7 @@ spring:
           model: qwen3:1.7b
       embedding:
         options:
-          model: mxbai-embed-large:latest
+          model: dengcao/Qwen3-Embedding-0.6B:Q8_0
         base-url: http://127.0.0.1:11434
         api-key: 111
     vectorstore:

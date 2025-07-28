@@ -38,13 +38,17 @@ public class RagController {
             MultipartFile file,
             String splitFileMethod,
             String methodData) {
-        /*JSONObject jsonObject = JSONUtil.parseObj(methodData);
-        List<String> list = ragService.readAndSplitDocument(file, splitFileMethod, jsonObject);
-        return Result.success(list);*/
+        /*
+         * JSONObject jsonObject = JSONUtil.parseObj(methodData);
+         * List<String> list = ragService.readAndSplitDocument(file, splitFileMethod,
+         * jsonObject);
+         * return Result.success(list);
+         */
         ObjectMapper objectMapper = new ObjectMapper();
         Map<String, Object> methodDataMap;
         try {
-            methodDataMap = objectMapper.readValue(methodData, new TypeReference<>() {});
+            methodDataMap = objectMapper.readValue(methodData, new TypeReference<>() {
+            });
         } catch (Exception e) {
             throw new IllegalArgumentException("Invalid methodData JSON format", e);
         }
@@ -56,17 +60,41 @@ public class RagController {
         List<String> list = ragService.readAndSplitDocument(file, config);
         return Result.success(list);
     }
+
+    @PreAuthorize("hasAuthority('/rag/readAndSplitDocument')")
+    @PostMapping("/rag/readAndSplitTextDocument")
+    public Result readAndSplitTextDocument(
+            String text,
+            String splitFileMethod,
+            String methodData) throws Exception {
+        ObjectMapper objectMapper = new ObjectMapper();
+        Map<String, Object> methodDataMap;
+        try {
+            methodDataMap = objectMapper.readValue(methodData, new TypeReference<>() {
+            });
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Invalid methodData JSON format", e);
+        }
+
+        // 封装为 SplitConfig
+        SplitConfig config = new SplitConfig(splitFileMethod, methodDataMap);
+
+        // 调用 Service，保持变量名不变
+        List<String> list = ragService.readAndSplitDocument(text, config);
+        return Result.success(list);
+    }
+
     @PreAuthorize("hasAuthority('/rag/readAndSplitDocument')")
     @PostMapping("/rag/readAndSplitHtmlDocument")
     public Result readAndSplitHtmlDocument(
             String url,
             String splitFileMethod,
-            String methodData) throws Exception
-            {
+            String methodData) throws Exception {
         ObjectMapper objectMapper = new ObjectMapper();
         Map<String, Object> methodDataMap;
         try {
-            methodDataMap = objectMapper.readValue(methodData, new TypeReference<>() {});
+            methodDataMap = objectMapper.readValue(methodData, new TypeReference<>() {
+            });
         } catch (Exception e) {
             throw new IllegalArgumentException("Invalid methodData JSON format", e);
         }
