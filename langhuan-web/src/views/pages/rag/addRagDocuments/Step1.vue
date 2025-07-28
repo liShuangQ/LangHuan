@@ -11,14 +11,16 @@
 
 <script setup lang="ts">
 import { ref, computed, nextTick } from "vue";
+import stepData from "./stepData";
 import Step1_file from "./Step1_file.vue";
 import Step1_text from "./Step1_text.vue";
-import stepData from "./stepData";
+import Step1_html from "./Step1_html.vue";
 
 const emit = defineEmits(["next", "setNextDisabled"]);
 const currentStepRef = ref<any>(null);
 
 // 根据stepData中的fileType来决定显示哪个组件
+// HACK
 const currentComponent = computed(() => {
     const fileType: FileType = stepData.value?.fileType;
     console.log(stepData.value, "fileTypefileType");
@@ -27,6 +29,8 @@ const currentComponent = computed(() => {
         return Step1_file;
     } else if (fileType === "text") {
         return Step1_text;
+    } else if (fileType === "html") {
+        return Step1_html;
     }
     // 默认显示文件上传组件
     return Step1_file;

@@ -5,6 +5,7 @@
                 <h3 class="text-xl font-semibold mb-6 text-center">
                     选择输入方式
                 </h3>
+                <!-- HACK -->
                 <div class="space-y-6">
                     <div
                         @click="selectType('file')"
@@ -31,9 +32,6 @@
                                     ></div>
                                 </div>
                             </div>
-                            <el-icon class="mr-4 text-3xl text-blue-600"
-                                ><Upload
-                            /></el-icon>
                             <div>
                                 <div class="font-semibold text-lg mb-1">
                                     文件上传
@@ -69,15 +67,47 @@
                                     ></div>
                                 </div>
                             </div>
-                            <el-icon class="mr-4 text-3xl text-green-600"
-                                ><Edit
-                            /></el-icon>
                             <div>
                                 <div class="font-semibold text-lg mb-1">
                                     文本输入
                                 </div>
                                 <div class="text-sm text-gray-500">
                                     直接输入文本内容
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div
+                        @click="selectType('html')"
+                        :class="[
+                            'w-full p-4 border-2 rounded-xl cursor-pointer transition-all duration-200',
+                            selectedType === 'html'
+                                ? 'border-green-500 bg-green-50 shadow-md'
+                                : 'border-gray-300 hover:border-green-400 hover:shadow-sm',
+                        ]"
+                    >
+                        <div class="flex items-center">
+                            <div class="flex items-center mr-4">
+                                <div
+                                    :class="[
+                                        'w-5 h-5 rounded-full border-2 flex items-center justify-center',
+                                        selectedType === 'html'
+                                            ? 'border-green-500 bg-green-500'
+                                            : 'border-gray-400',
+                                    ]"
+                                >
+                                    <div
+                                        v-if="selectedType === 'html'"
+                                        class="w-2 h-2 bg-white rounded-full"
+                                    ></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="font-semibold text-lg mb-1">
+                                    链接输入
+                                </div>
+                                <div class="text-sm text-gray-500">
+                                    直接输入链接URL
                                 </div>
                             </div>
                         </div>

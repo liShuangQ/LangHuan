@@ -22,6 +22,8 @@ import { FormDefineExpose } from "@/components/globalComponents/ElementFormC/for
 const emit = defineEmits(["next", "end", "setNextDisabled", "formHandle"]);
 const fileFormRef = ref<FormDefineExpose>();
 
+
+// HACK
 const init = async () => {
     emit("setNextDisabled", false);
     const res = await getFileGroupOption();

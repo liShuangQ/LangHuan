@@ -11,7 +11,6 @@
                     <el-radio border label="PatternTokenTextSplitter"
                         >正则切分</el-radio
                     >
-                    <!-- <el-radio border label="OpenNLPSentenceSplitter">NLP切分</el-radio> -->
                     <!-- <el-radio border label="LlmTextSplitter">大模型切分</el-radio> -->
                 </el-radio-group>
             </div>
@@ -39,9 +38,6 @@
                         size="small"
                     />
                 </div>
-                <div
-                    v-else-if="splitFileMethod === 'OpenNLPSentenceSplitter'"
-                ></div>
                 <div v-else-if="splitFileMethod === 'LlmTextSplitter'">
                     <div class="text-xs">窗口大小</div>
                     <el-slider
@@ -110,7 +106,6 @@ const methodData = ref<MethodData>({
     PatternTokenTextSplitter: {
         splitPattern: "(?:={6})\\s*",
     },
-    OpenNLPSentenceSplitter: {},
     LlmTextSplitter: {
         windowSize: 200,
         modelName: "",
@@ -120,6 +115,7 @@ const methodData = ref<MethodData>({
 // 获取支持的模型列表
 chatModelOption.value = toRaw(aimodel().getModelOptions()) as any;
 
+// HACK
 const getDocumentParam = () => {
     let param: any = {};
     let url: string = "";
@@ -139,6 +135,14 @@ const getDocumentParam = () => {
         url = "/rag/readAndSplitTextDocument";
         param = {
             text: stepData.value.text,
+            splitFileMethod: splitFileMethod.value,
+            methodData: methodDataJson,
+        };
+    }
+    if (stepData.value.fileType === "html") {
+        url = "/rag/readAndSplitHtmlDocument";
+        param = {
+            html: stepData.value.html,
             splitFileMethod: splitFileMethod.value,
             methodData: methodDataJson,
         };
