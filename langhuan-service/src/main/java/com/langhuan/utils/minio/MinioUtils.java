@@ -1,8 +1,6 @@
 package com.langhuan.utils.minio;
 
 import io.minio.*;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 
 import java.io.InputStream;
 
@@ -10,18 +8,14 @@ import java.io.InputStream;
  * @author Afish
  * @date 2025/7/29 09:25
  */
-@Slf4j
 public class MinioUtils {
 
     private MinioClient minioClient;
     private String bucketName;
-    private String minioUrl;
 
-
-    public MinioUtils(MinioClient minioClient, String bucketName, String minioUrl) {
+    public MinioUtils(MinioClient minioClient, String bucketName) {
         this.minioClient = minioClient;
         this.bucketName = bucketName;
-        this.minioUrl = minioUrl;
     }
 
     public void createBucket() throws Exception {
@@ -59,23 +53,4 @@ public class MinioUtils {
                         .build()
         );
     }
-
-    /**
-     * 从 URL 中提取 MinIO 的 objectName
-     */
-    public String extractObjectName(String url) {
-        if (url == null || url.isEmpty()) return null;
-        try {
-            String baseUrl = minioUrl + "/" + bucketName + "/";
-            if (url.startsWith(baseUrl)) {
-                return url.substring(baseUrl.length());
-            }
-            log.warn("Unrecognized MinIO URL format: {}", url);
-            return null;
-        } catch (Exception e) {
-            log.error("Error extracting object name from URL: {}", url, e);
-            return null;
-        }
-    }
-
 }
