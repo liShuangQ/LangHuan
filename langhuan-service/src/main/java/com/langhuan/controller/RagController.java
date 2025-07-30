@@ -37,7 +37,7 @@ public class RagController {
     public Result readAndSplitFileDocument(
             MultipartFile file,
             String splitFileMethod,
-            String methodData) {
+            String methodData) throws Exception {
         /*
          * JSONObject jsonObject = JSONUtil.parseObj(methodData);
          * List<String> list = ragService.readAndSplitDocument(file, splitFileMethod,

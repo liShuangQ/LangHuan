@@ -1,7 +1,15 @@
 package com.langhuan.utils.rag.extractor;
 
+import cn.hutool.core.util.IdUtil;
+import com.langhuan.model.domain.TFileUrl;
+import com.langhuan.service.CacheService;
+import com.langhuan.service.MinioService;
+import com.langhuan.service.TFileUrlService;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.Resource;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.xwpf.usermodel.*;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -16,13 +24,18 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
+import static com.langhuan.common.Constant.CACHE_KEY;
 import static com.langhuan.utils.http.GetRequestUtils.sendGetRequest;
 import static org.apache.poi.xdgf.util.Util.sanitizeFilename;
 
-import org.apache.poi.xwpf.usermodel.*;
+
 import java.io.*;
-import java.util.UUID;
+
 /**
  * @author Afish
  * @date 2025/7/23 13:42
@@ -30,17 +43,52 @@ import java.util.UUID;
 @Slf4j
 @Component
 public class DocumentExtractor {
-    @Value("${project.folder:}")
-    private String downloadDir;
 
-    @SneakyThrows
-    public String extract(MultipartFile file) {
-        // 检查是否为DOCX文件
+    @Value("${project.folder:}")
+    private String minioFolder; // 在 MinIO 中模拟的“文件夹”前缀
+
+    @Value("${minio.bucket-name}")
+    private String bucketName;
+
+    @Value("${minio.url}")
+    private String minioUrl;
+
+    private String publicBaseUrl; // 用于生成图片访问链接
+
+    @Resource
+    private final MinioService minioService;
+
+    @Resource
+    private CacheService cacheService;
+
+    @Resource
+    private TFileUrlService tFileUrlService;
+
+
+    public DocumentExtractor(MinioService minioService) {
+        this.minioService = minioService;
+    }
+
+    @PostConstruct
+    public void init() {
+        // 确保 bucket 存在
+        try {
+            minioService.ensureBucketExists();
+        } catch (Exception e) {
+            log.error("Failed to ensure bucket exists", e);
+        }
+
+        publicBaseUrl = minioUrl + "/" + bucketName;
+        if (!publicBaseUrl.endsWith("/")) {
+            publicBaseUrl += "/";
+        }
+    }
+
+    public String extract(MultipartFile file) throws Exception {
         if (file.getOriginalFilename() != null &&
                 file.getOriginalFilename().toLowerCase().endsWith(".docx")) {
             return extractDocxWithImages(file);
         } else {
-            // 非DOCX文件使用原有Tika处理
             return extractWithTika(file);
         }
     }
@@ -61,138 +109,146 @@ public class DocumentExtractor {
         return content;
     }
 
-    @SneakyThrows
-    private String extractDocxWithImages(MultipartFile file) {
+    private String extractDocxWithImages(MultipartFile file) throws Exception {
         StringBuilder markdownContent = new StringBuilder();
+
+        //生成随机 ID 并存入缓存
+        int randomId = (int) IdUtil.getSnowflakeNextId();
+        cacheService.putId(CACHE_KEY, randomId);
+        List<TFileUrl> fileUrlList = new ArrayList<>(); // 用于存储图片信息的列表
+
         try (InputStream is = file.getInputStream();
              XWPFDocument document = new XWPFDocument(is)) {
 
-            // 确保下载目录存在
-            File outputDir = new File(downloadDir);
-            if (!outputDir.exists()) outputDir.mkdirs();
-
-            // 处理文档中的所有元素
             for (IBodyElement element : document.getBodyElements()) {
                 if (element instanceof XWPFParagraph) {
-                    processParagraph((XWPFParagraph) element, markdownContent);
-                    // 段落结束后添加换行
+                    processParagraph((XWPFParagraph) element, markdownContent, fileUrlList, randomId); // 修改以包含fileUrlList
                     markdownContent.append("\n");
                 } else if (element instanceof XWPFTable) {
-                    processTable((XWPFTable) element, markdownContent);
-                    markdownContent.append("\n\n");  // 表格后添加额外换行
+                    processTable((XWPFTable) element, markdownContent, fileUrlList, randomId);
+                    markdownContent.append("\n\n");
                 }
+            }
+
+            // 批量插入数据库
+            if (!fileUrlList.isEmpty()) {
+                tFileUrlService.saveBatch(fileUrlList);
             }
         }
         return markdownContent.toString().trim();
     }
 
-    private void processParagraph(XWPFParagraph paragraph, StringBuilder markdownContent) {
+    private void processParagraph(XWPFParagraph paragraph, StringBuilder markdownContent, List<TFileUrl> fileUrlList, int randomId) {
         for (XWPFRun run : paragraph.getRuns()) {
-            // 原样输出文本内容（不处理样式）
             String text = run.getText(0);
             if (text != null && !text.isEmpty()) {
                 markdownContent.append(text);
             }
 
-            // 处理图片（使用Markdown格式）
             for (XWPFPicture picture : run.getEmbeddedPictures()) {
-                markdownContent.append(handleImage(picture.getPictureData()));
+                handleImage(picture.getPictureData(), fileUrlList, randomId).ifPresent(markdownContent::append);
             }
         }
     }
 
-    private void processTable(XWPFTable table, StringBuilder markdownContent) {
-        // 原样输出表格内容（使用制表符分隔）
+    private void processTable(XWPFTable table, StringBuilder markdownContent, List<TFileUrl> fileUrlList, int randomId) {
         for (XWPFTableRow row : table.getRows()) {
             for (XWPFTableCell cell : row.getTableCells()) {
                 for (XWPFParagraph paragraph : cell.getParagraphs()) {
-                    processParagraph(paragraph, markdownContent);
+                    processParagraph(paragraph, markdownContent, fileUrlList, randomId);
                 }
-                markdownContent.append("\t"); // 单元格分隔符
+                markdownContent.append("\t"); // 使用制表符分隔单元格内容
             }
-            markdownContent.append("\n"); // 行结束
+            markdownContent.append("\n"); // 每行结束后换行
         }
     }
 
     @SneakyThrows
-    private String handleImage(XWPFPictureData pictureData) {
-        // 生成唯一文件名
+    private Optional<String> handleImage(XWPFPictureData pictureData, List<TFileUrl> fileUrlList, int randomId) {
         String extension = pictureData.suggestFileExtension();
         String fileName = UUID.randomUUID() + "." + extension;
-        String filePath = downloadDir + fileName;
-        File imageFile = new File(downloadDir, fileName);
+        String objectName = (minioFolder != null ? minioFolder + "/" : "") + fileName;
 
-        // 保存图片到本地
-        try (OutputStream os = new FileOutputStream(imageFile)) {
-            os.write(pictureData.getData());
+        try (InputStream inputStream = new ByteArrayInputStream(pictureData.getData())) {
+            minioService.handleUpload(objectName, inputStream, pictureData.getData().length);
+        } catch (Exception e) {
+            log.error("Failed to upload image to MinIO", e);
+            return Optional.empty();
         }
 
-        // 返回Markdown格式的图片引用
-        return "\n![" + imageFile.getName() + "](" + filePath + ")\n";
+        // 生成可访问的 URL
+        String imageUrl = publicBaseUrl + objectName;
+
+        // 创建 TFileUrl 实体并添加到列表中
+        TFileUrl fileUrl = new TFileUrl();
+        fileUrl.setFileId(randomId);
+        fileUrl.setFUrl(imageUrl);
+        fileUrl.setFStatus("临时");
+        fileUrlList.add(fileUrl);
+
+        return Optional.of("\n![image](" + imageUrl + ")\n");
     }
 
     /**
-     * 发送GET请求并解析HTML中的图片，下载图片并替换为Markdown格式
-     *
-     * @param url         请求的URL
-     * @return 处理后的HTML内容（图片被替换为Markdown格式）
-     * @throws Exception 如果请求或处理过程中发生异常
+     * 提取 HTML 内容并下载图片到 MinIO
      */
-    public  String extract(String url) throws Exception {
-        // 1. 发送GET请求获取HTML内容
+    public String extract(String url) throws Exception {
         String htmlContent = sendGetRequest(url);
 
-        // 2. 创建下载目录
-        Path dirPath = Paths.get(downloadDir);
+        Path dirPath = Paths.get(minioFolder);
         if (!Files.exists(dirPath)) {
-            Files.createDirectories(dirPath);
+            Files.createDirectories(dirPath); // 本地调试用，可选
         }
 
-        // 3. 使用Jsoup解析HTML
         org.jsoup.nodes.Document doc = Jsoup.parse(htmlContent);
         Elements imgs = doc.select("img");
 
-        // 4. 遍历所有图片
+        //生成随机 ID 并存入缓存
+        int randomId = (int) IdUtil.getSnowflakeNextId();
+        cacheService.putId(CACHE_KEY, randomId);
+
+        // 用于批量插入的列表
+        List<TFileUrl> fileUrlList = new ArrayList<>();
+
         for (Element img : imgs) {
             String src = img.attr("src");
             String alt = img.hasAttr("alt") ? img.attr("alt") : "image";
 
-            if (src.isEmpty()) {
+            if (src.isEmpty()) continue;
+
+            URL imageUrl = new URL(new URL(url), src);
+            String filename = sanitizeFilename(imageUrl.getPath());
+            if (!filename.contains(".")) {
+                filename += ".jpg"; // 默认扩展名
+            }
+            String objectName = (minioFolder != null ? minioFolder + "/" : "") + filename;
+
+            try (InputStream in = imageUrl.openStream()) {
+                minioService.handleUpload(objectName, in, -1); // -1 表示未知大小
+            } catch (Exception e) {
+                log.error("Failed to upload image from URL to MinIO: {}", imageUrl, e);
                 continue;
             }
 
-            // 5. 下载图片
-            URL imageUrl = new URL(new URL(url), src); // 处理相对路径
-            String filename = sanitizeFilename(imageUrl.getPath());
-            String localPath = downloadDir + File.separator + filename;
+            // 构建公开访问 URL
+            String publicImageUrl = publicBaseUrl + objectName;
 
-            downloadImage(imageUrl, localPath);
+            // 创建 TFileUrl 实体
+            TFileUrl fileUrl = new TFileUrl();
+            fileUrl.setFileId(randomId);
+            fileUrl.setFUrl(publicImageUrl);
+            fileUrl.setFStatus("临时"); // 或 "temp"，根据你的业务定义
+            fileUrlList.add(fileUrl);
 
-            // 6. 构建Markdown图片链接
-            String markdownLink = String.format("![%s](%s)", alt, localPath);
-
-            // 7. 替换img标签为Markdown文本
+            String markdownLink = String.format("![%s](%s%s)", alt, publicBaseUrl, objectName);
             img.replaceWith(new org.jsoup.nodes.TextNode(markdownLink));
         }
 
-        // 8. 返回处理后的HTML文本（此时img标签已被替换）
-        return doc.body().text();
-    }
-
-    /**
-     * 下载图片到本地
-     */
-    private static void downloadImage(URL imageUrl, String localPath) throws IOException {
-        try (InputStream in = imageUrl.openStream();
-             FileOutputStream out = new FileOutputStream(localPath)) {
-            byte[] buffer = new byte[1024];
-            int bytesRead;
-            while ((bytesRead = in.read(buffer)) != -1) {
-                out.write(buffer, 0, bytesRead);
-            }
-            log.info("Downloaded image: {}", localPath);
-        } catch (IOException e) {
-            log.error("Failed to download image: {}", imageUrl, e);
+        // 批量插入数据库
+        if (!fileUrlList.isEmpty()) {
+            tFileUrlService.saveBatch(fileUrlList);
         }
+
+        return doc.body().text();
     }
 }

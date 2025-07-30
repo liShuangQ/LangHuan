@@ -221,12 +221,12 @@ public class ChatService {
                 : ToolCallbacks.from();
 
         // 获取用户提示词模板，优先使用缓存中的配置，否则使用默认值
-        String AINULLDEFAULTUSERPROMPT = TPromptsService
-                .getCachedTPromptsByMethodName("AINULLDEFAULTUSERPROMPT");
-
-        if (AINULLDEFAULTUSERPROMPT == null) {
-            AINULLDEFAULTUSERPROMPT = Constant.AINULLDEFAULTUSERPROMPT;
-        }
+        String AINULLDEFAULTUSERPROMPT = null;
+            AINULLDEFAULTUSERPROMPT = TPromptsService
+                    .getCachedTPromptsByMethodName("AINULLDEFAULTUSERPROMPT");
+            if (AINULLDEFAULTUSERPROMPT == null){
+                AINULLDEFAULTUSERPROMPT = Constant.AINULLDEFAULTUSERPROMPT;
+            }
 
         // 替换模板变量，生成最终的用户提示词
         String userPrompt = AINULLDEFAULTUSERPROMPT.replace("{user_prompt}",

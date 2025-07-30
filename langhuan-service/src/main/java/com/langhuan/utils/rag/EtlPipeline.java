@@ -46,7 +46,7 @@ public class EtlPipeline {
         this.chatGeneralAssistanceService = chatGeneralAssistanceService;
     }
 
-    public List<String> process(MultipartFile file, SplitConfig splitConfig) {
+    public List<String> process(MultipartFile file, SplitConfig splitConfig) throws Exception {
         String rawText = documentExtractor.extract(file);
         TextSplitter splitter = SplitterFactory.createSplitter(splitConfig, chatGeneralAssistanceService);
         return textTransformer.transform(rawText, splitter);

@@ -89,6 +89,36 @@ const init = async () => {
             },
         ]);
     }
+    if (stepData.value.fileType === "html") {
+        fileFormRef.value!.setFormOption([
+            {
+                key: "fileName",
+                value: "",
+                disabled: false,
+            },
+            {
+                key: "fileType",
+                value: "html",
+            },
+            {
+                key: "fileSize",
+                value: "无",
+            },
+            {
+                key: "documentNum",
+                value: stepData.value.fineTuneData.length,
+            },
+            {
+                key: "fileGroupId",
+                option: res.data.map((e: any) => {
+                    return {
+                        label: e.groupName,
+                        value: e.id,
+                    };
+                }),
+            },
+        ]);
+    }
 };
 const formHandle = (type: string, key: string, data: any, other: any) => {
     console.log(type, key, data, other);

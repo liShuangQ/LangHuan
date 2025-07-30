@@ -61,4 +61,7 @@ public class Constant {
         // --- 如果使用线性加权法（linearWeighting）方式配置如下参数 ---
         // {数据库向量距离，spring ai得分，rerank模型距离，手工排名}
         public static final double[] LINEARWEIGHTING = { 0.3, 0.2, 0.2, 0.3 };
+
+        // 定义固定的缓存键
+        public static final String CACHE_KEY = "file_id_cache";
 }

@@ -142,7 +142,7 @@ const getDocumentParam = () => {
     if (stepData.value.fileType === "html") {
         url = "/rag/readAndSplitHtmlDocument";
         param = {
-            html: stepData.value.html,
+            url: stepData.value.html,
             splitFileMethod: splitFileMethod.value,
             methodData: methodDataJson,
         };

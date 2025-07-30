@@ -7,10 +7,12 @@ import com.langhuan.common.BusinessException;
 import com.langhuan.common.Constant;
 import com.langhuan.config.VectorStoreConfig;
 import com.langhuan.model.domain.TRagFile;
+import com.langhuan.service.CacheService;
 import com.langhuan.service.TRagFileService;
 import com.langhuan.utils.rag.EtlPipeline;
 import com.langhuan.utils.rag.RagFileVectorUtils;
 import com.langhuan.utils.rag.config.SplitConfig;
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.postgresql.util.PGobject;
 import org.springframework.ai.document.Document;
@@ -26,6 +28,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static com.langhuan.common.Constant.CACHE_KEY;
+
 @Service
 @Slf4j
 public class RagService {
@@ -35,6 +39,9 @@ public class RagService {
     private final VectorStore ragVectorStore;
     private final ReRankModelService reRankModelService;
     private final EtlPipeline etlPipeline;
+
+    @Resource
+    private CacheService cacheService;
 
     public RagService(TRagFileService ragFileService, JdbcTemplate jdbcTemplate,
             VectorStoreConfig vectorStoreConfig, ReRankModelService reRankModelService, EtlPipeline etlPipeline) {
@@ -93,7 +100,7 @@ public class RagService {
         return updated ? "删除成功" : "删除失败";
     }
 
-    public List<String> readAndSplitDocument(MultipartFile file, SplitConfig splitConfig) {
+    public List<String> readAndSplitDocument(MultipartFile file, SplitConfig splitConfig) throws Exception {
         return etlPipeline.process(file, splitConfig);
     }
 
@@ -102,30 +109,73 @@ public class RagService {
             return etlPipeline.process(url, splitConfig);
         }
         return etlPipeline.process(url, splitConfig, false);
+
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public String writeDocumentsToVectorStore(List<String> documents, TRagFile ragFile) throws Exception {
         log.info("writeDocumentsToVectorStore: {}", ragFile);
-        boolean b = ragFile.getId() == null || ragFile.getId() == 0 || ragFile.getId().toString().isEmpty();
-        if (b) {
+
+        boolean isInsert = ragFile.getId() == null || ragFile.getId() == 0 || ragFile.getId().toString().isEmpty();
+        if (isInsert) {
             ragFile.setId((int) IdUtil.getSnowflakeNextId());
         }
         ragFile.setUploadedAt(new java.util.Date());
         ragFile.setUploadedBy(SecurityContextHolder.getContext().getAuthentication().getName());
 
-        if (etlPipeline.writeToVectorStore(documents, etlPipeline.getMetadataFactory().createMetadata(ragFile),
-                ragVectorStore)) {
-            if (b) {
-                log.info("添加到新增文件");
-                ragFileService.save(ragFile);
-            } else {
-                log.info("添加到已有文件");
-                ragFileService.updateById(ragFile);
-            }
-            return "添加成功";
-        } else {
+        // 写入向量库
+        boolean writeSuccess = etlPipeline.writeToVectorStore(
+                documents,
+                etlPipeline.getMetadataFactory().createMetadata(ragFile),
+                ragVectorStore
+        );
+
+        if (!writeSuccess) {
             return "添加失败，请检查日志。";
         }
+
+        try {
+            // 1. 从缓存中获取 extract 阶段生成的临时 fileId
+            Integer tempFileId = cacheService.getId(CACHE_KEY);
+            if (tempFileId == null) {
+                log.warn("未找到缓存的临时 file_id，跳过 t_file_url 更新");
+                return "添加成功，但未更新图片状态";
+            }
+
+            // 2. 使用 SQL 批量更新 t_file_url 表
+            String updateSql = """
+            UPDATE t_file_url
+            SET file_id = ?, f_status = ?
+            WHERE file_id = ? AND f_status = ?
+            """;
+
+            int updatedRows = baseDao.update(updateSql,
+                    ragFile.getId(),     // 新的 file_id
+                    "在用",              // 新状态
+                    tempFileId,          // 旧的临时 file_id
+                    "临时"               // 原状态
+            );
+
+            log.info("批量更新 t_file_url，影响行数: {}, file_id: {} -> {}", updatedRows, tempFileId, ragFile.getId());
+
+            // 3. 清理缓存
+            cacheService.removeId(CACHE_KEY);
+
+        } catch (Exception e) {
+            log.error("执行 t_file_url 批量更新时出错", e);
+            throw new Exception("更新图片引用状态失败", e); // 触发事务回滚
+        }
+
+        // 4. 保存或更新 ragFile 记录
+        if (isInsert) {
+            ragFileService.save(ragFile);
+            log.info("保存新文件记录: {}", ragFile.getId());
+        } else {
+            ragFileService.updateById(ragFile);
+            log.info("更新已有文件记录: {}", ragFile.getId());
+        }
+
+        return "添加成功";
     }
 
     @Transactional(rollbackFor = Exception.class)
