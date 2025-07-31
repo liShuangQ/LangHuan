@@ -14,6 +14,8 @@ import com.langhuan.model.domain.TUserRole;
 import com.langhuan.model.dto.UserLoginDTO;
 import com.langhuan.model.mapper.TUserMapper;
 import com.langhuan.utils.other.JwtUtil;
+import com.langhuan.utils.other.SecurityUtils;
+
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
@@ -59,10 +61,10 @@ public class TUserService extends ServiceImpl<TUserMapper, TUser> {
      * 根据用户名获取权限列表
      * 首先通过用户名查询用户信息，然后调用getPermissionByUser方法获取权限列表
      */
-    @Cacheable(value = "permission")
+    @Cacheable(value = "permission", key = "#username", sync = true)
     // 这里注意缓存配置，在操作用户后要清空缓存
     public List<TPermission> getPermissionByUsername(String username) {
-        log.info("setPermissionCache: {}", username);
+        log.info("getPermissionByUsername: {}", username);
         TUser user = super.getOne(new LambdaQueryWrapper<TUser>().eq(TUser::getUsername, username), true);
         return this.getPermissionByUser(user);
     }
@@ -126,7 +128,7 @@ public class TUserService extends ServiceImpl<TUserMapper, TUser> {
     public TUser change(TUser user) {
         user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
         super.update(user, new LambdaUpdateWrapper<TUser>().eq(TUser::getUsername, user.getUsername()));
-        cacheService.clearPermissionCache();
+        cacheService.clearPermissionCache(user.getUsername());
         return user;
     }
 

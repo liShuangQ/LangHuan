@@ -7,6 +7,8 @@ import com.langhuan.model.domain.TRole;
 import com.langhuan.model.domain.TRolePermission;
 import com.langhuan.model.domain.TUserRole;
 import com.langhuan.model.mapper.TRoleMapper;
+import com.langhuan.utils.other.SecurityUtils;
+
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

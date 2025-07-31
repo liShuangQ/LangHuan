@@ -6,6 +6,8 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.langhuan.model.domain.TPermission;
 import com.langhuan.model.domain.TRolePermission;
 import com.langhuan.model.mapper.TPermissionMapper;
+import com.langhuan.utils.other.SecurityUtils;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,7 +39,7 @@ public class TPermissionService extends ServiceImpl<TPermissionMapper, TPermissi
         );
         boolean b = super.removeById(permissionId);
         if (b) {
-            cacheService.clearPermissionCache();
+            cacheService.clearPermissionCache(SecurityUtils.getCurrentUsername());
             return true;
         }
         return false;
@@ -46,7 +48,7 @@ public class TPermissionService extends ServiceImpl<TPermissionMapper, TPermissi
     public Boolean change(TPermission Permission) {
         boolean b = super.update(Permission, new LambdaQueryWrapper<TPermission>().eq(TPermission::getId, Permission.getId()));
         if (b) {
-            cacheService.clearPermissionCache();
+            cacheService.clearPermissionCache(SecurityUtils.getCurrentUsername());
             return true;
         }
         return false;
