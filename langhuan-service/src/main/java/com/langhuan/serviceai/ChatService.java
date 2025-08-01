@@ -1,5 +1,6 @@
 package com.langhuan.serviceai;
 
+import cn.hutool.core.util.IdUtil;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
@@ -7,12 +8,15 @@ import com.langhuan.common.BusinessException;
 import com.langhuan.common.Constant;
 import com.langhuan.functionTools.RestRequestTools;
 import com.langhuan.model.domain.TRagFile;
+import com.langhuan.model.domain.TRagFileGroup;
 import com.langhuan.model.domain.TUser;
 import com.langhuan.model.domain.TUserChatWindow;
 import com.langhuan.model.dto.RagIntentionClassifierDTO;
 import com.langhuan.model.pojo.ChatModelResult;
 import com.langhuan.model.pojo.ChatRestOption;
 import com.langhuan.service.*;
+import com.langhuan.utils.other.SecurityUtils;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
@@ -166,14 +170,13 @@ public class ChatService {
      * @throws BusinessException 当AI服务异常时抛出，向用户显示友好的错误消息
      */
     public ChatModelResult chat(ChatRestOption chatRestOption) throws Exception {
-        // RagIntentionClassifierDTO ragIntentionClassifierDTO =
-        // ragIntentionClassifier(chatRestOption.getModelName(),
-        // chatRestOption.getQuestion());
-        // if (ragIntentionClassifierDTO.getIsAdd()) {
-        // return toAddDocuments(ragIntentionClassifierDTO);
-        // } else {
-        return toChat(chatRestOption);
-        // }
+        RagIntentionClassifierDTO ragIntentionClassifierDTO = ragIntentionClassifier(chatRestOption.getModelName(),
+                chatRestOption.getQuestion());
+        if (ragIntentionClassifierDTO.getIsAdd()) {
+            return toAddDocuments(ragIntentionClassifierDTO);
+        } else {
+            return toChat(chatRestOption);
+        }
     }
 
     public RagIntentionClassifierDTO ragIntentionClassifier(String modelName, String q) {
@@ -181,14 +184,31 @@ public class ChatService {
         return JSONUtil.toBean(s, RagIntentionClassifierDTO.class);
     }
 
-    // TODO： 需要优化用户方面的存储
-    // TODO： 未添加权限，等待权限处理
     public ChatModelResult toAddDocuments(RagIntentionClassifierDTO ragIntentionClassifierDTO) throws Exception {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        TUser user = userService
-                .getOne(new LambdaQueryWrapper<TUser>().select(TUser::getName).eq(TUser::getUsername, auth.getName()));
-        String setFileName = user.getName() + "_知识空间";
+        String user = SecurityUtils.getCurrentUsername();
+        String setFileGroupName = user + "_知识空间文件组";
+        String setFileName = user + "_知识空间";
         TRagFile ragFile = new TRagFile();
+
+        List<TRagFileGroup> fileGroupList = fileGroupService
+                .list(new LambdaQueryWrapper<TRagFileGroup>().eq(TRagFileGroup::getGroupName, setFileGroupName));
+
+        if (fileGroupList.isEmpty()) {
+            TRagFileGroup ragFileGroup = new TRagFileGroup();
+            ragFileGroup.setGroupName(setFileGroupName);
+            ragFileGroup.setGroupType("个人知识空间");
+            ragFileGroup.setGroupDesc("对话知识空间生成");
+            ragFileGroup.setCreatedBy(user);
+            ragFileGroup.setVisibility("private");
+            fileGroupService.save(ragFileGroup);
+            TRagFileGroup fileGroup = fileGroupService.getOne(new LambdaQueryWrapper<TRagFileGroup>()
+                    .eq(TRagFileGroup::getGroupName, setFileGroupName));
+            ragFile.setFileGroupId(String.valueOf(fileGroup.getId()));
+        } else {
+            // 如果文件组已存在，使用现有文件组的ID
+            TRagFileGroup existingGroup = fileGroupList.get(0);
+            ragFile.setFileGroupId(String.valueOf(existingGroup.getId()));
+        }
 
         // 文件操作
         List<TRagFile> fileList = fileService
@@ -199,14 +219,15 @@ public class ChatService {
             ragFile.setFileSize("无");
             ragFile.setDocumentNum(String.valueOf(ragIntentionClassifierDTO.getDocuments().size()));
             ragFile.setFileDesc(setFileName + "。在对话中产生。");
-            ragFile.setFileGroupId("2065141762");
-            ragFile.setUploadedBy(auth.getName());
+            // fileGroupId已经在上面设置过了
+            ragFile.setUploadedBy(user);
             fileService.save(ragFile);
         } else {
             TRagFile first = fileList.getFirst();
             first.setDocumentNum(String.valueOf(
                     Integer.parseInt(first.getDocumentNum()) + ragIntentionClassifierDTO.getDocuments().size()));
             ragFile = first;
+            fileService.updateById(first);
         }
         ragService.writeDocumentsToVectorStore(ragIntentionClassifierDTO.getDocuments(), ragFile);
         ChatModelResult chatModelResult = new ChatModelResult();
@@ -222,11 +243,11 @@ public class ChatService {
 
         // 获取用户提示词模板，优先使用缓存中的配置，否则使用默认值
         String AINULLDEFAULTUSERPROMPT = null;
-            AINULLDEFAULTUSERPROMPT = TPromptsService
-                    .getCachedTPromptsByMethodName("AINULLDEFAULTUSERPROMPT");
-            if (AINULLDEFAULTUSERPROMPT == null){
-                AINULLDEFAULTUSERPROMPT = Constant.AINULLDEFAULTUSERPROMPT;
-            }
+        AINULLDEFAULTUSERPROMPT = TPromptsService
+                .getCachedTPromptsByMethodName("AINULLDEFAULTUSERPROMPT");
+        if (AINULLDEFAULTUSERPROMPT == null) {
+            AINULLDEFAULTUSERPROMPT = Constant.AINULLDEFAULTUSERPROMPT;
+        }
 
         // 替换模板变量，生成最终的用户提示词
         String userPrompt = AINULLDEFAULTUSERPROMPT.replace("{user_prompt}",

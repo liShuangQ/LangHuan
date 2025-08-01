@@ -88,6 +88,12 @@
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-ooxml</artifactId>
             <version>5.2.3</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-io</groupId>
+                    <artifactId>commons-io</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 <!--        <dependency>-->
 <!--            <groupId>org.jsoup</groupId>-->

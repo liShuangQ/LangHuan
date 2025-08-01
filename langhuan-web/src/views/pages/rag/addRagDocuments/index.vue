@@ -90,9 +90,13 @@ const handlePrev = () => {
         })
             .then(() => {
                 activeStep.value--;
+
+                // HACK: 清空文件选择
                 stepData.value = {
+                    ...stepData.value,
                     file: null,
-                    fileType: "text",
+                    text: "",
+                    html: "",
                 };
             })
             .catch(() => {
