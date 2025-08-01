@@ -5,6 +5,7 @@ import com.langhuan.model.domain.TFileUrl;
 import com.langhuan.service.CacheService;
 import com.langhuan.service.MinioService;
 import com.langhuan.service.TFileUrlService;
+import com.langhuan.utils.other.SecurityUtils;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
 import lombok.SneakyThrows;
@@ -114,7 +115,7 @@ public class DocumentExtractor {
 
         //生成随机 ID 并存入缓存
         int randomId = (int) IdUtil.getSnowflakeNextId();
-        cacheService.putId(CACHE_KEY, randomId);
+        cacheService.putId(SecurityUtils.getCurrentUsername() + CACHE_KEY, randomId);
         List<TFileUrl> fileUrlList = new ArrayList<>(); // 用于存储图片信息的列表
 
         try (InputStream is = file.getInputStream();
@@ -205,7 +206,7 @@ public class DocumentExtractor {
 
         //生成随机 ID 并存入缓存
         int randomId = (int) IdUtil.getSnowflakeNextId();
-        cacheService.putId(CACHE_KEY, randomId);
+        cacheService.putId(SecurityUtils.getCurrentUsername() + CACHE_KEY, randomId);
 
         // 用于批量插入的列表
         List<TFileUrl> fileUrlList = new ArrayList<>();

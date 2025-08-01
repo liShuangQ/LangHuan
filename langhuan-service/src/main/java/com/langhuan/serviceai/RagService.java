@@ -9,6 +9,8 @@ import com.langhuan.config.VectorStoreConfig;
 import com.langhuan.model.domain.TFileUrl;
 import com.langhuan.model.domain.TRagFile;
 import com.langhuan.service.CacheService;
+import com.langhuan.service.MinioService;
+import com.langhuan.service.TFileUrlService;
 import com.langhuan.service.TRagFileService;
 import com.langhuan.utils.other.SecurityUtils;
 import com.langhuan.utils.rag.EtlPipeline;
@@ -33,8 +35,6 @@ import java.util.stream.Collectors;
 
 import static com.langhuan.common.Constant.CACHE_KEY;
 
-import static com.langhuan.common.Constant.CACHE_KEY;
-
 @Service
 @Slf4j
 public class RagService {
@@ -51,7 +51,6 @@ public class RagService {
 
     @Resource
     private MinioService minioService;
-
 
     public RagService(TRagFileService ragFileService, JdbcTemplate jdbcTemplate,
                       VectorStoreConfig vectorStoreConfig, ReRankModelService reRankModelService, EtlPipeline etlPipeline, TFileUrlService tFileUrlService) {
@@ -165,7 +164,7 @@ public class RagService {
 
         try {
             // 1. 从缓存中获取 extract 阶段生成的临时 fileId
-            Integer tempFileId = cacheService.getId(CACHE_KEY);
+            Integer tempFileId = cacheService.getId(SecurityUtils.getCurrentUsername() + CACHE_KEY);
             if (tempFileId == null) {
                 log.warn("未找到缓存的临时 file_id，跳过 t_file_url 更新");
                 return "添加成功，但未更新图片状态";
@@ -173,9 +172,9 @@ public class RagService {
 
             // 2. 使用 SQL 批量更新 t_file_url 表
             String updateSql = """
-            UPDATE t_file_url
-            SET file_id = ?, f_status = ?
-            WHERE file_id = ? AND f_status = ?
+                                  UPDATE t_file_url
+                                  SET file_id = ?, f_status = ?
+                                  WHERE file_id = ? AND f_status = ?
             """;
 
             int updatedRows = baseDao.update(updateSql,
@@ -188,7 +187,7 @@ public class RagService {
             log.info("批量更新 t_file_url，影响行数: {}, file_id: {} -> {}", updatedRows, tempFileId, ragFile.getId());
 
             // 3. 清理缓存
-            cacheService.removeId(CACHE_KEY);
+            cacheService.removeId(SecurityUtils.getCurrentUsername() + CACHE_KEY);
 
         } catch (Exception e) {
             log.error("执行 t_file_url 批量更新时出错", e);
