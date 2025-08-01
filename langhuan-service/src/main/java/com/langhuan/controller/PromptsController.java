@@ -23,7 +23,6 @@ public class PromptsController {
 
     // 提示词分类的枚举
     // NOTE：这里后续可能改动很小，直接在程序中定义死即可
-    @PreAuthorize("hasAuthority('/prompts/usePrompt/query')")
     @PostMapping("/usePrompt/getCategoryEnum")
     public Result getCategoryEnum(@RequestBody TPrompts tPrompts) {
         return Result.success(Constant.CATEGORYENUM);

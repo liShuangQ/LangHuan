@@ -44,8 +44,8 @@ public class Constant {
                         Map.of("label", "提示词", "value", "prompt"));
         // 设置相似度阈值，常是一个介于 0 和 1 之间的浮点数，例如 0.5、0.7、0.8
         // 等，如果设置得过高，可能会没有结果返回；如果设置得过低，可能会返回大量不相关的结果
-        public static final double RAGWITHSIMILARITYTHRESHOLD = 0.3;
-        // rag的rank排序方法 numFilter | linearWeighting
+        public static final double RAGWITHSIMILARITYTHRESHOLD = 0.4;
+        // rag的rank排序方法 linearWeighting
         public static final String RAGRANKMODULETYPE = "linearWeighting";
         // 从向量库返回的设置返回的得分最高结果的数量（注意当使用linearWeighting的时候，这个数同时也是给rerank的数）
         public static final int RAGWITHTOPK = 10;
@@ -54,10 +54,6 @@ public class Constant {
         public static final int LLM_RAG_TOPN = 5;
         // 是否开启rerank，当接口中没传递的时候默认使用这个值
         public static final Boolean ISRAGRERANK = false;
-        // --- 如果使用层层筛选（numFilter）的方式配置如下参数 ---
-        // {从上方的结果中取前多少个结果用于下一阶段排序(例如20条结果，取前10条按rerank排序)如果开启rerank那么这个值就是需要给rerank模型的数量,
-        // rerank的topn}
-        public static final int[] NUMFILTER = { 15, 10 };
         // --- 如果使用线性加权法（linearWeighting）方式配置如下参数 ---
         // {数据库向量距离，spring ai得分，rerank模型距离，手工排名}
         public static final double[] LINEARWEIGHTING = { 0.3, 0.2, 0.2, 0.3 };

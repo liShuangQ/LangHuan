@@ -53,7 +53,8 @@ public class RagService {
     private MinioService minioService;
 
     public RagService(TRagFileService ragFileService, JdbcTemplate jdbcTemplate,
-                      VectorStoreConfig vectorStoreConfig, ReRankModelService reRankModelService, EtlPipeline etlPipeline, TFileUrlService tFileUrlService) {
+            VectorStoreConfig vectorStoreConfig, ReRankModelService reRankModelService, EtlPipeline etlPipeline,
+            TFileUrlService tFileUrlService) {
         this.ragFileService = ragFileService;
         this.baseDao = jdbcTemplate;
         this.ragVectorStore = vectorStoreConfig.ragVectorStore();
@@ -107,7 +108,8 @@ public class RagService {
         baseDao.update(sqlDeleteVectorStore, documentId);
 
         String sqlSelectTFileUrls = "SELECT id, f_url FROM t_file_url WHERE file_id = ?";
-        List<TFileUrl> fileUrlList = baseDao.queryForList(sqlSelectTFileUrls, new Object[]{ragFile.getId()}, TFileUrl.class);
+        List<TFileUrl> fileUrlList = baseDao.queryForList(sqlSelectTFileUrls, new Object[] { ragFile.getId() },
+                TFileUrl.class);
 
         if (fileUrlList != null && !fileUrlList.isEmpty()) {
             deleteImage(fileUrlList);
@@ -155,8 +157,7 @@ public class RagService {
         boolean writeSuccess = etlPipeline.writeToVectorStore(
                 documents,
                 etlPipeline.getMetadataFactory().createMetadata(ragFile),
-                ragVectorStore
-        );
+                ragVectorStore);
 
         if (!writeSuccess) {
             return "添加失败，请检查日志。";
@@ -172,16 +173,16 @@ public class RagService {
 
             // 2. 使用 SQL 批量更新 t_file_url 表
             String updateSql = """
-                                  UPDATE t_file_url
-                                  SET file_id = ?, f_status = ?
-                                  WHERE file_id = ? AND f_status = ?
-            """;
+                                          UPDATE t_file_url
+                                          SET file_id = ?, f_status = ?
+                                          WHERE file_id = ? AND f_status = ?
+                    """;
 
             int updatedRows = baseDao.update(updateSql,
-                    ragFile.getId(),     // 新的 file_id
-                    "在用",              // 新状态
-                    tempFileId,          // 旧的临时 file_id
-                    "临时"               // 原状态
+                    ragFile.getId(), // 新的 file_id
+                    "在用", // 新状态
+                    tempFileId, // 旧的临时 file_id
+                    "临时" // 原状态
             );
 
             log.info("批量更新 t_file_url，影响行数: {}, file_id: {} -> {}", updatedRows, tempFileId, ragFile.getId());
@@ -360,35 +361,11 @@ public class RagService {
             log.error("ragSearch error: {}", e.getMessage());
             throw new BusinessException("查询失败");
         }
-        if ("numFilter".equals(Constant.RAGRANKMODULETYPE)) {
-            searchDocuments = rank_numFilter(searchDocuments, q, isReRank);
-        }
         if ("linearWeighting".equals(Constant.RAGRANKMODULETYPE)) {
             searchDocuments = rank_linearWeighting(searchDocuments, q, isReRank);
         }
         // 最后结果一定是LLM_RAG_TOPN的数量
         return searchDocuments.subList(0, Math.min(Constant.LLM_RAG_TOPN, searchDocuments.size()));
-    }
-
-    /**
-     * 匹配度得分 → rerank 模型距离 → 手工标记排名
-     */
-    public List<Document> rank_numFilter(List<Document> searchDocuments, String q, Boolean isReRank) throws Exception {
-        // 在得分最高的结果中，取前RAGRANKTOPN个结果给下面
-        if (searchDocuments.size() > Constant.NUMFILTER[0]) {
-            searchDocuments = searchDocuments.subList(0, Constant.LLM_RAG_TOPN);
-        }
-        // rerank模型重排
-        if (isReRank) {
-            searchDocuments = reRankModelService.chat(q, searchDocuments, Constant.NUMFILTER[1]);
-        }
-        // 按手工标记排序
-        searchDocuments.sort((o1, o2) -> {
-            Integer rank1 = (int) o1.getMetadata().get("rank");
-            Integer rank2 = (int) o2.getMetadata().get("rank");
-            return rank2.compareTo(rank1);
-        });
-        return searchDocuments;
     }
 
     /**
