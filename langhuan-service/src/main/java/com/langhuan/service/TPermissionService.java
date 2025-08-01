@@ -39,7 +39,7 @@ public class TPermissionService extends ServiceImpl<TPermissionMapper, TPermissi
         );
         boolean b = super.removeById(permissionId);
         if (b) {
-            cacheService.clearPermissionCache(SecurityUtils.getCurrentUsername());
+            cacheService.clearPermissionCache();
             return true;
         }
         return false;

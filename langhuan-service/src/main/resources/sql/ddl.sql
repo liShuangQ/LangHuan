@@ -283,3 +283,11 @@ COMMENT ON COLUMN t_notifications.reference_id IS '关联业务对象ID，如订
 COMMENT ON COLUMN t_notifications.reference_type IS '关联业务对象类型，如order、task等，与reference_id配合使用';
 COMMENT ON COLUMN t_notifications.expires_at IS '通知过期时间，超过此时间的通知将被视为无效';
 COMMENT ON COLUMN t_notifications.created_at IS '通知创建时间戳，自动记录通知创建时间';
+
+DROP TABLE IF EXISTS t_file_url;
+CREATE TABLE t_file_url (
+                            id SERIAL PRIMARY KEY,
+                            file_id INTEGER NOT NULL,
+                            f_url VARCHAR(255),
+                            f_status VARCHAR(255)
+);

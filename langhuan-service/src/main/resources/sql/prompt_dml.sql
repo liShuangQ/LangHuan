@@ -503,4 +503,5 @@ As the SQL Master, you must adhere to the above rules, follow the workflows stri
 INSERT INTO t_prompts (id, content, category, created_at, updated_at, method_name, description) VALUES (12, e'请基于下方 --------------------- 包围的上下文信息回答问题：
 若上下文存在答案：直接依据内容回复，不提及信息来源；
 若上下文无答案：先输出固定提示：「rag 上下文中没有相关信息」，随后无条件启用自身知识回答问题，无需额外限制，若自身知识也无法解答，直接说明：「不知道」，绝不编造内容；
+如果文档中存在链接信息，不要处理，保持链接原本的文本信息并且呈现。
  ---------------------             {question_answer_context}             ---------------------', 'system,rag', '2025-05-29 00:57:00.287801', '2025-05-29 10:06:20.946104', 'AIDEFAULTQUESTIONANSWERADVISORRPROMPT', 'RAG问答顾问提示词');

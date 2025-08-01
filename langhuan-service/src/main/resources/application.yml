@@ -64,3 +64,12 @@ logging:
           chat:
             client:
               advisor: DEBUG
+
+minio:
+  url: http://localhost:9000
+  access-key: minio
+  secret-key: minio123456
+  img-bucket-name: langhuan-img
+  file-bucket-name: langhuan-file
+project:
+  folder: uploads

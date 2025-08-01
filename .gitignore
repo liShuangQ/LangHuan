@@ -43,3 +43,4 @@ build/
 
 ### VS Code ###
 .vscode/
+langhuan-web/types/components.d.ts

@@ -48,7 +48,7 @@ public class DocumentExtractor {
     @Value("${project.folder:}")
     private String minioFolder; // 在 MinIO 中模拟的“文件夹”前缀
 
-    @Value("${minio.bucket-name}")
+    @Value("${minio.img-bucket-name}")
     private String bucketName;
 
     @Value("${minio.url}")

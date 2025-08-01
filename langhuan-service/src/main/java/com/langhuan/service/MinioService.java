@@ -21,7 +21,7 @@ public class MinioService {
     @Resource
     private MinioClient minioClient;
 
-    @Value("${minio.bucket-name}")
+    @Value("${minio.img-bucket-name}")
     private String bucketName;
 
     @Value("${minio.url}")
@@ -30,7 +30,7 @@ public class MinioService {
     private final MinioUtils minioUtils;
 
     // 使用构造函数注入
-    public MinioService(MinioClient minioClient, @Value("${minio.url}") String minioUrl, @Value("${minio.bucket-name}") String bucketName) {
+    public MinioService(MinioClient minioClient, @Value("${minio.url}") String minioUrl, @Value("${minio.img-bucket-name}") String bucketName) {
         this.minioClient = minioClient;
         this.bucketName = bucketName;
         this.minioUrl = minioUrl;

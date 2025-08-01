@@ -12,9 +12,9 @@ import org.springframework.util.StringUtils;
 public class CacheService {
     private static final String CACHE_NAME = "fileIdCache";
 
-    @CacheEvict(value = "permission",  key = "#username")
+    @CacheEvict(value = "permission", key = "#username")
     public void clearPermissionCache(String username) {
-        log.info("clearPermissionCache: {}", username);
+        log.info("clearPermissionCache");
     }
 
     @CacheEvict(value = "permission", allEntries = true)
@@ -35,7 +35,7 @@ public class CacheService {
         if (!StringUtils.hasText(key)) {
             throw new IllegalArgumentException("Cache key must not be null or empty");
         }
-        if (id == null) {  // 修改：检查Integer是否为null
+        if (id == null) { // 修改：检查Integer是否为null
             log.warn("Attempting to cache a null ID for key: {}", key);
             throw new IllegalArgumentException("ID to cache must not be null");
         }
@@ -74,11 +74,5 @@ public class CacheService {
         }
         log.info("Removing ID from cache for key: {}", key);
     }
-
-
-//    @CacheEvict(value = "permission", key = "#username")
-//    public void clearPermissionCache(String username) {
-//        log.info("clearPermissionCache");
-//    }
 
 }

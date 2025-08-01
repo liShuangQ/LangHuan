@@ -18,7 +18,7 @@
             </div>
             <template #tip>
                 <div class="el-upload__tip">
-                    支持上传txt、pdf、docx等格式文件，文件大小不超过10MB
+                    推荐上传docx格式文件。支持上传txt、markdown、pdf等格式文件，文件大小不超过10MB。
                 </div>
             </template>
         </el-upload>
