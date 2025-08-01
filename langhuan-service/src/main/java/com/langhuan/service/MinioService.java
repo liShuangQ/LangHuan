@@ -2,6 +2,7 @@ package com.langhuan.service;
 
 import com.langhuan.utils.minio.MinioUtils;
 import jakarta.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import io.minio.MinioClient;
@@ -14,6 +15,7 @@ import java.io.InputStream;
  * @date 2025/7/28 17:24
  */
 @Service
+@Slf4j
 public class MinioService {
 
     @Resource
@@ -22,13 +24,17 @@ public class MinioService {
     @Value("${minio.bucket-name}")
     private String bucketName;
 
+    @Value("${minio.url}")
+    private String minioUrl;
+
     private final MinioUtils minioUtils;
 
     // 使用构造函数注入
-    public MinioService(MinioClient minioClient, @Value("${minio.bucket-name}") String bucketName) {
+    public MinioService(MinioClient minioClient, @Value("${minio.url}") String minioUrl, @Value("${minio.bucket-name}") String bucketName) {
         this.minioClient = minioClient;
         this.bucketName = bucketName;
-        this.minioUtils = new MinioUtils(minioClient, bucketName);
+        this.minioUrl = minioUrl;
+        this.minioUtils = new MinioUtils(minioClient, bucketName, minioUrl);
     }
 
     public void handleUpload(String objectName, InputStream inputStream, long size) throws Exception {
@@ -48,5 +54,9 @@ public class MinioService {
 
     public void ensureBucketExists() throws Exception {
         minioUtils.createBucket();
+    }
+
+    public String extractObjectName(String url){
+        return minioUtils.extractObjectName(url);
     }
 }

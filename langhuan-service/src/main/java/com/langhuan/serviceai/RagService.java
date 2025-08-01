@@ -6,9 +6,13 @@ import cn.hutool.json.JSONUtil;
 import com.langhuan.common.BusinessException;
 import com.langhuan.common.Constant;
 import com.langhuan.config.VectorStoreConfig;
+import com.langhuan.model.domain.TFileUrl;
 import com.langhuan.model.domain.TRagFile;
 import com.langhuan.service.CacheService;
+import com.langhuan.service.MinioService;
+import com.langhuan.service.TFileUrlService;
 import com.langhuan.service.TRagFileService;
+import com.langhuan.utils.other.SecurityUtils;
 import com.langhuan.utils.rag.EtlPipeline;
 import com.langhuan.utils.rag.RagFileVectorUtils;
 import com.langhuan.utils.rag.config.SplitConfig;
@@ -27,6 +31,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static com.langhuan.common.Constant.CACHE_KEY;
 
@@ -39,17 +44,22 @@ public class RagService {
     private final VectorStore ragVectorStore;
     private final ReRankModelService reRankModelService;
     private final EtlPipeline etlPipeline;
+    private final TFileUrlService tFileUrlService;
 
     @Resource
     private CacheService cacheService;
 
+    @Resource
+    private MinioService minioService;
+
     public RagService(TRagFileService ragFileService, JdbcTemplate jdbcTemplate,
-            VectorStoreConfig vectorStoreConfig, ReRankModelService reRankModelService, EtlPipeline etlPipeline) {
+                      VectorStoreConfig vectorStoreConfig, ReRankModelService reRankModelService, EtlPipeline etlPipeline, TFileUrlService tFileUrlService) {
         this.ragFileService = ragFileService;
         this.baseDao = jdbcTemplate;
         this.ragVectorStore = vectorStoreConfig.ragVectorStore();
         this.reRankModelService = reRankModelService;
         this.etlPipeline = etlPipeline;
+        this.tFileUrlService = tFileUrlService;
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -91,13 +101,31 @@ public class RagService {
 
     @Transactional(rollbackFor = Exception.class)
     public String deleteDocumentText(String documentId, TRagFile ragFile) {
-        log.info("Delete deleteDocumentText: {},documentId: {}", ragFile, documentId);
-        String sql = "DELETE FROM vector_store_rag WHERE id = ?::uuid";
-        baseDao.update(sql, documentId);
-        String num = String.valueOf(Integer.parseInt(ragFile.getDocumentNum()) - 1);
-        ragFile.setDocumentNum(num);
+        log.info("Deleting document text: {}, documentId: {}", ragFile, documentId);
+
+        String sqlDeleteVectorStore = "DELETE FROM vector_store_rag WHERE id = ?::uuid";
+        baseDao.update(sqlDeleteVectorStore, documentId);
+
+        String sqlSelectTFileUrls = "SELECT id, f_url FROM t_file_url WHERE file_id = ?";
+        List<TFileUrl> fileUrlList = baseDao.queryForList(sqlSelectTFileUrls, new Object[]{ragFile.getId()}, TFileUrl.class);
+
+        if (fileUrlList != null && !fileUrlList.isEmpty()) {
+            deleteImage(fileUrlList);
+
+            String sqlDeleteTFileUrls = "DELETE FROM t_file_url WHERE file_id = ?";
+            int deleteCount = baseDao.update(sqlDeleteTFileUrls, ragFile.getId());
+            log.info("Deleted {} records from t_file_url", deleteCount);
+        }
+
+        Integer newDocNum = Math.max(0, Integer.parseInt(ragFile.getDocumentNum()) - 1);
+        ragFile.setDocumentNum(newDocNum.toString());
         boolean updated = ragFileService.updateById(ragFile);
-        return updated ? "删除成功" : "删除失败";
+        if (!updated) {
+            log.warn("Failed to update ragFile: {}", ragFile.getId());
+            throw new RuntimeException("更新文件记录失败");
+        }
+
+        return "删除成功";
     }
 
     public List<String> readAndSplitDocument(MultipartFile file, SplitConfig splitConfig) throws Exception {
@@ -136,7 +164,7 @@ public class RagService {
 
         try {
             // 1. 从缓存中获取 extract 阶段生成的临时 fileId
-            Integer tempFileId = cacheService.getId(CACHE_KEY);
+            Integer tempFileId = cacheService.getId(SecurityUtils.getCurrentUsername() + CACHE_KEY);
             if (tempFileId == null) {
                 log.warn("未找到缓存的临时 file_id，跳过 t_file_url 更新");
                 return "添加成功，但未更新图片状态";
@@ -144,9 +172,9 @@ public class RagService {
 
             // 2. 使用 SQL 批量更新 t_file_url 表
             String updateSql = """
-            UPDATE t_file_url
-            SET file_id = ?, f_status = ?
-            WHERE file_id = ? AND f_status = ?
+                                  UPDATE t_file_url
+                                  SET file_id = ?, f_status = ?
+                                  WHERE file_id = ? AND f_status = ?
             """;
 
             int updatedRows = baseDao.update(updateSql,
@@ -159,7 +187,7 @@ public class RagService {
             log.info("批量更新 t_file_url，影响行数: {}, file_id: {} -> {}", updatedRows, tempFileId, ragFile.getId());
 
             // 3. 清理缓存
-            cacheService.removeId(CACHE_KEY);
+            cacheService.removeId(SecurityUtils.getCurrentUsername() + CACHE_KEY);
 
         } catch (Exception e) {
             log.error("执行 t_file_url 批量更新时出错", e);
@@ -181,13 +209,60 @@ public class RagService {
     @Transactional(rollbackFor = Exception.class)
     public Boolean deleteFileAndDocuments(Integer id) {
         log.info("Deleting file and documents with ID: {}", id);
-        String sql = """
+
+        String sqlDeleteVectorStore = """
                         DELETE FROM vector_store_rag
                         WHERE metadata ->> 'fileId' = ?;
                 """;
-        baseDao.update(sql, id.toString());
-        ragFileService.removeById(id);
+        int deletedRowsFromVectorStore = baseDao.update(sqlDeleteVectorStore, id.toString());
+        log.info("Deleted {} rows from vector_store_rag", deletedRowsFromVectorStore);
+
+        List<TFileUrl> fileUrlList = tFileUrlService.lambdaQuery()
+                .eq(TFileUrl::getFileId, id)
+                .select(TFileUrl::getFUrl, TFileUrl::getId) // 只选择需要的字段
+                .list();
+
+        if (fileUrlList != null && !fileUrlList.isEmpty()) {
+            deleteImage(fileUrlList);
+
+            List<Integer> idsToDelete = fileUrlList.stream()
+                    .map(TFileUrl::getId)
+                    .collect(Collectors.toList());
+            boolean deletedFromTFileUrl = tFileUrlService.removeByIds(idsToDelete);
+            if (!deletedFromTFileUrl) {
+                log.warn("Failed to delete records from t_file_url");
+                throw new RuntimeException("删除 t_file_url 记录失败");
+            }
+            log.info("Deleted {} records from t_file_url", idsToDelete.size());
+        }
+
+        boolean deletedRagFile = ragFileService.removeById(id);
+        if (!deletedRagFile) {
+            log.warn("Failed to delete TRagFile record with ID: {}", id);
+            throw new RuntimeException("删除 TRagFile 记录失败");
+        }
+
         return true;
+    }
+
+    private void deleteImage(List<TFileUrl> fileUrlList) {
+        List<String> urlsToDelete = fileUrlList.stream()
+                .map(TFileUrl::getFUrl)
+                .filter(url -> url != null && !url.trim().isEmpty())
+                .toList();
+
+        for (String url : urlsToDelete) {
+            try {
+                String objectName = minioService.extractObjectName(url); // 使用之前的提取方法
+                if (objectName != null) {
+                    minioService.handleDelete(objectName);
+                    log.info("MinIO object deleted: {}", objectName);
+                }
+            } catch (Exception e) {
+                log.error("Failed to delete MinIO object: {}", url, e);
+                throw new RuntimeException("删除 MinIO 文件失败: " + url, e); // 触发事务回滚
+            }
+        }
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -412,6 +487,6 @@ public class RagService {
             log.warn("无法转换类型 {} 为Double，使用默认值 {}", obj.getClass().getSimpleName(), defaultValue);
             return defaultValue;
         }
-    }
 
+    }
 }
