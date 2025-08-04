@@ -1,9 +1,11 @@
 <template>
     <div class="mt-4">
+        <div class="text-red-500 mb-2">注：添加后在文件管理中查看</div>
+        <div class="mb-2 text-xl font-bold">{{ fileChangeTit }}</div>
         <ElementFormC
             ref="fileFormRef"
             :formConfig="formConfig"
-            :formItemConfig="formItemConfig"
+            :formItemConfig="formConfigData"
             @handle="formHandle"
         >
         </ElementFormC>
@@ -17,12 +19,14 @@ import {
     formConfig,
     formItemConfig,
     getFileGroupOption,
+    fileNowOptionCache,
 } from "./addFileFormconfig";
 import { FormDefineExpose } from "@/components/globalComponents/ElementFormC/form-component";
 const emit = defineEmits(["next", "end", "setNextDisabled", "formHandle"]);
 const fileFormRef = ref<FormDefineExpose>();
-
-
+let formConfigData = formItemConfig(fileFormRef);
+let fileChangeTit = ref<string>("");
+let fileChangeSelectData: any = {};
 // HACK
 const init = async () => {
     emit("setNextDisabled", false);
@@ -34,7 +38,16 @@ const init = async () => {
             {
                 key: "fileName",
                 value: file.name,
+                option: [
+                    {
+                        label: file.name,
+                        value: file.name,
+                    },
+                ],
                 disabled: true,
+                filterable: false,
+                remote: false,
+                allowCreate: false,
             },
             {
                 key: "fileType",
@@ -46,7 +59,7 @@ const init = async () => {
             },
             {
                 key: "documentNum",
-                value: stepData.value.fineTuneData.length,
+                value: (stepData.value.fineTuneData as any[]).length,
             },
             {
                 key: "fileGroupId",
@@ -65,6 +78,9 @@ const init = async () => {
                 key: "fileName",
                 value: "",
                 disabled: false,
+                filterable: true,
+                remote: true,
+                allowCreate: true,
             },
             {
                 key: "fileType",
@@ -76,7 +92,7 @@ const init = async () => {
             },
             {
                 key: "documentNum",
-                value: stepData.value.fineTuneData.length,
+                value: (stepData.value.fineTuneData as any[]).length,
             },
             {
                 key: "fileGroupId",
@@ -95,6 +111,9 @@ const init = async () => {
                 key: "fileName",
                 value: "",
                 disabled: false,
+                filterable: true,
+                remote: true,
+                allowCreate: true,
             },
             {
                 key: "fileType",
@@ -106,7 +125,7 @@ const init = async () => {
             },
             {
                 key: "documentNum",
-                value: stepData.value.fineTuneData.length,
+                value: (stepData.value.fineTuneData as any[]).length,
             },
             {
                 key: "fileGroupId",
@@ -120,8 +139,105 @@ const init = async () => {
         ]);
     }
 };
+// HACK
 const formHandle = (type: string, key: string, data: any, other: any) => {
     console.log(type, key, data, other);
+    if (
+        (stepData.value.fileType === "text" ||
+            stepData.value.fileType === "html") &&
+        type === "change"
+    ) {
+        if (key === "fileName") {
+            fileChangeSelectData = fileNowOptionCache.value.find(
+                (e: any) => e.fileName === data
+            );
+            if (fileChangeSelectData) {
+                if (fileChangeSelectData.canAdd) {
+                    fileChangeTit.value = "将添加到现有文件";
+                    fileFormRef.value?.setFormOption([
+                        {
+                            key: "id",
+                            value: fileChangeSelectData.id,
+                        },
+                        {
+                            key: "fileName",
+                            value: fileChangeSelectData.fileName,
+                        },
+                        {
+                            key: "fileType",
+                            value: fileChangeSelectData.fileType,
+                        },
+                        {
+                            key: "fileSize",
+                            value: fileChangeSelectData.fileSize,
+                        },
+                        {
+                            key: "documentNum",
+                            value: String(
+                                Number(fileChangeSelectData.documentNum) +
+                                    (stepData.value.fineTuneData as any[]).length
+                            ),
+                        },
+                        {
+                            key: "fileDesc",
+                            value: fileChangeSelectData.fileDesc,
+                            disabled: true,
+                        },
+                        {
+                            key: "fileGroupId",
+                            value: Number(fileChangeSelectData.fileGroupId),
+                            disabled: true,
+                        },
+                    ]);
+                } else {
+                    fileChangeTit.value =
+                        "当前文件名被占用且不可编辑，请重新编辑";
+                    fileFormRef.value?.setFormOption([
+                        {
+                            key: "fileName",
+                            value: "",
+                        },
+                    ]);
+                }
+            } else {
+                fileChangeTit.value = "将创建新文件";
+                fileFormRef.value?.setFormOption([
+                    {
+                        key: "id",
+                        value: 0,
+                    },
+                    // HACK
+                    {
+                        key: "fileType",
+                        value:
+                            stepData.value.fileType === "text"
+                                ? "text"
+                                : stepData.value.fileType === "html"
+                                ? "html"
+                                : "",
+                    },
+                    {
+                        key: "fileSize",
+                        value: "无",
+                    },
+                    {
+                        key: "documentNum",
+                        value: (stepData.value.fineTuneData as any[]).length,
+                    },
+                    {
+                        key: "fileDesc",
+                        value: "",
+                        disabled: false,
+                    },
+                    {
+                        key: "fileGroupId",
+                        value: "",
+                        disabled: false,
+                    },
+                ]);
+            }
+        }
+    }
 };
 const submit = () => {
     if (!fileFormRef.value!.submitForm()) {

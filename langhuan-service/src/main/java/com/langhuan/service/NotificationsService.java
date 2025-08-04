@@ -3,8 +3,8 @@ package com.langhuan.service;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.langhuan.dao.NotificationsDao;
 import com.langhuan.model.domain.TNotifications;
-import com.langhuan.utils.pagination.JdbcPaginationHelper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 
 import org.springframework.stereotype.Service;
@@ -28,12 +28,12 @@ import java.util.stream.Collectors;
 public class NotificationsService {
 
         private final TNotificationsService tNotificationsService;
-        private final JdbcPaginationHelper paginationHelper;
+        private final NotificationsDao notificationsDao;
 
         public NotificationsService(TNotificationsService tNotificationsService,
-                        JdbcPaginationHelper paginationHelper) {
+                        NotificationsDao notificationsDao) {
                 this.tNotificationsService = tNotificationsService;
-                this.paginationHelper = paginationHelper;
+                this.notificationsDao = notificationsDao;
         }
 
         /**
@@ -274,33 +274,8 @@ public class NotificationsService {
         public IPage<Map<String, Object>> getAllNotifications(String username, String notificationLevel,
                         String notificationType, Boolean isRead, Boolean isArchived, int pageNum, int pageSize) {
 
-                // 构建查询条件
-                JdbcPaginationHelper.QueryCondition condition = new JdbcPaginationHelper.QueryCondition();
-
-                // 添加查询条件
-                if (username != null && !username.isEmpty()) {
-                        condition.like("u.name", username);
-                }
-                if (notificationLevel != null && !notificationLevel.isEmpty()) {
-                        condition.eq("notification_level", notificationLevel);
-                }
-                if (notificationType != null && !notificationType.isEmpty()) {
-                        condition.eq("notification_type", notificationType);
-                }
-                if (isRead != null) {
-                        condition.eq("is_read", isRead);
-                }
-                if (isArchived != null) {
-                        condition.eq("is_archived", isArchived);
-                }
-
-                // 构建SQL查询语句
-                String sql = "SELECT n.*, u.name as user_name FROM t_notifications n "
-                                + " LEFT JOIN t_user u ON n.user_id = u.username"
-                                + condition.getWhereClause()
-                                + " ORDER BY is_read ASC, is_archived ASC, created_at DESC";
-
-                // 执行分页查询
-                return paginationHelper.selectPageForMap(sql, condition.getParams(), pageNum, pageSize);
+                // 委托给DAO层处理
+                return notificationsDao.getAllNotifications(username, notificationLevel, notificationType, 
+                                isRead, isArchived, pageNum, pageSize);
         }
 }

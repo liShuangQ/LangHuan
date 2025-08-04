@@ -1,6 +1,9 @@
 package com.langhuan.task;
 
+import com.langhuan.model.domain.TRagFile;
+import com.langhuan.model.domain.TRagFileGroup;
 import com.langhuan.service.MinioService;
+import com.langhuan.service.TRagFileGroupService;
 import com.langhuan.service.TRagFileService;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
@@ -12,12 +15,10 @@ import org.springframework.stereotype.Component;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.time.LocalDate;
 import java.util.List;
-
-/**
- * @author Afish
- * @date 2025/8/1 13:24
- */
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Component
@@ -31,17 +32,14 @@ public class UploadDocumentsTask {
 
     private String publicBaseUrl;
 
-    private final String extension = ".txt";
+    @Resource
+    private TRagFileService ragFileService;
 
     @Resource
-    private TRagFileService tragFileService;
+    private TRagFileGroupService ragFileGroupService;
 
     @Resource
     private MinioService minioService;
-
-    public UploadDocumentsTask(MinioService minioService) {
-        this.minioService = minioService;
-    }
 
     @PostConstruct
     public void init() {
@@ -64,45 +62,76 @@ public class UploadDocumentsTask {
     @Scheduled(cron = "${task.schedule.documents}")
     public void exportAndUploadDocuments() {
         log.info("【定时任务】开始执行文档导出并上传至 MinIO...");
-        String folderName = java.time.LocalDate.now().toString();
+
+        // 1. 获取当前日期作为文件夹名
+        String folderName = LocalDate.now().toString();
+
         try {
-            List<Integer> fileIds = tragFileService.getAllFileIdsForExport();
-            log.info("共找到 {} 个 fileId 需要处理", fileIds.size());
+            // 2. 查询所有文件组，获取文件组ID和名称映射
+            List<TRagFileGroup> fileGroups = ragFileGroupService.list();
+            Map<Integer, String> groupMap = fileGroups.stream()
+                    .collect(Collectors.toMap(TRagFileGroup::getId, TRagFileGroup::getGroupName));
 
-            for (Integer fileId : fileIds) {
+            if (groupMap.isEmpty()) {
+                log.warn("未找到任何文件组，跳过上传任务。");
+                return;
+            }
+
+            log.info("共找到 {} 个文件组", groupMap.size());
+
+            // 3. 查询所有有效文件
+            List<TRagFile> allFiles = ragFileService.list();
+            log.info("共找到 {} 个文件", allFiles.size());
+
+            for (TRagFile file : allFiles) {
+                int fileGroupId = Integer.parseInt(file.getFileGroupId());
+                String fileName = file.getFileName();
+                Integer fileId = file.getId();
+
+                if (fileName == null || fileName.isBlank()) {
+                    fileName = "未知文件"; // 默认名
+                }
+
+                // 去除扩展名（如果包含）
+                String baseName = fileName.contains(".")
+                        ? fileName.substring(0, fileName.lastIndexOf('.'))
+                        : fileName;
+
+                String groupName = groupMap.getOrDefault(fileGroupId, "未知组");
+
                 try {
-                    log.info("正在处理 fileId: {}", fileId);
+                    log.info("正在处理文件: {} - {}", groupName, baseName);
 
-                    // 1. 生成文档流
-                    InputStreamResource resource = tragFileService.generateDocumentStreamByFileId(fileId);
+                    // 4. 生成文档流
+                    InputStreamResource resource = ragFileService.generateDocumentStreamByFileId(fileId);
                     InputStream inputStream = resource.getInputStream();
-
-                    // 2. 转为字节数组（获取长度）
                     byte[] content = inputStream.readAllBytes();
+
                     if (content.length == 0) {
                         log.warn("fileId={} 的内容为空，跳过上传", fileId);
                         continue;
                     }
 
-                    // 3. 构造 MinIO 对象名
-                    String objectName = folderName + "/" + fileId + extension;
+                    // 5. 构造对象名：时间/文件组名-文件名.txt
+                    String objectName = folderName + "/" +
+                            groupName.trim() + "-" +
+                            baseName.trim() + ".txt";
 
-                    // 4.检查是否已存在
+                    // 6. 检查是否已存在
                     if (minioService.fileExists(objectName, bucketName)) {
                         log.info("文件已存在，跳过: {}", objectName);
                         continue;
                     }
 
-                    // 5. 上传到 MinIO
+                    // 7. 上传到 MinIO
                     try (InputStream is = new ByteArrayInputStream(content)) {
                         minioService.handleUpload(objectName, is, content.length, bucketName);
                     }
 
-                    log.info("成功上传文档: fileId={}, 路径={}", fileId, objectName);
+                    log.info("成功上传文档: {} -> {}", fileId, objectName);
 
                 } catch (Exception e) {
-                    log.error("处理 fileId={} 时发生错误", fileId, e);
-                    // 继续处理下一个，不中断整体任务
+                    log.error("处理文件失败: fileId={}, name={}", fileId, fileName, e);
                 }
             }
 

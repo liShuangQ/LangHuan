@@ -21,42 +21,42 @@ public class MinioService {
     @Resource
     private MinioClient minioClient;
 
-    @Value("${minio.img-bucket-name}")
-    private String bucketName;
-
     @Value("${minio.url}")
     private String minioUrl;
 
     private final MinioUtils minioUtils;
 
     // 使用构造函数注入
-    public MinioService(MinioClient minioClient, @Value("${minio.url}") String minioUrl, @Value("${minio.img-bucket-name}") String bucketName) {
+    public MinioService(MinioClient minioClient, @Value("${minio.url}") String minioUrl) {
         this.minioClient = minioClient;
-        this.bucketName = bucketName;
         this.minioUrl = minioUrl;
-        this.minioUtils = new MinioUtils(minioClient, bucketName, minioUrl);
+        this.minioUtils = new MinioUtils(minioClient, minioUrl);
     }
 
-    public void handleUpload(String objectName, InputStream inputStream, long size) throws Exception {
+    public void handleUpload(String objectName, InputStream inputStream, long size, String bucketName) throws Exception {
         // 可以在此添加额外的业务逻辑
-        minioUtils.uploadFile(objectName, inputStream, size);
+        minioUtils.uploadFile(objectName, inputStream, size, bucketName);
     }
 
-    public InputStream handleDownload(String objectName) throws Exception {
+    public InputStream handleDownload(String objectName, String bucketName) throws Exception {
         // 可以在此添加额外的业务逻辑
-        return minioUtils.downloadFile(objectName);
+        return minioUtils.downloadFile(objectName, bucketName);
     }
 
-    public void handleDelete(String objectName) throws Exception {
+    public void handleDelete(String objectName, String bucketName) throws Exception {
         // 可以在此添加额外的业务逻辑
-        minioUtils.deleteFile(objectName);
+        minioUtils.deleteFile(objectName, bucketName);
     }
 
-    public void ensureBucketExists() throws Exception {
-        minioUtils.createBucket();
+    public void ensureBucketExists(String bucketName) throws Exception {
+        minioUtils.createBucket(bucketName);
     }
 
-    public String extractObjectName(String url){
-        return minioUtils.extractObjectName(url);
+    public String extractObjectName(String url, String bucketName){
+        return minioUtils.extractObjectName(url, bucketName);
+    }
+
+    public boolean fileExists(String objectName, String bucketName){
+        return minioUtils.fileExists(objectName, bucketName);
     }
 }

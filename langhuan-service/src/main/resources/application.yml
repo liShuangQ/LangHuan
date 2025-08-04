@@ -73,3 +73,7 @@ minio:
   file-bucket-name: langhuan-file
 project:
   folder: uploads
+task:
+  schedule:
+    documents: 0 0 2 */7 * ?
+    image: 0 0 0 * * ?

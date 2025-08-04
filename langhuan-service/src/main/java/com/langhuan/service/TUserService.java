@@ -13,13 +13,13 @@ import com.langhuan.model.domain.TUser;
 import com.langhuan.model.domain.TUserRole;
 import com.langhuan.model.dto.UserLoginDTO;
 import com.langhuan.model.mapper.TUserMapper;
+import com.langhuan.dao.TUserDao;
 import com.langhuan.utils.other.JwtUtil;
 import com.langhuan.utils.other.SecurityUtils;
 
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -43,17 +43,17 @@ public class TUserService extends ServiceImpl<TUserMapper, TUser> {
     // 权限服务，用于执行权限相关的数据库操作
     private final TPermissionService TPermissionService;
     private final JwtUtil jwtUtil;
-    private final JdbcTemplate dao;
+    private final TUserDao userDao;
     private final CacheService cacheService;
 
     // 构造方法，注入必要的服务和映射器
     public TUserService(TUserRoleService TUserRoleService, TRolePermissionService TRolePermissionService,
-            TPermissionService TPermissionService, JwtUtil jwtUtil, JdbcTemplate dao, CacheService cacheService) {
+            TPermissionService TPermissionService, JwtUtil jwtUtil, TUserDao userDao, CacheService cacheService) {
         this.TUserRoleService = TUserRoleService;
         this.TRolePermissionService = TRolePermissionService;
         this.TPermissionService = TPermissionService;
         this.jwtUtil = jwtUtil;
-        this.dao = dao;
+        this.userDao = userDao;
         this.cacheService = cacheService;
     }
 
@@ -169,12 +169,7 @@ public class TUserService extends ServiceImpl<TUserMapper, TUser> {
         user.setPassword(null);
         map.put("user", user);
         map.put("permission", auth.getAuthorities());
-        map.put("role", dao.queryForList("""
-                select r.* from t_user u
-                left join t_user_role ur on u.id = ur.user_id
-                left join t_role r on ur.role_id = r.id
-                where u.id = ?
-                """, List.of(user.getId()).toArray()));
+        map.put("role", userDao.getUserInfoById(user.getId()));
         return map;
     }
 
@@ -208,49 +203,11 @@ public class TUserService extends ServiceImpl<TUserMapper, TUser> {
     }
 
     public List<Map<String, Object>> getUserRoles(Integer userId) {
-        StringBuilder sql = new StringBuilder();
-        if (userId != null) {
-            sql.append("""
-                    select
-                        r.id as role_id,
-                        r.name as role_name
-                    from t_user_role ur
-                             left join t_user u on ur.user_id = u.id
-                             left join t_role r on ur.role_id = r.id
-                    where 1 = 1
-                    and u.id = ?
-                    """);
-            return dao.queryForList(sql.toString(), List.of(userId).toArray());
-        } else {
-            sql.append("""
-                        select r.id as role_id, r.name as role_name
-                        from t_role r;
-                    """);
-            return dao.queryForList(sql.toString());
-        }
+        return userDao.getUserRolesById(userId);
     }
 
     public List<Map<String, Object>> getUserRoles(String userName) {
-        StringBuilder sql = new StringBuilder();
-        if (userName != null) {
-            sql.append("""
-                    select
-                        r.id as role_id,
-                        r.name as role_name
-                    from t_user_role ur
-                             left join t_user u on ur.user_id = u.id
-                             left join t_role r on ur.role_id = r.id
-                    where 1 = 1
-                    and u.username = ?
-                    """);
-            return dao.queryForList(sql.toString(), List.of(userName).toArray());
-        } else {
-            sql.append("""
-                        select r.id as role_id, r.name as role_name
-                        from t_role r;
-                    """);
-            return dao.queryForList(sql.toString());
-        }
+        return userDao.getUserRolesByName(userName);
     }
 
     @Transactional(rollbackFor = Exception.class)

@@ -5,6 +5,7 @@ import com.langhuan.service.MinioService;
 import com.langhuan.service.TFileUrlService;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,16 +20,17 @@ import java.util.stream.Collectors;
 @Component
 @Slf4j
 public class CleanTempImageTask {
+    @Value("${minio.img-bucket-name}")
+    private String bucketName;
+
     @Resource
     private TFileUrlService tFileUrlService;
 
     @Resource
     private MinioService minioService;
 
-    /**
-     * 定时任务：每天凌晨 0 点执行，清理超过 1 小时的临时图片
-     */
-    @Scheduled(cron = "0 0 0 * * ?") // 每天 00:00:00 执行
+
+    @Scheduled(cron = "${task.schedule.image}") // 每天 00:00:00 执行
     @Transactional(rollbackFor = Exception.class)
     public void cleanupTemporaryImages() {
         log.info("Starting cleanup of temporary images at midnight...");
@@ -47,14 +49,14 @@ public class CleanTempImageTask {
         // 提取需要删除的 MinIO objectNames
         List<String> objectNames = expiredUrls.stream()
                 .map(TFileUrl::getFUrl)
-                .map(minioService::extractObjectName)
+                .map(url -> minioService.extractObjectName(url, bucketName))
                 .filter(objName -> objName != null && !objName.isEmpty())
                 .toList();
 
         // 删除 MinIO 中的对象
         for (String objectName : objectNames) {
             try {
-                minioService.handleDelete(objectName);
+                minioService.handleDelete(objectName, bucketName);
                 log.info("Successfully removed MinIO object: {}", objectName);
             } catch (Exception e) {
                 log.error("Failed to remove MinIO object: {}", objectName, e);

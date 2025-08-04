@@ -14,17 +14,15 @@ import java.io.InputStream;
 public class MinioUtils {
 
     private MinioClient minioClient;
-    private String bucketName;
     private String minioUrl;
 
 
-    public MinioUtils(MinioClient minioClient, String bucketName, String minioUrl) {
+    public MinioUtils(MinioClient minioClient, String minioUrl) {
         this.minioClient = minioClient;
-        this.bucketName = bucketName;
         this.minioUrl = minioUrl;
     }
 
-    public void createBucket() throws Exception {
+    public void createBucket(String bucketName) throws Exception {
         boolean found =
                 minioClient.bucketExists(BucketExistsArgs.builder().bucket(bucketName).build());
         if (!found) {
@@ -32,7 +30,7 @@ public class MinioUtils {
         }
     }
 
-    public void uploadFile(String objectName, InputStream inputStream, long size) throws Exception {
+    public void uploadFile(String objectName, InputStream inputStream, long size, String bucketName) throws Exception {
         minioClient.putObject(
                 PutObjectArgs.builder()
                         .bucket(bucketName)
@@ -42,7 +40,7 @@ public class MinioUtils {
         );
     }
 
-    public InputStream downloadFile(String objectName) throws Exception {
+    public InputStream downloadFile(String objectName, String bucketName) throws Exception {
         return minioClient.getObject(
                 GetObjectArgs.builder()
                         .bucket(bucketName)
@@ -51,7 +49,7 @@ public class MinioUtils {
         );
     }
 
-    public void deleteFile(String objectName) throws Exception {
+    public void deleteFile(String objectName, String bucketName) throws Exception {
         minioClient.removeObject(
                 RemoveObjectArgs.builder()
                         .bucket(bucketName)
@@ -63,7 +61,7 @@ public class MinioUtils {
     /**
      * 从 URL 中提取 MinIO 的 objectName
      */
-    public String extractObjectName(String url) {
+    public String extractObjectName(String url, String bucketName) {
         if (url == null || url.isEmpty()) return null;
         try {
             String baseUrl = minioUrl + "/" + bucketName + "/";
@@ -78,4 +76,34 @@ public class MinioUtils {
         }
     }
 
+    /**
+     * 判断指定 objectName 的文件是否存在于 MinIO 的 bucket 中
+     *
+     * @param objectName 文件对象名称（即路径+文件名）
+     * @return true 如果文件存在，false 不存在或发生异常
+     */
+    public boolean fileExists(String objectName, String bucketName) {
+        if (objectName == null || objectName.isEmpty()) {
+            log.warn("Object name is null or empty.");
+            return false;
+        }
+
+        try {
+            minioClient.statObject(
+                    StatObjectArgs.builder()
+                            .bucket(bucketName)
+                            .object(objectName)
+                            .build()
+            );
+            return true; // 能成功获取元信息，说明文件存在
+        } catch (Exception e) {
+            // 文件不存在会抛出异常（如 404），其他可能是网络等问题
+            if (e.getMessage().contains("404") || e instanceof io.minio.errors.ErrorResponseException) {
+                log.debug("File not found in MinIO: {}", objectName);
+                return false;
+            }
+            log.error("Error occurred while checking file existence: {}", objectName, e);
+            return false;
+        }
+    }
 }

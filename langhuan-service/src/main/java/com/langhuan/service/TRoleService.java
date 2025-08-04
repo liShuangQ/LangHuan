@@ -3,13 +3,13 @@ package com.langhuan.service;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.langhuan.dao.TRoleDao;
 import com.langhuan.model.domain.TRole;
 import com.langhuan.model.domain.TRolePermission;
 import com.langhuan.model.domain.TUserRole;
 import com.langhuan.model.mapper.TRoleMapper;
 import com.langhuan.utils.other.SecurityUtils;
 
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,13 +26,13 @@ import java.util.Map;
 public class TRoleService extends ServiceImpl<TRoleMapper, TRole> {
     private final TRolePermissionService TRolePermissionService;
     private final TUserRoleService TUserRoleService;
-    private final JdbcTemplate dao;
+    private final TRoleDao TRoleDao;
     private final CacheService cacheService;
 
-    public TRoleService(TRolePermissionService TRolePermissionService, TUserRoleService TUserRoleService, JdbcTemplate dao, CacheService cacheService) {
+    public TRoleService(TRolePermissionService TRolePermissionService, TUserRoleService TUserRoleService, TRoleDao TRoleDao, CacheService cacheService) {
         this.TRolePermissionService = TRolePermissionService;
         this.TUserRoleService = TUserRoleService;
-        this.dao = dao;
+        this.TRoleDao = TRoleDao;
         this.cacheService = cacheService;
     }
 
@@ -73,27 +73,7 @@ public class TRoleService extends ServiceImpl<TRoleMapper, TRole> {
     }
 
     public List<Map<String, Object>> getRolePermission(Integer roleId) {
-        StringBuilder sql = new StringBuilder();
-        if (roleId != null) {
-            sql.append("""
-                    select
-                        p.id as permission_id,
-                        p.name as permission_name
-                    from t_role_permission rp
-                             left join t_role r on rp.role_id = r.id
-                             left join t_permission p on rp.permission_id = p.id
-                    where 1 = 1
-                    and r.id = ?
-                    """);
-            return dao.queryForList(sql.toString(), List.of(roleId).toArray());
-        } else {
-            sql.append("""
-                        select  p.id as permission_id,
-                                p.name as permission_name
-                        from t_permission p
-                    """);
-            return dao.queryForList(sql.toString());
-        }
+        return TRoleDao.getRolePermission(roleId);
     }
 
     @Transactional(rollbackFor = Exception.class)

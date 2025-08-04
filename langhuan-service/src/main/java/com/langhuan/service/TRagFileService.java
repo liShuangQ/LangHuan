@@ -82,4 +82,11 @@ public class TRagFileService extends ServiceImpl<TRagFileMapper, TRagFile> {
                 .map(map -> map.get("content").toString())
                 .collect(java.util.stream.Collectors.toList()));
     }
+
+    /**
+     * 获取所有需要导出的 fileId 列表
+     */
+    public List<Integer> getAllFileIdsForExport() {
+        return ragFileDao.queryAllFileIds(); // 返回 List<Integer>
+    }
 }

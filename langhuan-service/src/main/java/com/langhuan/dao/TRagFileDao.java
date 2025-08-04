@@ -210,6 +210,16 @@ public class TRagFileDao {
         String sql = "SELECT content FROM vector_store_rag WHERE metadata ->> 'fileId' = ? ;";
         return jdbcTemplate.queryForList(sql, fileId.toString());
     }
+
+    /**
+     * 查询所有有效的 fileId（用于导出）
+     */
+    public List<Integer> queryAllFileIds() {
+        String sql = "SELECT DISTINCT CAST(metadata ->> 'fileId' AS INTEGER) AS file_id " +
+                "FROM vector_store_rag " +
+                "WHERE metadata ->> 'fileId' IS NOT NULL";
+        return jdbcTemplate.queryForList(sql, Integer.class);
+    }
     
     /**
      * 添加动态查询条件

@@ -12,6 +12,8 @@ import com.langhuan.service.CacheService;
 import com.langhuan.service.MinioService;
 import com.langhuan.service.TFileUrlService;
 import com.langhuan.service.TRagFileService;
+import com.langhuan.dao.VectorStoreRagDao;
+import com.langhuan.dao.TFileUrlDao;
 import com.langhuan.utils.other.SecurityUtils;
 import com.langhuan.utils.rag.EtlPipeline;
 import com.langhuan.utils.rag.RagFileVectorUtils;
@@ -41,11 +43,12 @@ import static com.langhuan.common.Constant.CACHE_KEY;
 public class RagService {
 
     private final TRagFileService ragFileService;
-    private final JdbcTemplate baseDao;
     private final VectorStore ragVectorStore;
     private final ReRankModelService reRankModelService;
     private final EtlPipeline etlPipeline;
     private final TFileUrlService tFileUrlService;
+    private final VectorStoreRagDao vectorStoreRagDao;
+    private final TFileUrlDao tFileUrlDao;
 
     @Value("${minio.img-bucket-name}")
     private String bucketName;
@@ -58,20 +61,20 @@ public class RagService {
 
     public RagService(TRagFileService ragFileService, JdbcTemplate jdbcTemplate,
             VectorStoreConfig vectorStoreConfig, ReRankModelService reRankModelService, EtlPipeline etlPipeline,
-            TFileUrlService tFileUrlService) {
+            TFileUrlService tFileUrlService, VectorStoreRagDao vectorStoreRagDao, TFileUrlDao tFileUrlDao) {
         this.ragFileService = ragFileService;
-        this.baseDao = jdbcTemplate;
         this.ragVectorStore = vectorStoreConfig.ragVectorStore();
         this.reRankModelService = reRankModelService;
         this.etlPipeline = etlPipeline;
         this.tFileUrlService = tFileUrlService;
+        this.vectorStoreRagDao = vectorStoreRagDao;
+        this.tFileUrlDao = tFileUrlDao;
     }
 
     @Transactional(rollbackFor = Exception.class)
     public String changeDocumentText(String documents, String documentId, TRagFile ragFile) throws Exception {
         log.info("Updating changeDocumentText: {},documentId: {},documents: {}", ragFile, documentId, documents);
-        String sql = "DELETE FROM vector_store_rag WHERE id = ?::uuid";
-        baseDao.update(sql, documentId);
+        vectorStoreRagDao.deleteByDocumentId(documentId);
         if (etlPipeline.writeToVectorStore(List.of(documents), etlPipeline.getMetadataFactory().createMetadata(ragFile),
                 ragVectorStore)) {
             return "更新成功";
@@ -84,8 +87,7 @@ public class RagService {
     public String changeDocumentTextByString(String documents, String documentId) throws Exception {
         log.info("Updating changeDocumentTextByString: {}, documentId: {}, documents: {}", documentId, documents);
 
-        String seqsql = "SELECT * FROM vector_store_rag WHERE id = ?::uuid";
-        List<Map<String, Object>> queryForList = baseDao.queryForList(seqsql, documentId);
+        List<Map<String, Object>> queryForList = vectorStoreRagDao.selectByDocumentId(documentId);
         PGobject pgObject = (PGobject) queryForList.get(0).get("metadata");
         String string = pgObject.getValue(); // 提取 JSON 字符串
         JSONObject object = JSONUtil.parseObj(string);
@@ -93,8 +95,7 @@ public class RagService {
         String fileId = object.getStr("fileId");
         String groupId = object.getStr("groupId");
 
-        String delsql = "DELETE FROM vector_store_rag WHERE id = ?::uuid";
-        baseDao.update(delsql, documentId);
+        vectorStoreRagDao.deleteByDocumentId(documentId);
         if (etlPipeline.writeToVectorStore(List.of(documents),
                 etlPipeline.getMetadataFactory().createMetadata(fileName, fileId, groupId),
                 ragVectorStore)) {
@@ -108,18 +109,14 @@ public class RagService {
     public String deleteDocumentText(String documentId, TRagFile ragFile) {
         log.info("Deleting document text: {}, documentId: {}", ragFile, documentId);
 
-        String sqlDeleteVectorStore = "DELETE FROM vector_store_rag WHERE id = ?::uuid";
-        baseDao.update(sqlDeleteVectorStore, documentId);
+        vectorStoreRagDao.deleteByDocumentId(documentId);
 
-        String sqlSelectTFileUrls = "SELECT id, f_url FROM t_file_url WHERE file_id = ?";
-        List<TFileUrl> fileUrlList = baseDao.queryForList(sqlSelectTFileUrls, new Object[] { ragFile.getId() },
-                TFileUrl.class);
+        List<TFileUrl> fileUrlList = tFileUrlDao.selectByFileId(ragFile.getId());
 
         if (fileUrlList != null && !fileUrlList.isEmpty()) {
             deleteImage(fileUrlList);
 
-            String sqlDeleteTFileUrls = "DELETE FROM t_file_url WHERE file_id = ?";
-            int deleteCount = baseDao.update(sqlDeleteTFileUrls, ragFile.getId());
+            int deleteCount = tFileUrlDao.deleteByFileId(ragFile.getId());
             log.info("Deleted {} records from t_file_url", deleteCount);
         }
 
@@ -172,27 +169,20 @@ public class RagService {
             Integer tempFileId = cacheService.getId(SecurityUtils.getCurrentUsername() + CACHE_KEY);
             if (tempFileId == null) {
                 log.warn("未找到缓存的临时 file_id，跳过 t_file_url 更新");
-                return "添加成功，但未更新图片状态";
+            } else {
+                // 2. 使用 SQL 批量更新 t_file_url 表
+                int updatedRows = tFileUrlDao.updateFileIdAndStatus(
+                        ragFile.getId(), // 新的 file_id
+                        "在用", // 新状态
+                        tempFileId, // 旧的临时 file_id
+                        "临时" // 原状态
+                );
+
+                log.info("批量更新 t_file_url，影响行数: {}, file_id: {} -> {}", updatedRows, tempFileId, ragFile.getId());
+
+                // 3. 清理缓存
+                cacheService.removeId(SecurityUtils.getCurrentUsername() + CACHE_KEY);
             }
-
-            // 2. 使用 SQL 批量更新 t_file_url 表
-            String updateSql = """
-                                          UPDATE t_file_url
-                                          SET file_id = ?, f_status = ?
-                                          WHERE file_id = ? AND f_status = ?
-                    """;
-
-            int updatedRows = baseDao.update(updateSql,
-                    ragFile.getId(), // 新的 file_id
-                    "在用", // 新状态
-                    tempFileId, // 旧的临时 file_id
-                    "临时" // 原状态
-            );
-
-            log.info("批量更新 t_file_url，影响行数: {}, file_id: {} -> {}", updatedRows, tempFileId, ragFile.getId());
-
-            // 3. 清理缓存
-            cacheService.removeId(SecurityUtils.getCurrentUsername() + CACHE_KEY);
 
         } catch (Exception e) {
             log.error("执行 t_file_url 批量更新时出错", e);
@@ -215,11 +205,7 @@ public class RagService {
     public Boolean deleteFileAndDocuments(Integer id) {
         log.info("Deleting file and documents with ID: {}", id);
 
-        String sqlDeleteVectorStore = """
-                        DELETE FROM vector_store_rag
-                        WHERE metadata ->> 'fileId' = ?;
-                """;
-        int deletedRowsFromVectorStore = baseDao.update(sqlDeleteVectorStore, id.toString());
+        int deletedRowsFromVectorStore = vectorStoreRagDao.deleteByFileId(id.toString());
         log.info("Deleted {} rows from vector_store_rag", deletedRowsFromVectorStore);
 
         List<TFileUrl> fileUrlList = tFileUrlService.lambdaQuery()
@@ -258,9 +244,9 @@ public class RagService {
 
         for (String url : urlsToDelete) {
             try {
-                String objectName = minioService.extractObjectName(url); // 使用之前的提取方法
+                String objectName = minioService.extractObjectName(url, bucketName); // 使用之前的提取方法
                 if (objectName != null) {
-                    minioService.handleDelete(objectName);
+                    minioService.handleDelete(objectName, bucketName);
                     log.info("MinIO object deleted: {}", objectName);
                 }
             } catch (Exception e) {
@@ -273,24 +259,14 @@ public class RagService {
     @Transactional(rollbackFor = Exception.class)
     public String changeFileAndDocuments(TRagFile ragFile) {
         log.info("Updating changeFileAndDocuments: {}", ragFile);
-        String sql = """
-                        UPDATE vector_store_rag
-                        SET metadata = jsonb_set(metadata::jsonb, '{groupId}', to_jsonb(?))
-                        WHERE metadata ->> 'fileId' = ?;
-                """;
-        baseDao.update(sql, ragFile.getFileGroupId(), ragFile.getId().toString());
+        vectorStoreRagDao.updateGroupIdByFileId(ragFile.getFileGroupId(), ragFile.getId().toString());
         ragFileService.updateById(ragFile);
         return "更新成功";
     }
 
     public String changeDocumentsRank(String documentId, Integer rank) {
         log.info("Updating changeDocumentsRank: {} rank: {}", documentId, rank);
-        String sql = """
-                        UPDATE vector_store_rag
-                        SET metadata = jsonb_set(metadata::jsonb, '{rank}', to_jsonb(?))
-                        WHERE id = ?::uuid;
-                """;
-        baseDao.update(sql, rank, documentId);
+        vectorStoreRagDao.updateRankByDocumentId(documentId, rank);
         return "更新成功";
     }
 
@@ -299,16 +275,10 @@ public class RagService {
             throw new BusinessException("fileId不能为空");
         }
         log.info("queryDocumentsByFileId: {}", fileId);
-        String sql = """
-                        SELECT * FROM vector_store_rag WHERE metadata ->> 'fileId' = ? AND content LIKE ?
-                        LIMIT ? OFFSET ?;
-                """;
-        String count = """
-                        SELECT COUNT(*) FROM vector_store_rag WHERE metadata ->> 'fileId' = ? AND content LIKE ?;
-                """;
         return Map.of("list",
-                baseDao.queryForList(sql, fileId.toString(), "%" + content + "%", pageSize, (pageNum - 1) * pageSize),
-                "count", baseDao.queryForObject(count, Integer.class, fileId.toString(), "%" + content + "%"));
+                vectorStoreRagDao.selectByFileIdAndContent(fileId.toString(), content, pageSize,
+                        (pageNum - 1) * pageSize),
+                "count", vectorStoreRagDao.countByFileIdAndContent(fileId.toString(), content));
     }
 
     public List<Map<String, Object>> queryDocumentsByIds(String fileIds) {
@@ -320,23 +290,10 @@ public class RagService {
             throw new BusinessException("fileId数量不能超过10");
         }
 
-        StringBuilder sqlBuilder = new StringBuilder(
-                "SELECT vs.id,vs.content,fg.group_name AS groupName,vs.metadata->>'filename' AS filename FROM vector_store_rag vs LEFT JOIN t_rag_file_group fg ON vs.metadata->>'groupId' = CAST(fg.id AS TEXT) WHERE vs.id IN (");
-        for (int i = 0; i < fileIdsArray.length; i++) {
-            sqlBuilder.append("?::uuid");
-            if (i < fileIdsArray.length - 1) {
-                sqlBuilder.append(",");
-            }
-        }
-        sqlBuilder.append(");");
-        String sql = sqlBuilder.toString();
-        Object[] params = new Object[fileIdsArray.length];
-        for (int i = 0; i < fileIdsArray.length; i++) {
-            params[i] = fileIdsArray[i];
-        }
+        List<String> documentIds = List.of(fileIdsArray);
         // 执行查询
         log.info("queryDocumentsByFileIds: {}", fileIds);
-        List<Map<String, Object>> queryForList = baseDao.queryForList(sql, params);
+        List<Map<String, Object>> queryForList = vectorStoreRagDao.selectByIds(documentIds);
         queryForList.forEach(map -> {
             map.put("metadata", map.get("metadata"));
         });

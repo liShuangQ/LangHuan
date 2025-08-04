@@ -34,7 +34,6 @@ import static com.langhuan.common.Constant.CACHE_KEY;
 import static com.langhuan.utils.http.GetRequestUtils.sendGetRequest;
 import static org.apache.poi.xdgf.util.Util.sanitizeFilename;
 
-
 import java.io.*;
 
 /**
@@ -65,7 +64,6 @@ public class DocumentExtractor {
     @Resource
     private TFileUrlService tFileUrlService;
 
-
     public DocumentExtractor(MinioService minioService) {
         this.minioService = minioService;
     }
@@ -74,7 +72,7 @@ public class DocumentExtractor {
     public void init() {
         // 确保 bucket 存在
         try {
-            minioService.ensureBucketExists();
+            minioService.ensureBucketExists(bucketName);
         } catch (Exception e) {
             log.error("Failed to ensure bucket exists", e);
         }
@@ -113,13 +111,13 @@ public class DocumentExtractor {
     private String extractDocxWithImages(MultipartFile file) throws Exception {
         StringBuilder markdownContent = new StringBuilder();
 
-        //生成随机 ID 并存入缓存
+        // 生成随机 ID 并存入缓存
         int randomId = (int) IdUtil.getSnowflakeNextId();
         cacheService.putId(SecurityUtils.getCurrentUsername() + CACHE_KEY, randomId);
         List<TFileUrl> fileUrlList = new ArrayList<>(); // 用于存储图片信息的列表
 
         try (InputStream is = file.getInputStream();
-             XWPFDocument document = new XWPFDocument(is)) {
+                XWPFDocument document = new XWPFDocument(is)) {
 
             for (IBodyElement element : document.getBodyElements()) {
                 if (element instanceof XWPFParagraph) {
@@ -139,7 +137,8 @@ public class DocumentExtractor {
         return markdownContent.toString().trim();
     }
 
-    private void processParagraph(XWPFParagraph paragraph, StringBuilder markdownContent, List<TFileUrl> fileUrlList, int randomId) {
+    private void processParagraph(XWPFParagraph paragraph, StringBuilder markdownContent, List<TFileUrl> fileUrlList,
+            int randomId) {
         for (XWPFRun run : paragraph.getRuns()) {
             String text = run.getText(0);
             if (text != null && !text.isEmpty()) {
@@ -152,7 +151,8 @@ public class DocumentExtractor {
         }
     }
 
-    private void processTable(XWPFTable table, StringBuilder markdownContent, List<TFileUrl> fileUrlList, int randomId) {
+    private void processTable(XWPFTable table, StringBuilder markdownContent, List<TFileUrl> fileUrlList,
+            int randomId) {
         for (XWPFTableRow row : table.getRows()) {
             for (XWPFTableCell cell : row.getTableCells()) {
                 for (XWPFParagraph paragraph : cell.getParagraphs()) {
@@ -171,7 +171,7 @@ public class DocumentExtractor {
         String objectName = (minioFolder != null ? minioFolder + "/" : "") + fileName;
 
         try (InputStream inputStream = new ByteArrayInputStream(pictureData.getData())) {
-            minioService.handleUpload(objectName, inputStream, pictureData.getData().length);
+            minioService.handleUpload(objectName, inputStream, pictureData.getData().length, bucketName);
         } catch (Exception e) {
             log.error("Failed to upload image to MinIO", e);
             return Optional.empty();
@@ -204,7 +204,7 @@ public class DocumentExtractor {
         org.jsoup.nodes.Document doc = Jsoup.parse(htmlContent);
         Elements imgs = doc.select("img");
 
-        //生成随机 ID 并存入缓存
+        // 生成随机 ID 并存入缓存
         int randomId = (int) IdUtil.getSnowflakeNextId();
         cacheService.putId(SecurityUtils.getCurrentUsername() + CACHE_KEY, randomId);
 
@@ -215,7 +215,8 @@ public class DocumentExtractor {
             String src = img.attr("src");
             String alt = img.hasAttr("alt") ? img.attr("alt") : "image";
 
-            if (src.isEmpty()) continue;
+            if (src.isEmpty())
+                continue;
 
             URL imageUrl = new URL(new URL(url), src);
             String filename = sanitizeFilename(imageUrl.getPath());
@@ -225,7 +226,7 @@ public class DocumentExtractor {
             String objectName = (minioFolder != null ? minioFolder + "/" : "") + filename;
 
             try (InputStream in = imageUrl.openStream()) {
-                minioService.handleUpload(objectName, in, -1); // -1 表示未知大小
+                minioService.handleUpload(objectName, in, -1, bucketName); // -1 表示未知大小
             } catch (Exception e) {
                 log.error("Failed to upload image from URL to MinIO: {}", imageUrl, e);
                 continue;
