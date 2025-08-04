@@ -359,6 +359,7 @@ const addAndChangeFormShowFun = async (t: string, d: any = null) => {
                 canUpdate: d.canUpdate || false,
                 canDelete: d.canDelete || false,
             } as any);
+            shareManageRef.value?.getShareList();
         });
     }
 };

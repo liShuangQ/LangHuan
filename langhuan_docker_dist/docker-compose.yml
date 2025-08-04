@@ -1,3 +1,4 @@
+
 networks:
   langhuan-net:
     driver: bridge
@@ -33,7 +34,6 @@ services:
     volumes:
       - ./postgres-data:/var/lib/postgresql/data
       - ./sql:/docker-entrypoint-initdb.d
-
     networks:
       - langhuan-net
     environment:
@@ -47,7 +47,7 @@ services:
       - "9000:9000"
       - "9001:9001"
     volumes:
-      -./minio:/data
+      - ./minio-data:/data
     environment:
       MINIO_ROOT_USER: minio
       MINIO_ROOT_PASSWORD: minio123456

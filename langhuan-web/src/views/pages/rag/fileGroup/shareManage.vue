@@ -1,84 +1,6 @@
 <template>
     <div class="share-manage-container">
         <el-tabs v-model="activeTab" class="share-tabs">
-            <!-- 添加共享 Tab -->
-            <el-tab-pane label="添加共享" name="share">
-                <div class="tab-content">
-                    <el-form
-                        ref="shareFormRef"
-                        :model="shareForm"
-                        :rules="shareFormRules"
-                        label-width="120px"
-                        class="share-form"
-                    >
-                        <el-form-item label="共享用户" prop="sharedUsers">
-                            <el-select
-                                v-model="shareForm.sharedUsers"
-                                placeholder="请选择共享用户"
-                                style="width: 100%"
-                                clearable
-                                multiple
-                                filterable
-                                remote
-                                @change="userChangeMethod"
-                                :remote-method="userRemoteMethod"
-                            >
-                                <el-option
-                                    v-for="user in userOptions"
-                                    :key="user.value"
-                                    :label="user.label"
-                                    :value="user.value"
-                                />
-                            </el-select>
-                        </el-form-item>
-
-                        <el-form-item label="权限配置">
-                            <div class="permission-grid">
-                                <div class="permission-item">
-                                    <div class="permission-label">读取权限</div>
-                                    <el-switch
-                                        v-model="shareForm.canRead"
-                                        active-text="开启"
-                                        inactive-text="关闭"
-                                    />
-                                </div>
-                                <div class="permission-item">
-                                    <div class="permission-label">新增权限</div>
-                                    <el-switch
-                                        v-model="shareForm.canAdd"
-                                        active-text="开启"
-                                        inactive-text="关闭"
-                                    />
-                                </div>
-                                <div class="permission-item">
-                                    <div class="permission-label">更新权限</div>
-                                    <el-switch
-                                        v-model="shareForm.canUpdate"
-                                        active-text="开启"
-                                        inactive-text="关闭"
-                                    />
-                                </div>
-                                <div class="permission-item">
-                                    <div class="permission-label">删除权限</div>
-                                    <el-switch
-                                        v-model="shareForm.canDelete"
-                                        active-text="开启"
-                                        inactive-text="关闭"
-                                    />
-                                </div>
-                            </div>
-                        </el-form-item>
-                    </el-form>
-
-                    <div class="form-actions">
-                        <el-button @click="handleShareCancel">取消</el-button>
-                        <el-button type="primary" @click="handleShareConfirm"
-                            >确定</el-button
-                        >
-                    </div>
-                </div>
-            </el-tab-pane>
-
             <!-- 管理共享 Tab -->
             <el-tab-pane label="管理共享" name="unshare">
                 <div class="tab-content">
@@ -162,6 +84,84 @@
                     </div>
                 </div>
             </el-tab-pane>
+
+            <!-- 添加共享 Tab -->
+            <el-tab-pane label="添加共享" name="share">
+                <div class="tab-content">
+                    <el-form
+                        ref="shareFormRef"
+                        :model="shareForm"
+                        :rules="shareFormRules"
+                        label-width="120px"
+                        class="share-form"
+                    >
+                        <el-form-item label="共享用户" prop="sharedUsers">
+                            <el-select
+                                v-model="shareForm.sharedUsers"
+                                placeholder="请选择共享用户"
+                                style="width: 100%"
+                                clearable
+                                multiple
+                                filterable
+                                remote
+                                @change="userChangeMethod"
+                                :remote-method="userRemoteMethod"
+                            >
+                                <el-option
+                                    v-for="user in userOptions"
+                                    :key="user.value"
+                                    :label="user.label"
+                                    :value="user.value"
+                                />
+                            </el-select>
+                        </el-form-item>
+
+                        <el-form-item label="权限配置">
+                            <div class="permission-grid">
+                                <div class="permission-item">
+                                    <div class="permission-label">读取权限</div>
+                                    <el-switch
+                                        v-model="shareForm.canRead"
+                                        active-text="开启"
+                                        inactive-text="关闭"
+                                    />
+                                </div>
+                                <div class="permission-item">
+                                    <div class="permission-label">新增权限</div>
+                                    <el-switch
+                                        v-model="shareForm.canAdd"
+                                        active-text="开启"
+                                        inactive-text="关闭"
+                                    />
+                                </div>
+                                <div class="permission-item">
+                                    <div class="permission-label">更新权限</div>
+                                    <el-switch
+                                        v-model="shareForm.canUpdate"
+                                        active-text="开启"
+                                        inactive-text="关闭"
+                                    />
+                                </div>
+                                <div class="permission-item">
+                                    <div class="permission-label">删除权限</div>
+                                    <el-switch
+                                        v-model="shareForm.canDelete"
+                                        active-text="开启"
+                                        inactive-text="关闭"
+                                    />
+                                </div>
+                            </div>
+                        </el-form-item>
+                    </el-form>
+
+                    <div class="form-actions">
+                        <el-button @click="handleShareCancel">取消</el-button>
+                        <el-button type="primary" @click="handleShareConfirm"
+                            >确定</el-button
+                        >
+                    </div>
+                </div>
+            </el-tab-pane>
         </el-tabs>
     </div>
 </template>
@@ -225,7 +225,7 @@ const emit = defineEmits<{
 }>();
 
 // Tab 相关
-const activeTab = ref("share");
+const activeTab = ref("unshare");
 
 // 共享表单相关
 const shareFormRef = ref<FormInstance>();
@@ -453,13 +453,15 @@ watch(activeTab, (newTab) => {
 // 暴露方法给父组件
 defineExpose({
     resetShareForm,
+    getShareList,
     setShareFormData,
     getShareFormData,
     refreshList,
 });
 
 onMounted(() => {
-    nextTick(() => {});
+    nextTick(() => {
+    });
 });
 </script>
 
