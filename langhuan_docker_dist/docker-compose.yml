@@ -17,6 +17,8 @@ services:
     build: ./langhuan-service
     ports:
       - "9077:9077"
+    volumes:
+      - ./logs:/app/logs
     depends_on:
       - db
     environment:
