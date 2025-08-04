@@ -22,6 +22,7 @@ import org.postgresql.util.PGobject;
 import org.springframework.ai.document.Document;
 import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -45,6 +46,9 @@ public class RagService {
     private final ReRankModelService reRankModelService;
     private final EtlPipeline etlPipeline;
     private final TFileUrlService tFileUrlService;
+
+    @Value("${minio.img-bucket-name}")
+    private String bucketName;
 
     @Resource
     private CacheService cacheService;
