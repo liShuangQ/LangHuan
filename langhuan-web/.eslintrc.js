@@ -52,5 +52,6 @@ module.exports = {
         'vue/attribute-hyphenation': 'off',      // 禁用属性必须使用连字符的警告
         'vue/prop-name-casing': 'off',           // 禁用属性命名需使用 camelCase 的警告
         'vue/require-prop-types': 'off',         // 禁用要求 prop 定义类型的警告
+        'no-irregular-whitespace': 'off',
     },
 };

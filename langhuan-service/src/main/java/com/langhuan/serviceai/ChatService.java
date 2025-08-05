@@ -172,10 +172,21 @@ public class ChatService {
     public ChatModelResult chat(ChatRestOption chatRestOption) throws Exception {
         RagIntentionClassifierDTO ragIntentionClassifierDTO = ragIntentionClassifier(chatRestOption.getModelName(),
                 chatRestOption.getQuestion());
-        if (ragIntentionClassifierDTO.getIsAdd()) {
-            return toAddDocuments(ragIntentionClassifierDTO);
-        } else {
-            return toChat(chatRestOption);
+        try {
+            if (ragIntentionClassifierDTO.getIsAdd()) {
+                return toAddDocuments(ragIntentionClassifierDTO);
+            } else {
+                return toChat(chatRestOption);
+            }
+        } catch (Exception e) {
+            return new ChatModelResult() {
+                {
+                    {
+                        setChat("个人空间意图识别错误");
+                        setRag(List.of());
+                    }
+                }
+            };
         }
     }
 

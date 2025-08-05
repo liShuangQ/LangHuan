@@ -31,19 +31,6 @@ const menu: PagesMenu[] = [
             },
         ],
     },
-    // {
-    //     path: "/pages/aiUtopia",
-    //     faPath: [],
-    //     title: "斯坦福小镇",
-    //     icon: "Menu",
-    //     children: [
-    //         {
-    //             title: "多角色对话",
-    //             path: "/pages/aiUtopia/aiChat",
-    //             faPath: ["aiUtopia"],
-    //         },
-    //     ],
-    // },
     {
         path: "prompt",
         faPath: [],

@@ -22,7 +22,7 @@ export default defineStore("aimodel", {
                         if (res.code === 200) {
                             this.modelOptions = res.data.data
                                 .filter((e: any) => {
-                                    return e.id.indexOf("embed") === -1;
+                                    return (e.id.indexOf("embed") === -1) && (e.id.indexOf("Embed") === -1);
                                 })
                                 .map((e: any) => {
                                     return {

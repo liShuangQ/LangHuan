@@ -5,14 +5,7 @@ export interface ChatWindow {
     active?: boolean;
 }
 
-export interface Message {
-    id: string;
-    content: string;
-    sender: 'user' | 'assistant';
-    timestamp: string;
-    loading?: boolean;
-    rag?: any[];
-}
+
 
 export interface ChatMessage {
     id: string;
@@ -32,6 +25,25 @@ export interface ChatSettings {
         name: string;
     } | null;
     isReRank: boolean;
+    // 多专家模式相关字段
+    // 纯前端编写专家流程
+    isExpertMode: boolean;
+    expertFileGroups: {
+        id: string;
+        name: string;
+    }[]; // 文件组（多选）
+    expertConversationRounds: number; // 对话轮数
+}
+
+export interface Message{
+    id: string;
+    content: string;
+    sender: "user" | "assistant";
+    timestamp: string;
+    loading?: boolean;
+    rag?: any[];
+    chatSettings?: ChatSettings | any;
+    showUserMessage?: boolean; // 目前是否展示用户消息
 }
 
 export interface RagGroup {

@@ -34,6 +34,10 @@ export const sendChatMessage = (
  * @param text 需要优化的文本
  */
 export const optimizePromptWords = (text: string) => {
+    if (!text) {
+        ElMessage.info("请输入需要优化的文本");
+        return;
+    }
     return http.request<any>({
         url: "/chat/getPrompt",
         method: "post",

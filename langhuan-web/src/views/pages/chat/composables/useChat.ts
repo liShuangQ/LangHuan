@@ -20,7 +20,7 @@ export function useChat() {
     const sendMessage = async (
         windowId: string,
         message: string,
-        chatParams = {}
+        chatParams: any = {}
     ) => {
         const assistantMessage = {
             id: "loading-" + Date.now().toString(),
@@ -34,14 +34,13 @@ export function useChat() {
             id: Date.now().toString(),
             content: message,
             sender: "user" as const,
-            timestamp: new Date().toISOString(),
+            timestamp: new Date().toLocaleString().replaceAll("/", "-"),
+            showUserMessage: chatParams.showUserMessage,
         };
 
         axiosCancel = axios.CancelToken.source();
         messages.value.push(userMessage, assistantMessage);
         canSend.value = false;
-
-        console.log(chatParams,'chatParamschatParams');
 
         try {
             const res = await api.sendChatMessage(
@@ -71,7 +70,8 @@ export function useChat() {
                     content: res.data.chat,
                     rag: res.data?.rag ?? [],
                     sender: "assistant",
-                    timestamp: new Date().toISOString(),
+                    timestamp: new Date().toLocaleString().replaceAll("/", "-"),
+                    chatSettings: chatParams,
                 };
             }
         } catch (error) {

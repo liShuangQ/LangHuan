@@ -8,9 +8,11 @@ import { onMounted } from "vue";
 import Sidebar from "./components/sidebar.vue";
 import SettingsSidebar from "./components/settings-sidebar.vue";
 import PromptContainers from "./components/prompt-containers.vue";
+import UpdateTip from "./components/updateTip.vue";
 import { useChat } from "./composables/useChat";
 import { useWindow } from "./composables/useWindow";
 import { useSettings } from "./composables/useSettings";
+import { expertPrompt, observerPrompt, summarizePrompt } from "./config";
 import user from "@/store/user";
 const {
     messages,
@@ -46,8 +48,6 @@ const router = useRouter();
 const nowIsChat = router.currentRoute.value.path === "/chat";
 
 const handleSidebarAction = async (type: string, payload?: any) => {
-    console.log("handleSidebarAction", type, payload);
-
     if (type === "new-chat") {
         const newId = createWindow();
         await loadMessages(newId);
@@ -88,11 +88,67 @@ const handlePromptAction = async (type: string, payload?: any) => {
     }
 };
 
-const handleSendMessage = (windowId: string, message: string) => {
-    sendMessage(windowId, message, {
-        ...getChatParams.value,
-        fileGroupName: settings.value.ragGroup?.name,
+// XXX 后续可优化记忆压缩，超出记忆的时候，总是留下总结者的信息
+const sendMessageExpertMode = async (windowId: string, message: string) => {
+    if (settings.value.expertFileGroups.length < 2) {
+        ElMessage.warning("请选择至少两个文件组");
+        return;
+    }
+    let expertFileGroups:any = JSON.parse(
+        JSON.stringify(toRaw(settings.value.expertFileGroups))
+    );
+    expertFileGroups.push({
+        id: "observer",
+        name: "观察者",
     });
+    for (let i = 0; i < settings.value.expertConversationRounds; i++) {
+        if (settings.value.expertConversationRounds === i + 1) {
+            // 最后一轮不需要观察者
+            expertFileGroups = expertFileGroups.filter(
+                (item:any) => item.id !== "observer"
+            );
+        }
+        // 一轮信息
+        for (let index = 0; index < expertFileGroups.length; index++) {
+            await sendMessage(windowId, message, {
+                ...getChatParams.value,
+                groupId: expertFileGroups[index].id,
+                isRag: true,
+                p:
+                    expertFileGroups[index].id === "observer"
+                        ? observerPrompt
+                        : getChatParams.value.p +
+                          "\n" +
+                          expertPrompt.replace(
+                              "{{fileGroupName}}",
+                              expertFileGroups[index].name
+                          ),
+                fileGroupName: expertFileGroups[index].name,
+                showUserMessage: i === 0 && index === 0,
+            });
+        }
+    }
+
+    // 完成后总结
+    await sendMessage(windowId, message, {
+        ...getChatParams.value,
+        groupId: "",
+        isRag: false,
+        p: summarizePrompt,
+        fileGroupName: "总结者",
+        showUserMessage: false,
+    });
+};
+
+const handleSendMessage = (windowId: string, message: string) => {
+    if (settings.value.isExpertMode) {
+        sendMessageExpertMode(windowId, message);
+    } else {
+        sendMessage(windowId, message, {
+            ...getChatParams.value,
+            fileGroupName: settings.value.ragGroup?.name,
+        });
+    }
 };
 
 onMounted(async () => {
@@ -129,5 +185,6 @@ onMounted(async () => {
             :rag-groups="ragGroups"
             @close="toggleSettings"
         />
+        <UpdateTip />
     </main>
 </template>

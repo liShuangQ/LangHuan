@@ -20,7 +20,7 @@ public class Constant {
         // ai的rag默认导出的分隔符
         public static final String DEFAULT_RAG_EXPORT_SPLIT = "======";
         // ai的单id最大记忆消息数
-        public static final int MESSAGEWINDOWCHATMEMORYMAX = 10;
+        public static final int MESSAGEWINDOWCHATMEMORYMAX = 30;
         // ai系统默认提示词数据库定时刷新时间
         public static final int AIDEFAULTSYSTEMPROMPTRECTIME = 1000 * 60 * 60 * 2;
         // ai系统默认提示词

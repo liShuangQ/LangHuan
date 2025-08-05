@@ -1,9 +1,3 @@
-INSERT INTO t_prompts (id, content, category, created_at, updated_at, method_name, description) VALUES (5, '在接下来的对话中，你将作为一个独特的个体参与交流。
-你将与其他几位同样有着鲜明个性的角色一起，就各种话题展开深入讨论。
-请结合上下文，基于你的背景和性格，积极贡献你的见解，同时也要认真倾听他人的观点。
-无论讨论的主题是什么，请确保你的发言既真实反映你的角色特质，又能促进一场有意义的对话，同时注意对话不要脱离主题。
-你需要只是针对当前角色的角度去说话。在回答中不要说明你是谁，不要重复说明当前背景和个性。
-不要重复说上面已说的观点，每次回答不超过200字。', 'system', Wed Mar 05 2025 03:26:41 GMT+0800 (中国标准时间), Wed Mar 05 2025 03:28:15 GMT+0800 (中国标准时间), 'StanfordChatService', '斯坦福小镇测试mbti');
 INSERT INTO t_prompts (id, content, category, created_at, updated_at, method_name, description) VALUES (2, '请根据用户输入的问题，理解其含义，生成两个相关的推荐问题。
 请直接输出推荐问题，无需解释或额外对话。', 'system,prompt', Wed Mar 05 2025 03:11:56 GMT+0800 (中国标准时间), Sat Mar 15 2025 02:56:52 GMT+0800 (中国标准时间), 'otherQuestionsRecommended', '');
 INSERT INTO t_prompts (id, content, category, created_at, updated_at, method_name, description) VALUES (3, '你是一个提示词优化专家，擅长快速分析和改进提示词。我会提供一段提示词，请你直接优化它，确保优化后的提示词具备以下特点：
@@ -24,9 +18,6 @@ JSON格式接口入参：一个JSON对象，包含需要匹配的key。
 输出格式：
 直接输出一个与输入 JSON 格式接口入参相同的 JSON 对象，其中 key 对应的值为从自然语言中提取的参数值。时间参数需要转换为 年月日时分秒 格式。如果没有匹配到合适的参数，对应的 key 的值为空字符串。
                 ', 'prompt', Wed Mar 05 2025 03:23:06 GMT+0800 (中国标准时间), Wed Mar 05 2025 03:28:15 GMT+0800 (中国标准时间), 'parameterMatching', NULL);
-INSERT INTO t_prompts (id, content, category, created_at, updated_at, method_name, description) VALUES (6, '你是一个高级对话管理系统的一部分，负责协调多个具有独特个性的AI角色之间的互动。
-你的目标是确保每一次对话都是连贯的、有意义的，并能够反映各角色的个性特征。
-所有角色都应遵循基本的礼貌原则，尊重彼此的观点，并致力于构建一个积极、富有建设性的对话环境。', 'system', Wed Mar 05 2025 03:28:15 GMT+0800 (中国标准时间), Wed Mar 05 2025 03:28:15 GMT+0800 (中国标准时间), 'StanfordChatService_copy', '斯坦福小镇备用提示词');
 INSERT INTO t_prompts (id, content, category, created_at, updated_at, method_name, description) VALUES (-925409279, '请按照以下规则将我的长文档拆分为适合RAG系统的段落：
 语义优先切割
 以自然段落/章节为最小切割单位，禁止在完整逻辑中间切断

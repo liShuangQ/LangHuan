@@ -10,6 +10,9 @@ export function useSettings() {
         promptTemplate: "",
         ragGroup: null,
         isReRank: false,
+        isExpertMode: false,
+        expertFileGroups: [],
+        expertConversationRounds: 1,
     });
 
     const availableModels = ref();
@@ -34,6 +37,7 @@ export function useSettings() {
         showSettings.value = !showSettings.value;
     };
 
+    // HACK 根据后端参数改变
     const getChatParams = computed(() => ({
         modelName: settings.value.modelName,
         p: settings.value.promptTemplate,
