@@ -12,8 +12,15 @@ import UpdateTip from "./components/updateTip.vue";
 import { useChat } from "./composables/useChat";
 import { useWindow } from "./composables/useWindow";
 import { useSettings } from "./composables/useSettings";
-import { expertPrompt, observerPrompt, summarizePrompt } from "./config";
+import {
+    expertPrompt,
+    observerPrompt,
+    questionGeneratorPrompt,
+    summarizePrompt,
+} from "./config";
 import user from "@/store/user";
+import * as api from "./api";
+
 const {
     messages,
     canSend,
@@ -101,6 +108,8 @@ const sendMessageExpertMode = async (windowId: string, message: string) => {
         id: "observer",
         name: "观察者",
     });
+    // 优化提示词，后面在二轮后会用其它问题替换这个提示词
+    let newMessage = message;
     for (let i = 0; i < settings.value.expertConversationRounds; i++) {
         if (settings.value.expertConversationRounds === i + 1) {
             // 最后一轮不需要观察者
@@ -110,28 +119,59 @@ const sendMessageExpertMode = async (windowId: string, message: string) => {
         }
         // 一轮信息
         for (let index = 0; index < expertFileGroups.length; index++) {
-            await sendMessage(windowId, `第${i + 1}轮问题：${message}`, {
+            await sendMessage(windowId, `第${i + 1}轮问题：${newMessage}`, {
                 ...getChatParams.value,
                 groupId: expertFileGroups[index].id,
                 isRag: expertFileGroups[index].id === "observer" ? false : true,
                 p:
                     expertFileGroups[index].id === "observer"
-                        ? observerPrompt
-                        : expertPrompt + "\n" + getChatParams.value.p,
+                        ? observerPrompt.replaceAll(
+                              "{currentRound}",
+                              String(i + 1)
+                          )
+                        : expertPrompt.replaceAll(
+                              "{currentRound}",
+                              String(i + 1)
+                          ) +
+                          "\n" +
+                          getChatParams.value.p,
                 fileGroupName: expertFileGroups[index].name,
-                showUserMessage: i === 0 && index === 0,
+                showUserMessage: index === 0,
             });
+        }
+
+        // 不是最后一轮，需要生成下一轮的问题
+        if (settings.value.expertConversationRounds !== i + 1) {
+            const res = await api.sendEasyChatMessage({
+                p: questionGeneratorPrompt
+                    .replaceAll("{currentRound}", String(i + 1))
+                    .replaceAll("{nextRound}", String(i + 2)),
+                q: messages.value
+                    .filter(
+                        (item: any) =>
+                            item.sender === "assistant" &&
+                            item.content !== "正在思考中..."
+                    )
+                    .slice(-expertFileGroups.length)
+                    .map((item: any) => item.content)
+                    .join("\n"),
+                modelName: getChatParams.value.modelName,
+            });
+            newMessage = res.data.chat;
         }
     }
 
     // 完成后总结
-    await sendMessage(windowId, `总结问题：${message}`, {
+    await sendMessage(windowId, `总结问题`, {
         ...getChatParams.value,
         groupId: "",
         isRag: false,
-        p: summarizePrompt,
+        p: summarizePrompt.replaceAll(
+            "{totalRounds}",
+            String(settings.value.expertConversationRounds)
+        ),
         fileGroupName: "总结者",
-        showUserMessage: false,
+        showUserMessage: true,
     });
 };
 

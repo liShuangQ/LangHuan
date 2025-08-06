@@ -14,16 +14,16 @@ import { tr } from "element-plus/es/locale";
 // 去除markdown代码块标记的函数
 function removeMarkdownCodeBlocks(content: string): string {
     if (!content) return content;
-    
+
     // 去除开头结尾的空格
     const trimmedContent = content.trim();
-    
+
     // 检查是否以```markdown开头并以```结尾
     if (trimmedContent.startsWith('```markdown') && trimmedContent.endsWith('```')) {
         // 去除开头的```markdown和结尾的```
         return trimmedContent.slice(11, -3).trim();
     }
-    
+
     // 检查是否以```开头并以```结尾（通用代码块）
     if (trimmedContent.startsWith('```') && trimmedContent.endsWith('```')) {
         // 找到第一个换行符的位置
@@ -36,7 +36,7 @@ function removeMarkdownCodeBlocks(content: string): string {
             return trimmedContent.slice(3, -3).trim();
         }
     }
-    
+
     // 如果没有代码块标记，返回原内容
     return trimmedContent;
 }

@@ -19,7 +19,6 @@ public class ChatGeneralAssistanceService {
                                 .defaultAdvisors(
                                                 new SafeGuardAdvisor(Constant.AIDEFAULTSAFEGUARDADVISOR),
                                                 new SimpleLoggerAdvisor())
-                                .defaultSystem("回答必须使用 Markdown 格式（如标题、列表、加粗等），不得嵌套任何 JSON、XML 等结构化格式，不得使用```markdown  ```代码块标记；")
                                 .build();
         }
 
@@ -31,6 +30,7 @@ public class ChatGeneralAssistanceService {
                                                                 .model(modelName)
                                                                 .build()))
                                 .user(q)
+                                .system("回答必须使用 Markdown 格式（如标题、列表、加粗等），不得嵌套任何 JSON、XML 等结构化格式，不得使用```markdown  ```代码块标记；")
                                 .call().content();
         }
 
@@ -45,6 +45,7 @@ public class ChatGeneralAssistanceService {
                 return chatClient
                                 .prompt(TPromptsService.getCachedTPromptsByMethodName("otherQuestionsRecommended"))
                                 .user(q)
+                                .system("回答必须使用 Markdown 格式（如标题、列表、加粗等），不得嵌套任何 JSON、XML 等结构化格式，不得使用```markdown  ```代码块标记；")
                                 .call()
                                 .content();
         }
@@ -53,6 +54,7 @@ public class ChatGeneralAssistanceService {
 
                 return chatClient.prompt(TPromptsService.getCachedTPromptsByMethodName("optimizePromptWords"))
                                 .user(q)
+                                .system("回答必须使用 Markdown 格式（如标题、列表、加粗等），不得嵌套任何 JSON、XML 等结构化格式，不得使用```markdown  ```代码块标记；")
                                 .call()
                                 .content();
         }
@@ -60,6 +62,7 @@ public class ChatGeneralAssistanceService {
         public String parameterMatching(String q) {
                 return chatClient.prompt(TPromptsService.getCachedTPromptsByMethodName("parameterMatching"))
                                 .user(q)
+                                .system("回答必须使用 Markdown 格式（如标题、列表、加粗等），不得嵌套任何 JSON、XML 等结构化格式，不得使用```markdown  ```代码块标记；")
                                 .call()
                                 .content();
         }
@@ -72,6 +75,7 @@ public class ChatGeneralAssistanceService {
                                                                 .model(modelName)
                                                                 .build()))
                                 .user(q)
+                                .system("回答必须使用 Markdown 格式（如标题、列表、加粗等），不得嵌套任何 JSON、XML 等结构化格式，不得使用```markdown  ```代码块标记；")
                                 .call()
                                 .content();
         }

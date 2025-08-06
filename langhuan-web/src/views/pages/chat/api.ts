@@ -30,6 +30,27 @@ export const sendChatMessage = (
 };
 
 /**
+ * 发送简单聊天消息
+ * @param params 聊天参数
+ * @param cancelToken 用于取消请求的token
+ */
+export const sendEasyChatMessage = (
+    params: {
+        p: string;
+        q: string;
+        modelName: string;
+    }
+) => {
+    return http.request<any>({
+        url: "chat/easyChat",
+        method: "post",
+        q_spinning: false,
+        data: params,
+    });
+};
+
+
+/**
  * 优化提示词
  * @param text 需要优化的文本
  */
