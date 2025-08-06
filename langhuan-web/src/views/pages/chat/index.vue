@@ -94,7 +94,7 @@ const sendMessageExpertMode = async (windowId: string, message: string) => {
         ElMessage.warning("请选择至少两个文件组");
         return;
     }
-    let expertFileGroups:any = JSON.parse(
+    let expertFileGroups: any = JSON.parse(
         JSON.stringify(toRaw(settings.value.expertFileGroups))
     );
     expertFileGroups.push({
@@ -105,24 +105,19 @@ const sendMessageExpertMode = async (windowId: string, message: string) => {
         if (settings.value.expertConversationRounds === i + 1) {
             // 最后一轮不需要观察者
             expertFileGroups = expertFileGroups.filter(
-                (item:any) => item.id !== "observer"
+                (item: any) => item.id !== "observer"
             );
         }
         // 一轮信息
         for (let index = 0; index < expertFileGroups.length; index++) {
-            await sendMessage(windowId, message, {
+            await sendMessage(windowId, `第${i + 1}轮问题：${message}`, {
                 ...getChatParams.value,
                 groupId: expertFileGroups[index].id,
-                isRag: true,
+                isRag: expertFileGroups[index].id === "observer" ? false : true,
                 p:
                     expertFileGroups[index].id === "observer"
                         ? observerPrompt
-                        : getChatParams.value.p +
-                          "\n" +
-                          expertPrompt.replace(
-                              "{{fileGroupName}}",
-                              expertFileGroups[index].name
-                          ),
+                        : expertPrompt + "\n" + getChatParams.value.p,
                 fileGroupName: expertFileGroups[index].name,
                 showUserMessage: i === 0 && index === 0,
             });
@@ -130,7 +125,7 @@ const sendMessageExpertMode = async (windowId: string, message: string) => {
     }
 
     // 完成后总结
-    await sendMessage(windowId, message, {
+    await sendMessage(windowId, `总结问题：${message}`, {
         ...getChatParams.value,
         groupId: "",
         isRag: false,

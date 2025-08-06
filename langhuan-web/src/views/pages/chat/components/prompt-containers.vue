@@ -95,7 +95,6 @@ const scrollToBottom = () => {
 watch(
     () => props.messages,
     () => {
-        console.log(props.messages, "props.messages");
         scrollToBottom();
     },
     { deep: true }

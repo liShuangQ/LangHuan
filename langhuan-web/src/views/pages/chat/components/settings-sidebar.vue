@@ -184,13 +184,13 @@ watch(isExpertMode, (newValue) => {
                 <div>
                     <label
                         class="block text-sm font-medium text-slate-700 dark:text-slate-300 pb-1"
-                        >RAG文档组</label
+                        >RAG文件组</label
                     >
                     <el-select
                         v-model="ragGroup"
                         size="small"
                         class="w-full"
-                        placeholder="选择RAG文档组"
+                        placeholder="选择RAG文件组"
                         :disabled="isExpertMode"
                     >
                         <el-option
@@ -204,7 +204,7 @@ watch(isExpertMode, (newValue) => {
                         v-if="isExpertMode"
                         class="text-xs text-slate-500 dark:text-slate-400 mt-1"
                     >
-                        专家模式下RAG文档组不可用
+                        专家模式下RAG文件组不可用
                     </div>
                 </div>
 
@@ -225,7 +225,7 @@ watch(isExpertMode, (newValue) => {
                         v-if="isReRankDisabled"
                         class="text-xs text-slate-500 dark:text-slate-400 mt-1"
                     >
-                        需要选择RAG文档组才能启用ReRank模型
+                        需要选择RAG文件组才能启用ReRank模型
                     </div>
                 </div>
 
@@ -281,14 +281,13 @@ watch(isExpertMode, (newValue) => {
                     <!-- 对话轮数 -->
                     <div v-if="isExpertMode">
                         <span class="text-xs">对话轮数 : </span>
-                        <el-input-number
+                        <el-slider
+                            class="px-1"
                             v-model="expertConversationRounds"
-                            size="small"
-                            class="w-full"
-                            :min="1"
+                            show-stops
                             :max="20"
+                            :min="1"
                             :step="1"
-                            placeholder="输入对话轮数"
                         />
                     </div>
                 </div>

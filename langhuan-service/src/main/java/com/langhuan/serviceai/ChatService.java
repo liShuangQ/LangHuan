@@ -1,6 +1,5 @@
 package com.langhuan.serviceai;
 
-import cn.hutool.core.util.IdUtil;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
@@ -9,7 +8,6 @@ import com.langhuan.common.Constant;
 import com.langhuan.functionTools.RestRequestTools;
 import com.langhuan.model.domain.TRagFile;
 import com.langhuan.model.domain.TRagFileGroup;
-import com.langhuan.model.domain.TUser;
 import com.langhuan.model.domain.TUserChatWindow;
 import com.langhuan.model.dto.RagIntentionClassifierDTO;
 import com.langhuan.model.pojo.ChatModelResult;
@@ -20,26 +18,24 @@ import com.langhuan.utils.other.SecurityUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
+import org.springframework.ai.chat.client.advisor.PromptChatMemoryAdvisor;
 import org.springframework.ai.chat.client.advisor.SafeGuardAdvisor;
 import org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor;
 import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.chat.memory.MessageWindowChatMemory;
 import org.springframework.ai.chat.memory.repository.jdbc.JdbcChatMemoryRepository;
 import org.springframework.ai.chat.messages.Message;
-import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.document.Document;
 import org.springframework.ai.openai.OpenAiChatOptions;
 import org.springframework.ai.support.ToolCallbacks;
 import org.springframework.ai.tool.ToolCallback;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * AI聊天服务类
@@ -153,6 +149,7 @@ public class ChatService {
                 .defaultAdvisors(
                         new SafeGuardAdvisor(Constant.AIDEFAULTSAFEGUARDADVISOR),
                         new SimpleLoggerAdvisor(),
+                        // MessageChatMemoryAdvisor
                         MessageChatMemoryAdvisor.builder(chatMemory).build())
                 .build();
     }
