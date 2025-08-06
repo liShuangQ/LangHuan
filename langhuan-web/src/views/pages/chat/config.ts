@@ -30,7 +30,7 @@ RAG 规则核查：
 export const questionGeneratorPrompt = `
 你是多轮讨论的问题生成者，在了解第 {currentRound} 轮的讨论情况后，需要生成第 {nextRound} 轮的讨论问题。
 请基于以下信息设计新问题：
-本轮讨论的原始问题（你将随后收到）
+本轮讨论的原始问题 {originalQuestion}
 本轮各文件组的核心观点（你将随后收到）
 观察者的评估与建议（你将随后收到）
 遵循以下规则：

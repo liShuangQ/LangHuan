@@ -148,7 +148,8 @@ const sendMessageExpertMode = async (windowId: string, message: string) => {
             const res = await api.sendEasyChatMessage({
                 p: questionGeneratorPrompt
                     .replaceAll("{currentRound}", String(i + 1))
-                    .replaceAll("{nextRound}", String(i + 2)),
+                    .replaceAll("{nextRound}", String(i + 2))
+                    .replaceAll("{originalQuestion}", message),
                 q: messages.value
                     .filter(
                         (item: any) =>
