@@ -132,6 +132,9 @@ const sendMessageExpertMode = async (windowId: string, message: string) => {
                         : expertPrompt.replaceAll(
                               "{currentRound}",
                               String(i + 1)
+                          ).replaceAll(
+                              "{fileGroupName}",
+                              expertFileGroups[index].name
                           ) +
                           "\n" +
                           getChatParams.value.p,
