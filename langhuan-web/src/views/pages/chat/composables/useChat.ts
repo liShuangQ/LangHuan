@@ -11,6 +11,36 @@ import { ElMessage } from "element-plus";
 import { data } from "autoprefixer";
 import { documentRankHandleApi } from "@/api/rag";
 import { tr } from "element-plus/es/locale";
+// 去除markdown代码块标记的函数
+function removeMarkdownCodeBlocks(content: string): string {
+    if (!content) return content;
+    
+    // 去除开头结尾的空格
+    const trimmedContent = content.trim();
+    
+    // 检查是否以```markdown开头并以```结尾
+    if (trimmedContent.startsWith('```markdown') && trimmedContent.endsWith('```')) {
+        // 去除开头的```markdown和结尾的```
+        return trimmedContent.slice(11, -3).trim();
+    }
+    
+    // 检查是否以```开头并以```结尾（通用代码块）
+    if (trimmedContent.startsWith('```') && trimmedContent.endsWith('```')) {
+        // 找到第一个换行符的位置
+        const firstNewlineIndex = trimmedContent.indexOf('\n');
+        if (firstNewlineIndex !== -1) {
+            // 去除开头的```语言标识和结尾的```
+            return trimmedContent.slice(firstNewlineIndex + 1, -3).trim();
+        } else {
+            // 如果没有换行符，直接去除开头和结尾的```
+            return trimmedContent.slice(3, -3).trim();
+        }
+    }
+    
+    // 如果没有代码块标记，返回原内容
+    return trimmedContent;
+}
+
 export function useChat() {
     const messages = ref<Message[]>([]);
     const canSend = ref(true);
@@ -67,7 +97,7 @@ export function useChat() {
             if (index !== -1) {
                 messages.value[index] = {
                     id: Date.now().toString(),
-                    content: res.data.chat,
+                    content: removeMarkdownCodeBlocks(res.data.chat),
                     rag: res.data?.rag ?? [],
                     sender: "assistant",
                     timestamp: new Date().toLocaleString().replaceAll("/", "-"),
@@ -119,7 +149,7 @@ export function useChat() {
         }));
     };
     const optimizePrompt = async (message: string) => {
-        const res = await api.optimizePromptWords(message);
+        const res:any = await api.optimizePromptWords(message);
         return res.data;
     };
 

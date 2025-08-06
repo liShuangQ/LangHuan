@@ -19,7 +19,7 @@ public class ChatGeneralAssistanceService {
                                 .defaultAdvisors(
                                                 new SafeGuardAdvisor(Constant.AIDEFAULTSAFEGUARDADVISOR),
                                                 new SimpleLoggerAdvisor())
-                                .defaultSystem("回答必须使用 Markdown 格式（如标题、列表、加粗等），不得嵌套任何 JSON、XML 等结构化格式；")
+                                .defaultSystem("回答必须使用 Markdown 格式（如标题、列表、加粗等），不得嵌套任何 JSON、XML 等结构化格式，不得使用```markdown  ```代码块标记；")
                                 .build();
         }
 
