@@ -232,15 +232,15 @@ DROP TABLE IF EXISTS t_user_chat_window;
 CREATE TABLE t_user_chat_window (
                                   id SERIAL PRIMARY KEY,                   -- 自增主键
                                   user_id VARCHAR(36) NOT NULL,           -- 用户id
-                                  conversation_id VARCHAR(36) NOT NULL,   -- 对话记忆id
-                                  conversation_name VARCHAR(36) NOT NULL,   -- 对话记忆id
+                                  conversation_id VARCHAR(100) NOT NULL,   -- 对话记忆id
+                                  conversation_name VARCHAR(100) NOT NULL,   -- 对话名称
                                   created_time TIMESTAMP DEFAULT NOW()    -- 创建时间
 );
 
 
 -- 对话记忆
 CREATE TABLE IF NOT EXISTS SPRING_AI_CHAT_MEMORY (
-                                                     conversation_id VARCHAR(36) NOT NULL,
+                                                     conversation_id VARCHAR(100) NOT NULL,
                                                      content TEXT NOT NULL,
                                                      type VARCHAR(10) NOT NULL CHECK (type IN ('USER', 'ASSISTANT', 'SYSTEM', 'TOOL')),
                                                      "timestamp" TIMESTAMP NOT NULL

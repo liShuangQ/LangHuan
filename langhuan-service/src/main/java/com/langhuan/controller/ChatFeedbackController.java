@@ -5,6 +5,7 @@ import com.langhuan.common.Result;
 import com.langhuan.model.domain.TChatFeedback;
 import com.langhuan.service.TChatFeedbackService;
 import com.langhuan.serviceai.RagService;
+import com.langhuan.utils.other.SecurityUtils;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -26,7 +27,7 @@ public class ChatFeedbackController {
     @PostMapping(path = "/add")
     public Result add(
             @RequestBody TChatFeedback chatFeedback) {
-        chatFeedback.setUserId(SecurityContextHolder.getContext().getAuthentication().getName());
+        chatFeedback.setUserId(SecurityUtils.getCurrentUsername());
         return Result.success(tChatFeedbackService.save(chatFeedback));
     }
 

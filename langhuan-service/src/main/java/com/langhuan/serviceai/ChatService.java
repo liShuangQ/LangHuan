@@ -2,13 +2,12 @@ package com.langhuan.serviceai;
 
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.langhuan.common.BusinessException;
 import com.langhuan.common.Constant;
 import com.langhuan.functionTools.RestRequestTools;
 import com.langhuan.model.domain.TRagFile;
 import com.langhuan.model.domain.TRagFileGroup;
-import com.langhuan.model.domain.TUserChatWindow;
+
 import com.langhuan.model.dto.RagIntentionClassifierDTO;
 import com.langhuan.model.pojo.ChatModelResult;
 import com.langhuan.model.pojo.ChatRestOption;
@@ -18,12 +17,9 @@ import com.langhuan.utils.other.SecurityUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
-import org.springframework.ai.chat.client.advisor.PromptChatMemoryAdvisor;
 import org.springframework.ai.chat.client.advisor.SafeGuardAdvisor;
 import org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor;
 import org.springframework.ai.chat.memory.ChatMemory;
-import org.springframework.ai.chat.memory.MessageWindowChatMemory;
-import org.springframework.ai.chat.memory.repository.jdbc.JdbcChatMemoryRepository;
 import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.document.Document;
@@ -31,7 +27,7 @@ import org.springframework.ai.openai.OpenAiChatOptions;
 import org.springframework.ai.support.ToolCallbacks;
 import org.springframework.ai.tool.ToolCallback;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
+
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -46,14 +42,12 @@ import java.util.List;
  * <ul>
  * <li>基础聊天对话</li>
  * <li>基于RAG(检索增强生成)的智能问答</li>
- * <li>聊天记忆管理</li>
  * <li>工具函数调用</li>
- * <li>对话窗口管理</li>
+ * <li>意图识别和文档添加</li>
  * </ul>
  *
  * <p>
- * 该类整合了Spring AI框架，使用OpenAI作为底层大模型，
- * 通过JdbcChatMemoryRepository实现聊天记录的持久化存储。
+ * 该类整合了Spring AI框架，使用OpenAI作为底层大模型。
  * </p>
  *
  * @author LangHuan
@@ -63,54 +57,13 @@ import java.util.List;
 @Service
 @Slf4j
 public class ChatService {
-
-    /**
-     * 聊天记忆数据访问仓库
-     * <p>
-     * 用于将聊天记录持久化到数据库中，支持基于JDBC的存储实现。
-     * </p>
-     */
-    @Autowired
-    JdbcChatMemoryRepository chatMemoryRepository;
-
-    /**
-     * RAG(检索增强生成)服务
-     *
-     * <p>
-     * 提供基于向量数据库的文档检索功能，用于增强AI回答的准确性和相关性。
-     * </p>
-     */
-    @Autowired
-    RagService ragService;
-
-    /**
-     * 用户聊天窗口服务
-     *
-     * <p>
-     * 管理用户的聊天会话窗口，包括创建、更新、查询和删除操作。
-     * </p>
-     */
-    @Autowired
-    TUserChatWindowService userChatWindowService;
-
-    /**
-     * Spring AI聊天客户端
-     *
-     * <p>
-     * 配置了默认的advisors，包括安全防护、日志记录和记忆管理。
-     * </p>
-     */
     ChatClient chatClient;
-
-    /**
-     * 聊天记忆管理器
-     *
-     * <p>
-     * 管理对话历史的内存存储，支持滑动窗口机制限制存储的消息数量。
-     * </p>
-     */
     ChatMemory chatMemory;
 
+    @Autowired
+    private ChatMemoryService chatMemoryService;
+    @Autowired
+    RagService ragService;
     @Autowired
     ChatGeneralAssistanceService chatGeneralAssistanceService;
     @Autowired
@@ -120,32 +73,16 @@ public class ChatService {
     @Autowired
     TUserService userService;
 
-    /**
-     * 构造函数
-     *
-     * <p>
-     * 初始化聊天客户端和记忆管理器，配置默认的advisors：
-     * </p>
-     * <ul>
-     * <li>SafeGuardAdvisor - 安全防护advisor，确保输出内容安全</li>
-     * <li>SimpleLoggerAdvisor - 日志记录advisor，记录聊天过程</li>
-     * <li>MessageChatMemoryAdvisor - 消息记忆advisor，维护对话历史</li>
-     * </ul>
-     *
-     * @param chatClientBuilder Spring AI聊天客户端构建器
-     * @param ragService        RAG服务实例
-     */
     public ChatService(ChatClient.Builder chatClientBuilder, RagService ragService) {
         this.ragService = ragService;
+        this.chatClient = chatClientBuilder.build();
+    }
 
-        // 初始化聊天记忆管理器，配置最大消息数量和持久化仓库
-        chatMemory = MessageWindowChatMemory.builder()
-                .chatMemoryRepository(chatMemoryRepository)
-                .maxMessages(Constant.MESSAGEWINDOWCHATMEMORYMAX)
-                .build();
-
-        // 构建聊天客户端，配置默认advisors
-        this.chatClient = chatClientBuilder
+    // 添加Advisor
+    @Autowired
+    public void setAdvisor(ChatMemoryService chatMemoryService) {
+        this.chatMemory = chatMemoryService.getChatMemory();
+        this.chatClient = this.chatClient.mutate()
                 .defaultAdvisors(
                         new SafeGuardAdvisor(Constant.AIDEFAULTSAFEGUARDADVISOR),
                         new SimpleLoggerAdvisor(),
@@ -167,6 +104,10 @@ public class ChatService {
      * @throws BusinessException 当AI服务异常时抛出，向用户显示友好的错误消息
      */
     public ChatModelResult chat(ChatRestOption chatRestOption) throws Exception {
+        // 这里由于记忆在存入的时候 会自己在前面拼接用户名 然后窗口表存储的是用户名_会话ID，避免出现用户名重复的情况 采用下面操作
+        chatRestOption.setChatId(chatRestOption.getChatId().indexOf("_") > 0
+                ? chatRestOption.getChatId().substring(chatRestOption.getChatId().indexOf("_") + 1)
+                : chatRestOption.getChatId());
         RagIntentionClassifierDTO ragIntentionClassifierDTO = ragIntentionClassifier(chatRestOption.getModelName(),
                 chatRestOption.getQuestion());
         try {
@@ -372,161 +313,6 @@ public class ChatService {
         chatModelResult.setChat(chat);
         chatModelResult.setRag(new ArrayList<>());
         return chatModelResult;
-    }
-
-    /**
-     * 设置聊天窗口名称
-     *
-     * <p>
-     * 更新指定会话窗口的显示名称，用于用户界面展示。
-     * </p>
-     *
-     * @param conversationId   会话ID
-     * @param conversationName 新的会话名称
-     * @return Boolean 更新是否成功
-     */
-    public Boolean setChatMemoryWindowsName(String conversationId, String conversationName) {
-        log.info("ChatMemory-set-windows-name");
-        return userChatWindowService.update(new LambdaUpdateWrapper<TUserChatWindow>()
-                .eq(TUserChatWindow::getConversationId, conversationId)
-                .set(TUserChatWindow::getConversationName, conversationName));
-    }
-
-    /**
-     * 获取当前用户的所有聊天窗口
-     *
-     * <p>
-     * 查询当前登录用户的所有聊天会话窗口列表。
-     * </p>
-     *
-     * @return List<TUserChatWindow> 用户的聊天窗口列表
-     */
-    public List<TUserChatWindow> getChatMemoryWindows() {
-        log.info("ChatMemory-get-windows");
-        // 获取当前登录用户ID
-        String currentUserId = SecurityContextHolder.getContext().getAuthentication().getName();
-
-        // 查询该用户的所有聊天窗口
-        return userChatWindowService.list(
-                new LambdaQueryWrapper<TUserChatWindow>().eq(TUserChatWindow::getUserId, currentUserId));
-    }
-
-    /**
-     * 获取指定会话的聊天历史
-     *
-     * <p>
-     * 从数据库中查询指定会话ID的所有聊天记录。
-     * </p>
-     *
-     * @param id 会话ID
-     * @return List<Message> 聊天消息列表
-     */
-    public List<Message> getChatMemory(String id) {
-        log.info("ChatMemory-get: {}", id);
-        return chatMemoryRepository.findByConversationId(id);
-    }
-
-    /**
-     * 初始化聊天内存
-     *
-     * <p>
-     * 将指定会话的历史记录加载到内存中，用于后续的对话记忆管理。
-     * 注意：内存中存储的key格式为"用户ID_会话ID"，而数据库中直接使用会话ID。
-     * </p>
-     *
-     * @param id 会话ID
-     */
-    public void initChatMemory(String id) {
-        log.info("ChatMemory-init: {}", id);
-        List<Message> byConversationId = chatMemoryRepository.findByConversationId(id);
-
-        // 构建内存存储的key：用户ID_会话ID
-        String memoryKey = SecurityContextHolder.getContext().getAuthentication().getName() + '_' + id;
-
-        // 将历史记录加载到内存中
-        chatMemory.add(memoryKey, byConversationId);
-    }
-
-    /**
-     * 保存聊天记录到数据库
-     *
-     * <p>
-     * 将内存中的聊天记录持久化到数据库，包括：
-     * </p>
-     * <ul>
-     * <li>如果会话窗口不存在，则创建新的窗口记录</li>
-     * <li>将内存中的消息记录保存到数据库</li>
-     * </ul>
-     *
-     * @param id         会话ID
-     * @param windowName 窗口名称
-     * @return String 保存结果提示信息
-     */
-    public String saveChatMemory(String id, String windowName) {
-        log.info("ChatMemory-save: {}", id);
-        String user_id = SecurityContextHolder.getContext().getAuthentication().getName();
-
-        // 检查是否已存在该会话窗口
-        long count = userChatWindowService
-                .count(new LambdaQueryWrapper<TUserChatWindow>().eq(TUserChatWindow::getConversationId, id));
-
-        // 如果不存在，创建新的窗口记录
-        if (count == 0) {
-            userChatWindowService.save(new TUserChatWindow() {
-                {
-                    setUserId(user_id);
-                    setConversationName(windowName);
-                    setConversationId(id);
-                }
-            });
-        }
-
-        // 从内存中获取聊天记录并保存到数据库
-        // 注意：内存中的key包含用户ID前缀，而数据库存储使用纯会话ID
-        List<Message> messages = chatMemory.get(user_id + '_' + id);
-        chatMemoryRepository.saveAll(id, messages);
-        return "保存成功";
-    }
-
-    // 内存优化说明：
-    // 当用户不保存窗口直接关闭页面，会导致内存中存在数据但数据库中没有记录，
-    // 造成无意义的内存占用。后续需要实现：
-    // 1. 窗口无感知的自动保存机制
-    // 2. 定期清理无效会话数据
-    // 3. 用户登录时清理相关无效内存
-
-    /**
-     * 清除指定会话的所有数据
-     *
-     * <p>
-     * 彻底清理指定会话的所有相关数据，包括：
-     * </p>
-     * <ul>
-     * <li>清空内存中的对话历史</li>
-     * <li>删除用户聊天窗口记录</li>
-     * <li>清空数据库中的对话记录</li>
-     * </ul>
-     *
-     * @param id 会话ID
-     * @return String 清除结果提示信息
-     */
-    public String clearChatMemory(String id) {
-        log.info("ChatMemory-clear: {}", id);
-
-        // 获取当前用户ID，用于构建内存key
-        String currentUserId = SecurityContextHolder.getContext().getAuthentication().getName();
-
-        // 清空内存中的对话历史（key格式：用户ID_会话ID）
-        chatMemory.clear(currentUserId + '_' + id);
-
-        // 删除用户聊天窗口记录
-        userChatWindowService
-                .remove(new LambdaQueryWrapper<TUserChatWindow>().eq(TUserChatWindow::getConversationId, id));
-
-        // 清空数据库中的对话记录
-        chatMemoryRepository.deleteByConversationId(id);
-
-        return "清除成功";
     }
 
 }

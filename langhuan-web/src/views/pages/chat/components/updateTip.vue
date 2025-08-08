@@ -7,7 +7,6 @@
                 </el-icon>
             </div>
             <div class="tip-text">
-                <p class="tip-title">最新更新</p>
                 <p
                     class="tip-description"
                     v-html="

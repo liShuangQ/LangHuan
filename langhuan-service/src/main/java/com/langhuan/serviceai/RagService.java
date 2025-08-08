@@ -152,7 +152,7 @@ public class RagService {
             ragFile.setId((int) IdUtil.getSnowflakeNextId());
         }
         ragFile.setUploadedAt(new java.util.Date());
-        ragFile.setUploadedBy(SecurityContextHolder.getContext().getAuthentication().getName());
+        ragFile.setUploadedBy(SecurityUtils.getCurrentUsername());
 
         // 写入向量库
         boolean writeSuccess = etlPipeline.writeToVectorStore(

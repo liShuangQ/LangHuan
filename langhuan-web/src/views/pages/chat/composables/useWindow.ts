@@ -1,20 +1,21 @@
 import { ref } from "vue";
+import dayjs from "dayjs";
 import * as api from "../api";
-import { generateUUID } from "@/utils/uuid";
 import type { ChatWindow } from "../types";
 
 export function useWindow() {
     const chatList = ref<ChatWindow[]>([]);
     const currentWindowId = ref("");
 
-    const createWindow = () => {
-        const date = new Date().toISOString();
+    const createWindow = async () => {
         const newWindow = {
-            id: generateUUID(),
-            title: "新窗口",
-            date: date.split("T")[0] + " " + date.split("T")[1].split("+")[0],
+            id: "new", // 和后端约定
+            title: "新窗口" + (chatList.value.length + 1),
+            date: dayjs().format("YYYY-MM-DD HH:mm:ss"),
             active: true,
         };
+        const res = await api.saveChatMemory(newWindow.id, newWindow.title);
+        newWindow.id = res.data;
         chatList.value.push(newWindow);
         selectWindow(newWindow.id);
         return newWindow.id;

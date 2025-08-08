@@ -1,0 +1,189 @@
+<svg width="1200" height="1400" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      .title { font-family: Arial, sans-serif; font-size: 20px; font-weight: bold; fill: #2c3e50; }
+      .box { fill: #ecf0f1; stroke: #34495e; stroke-width: 2; rx: 8; ry: 8; }
+      .decision { fill: #f39c12; stroke: #e67e22; stroke-width: 2; }
+      .process { fill: #3498db; stroke: #2980b9; stroke-width: 2; }
+      .rag { fill: #e74c3c; stroke: #c0392b; stroke-width: 2; }
+      .result { fill: #27ae60; stroke: #229954; stroke-width: 2; }
+      .text { font-family: Arial, sans-serif; font-size: 12px; fill: #2c3e50; text-anchor: middle; }
+      .small-text { font-family: Arial, sans-serif; font-size: 10px; fill: #2c3e50; text-anchor: middle; }
+      .arrow { stroke: #34495e; stroke-width: 2; fill: none; marker-end: url(#arrowhead); }
+      .yes-arrow { stroke: #27ae60; stroke-width: 2; fill: none; marker-end: url(#arrowhead); }
+      .no-arrow { stroke: #e74c3c; stroke-width: 2; fill: none; marker-end: url(#arrowhead); }
+    </style>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#34495e" />
+    </marker>
+  </defs>
+  
+
+  
+  <!-- 开始 -->
+  <rect x="520" y="60" width="160" height="40" class="box process"/>
+  <text x="600" y="85" class="text">用户发起聊天请求</text>
+  <text x="600" y="95" class="small-text">ChatRestOption</text>
+  
+  <!-- 意图识别 -->
+  <rect x="520" y="130" width="160" height="40" class="box decision"/>
+  <text x="600" y="155" class="text">RAG意图识别</text>
+  <text x="600" y="165" class="small-text">ragIntentionClassifier()</text>
+  
+  <!-- 判断是否添加文档 -->
+  <polygon points="600,200 680,230 600,260 520,230" class="decision"/>
+  <text x="600" y="235" class="text">是否添加文档?</text>
+  
+  <!-- 添加文档分支 -->
+  <rect x="320" y="300" width="160" height="60" class="box rag"/>
+  <text x="400" y="325" class="text">添加到个人知识空间</text>
+  <text x="400" y="340" class="small-text">toAddDocuments()</text>
+  <text x="400" y="350" class="small-text">创建/更新文件组和文件</text>
+  
+  <!-- 正常聊天分支 -->
+  <rect x="720" y="300" width="160" height="40" class="box process"/>
+  <text x="800" y="325" class="text">进入聊天流程</text>
+  <text x="800" y="335" class="small-text">toChat()</text>
+  
+  <!-- 工具函数判断 -->
+  <polygon points="800,370 880,400 800,430 720,400" class="decision"/>
+  <text x="800" y="405" class="text">是否启用工具?</text>
+  
+  <!-- 提示词处理 -->
+  <rect x="720" y="470" width="160" height="50" class="box process"/>
+  <text x="800" y="490" class="text">处理提示词模板</text>
+  <text x="800" y="505" class="small-text">获取用户提示词</text>
+  <text x="800" y="515" class="small-text">替换模板变量</text>
+  
+  <!-- RAG模式判断 -->
+  <polygon points="800,550 880,580 800,610 720,580" class="decision"/>
+  <text x="800" y="585" class="text">是否启用RAG?</text>
+  
+  <!-- RAG聊天分支 -->
+  <rect x="520" y="650" width="160" height="40" class="box rag"/>
+  <text x="600" y="675" class="text">RAG模式聊天</text>
+  <text x="600" y="685" class="small-text">isRagChat()</text>
+  
+  <!-- 普通聊天分支 -->
+  <rect x="920" y="650" width="160" height="40" class="box process"/>
+  <text x="1000" y="675" class="text">普通聊天模式</text>
+  <text x="1000" y="685" class="small-text">noRagChat()</text>
+  
+  <!-- RAG检索流程 -->
+  <rect x="420" y="720" width="160" height="40" class="box rag"/>
+  <text x="500" y="745" class="text">向量检索</text>
+  <text x="500" y="755" class="small-text">ragService.ragSearch()</text>
+  
+  <rect x="420" y="790" width="160" height="50" class="box rag"/>
+  <text x="500" y="810" class="text">相似度搜索</text>
+  <text x="500" y="825" class="small-text">VectorStore.similaritySearch()</text>
+  <text x="500" y="835" class="small-text">支持分组过滤</text>
+  
+  <!-- 重排序判断 -->
+  <polygon points="500,870 580,900 500,930 420,900" class="decision"/>
+  <text x="500" y="905" class="text">是否重排序?</text>
+  
+  <!-- 重排序处理 -->
+  <rect x="220" y="950" width="160" height="50" class="box rag"/>
+  <text x="300" y="970" class="text">ReRank模型重排序</text>
+  <text x="300" y="985" class="small-text">reRankModelService.chat()</text>
+  <text x="300" y="995" class="small-text">线性加权计算</text>
+  
+  <!-- 线性加权 -->
+  <rect x="420" y="1020" width="160" height="50" class="box rag"/>
+  <text x="500" y="1040" class="text">线性加权排序</text>
+  <text x="500" y="1055" class="small-text">rank_linearWeighting()</text>
+  <text x="500" y="1065" class="small-text">综合多种得分</text>
+  
+  <!-- 构建上下文 -->
+  <rect x="520" y="1100" width="160" height="50" class="box rag"/>
+  <text x="600" y="1120" class="text">构建RAG上下文</text>
+  <text x="600" y="1135" class="small-text">拼接检索文档</text>
+  <text x="600" y="1145" class="small-text">替换提示词模板</text>
+  
+  <!-- AI调用 -->
+  <rect x="720" y="1180" width="160" height="60" class="box process"/>
+  <text x="800" y="1205" class="text">调用AI模型</text>
+  <text x="800" y="1220" class="small-text">ChatClient.prompt()</text>
+  <text x="800" y="1230" class="small-text">包含记忆管理</text>
+  <text x="800" y="1240" class="small-text">工具函数支持</text>
+  
+  <!-- 返回结果 -->
+  <rect x="520" y="1270" width="160" height="50" class="box result"/>
+  <text x="600" y="1290" class="text">返回聊天结果</text>
+  <text x="600" y="1305" class="small-text">ChatModelResult</text>
+  <text x="600" y="1315" class="small-text">包含AI回复和RAG文档</text>
+  
+  <!-- ETL流程 (右侧) -->
+  <rect x="50" y="300" width="160" height="40" class="box process"/>
+  <text x="130" y="325" class="text">ETL文档处理</text>
+  <text x="130" y="335" class="small-text">EtlPipeline.process()</text>
+  
+  <rect x="50" y="370" width="160" height="40" class="box process"/>
+  <text x="130" y="395" class="text">文档提取</text>
+  <text x="130" y="405" class="small-text">DocumentExtractor</text>
+  
+  <rect x="50" y="440" width="160" height="40" class="box process"/>
+  <text x="130" y="465" class="text">文本分割</text>
+  <text x="130" y="475" class="small-text">TextSplitter</text>
+  
+  <rect x="50" y="510" width="160" height="40" class="box process"/>
+  <text x="130" y="535" class="text">向量化存储</text>
+  <text x="130" y="545" class="small-text">VectorStoreLoader</text>
+  
+  <!-- 箭头连接 -->
+  <line x1="600" y1="100" x2="600" y2="130" class="arrow"/>
+  <line x1="600" y1="170" x2="600" y2="200" class="arrow"/>
+  
+  <!-- 添加文档分支 -->
+  <line x1="560" y1="230" x2="480" y2="300" class="yes-arrow"/>
+  <text x="520" y="265" class="small-text" fill="#27ae60">是</text>
+  
+  <!-- 正常聊天分支 -->
+  <line x1="640" y1="230" x2="720" y2="300" class="no-arrow"/>
+  <text x="680" y="265" class="small-text" fill="#e74c3c">否</text>
+  
+  <line x1="800" y1="340" x2="800" y2="370" class="arrow"/>
+  <line x1="800" y1="430" x2="800" y2="470" class="arrow"/>
+  <line x1="800" y1="520" x2="800" y2="550" class="arrow"/>
+  
+  <!-- RAG分支 -->
+  <line x1="760" y1="580" x2="680" y2="650" class="yes-arrow"/>
+  <text x="720" y="615" class="small-text" fill="#27ae60">是</text>
+  
+  <!-- 普通聊天分支 -->
+  <line x1="840" y1="580" x2="920" y2="650" class="no-arrow"/>
+  <text x="880" y="615" class="small-text" fill="#e74c3c">否</text>
+  
+  <!-- RAG流程连接 -->
+  <line x1="600" y1="690" x2="500" y2="720" class="arrow"/>
+  <line x1="500" y1="760" x2="500" y2="790" class="arrow"/>
+  <line x1="500" y1="840" x2="500" y2="870" class="arrow"/>
+  
+  <!-- 重排序分支 -->
+  <line x1="460" y1="900" x2="380" y2="950" class="yes-arrow"/>
+  <text x="420" y="925" class="small-text" fill="#27ae60">是</text>
+  
+  <line x1="540" y1="900" x2="500" y2="1020" class="no-arrow"/>
+  <text x="520" y="960" class="small-text" fill="#e74c3c">否</text>
+  
+  <line x1="300" y1="1000" x2="500" y2="1020" class="arrow"/>
+  <line x1="500" y1="1070" x2="600" y2="1100" class="arrow"/>
+  <line x1="600" y1="1150" x2="800" y2="1180" class="arrow"/>
+  
+  <!-- 普通聊天直接到AI -->
+  <line x1="1000" y1="690" x2="800" y2="1180" class="arrow"/>
+  
+  <!-- 最终结果 -->
+  <line x1="800" y1="1240" x2="600" y2="1270" class="arrow"/>
+  
+  <!-- 添加文档到结果 -->
+  <line x1="400" y1="360" x2="600" y2="1270" class="arrow"/>
+  
+  <!-- ETL流程连接 -->
+  <line x1="320" y1="320" x2="210" y2="320" class="arrow"/>
+  <line x1="130" y1="340" x2="130" y2="370" class="arrow"/>
+  <line x1="130" y1="410" x2="130" y2="440" class="arrow"/>
+  <line x1="130" y1="480" x2="130" y2="510" class="arrow"/>
+  
+</svg>

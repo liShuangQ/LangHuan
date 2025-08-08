@@ -64,7 +64,6 @@ const processMessageContent = (content: string, messageId: string) => {
 };
 
 const suggestions = [
-    { id: "saveMemory", text: "保存记录" },
     { id: "optimizePrompt", text: "优化提示词" },
 ];
 

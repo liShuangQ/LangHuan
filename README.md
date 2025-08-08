@@ -54,6 +54,9 @@
 #### 添加向量
 ![image.png](./readme/addfile.png)
 
+### 当前对话流程
+![image.png](./readme/对话流程图.svg)
+
 ### 部署
 
 请见langhuan_docker_dist/README.md

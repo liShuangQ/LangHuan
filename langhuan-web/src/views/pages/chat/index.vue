@@ -25,7 +25,6 @@ const {
     messages,
     canSend,
     sendMessage,
-    saveMemory,
     loadMessages,
     optimizePrompt,
     handleMessageAction,
@@ -56,7 +55,7 @@ const nowIsChat = router.currentRoute.value.path === "/chat";
 
 const handleSidebarAction = async (type: string, payload?: any) => {
     if (type === "new-chat") {
-        const newId = createWindow();
+        const newId = await createWindow();
         await loadMessages(newId);
     } else if (type === "barChat") {
         return;
@@ -74,13 +73,13 @@ const handleSidebarAction = async (type: string, payload?: any) => {
         user().userLogOut();
     } else if (type === "settings") {
         toggleSettings();
+    } else if (type === "editend") {
+        updateWindowName(payload.id, payload.title);
     }
 };
 
 const handlePromptAction = async (type: string, payload?: any) => {
-    if (type === "saveMemory") {
-        await saveMemory(currentWindowId.value);
-    } else if (type === "optimizePrompt") {
+    if (type === "optimizePrompt") {
         if (PromptContainersRef.value) {
             PromptContainersRef.value.setMessageInput(
                 await optimizePrompt(
@@ -129,13 +128,12 @@ const sendMessageExpertMode = async (windowId: string, message: string) => {
                               "{currentRound}",
                               String(i + 1)
                           )
-                        : expertPrompt.replaceAll(
-                              "{currentRound}",
-                              String(i + 1)
-                          ).replaceAll(
-                              "{fileGroupName}",
-                              expertFileGroups[index].name
-                          ) +
+                        : expertPrompt
+                              .replaceAll("{currentRound}", String(i + 1))
+                              .replaceAll(
+                                  "{fileGroupName}",
+                                  expertFileGroups[index].name
+                              ) +
                           "\n" +
                           getChatParams.value.p,
                 fileGroupName: expertFileGroups[index].name,

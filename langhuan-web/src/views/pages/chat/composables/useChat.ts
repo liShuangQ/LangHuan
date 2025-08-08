@@ -1,5 +1,6 @@
 import { ref } from "vue";
 import * as api from "../api";
+import dayjs from "dayjs";
 import axios, { CancelTokenSource } from "axios";
 import type {
     Message,
@@ -19,15 +20,18 @@ function removeMarkdownCodeBlocks(content: string): string {
     const trimmedContent = content.trim();
 
     // 检查是否以```markdown开头并以```结尾
-    if (trimmedContent.startsWith('```markdown') && trimmedContent.endsWith('```')) {
+    if (
+        trimmedContent.startsWith("```markdown") &&
+        trimmedContent.endsWith("```")
+    ) {
         // 去除开头的```markdown和结尾的```
         return trimmedContent.slice(11, -3).trim();
     }
 
     // 检查是否以```开头并以```结尾（通用代码块）
-    if (trimmedContent.startsWith('```') && trimmedContent.endsWith('```')) {
+    if (trimmedContent.startsWith("```") && trimmedContent.endsWith("```")) {
         // 找到第一个换行符的位置
-        const firstNewlineIndex = trimmedContent.indexOf('\n');
+        const firstNewlineIndex = trimmedContent.indexOf("\n");
         if (firstNewlineIndex !== -1) {
             // 去除开头的```语言标识和结尾的```
             return trimmedContent.slice(firstNewlineIndex + 1, -3).trim();
@@ -56,7 +60,7 @@ export function useChat() {
             id: "loading-" + Date.now().toString(),
             content: "正在思考中...",
             sender: "assistant" as const,
-            timestamp: new Date().toISOString(),
+            timestamp: dayjs().format("YYYY-MM-DD HH:mm:ss"),
             loading: true,
         };
 
@@ -64,7 +68,7 @@ export function useChat() {
             id: Date.now().toString(),
             content: message,
             sender: "user" as const,
-            timestamp: new Date().toLocaleString().replaceAll("/", "-"),
+            timestamp: dayjs().format("YYYY-MM-DD HH:mm:ss"),
             showUserMessage: chatParams.showUserMessage,
         };
 
@@ -100,7 +104,7 @@ export function useChat() {
                     content: removeMarkdownCodeBlocks(res.data.chat),
                     rag: res.data?.rag ?? [],
                     sender: "assistant",
-                    timestamp: new Date().toLocaleString().replaceAll("/", "-"),
+                    timestamp: dayjs().format("YYYY-MM-DD HH:mm:ss"),
                     chatSettings: chatParams,
                 };
             }
@@ -113,31 +117,8 @@ export function useChat() {
         }
     };
 
-    const saveMemory = async (windowId: string) => {
-        if (!windowId) {
-            ElMessage({
-                message: "请创建窗口",
-                type: "warning",
-            });
-            return;
-        }
-        if (lastMessageContent === "") {
-            ElMessage({
-                message: "请先发送消息",
-                type: "warning",
-            });
-            return;
-        }
-
-        const res = await api.saveChatMemory(windowId, lastMessageContent);
-        ElMessage({
-            message: res.data,
-            type: "success",
-        });
-    };
-
     const loadMessages = async (windowId: string) => {
-        const res = await api.getChatMemory(windowId);
+        const res = await api.getChatMemoryMessages(windowId);
         messages.value = res.data.map((item: any, index: number) => ({
             id: (windowId + index).toString(),
             content: item.text,
@@ -149,7 +130,7 @@ export function useChat() {
         }));
     };
     const optimizePrompt = async (message: string) => {
-        const res:any = await api.optimizePromptWords(message);
+        const res: any = await api.optimizePromptWords(message);
         return res.data;
     };
 
@@ -209,7 +190,6 @@ export function useChat() {
         messages,
         canSend,
         sendMessage,
-        saveMemory,
         loadMessages,
         optimizePrompt,
         handleMessageAction,

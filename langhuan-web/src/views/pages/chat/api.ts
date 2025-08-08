@@ -20,7 +20,6 @@ export const sendChatMessage = (
     cancelToken: CancelToken
 ) => {
     return http.request<any>({
-        // url: params.chatServiceType + '/chat',
         url: "chat/chat",
         method: "post",
         q_spinning: false,
@@ -147,11 +146,11 @@ export const setChatMemoryWindowsName = (id: string, name: string) => {
  * 获取特定聊天窗口的历史记录
  * @param chatId 聊天ID
  */
-export const getChatMemory = (chatId: string) => {
+export const getChatMemoryMessages = (chatId: string) => {
     return http.request<any>({
-        url: "/chat/getChatMemory",
+        url: "/chat/getChatMemoryMessages",
         method: "post",
-        q_spinning: true,
+        q_spinning: false,
         data: {
             id: chatId,
         },

@@ -6,6 +6,7 @@ import com.langhuan.common.Result;
 import com.langhuan.model.pojo.ChatModelResult;
 import com.langhuan.model.pojo.ChatRestOption;
 import com.langhuan.serviceai.*;
+import com.langhuan.utils.other.SecurityUtils;
 
 import cn.hutool.json.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +30,7 @@ import java.util.Map;
 // 常规接口接口使用 “/chat” 开头，规范用途。当前作用为通用对话
 public class ChatController {
     private final ChatService chatService;
+    private final ChatMemoryService chatMemoryService;
     private final ChatGeneralAssistanceService chatGeneralAssistanceService;
     private final StanfordChatService stanfordChatService;
     private final RagService ragService;
@@ -39,9 +41,10 @@ public class ChatController {
     @Value("${spring.ai.openai.api-key}")
     private String openApiKey;
 
-    public ChatController(ChatService chatService, ChatGeneralAssistanceService chatGeneralAssistanceService,
+    public ChatController(ChatService chatService, ChatMemoryService chatMemoryService, ChatGeneralAssistanceService chatGeneralAssistanceService,
             StanfordChatService stanfordChatService, RagService ragService) {
         this.chatService = chatService;
+        this.chatMemoryService = chatMemoryService;
         this.chatGeneralAssistanceService = chatGeneralAssistanceService;
         this.stanfordChatService = stanfordChatService;
         this.ragService = ragService;
@@ -58,7 +61,7 @@ public class ChatController {
             @RequestParam(name = "groupId", required = true, defaultValue = "") String groupId,
             @RequestParam(name = "isFunction", required = true) Boolean isFunction,
             @RequestParam(name = "modelName", required = true, defaultValue = "") String modelName) throws Exception {
-        id = SecurityContextHolder.getContext().getAuthentication().getName() + "_" + id;
+        id = SecurityUtils.getCurrentUsername() + "_" + id;
 
         if (modelName.isEmpty()) {
             modelName = defaultModelName;
@@ -115,33 +118,33 @@ public class ChatController {
         return Result.success(chatGeneralAssistanceService.optimizePromptWords(q));
     }
 
+
     @PostMapping("/chat/setChatMemoryWindowsName")
     public Result setChatMemoryWindowsName(
             @RequestParam(name = "id", required = true) String id,
             @RequestParam(name = "name", required = true) String name) {
-        return Result.success(chatService.setChatMemoryWindowsName(id, name));
+        return Result.success(chatMemoryService.setChatMemoryWindowsName(id, name));
     }
 
     @PostMapping("/chat/getChatMemoryWindows")
     public Result getChatMemoryWindows() {
-        return Result.success(chatService.getChatMemoryWindows());
+        return Result.success(chatMemoryService.getChatMemoryWindows());
     }
 
-    @PostMapping("/chat/getChatMemory")
-    public Result getChatMemory(@RequestParam String id) {
-        chatService.initChatMemory(id);
-        return Result.success(chatService.getChatMemory(id));
+    @PostMapping("/chat/getChatMemoryMessages")
+    public Result getChatMemoryMessages(@RequestParam String id) {
+        return Result.success(chatMemoryService.getChatMemoryMessages(id));
     }
 
     @PostMapping("/chat/saveChatMemory")
     public Result saveChatMemory(@RequestParam String id,
             @RequestParam String name) {
-        return Result.success(chatService.saveChatMemory(id, name));
+        return Result.success(chatMemoryService.saveChatMemory(id, name));
     }
 
     @PostMapping("/chat/clearChatMemory")
     public Result clearChatMemory(@RequestParam String id) {
-        return Result.success(chatService.clearChatMemory(id));
+        return Result.success(chatMemoryService.clearChatMemory(id));
     }
 
     @PostMapping("/onlyRag/chat")
