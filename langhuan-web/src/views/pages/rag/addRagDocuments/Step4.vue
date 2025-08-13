@@ -175,7 +175,8 @@ const formHandle = (type: string, key: string, data: any, other: any) => {
                             key: "documentNum",
                             value: String(
                                 Number(fileChangeSelectData.documentNum) +
-                                    (stepData.value.fineTuneData as any[]).length
+                                    (stepData.value.fineTuneData as any[])
+                                        .length
                             ),
                         },
                         {
@@ -237,6 +238,13 @@ const formHandle = (type: string, key: string, data: any, other: any) => {
                 ]);
             }
         }
+    } else {
+        fileFormRef.value!.setFormOption([
+            {
+                key: "id",
+                value: 0,
+            },
+        ]);
     }
 };
 const submit = () => {
@@ -251,7 +259,6 @@ const submit = () => {
         data: {
             documents: stepData.value.fineTuneData,
             ragFile: {
-                id: 0,
                 ...fileFormRef.value!.getFromValue(),
             },
         },

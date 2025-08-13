@@ -18,6 +18,14 @@ export const formItemConfig = (
     return [
         [
             {
+                value: "0",
+                key: "id",
+                type: "input",
+                label: "id",
+                col: 12,
+                show: false,
+            },
+            {
                 value: "",
                 key: "fileName",
                 type: "select",
@@ -31,8 +39,6 @@ export const formItemConfig = (
                     },
                 ],
                 remoteMethod: (query: string) => {
-                    console.log(query, "queryquery");
-
                     if (query === "") {
                         return;
                     }
