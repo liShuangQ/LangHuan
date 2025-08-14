@@ -16,7 +16,6 @@ import com.langhuan.dao.VectorStoreRagDao;
 import com.langhuan.dao.TFileUrlDao;
 import com.langhuan.utils.other.SecurityUtils;
 import com.langhuan.utils.rag.EtlPipeline;
-import com.langhuan.utils.rag.RagFileVectorUtils;
 import com.langhuan.utils.rag.config.SplitConfig;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
@@ -26,7 +25,6 @@ import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -310,8 +308,41 @@ public class RagService {
                                 .similarityThreshold(Constant.RAGWITHSIMILARITYTHRESHOLD).build() // 单独设置多一些
                 );
             } else {
-                // HACK:一个组下有相同的文件ID再用 groupId == '" + groupId + "' AND
-                String sql = fileId.isEmpty() ? "groupId == '" + groupId + "'" : "fileId == '" + fileId + "'";
+                // HACK: 要么组查询 要么文件查询 文件id是唯一的
+                String sql;
+                if (!fileId.isEmpty()) {
+                    sql = "fileId == '" + fileId + "'";
+                } else {
+                    // 处理多个groupId的情况，支持逗号分割
+                    String[] groupIds = groupId.split(",");
+                    // 过滤掉空字符串元素，处理 ",1,2" 这种情况
+                    List<String> validGroupIds = new ArrayList<>();
+                    for (String id : groupIds) {
+                        String trimmedId = id.trim();
+                        if (!trimmedId.isEmpty()) {
+                            validGroupIds.add(trimmedId);
+                        }
+                    }
+                    
+                    if (validGroupIds.isEmpty()) {
+                        // 如果没有有效的groupId，抛出异常
+                        throw new BusinessException("groupId不能为空");
+                    } else if (validGroupIds.size() == 1) {
+                        // 单个有效groupId的情况
+                        sql = "groupId == '" + validGroupIds.get(0) + "'";
+                    } else {
+                        // 多个有效groupId的情况，构建OR条件
+                        StringBuilder sqlBuilder = new StringBuilder("(");
+                        for (int i = 0; i < validGroupIds.size(); i++) {
+                            if (i > 0) {
+                                sqlBuilder.append(" OR ");
+                            }
+                            sqlBuilder.append("groupId == '").append(validGroupIds.get(i)).append("'");
+                        }
+                        sqlBuilder.append(")");
+                        sql = sqlBuilder.toString();
+                    }
+                }
                 searchDocuments = ragVectorStore.similaritySearch(
                         SearchRequest.builder().query(q).topK(Constant.RAGWITHTOPK)
                                 .similarityThreshold(Constant.RAGWITHSIMILARITYTHRESHOLD)

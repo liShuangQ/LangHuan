@@ -135,6 +135,7 @@ public class ChatService {
 
     public ChatModelResult toAddDocuments(RagIntentionClassifierDTO ragIntentionClassifierDTO) throws Exception {
         String user = SecurityUtils.getCurrentUsername();
+        // HACK 和前端约定的知识空间文件组名称
         String setFileGroupName = user + "_知识空间文件组";
         String setFileName = user + "_知识空间";
         TRagFile ragFile = new TRagFile();

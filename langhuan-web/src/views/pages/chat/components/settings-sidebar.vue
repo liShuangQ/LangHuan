@@ -3,7 +3,9 @@ import { computed, ref, watch } from "vue";
 import { Close } from "@element-plus/icons-vue";
 import type { ChatSettings, RagGroup } from "../types";
 import PersonalSpace from "./personal-space.vue";
-
+import userStore from "@/store/user";
+import { fa } from "element-plus/es/locale";
+const user = userStore();
 defineOptions({
     name: "SettingsSidebar",
 });
@@ -34,31 +36,62 @@ const promptTemplate = computed({
             promptTemplate: value,
         }),
 });
+let ragGroupOnceSwitch = false;
 
-// 修改计算属性处理方式
+const emitUpdateRagGroup = (value: any) => {
+    const selectedGroup = {
+        id: value.join(","),
+        name: value
+            .map(
+                (item: string) =>
+                    props.ragGroups.find((g) => g.id === item)?.name || ""
+            )
+            .join(","),
+    };
+
+    const newSettings = {
+        ...props.modelValue,
+        ragGroup: selectedGroup || null,
+    };
+
+    // 当不选RAG文件组时，自动关闭ReRank
+    if (value.length === 0) {
+        newSettings.isReRank = false;
+    }
+    emit("update:modelValue", newSettings);
+};
+// 文件组-修改计算属性处理方式
 const ragGroup = computed({
     get: () => {
         // 当专家模式开启时，返回空值
         if (isExpertMode.value) {
-            return "";
+            return [];
         }
-        return props.modelValue.ragGroup?.id || "";
+        if (props.modelValue.ragGroup?.id) {
+            return props.modelValue.ragGroup.id.split(",").filter((e) => !!e);
+        } else {
+            let base: string[] = [];
+            if (ragGroupOnceSwitch) {
+                base = [];
+            } else {
+                base = [
+                    props.ragGroups.find(
+                        (g) =>
+                            g.name ===
+                            user.info.user.username + "_知识空间文件组"
+                    )?.id || "",
+                ].filter((e) => !!e);
+            }
+            emitUpdateRagGroup(base);
+            return base;
+        }
     },
-    set: (value) => {
+    set: (value: any) => {
         // 当专家模式开启时，不允许设置值
         if (isExpertMode.value) {
             return;
         }
-        const selectedGroup = props.ragGroups.find((g) => g.id === value);
-        const newSettings = {
-            ...props.modelValue,
-            ragGroup: selectedGroup || null,
-        };
-        // 当选择"无"时，自动关闭ReRank
-        if (!value) {
-            newSettings.isReRank = false;
-        }
-        emit("update:modelValue", newSettings);
+        emitUpdateRagGroup(value);
     },
 });
 
@@ -133,6 +166,14 @@ watch(isExpertMode, (newValue) => {
         emit("update:modelValue", newSettings);
     }
 });
+
+onMounted(() => {
+    nextTick(() => {
+        setTimeout(() => {
+            ragGroupOnceSwitch = true;
+        }, 500);
+    });
+});
 </script>
 
 <template>
@@ -188,6 +229,9 @@ watch(isExpertMode, (newValue) => {
                     >
                     <el-select
                         v-model="ragGroup"
+                        multiple
+                        :multiple-limit="5"
+                        clearable
                         size="small"
                         class="w-full"
                         placeholder="选择RAG文件组"

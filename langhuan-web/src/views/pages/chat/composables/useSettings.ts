@@ -25,10 +25,9 @@ export function useSettings() {
         }
         api.getRagGroupOptionList().then((res) => {
             ragGroups.value = res.data.map((item: any) => ({
-                id: item.id,
+                id: String(item.id),
                 name: item.groupName,
             }));
-            ragGroups.value.unshift({ id: "", name: "无" });
         });
     };
     getSetInfo();

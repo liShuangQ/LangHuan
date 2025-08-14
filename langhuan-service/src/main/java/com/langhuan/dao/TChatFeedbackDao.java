@@ -43,10 +43,21 @@ public class TChatFeedbackDao {
         }
 
         // 构建SQL查询语句
-        String sql = "SELECT cf.*, u.name as user_name, rg.group_name as use_file_group_name FROM t_chat_feedback cf"
-                + " LEFT JOIN t_user u ON cf.user_id = u.username"
-                + " LEFT JOIN t_rag_file_group rg ON cf.use_file_group_id = CAST(rg.id AS VARCHAR)"
-                + condition.getWhereClause() +
+        // 使用子查询来处理逗号分隔的use_file_group_id，并聚合文件组名称
+        String sql = "SELECT cf.*, u.name as user_name, " +
+                "COALESCE(group_names.use_file_group_name, '') as use_file_group_name " +
+                "FROM t_chat_feedback cf " +
+                "LEFT JOIN t_user u ON cf.user_id = u.username " +
+                "LEFT JOIN (" +
+                "  SELECT cf_inner.id, " +
+                "    STRING_AGG(rg.group_name, ',') as use_file_group_name " +
+                "  FROM t_chat_feedback cf_inner " +
+                "  CROSS JOIN LATERAL unnest(string_to_array(cf_inner.use_file_group_id, ',')) as group_id(id) " +
+                "  LEFT JOIN t_rag_file_group rg ON TRIM(group_id.id) = CAST(rg.id AS VARCHAR) " +
+                "  WHERE cf_inner.use_file_group_id IS NOT NULL AND cf_inner.use_file_group_id != '' " +
+                "  GROUP BY cf_inner.id" +
+                ") group_names ON cf.id = group_names.id" +
+                condition.getWhereClause() +
                 " ORDER BY CASE interaction " +
                 " WHEN 'dislike' THEN 1 " +
                 " WHEN 'like' THEN 2 " +
