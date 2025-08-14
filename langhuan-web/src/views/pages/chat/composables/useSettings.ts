@@ -15,11 +15,14 @@ export function useSettings() {
         expertConversationRounds: 1,
     });
 
-    const availableModels = ref();
+    const availableModels = ref<{ label: string; value: string }[]>([]);
 
     const ragGroups = ref<RagGroup[]>([]);
     const getSetInfo = async () => {
-        availableModels.value = await aimodel().getModelOptions();
+        availableModels.value = await aimodel().getModelOptions() as {
+            label: string;
+            value: string;
+        }[];
         if (settings.value.modelName === "") {
             settings.value.modelName = availableModels.value[0].value;
         }

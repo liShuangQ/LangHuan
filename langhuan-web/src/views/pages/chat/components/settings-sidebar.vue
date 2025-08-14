@@ -36,8 +36,8 @@ const promptTemplate = computed({
             promptTemplate: value,
         }),
 });
-let ragGroupOnceSwitch = false;
-
+// 初始化RAG文件组的默认值，无值去找是不是有默认重置，有值后将长度>0 满足直接清空
+let ragGroupOnceBase: string[] = [];
 const emitUpdateRagGroup = (value: any) => {
     const selectedGroup = {
         id: value.join(","),
@@ -70,11 +70,10 @@ const ragGroup = computed({
         if (props.modelValue.ragGroup?.id) {
             return props.modelValue.ragGroup.id.split(",").filter((e) => !!e);
         } else {
-            let base: string[] = [];
-            if (ragGroupOnceSwitch) {
-                base = [];
+            if (ragGroupOnceBase.length > 0) {
+                ragGroupOnceBase = [];
             } else {
-                base = [
+                ragGroupOnceBase = [
                     props.ragGroups.find(
                         (g) =>
                             g.name ===
@@ -82,8 +81,7 @@ const ragGroup = computed({
                     )?.id || "",
                 ].filter((e) => !!e);
             }
-            emitUpdateRagGroup(base);
-            return base;
+            return ragGroupOnceBase;
         }
     },
     set: (value: any) => {
@@ -170,7 +168,7 @@ watch(isExpertMode, (newValue) => {
 onMounted(() => {
     nextTick(() => {
         setTimeout(() => {
-            ragGroupOnceSwitch = true;
+            emitUpdateRagGroup(ragGroupOnceBase);
         }, 500);
     });
 });
