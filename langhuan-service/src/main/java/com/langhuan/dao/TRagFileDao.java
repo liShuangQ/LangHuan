@@ -19,15 +19,15 @@ import java.util.Map;
 @Repository
 @Slf4j
 public class TRagFileDao {
-    
+
     private final JdbcTemplate jdbcTemplate;
     private final JdbcPaginationHelper paginationHelper;
-    
+
     public TRagFileDao(JdbcTemplate jdbcTemplate, JdbcPaginationHelper paginationHelper) {
         this.jdbcTemplate = jdbcTemplate;
         this.paginationHelper = paginationHelper;
     }
-    
+
     /**
      * 管理员查询文件列表（无权限限制）
      * 
@@ -38,13 +38,13 @@ public class TRagFileDao {
      * @param pageSize      每页大小
      * @return 分页结果
      */
-    public IPage<Map<String, Object>> queryFilesForAdmin(String fileName, String fileType, String fileGroupName, 
-                                                          int pageNum, int pageSize) {
+    public IPage<Map<String, Object>> queryFilesForAdmin(String fileName, String fileType, String fileGroupName,
+            int pageNum, int pageSize) {
         StringBuilder dataSql = new StringBuilder();
         StringBuilder countSql = new StringBuilder();
         List<Object> dataParams = new ArrayList<>();
         List<Object> countParams = new ArrayList<>();
-        
+
         // 超级管理员查询所有文件
         dataSql.append("""
                 SELECT
@@ -77,18 +77,18 @@ public class TRagFileDao {
                 INNER JOIN t_rag_file_group fg ON f.file_group_id = fg.id::VARCHAR
                 WHERE 1=1
                 """);
-        
+
         // 添加动态查询条件
         addQueryConditions(dataSql, countSql, dataParams, countParams, fileName, fileType, fileGroupName);
-        
+
         dataSql.append(" ORDER BY f.uploaded_at DESC");
-        
+
         return paginationHelper.selectPageForMapWithDifferentParams(
                 dataSql.toString(), countSql.toString(),
                 dataParams.toArray(), countParams.toArray(),
                 pageNum, pageSize);
     }
-    
+
     /**
      * 普通用户查询文件列表（带权限控制）
      * 
@@ -100,13 +100,13 @@ public class TRagFileDao {
      * @param pageSize      每页大小
      * @return 分页结果
      */
-    public IPage<Map<String, Object>> queryFilesForUser(String currentUser, String fileName, String fileType, 
-                                                         String fileGroupName, int pageNum, int pageSize) {
+    public IPage<Map<String, Object>> queryFilesForUser(String currentUser, String fileName, String fileType,
+            String fileGroupName, int pageNum, int pageSize) {
         StringBuilder dataSql = new StringBuilder();
         StringBuilder countSql = new StringBuilder();
         List<Object> dataParams = new ArrayList<>();
         List<Object> countParams = new ArrayList<>();
-        
+
         // 普通用户查询文件（根据文件组权限）
         dataSql.append("""
                 SELECT DISTINCT
@@ -129,24 +129,28 @@ public class TRagFileDao {
                         ELSE 'none'
                     END as permission_type,
                     CASE
+                        WHEN f.uploaded_by = ? THEN TRUE
                         WHEN fg.created_by = ? THEN TRUE
                         WHEN fg.visibility = 'public' THEN TRUE
                         WHEN fgs.can_read = TRUE THEN TRUE
                         ELSE FALSE
                     END as can_read,
                     CASE
+                        WHEN f.uploaded_by = ? THEN TRUE
                         WHEN fg.created_by = ? THEN TRUE
                         WHEN fg.visibility = 'public' AND fg.created_by = ? THEN TRUE
                         WHEN fgs.can_add = TRUE THEN TRUE
                         ELSE FALSE
                     END as can_add,
                     CASE
+                        WHEN f.uploaded_by = ? THEN TRUE
                         WHEN fg.created_by = ? THEN TRUE
                         WHEN fg.visibility = 'public' AND fg.created_by = ? THEN TRUE
                         WHEN fgs.can_update = TRUE THEN TRUE
                         ELSE FALSE
                     END as can_update,
                     CASE
+                        WHEN f.uploaded_by = ? THEN TRUE
                         WHEN fg.created_by = ? THEN TRUE
                         WHEN fg.visibility = 'public' AND fg.created_by = ? THEN TRUE
                         WHEN fgs.can_delete = TRUE THEN TRUE
@@ -157,9 +161,9 @@ public class TRagFileDao {
                 LEFT JOIN t_user u ON f.uploaded_by = u.username
                 LEFT JOIN t_rag_file_group_share fgs ON fg.id = fgs.file_group_id AND fgs.shared_with = ?
                 WHERE
-                    fg.visibility = 'public'  -- 公开文件组的文件
+                    (fg.visibility = 'public'  -- 公开文件组的文件
                     OR fg.created_by = ?      -- 自己创建的文件组的文件
-                    OR fgs.id IS NOT NULL     -- 被分享文件组的文件
+                    OR fgs.id IS NOT NULL)     -- 被分享文件组的文件
                 """);
 
         countSql.append("""
@@ -168,38 +172,42 @@ public class TRagFileDao {
                 INNER JOIN t_rag_file_group fg ON f.file_group_id = fg.id::VARCHAR
                 LEFT JOIN t_rag_file_group_share fgs ON fg.id = fgs.file_group_id AND fgs.shared_with = ?
                 WHERE
-                    fg.visibility = 'public'  -- 公开文件组的文件
+                    (fg.visibility = 'public'  -- 公开文件组的文件
                     OR fg.created_by = ?      -- 自己创建的文件组的文件
-                    OR fgs.id IS NOT NULL     -- 被分享文件组的文件
+                    OR fgs.id IS NOT NULL)     -- 被分享文件组的文件
                 """);
-        
+
         // 添加CASE语句中的参数（按顺序）
-        dataParams.add(currentUser); // permission_type CASE中的owner判断
-        dataParams.add(currentUser); // can_read CASE中的owner判断
-        dataParams.add(currentUser); // can_add CASE中的owner判断
-        dataParams.add(currentUser); // can_add CASE中的public创建者判断
-        dataParams.add(currentUser); // can_update CASE中的owner判断
-        dataParams.add(currentUser); // can_update CASE中的public创建者判断
-        dataParams.add(currentUser); // can_delete CASE中的owner判断
-        dataParams.add(currentUser); // can_delete CASE中的public创建者判断
-        dataParams.add(currentUser); // LEFT JOIN中的shared_with
-        dataParams.add(currentUser); // WHERE中的created_by
+        dataParams.add(currentUser);
+        dataParams.add(currentUser);
+        dataParams.add(currentUser);
+        dataParams.add(currentUser);
+        dataParams.add(currentUser);
+        dataParams.add(currentUser);
+        dataParams.add(currentUser);
+        dataParams.add(currentUser);
+        dataParams.add(currentUser);
+        dataParams.add(currentUser);
+        dataParams.add(currentUser);
+        dataParams.add(currentUser);
+        dataParams.add(currentUser);
+        dataParams.add(currentUser);
 
         // count查询的参数
         countParams.add(currentUser); // LEFT JOIN中的shared_with
         countParams.add(currentUser); // WHERE中的created_by
-        
+
         // 添加动态查询条件
         addQueryConditions(dataSql, countSql, dataParams, countParams, fileName, fileType, fileGroupName);
-        
+
         dataSql.append(" ORDER BY f.uploaded_at DESC");
-        
+
         return paginationHelper.selectPageForMapWithDifferentParams(
                 dataSql.toString(), countSql.toString(),
                 dataParams.toArray(), countParams.toArray(),
                 pageNum, pageSize);
     }
-    
+
     /**
      * 根据文件ID查询向量存储内容
      * 
@@ -220,7 +228,7 @@ public class TRagFileDao {
                 "WHERE metadata ->> 'fileId' IS NOT NULL";
         return jdbcTemplate.queryForList(sql, Integer.class);
     }
-    
+
     /**
      * 添加动态查询条件
      * 
@@ -232,9 +240,9 @@ public class TRagFileDao {
      * @param fileType      文件类型
      * @param fileGroupName 文件组名
      */
-    private void addQueryConditions(StringBuilder dataSql, StringBuilder countSql, 
-                                   List<Object> dataParams, List<Object> countParams,
-                                   String fileName, String fileType, String fileGroupName) {
+    private void addQueryConditions(StringBuilder dataSql, StringBuilder countSql,
+            List<Object> dataParams, List<Object> countParams,
+            String fileName, String fileType, String fileGroupName) {
         if (StringUtils.hasText(fileName)) {
             dataSql.append(" AND f.file_name LIKE ?");
             countSql.append(" AND f.file_name LIKE ?");
@@ -255,5 +263,6 @@ public class TRagFileDao {
             dataParams.add("%" + fileGroupName + "%");
             countParams.add("%" + fileGroupName + "%");
         }
+
     }
 }

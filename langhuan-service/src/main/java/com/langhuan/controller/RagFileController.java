@@ -6,6 +6,8 @@ import com.langhuan.common.Result;
 import com.langhuan.model.domain.TRagFile;
 import com.langhuan.service.TRagFileService;
 import com.langhuan.serviceai.RagService;
+import com.langhuan.utils.other.SecurityUtils;
+
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -40,7 +42,7 @@ public class RagFileController {
         return success ? Result.success("删除成功") : Result.error("删除失败");
     }
 
-    @PreAuthorize("hasAuthority('/rag/file/query')")
+    // @PreAuthorize("hasAuthority('/rag/file/query')")
     @PostMapping("/file/query")
     public Result queryFiles(@RequestParam(required = false) String fileName,
             @RequestParam(required = false) String fileType,
@@ -56,10 +58,11 @@ public class RagFileController {
         fileType = (fileType != null && fileType.trim().isEmpty()) ? null : fileType;
         fileGroupName = (fileGroupName != null && fileGroupName.trim().isEmpty()) ? null : fileGroupName;
         
+        System.out.println(SecurityUtils.getCurrentUserRoles());
         return Result.success(ragFileService.queryFiles(fileName, fileType, fileGroupName, pageNum, pageSize));
     }
 
-    @PreAuthorize("hasAuthority('/rag/file/queryDocumentsByFileId')")
+    // @PreAuthorize("hasAuthority('/rag/file/queryDocumentsByFileId')")
     @PostMapping("/file/queryDocumentsByFileId")
     public Result queryDocumentsByFileId(
             @RequestParam(required = true) Integer fileId,

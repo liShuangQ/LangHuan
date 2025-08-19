@@ -14,6 +14,7 @@ import com.langhuan.service.TFileUrlService;
 import com.langhuan.service.TRagFileService;
 import com.langhuan.dao.VectorStoreRagDao;
 import com.langhuan.dao.TFileUrlDao;
+import com.langhuan.utils.other.NumberTool;
 import com.langhuan.utils.other.SecurityUtils;
 import com.langhuan.utils.rag.EtlPipeline;
 import com.langhuan.utils.rag.config.SplitConfig;
@@ -323,7 +324,7 @@ public class RagService {
                             validGroupIds.add(trimmedId);
                         }
                     }
-                    
+
                     if (validGroupIds.isEmpty()) {
                         // 如果没有有效的groupId，抛出异常
                         throw new BusinessException("groupId不能为空");
@@ -362,6 +363,13 @@ public class RagService {
 
     /**
      * 线性加权法
+     * score（Double类型） -> spring ai的得分 searchDocuments.get(0).get("score");
+     * distance（Float类型） -> 数据库向量距离
+     * searchDocuments.get(0).getMetadata().get("distance")
+     * relevance_score（Double类型） -> rerank模型距离
+     * searchDocuments.get(0).getMetadata().get("relevance_score")
+     * normalizationRank（Double类型） -> 手工排名
+     * searchDocuments.get(0).getMetadata().get("normalizationRank")
      */
     public List<Document> rank_linearWeighting(List<Document> searchDocuments, String q, Boolean isReRank)
             throws Exception {
@@ -381,14 +389,6 @@ public class RagService {
             }
         }
 
-        // score（Double类型） -> spring ai的得分 searchDocuments.get(0).get("score");
-        // distance（Float类型） -> 数据库向量距离
-        // searchDocuments.get(0).getMetadata().get("distance")
-        // relevance_score（Double类型） -> rerank模型距离
-        // searchDocuments.get(0).getMetadata().get("relevance_score")
-        // normalizationRank（Double类型） -> 手工排名
-        // searchDocuments.get(0).getMetadata().get("normalizationRank")
-
         // 线性加权法计算综合得分
         // LINEARWEIGHTING = {数据库向量距离，spring ai得分，rerank模型距离，手工排名}
         for (Document doc : searchDocuments) {
@@ -399,10 +399,10 @@ public class RagService {
             Object normalizedRankObj = doc.getMetadata().get("normalizationRank");
 
             // 安全转换为Double类型，处理可能的Integer、Float等类型
-            Double springAiScore = convertToDouble(scoreObj, 0.0);
-            Double vectorDistance = convertToDouble(distanceObj, 1.0);
-            Double rerankScore = convertToDouble(rerankScoreObj, 1.0);
-            Double normalizedRank = convertToDouble(normalizedRankObj, 0.0);
+            Double springAiScore = NumberTool.convertToDouble(scoreObj, 0.0);
+            Double vectorDistance = NumberTool.convertToDouble(distanceObj, 1.0);
+            Double rerankScore = NumberTool.convertToDouble(rerankScoreObj, 1.0);
+            Double normalizedRank = NumberTool.convertToDouble(normalizedRankObj, 0.0);
 
             // 向量距离需要转换为相似度（距离越小，相似度越高）
             // 这里使用 1 / (1 + distance) 进行转换，确保值在0-1之间
@@ -429,33 +429,4 @@ public class RagService {
         return searchDocuments;
     }
 
-    /**
-     * 安全地将Object转换为Double类型
-     * 处理Integer、Float、Double等数值类型的转换
-     *
-     * @param obj          待转换的对象
-     * @param defaultValue 默认值
-     * @return 转换后的Double值
-     */
-    private Double convertToDouble(Object obj, Double defaultValue) {
-        if (obj == null) {
-            return defaultValue;
-        }
-
-        if (obj instanceof Double) {
-            return (Double) obj;
-        } else if (obj instanceof Integer) {
-            return ((Integer) obj).doubleValue();
-        } else if (obj instanceof Float) {
-            return ((Float) obj).doubleValue();
-        } else if (obj instanceof Long) {
-            return ((Long) obj).doubleValue();
-        } else if (obj instanceof Number) {
-            return ((Number) obj).doubleValue();
-        } else {
-            log.warn("无法转换类型 {} 为Double，使用默认值 {}", obj.getClass().getSimpleName(), defaultValue);
-            return defaultValue;
-        }
-
-    }
 }

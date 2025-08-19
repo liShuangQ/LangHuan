@@ -86,7 +86,6 @@ public class ChatService {
                 .defaultAdvisors(
                         new SafeGuardAdvisor(Constant.AIDEFAULTSAFEGUARDADVISOR),
                         new SimpleLoggerAdvisor(),
-                        // MessageChatMemoryAdvisor
                         MessageChatMemoryAdvisor.builder(chatMemory).build())
                 .build();
     }
