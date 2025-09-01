@@ -12,6 +12,10 @@ import { ElMessage } from "element-plus";
 import { data } from "autoprefixer";
 import { documentRankHandleApi } from "@/api/rag";
 import { tr } from "element-plus/es/locale";
+
+const BASE_PROJECT_NAME_CN = computed(() => {
+    return process.env.BASE_PROJECT_NAME_CN as string;
+});
 // 去除markdown代码块标记的函数
 function removeMarkdownCodeBlocks(content: string): string {
     if (!content) return content;
@@ -122,11 +126,11 @@ export function useChat() {
         messages.value = res.data.map((item: any, index: number) => ({
             id: (windowId + index).toString(),
             content: item.text,
-            sender:
-                item.metadata.messageType === "ASSISTANT"
-                    ? "assistant"
-                    : "user",
-            timestamp: "",
+            chatSettings: {
+                fileGroupName: BASE_PROJECT_NAME_CN.value,
+            },
+            sender: item.messageType === "ASSISTANT" ? "assistant" : "user",
+            timestamp: item.time ? item.time.split(".")[0] : "",
         }));
     };
     const optimizePrompt = async (message: string) => {

@@ -4,6 +4,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import com.langhuan.utils.other.SecurityUtils;
+
 import java.util.List;
 import java.util.Map;
 
@@ -94,5 +96,28 @@ public class TUserDao {
                 left join t_role r on ur.role_id = r.id
                 where u.id = ?
                 """, List.of(userId).toArray());
+    }
+
+    public List<Map<String, Object>> getUserRoleListById(Integer roleId) {
+        String currentUser = SecurityUtils.getCurrentUsername();
+        String sql = """
+                SELECT
+                    DISTINCT
+                    u.id AS user_id,
+                    u.username AS username,
+                    u.name AS name,
+                    r.id AS roleId,
+                    CASE WHEN r.name IS NOT NULL THEN r.name ELSE '访客' END AS roleName
+                FROM t_user u
+                LEFT JOIN t_user_role ur ON ur.user_id = u.id
+                LEFT JOIN t_role r ON r.id = ur.role_id
+                WHERE u.username != ?
+                """;
+        
+        if (roleId != null) {
+            sql += " AND r.id = ?";
+            return jdbcTemplate.queryForList(sql, currentUser, roleId);
+        }
+        return jdbcTemplate.queryForList(sql, currentUser);
     }
 }

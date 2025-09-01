@@ -226,4 +226,8 @@ public class TUserService extends ServiceImpl<TUserMapper, TUser> {
         TUserRoleService.saveBatch(userRoles);
         cacheService.clearPermissionCache();
     }
+
+    public List<Map<String, Object>> getUserRoleListById(Integer roleId) {
+        return userDao.getUserRoleListById(roleId);
+    }
 }

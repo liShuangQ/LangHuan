@@ -51,8 +51,7 @@ public class UserController {
 
     // @PreAuthorize("hasAuthority('/user/info/view')")
     @PostMapping("/getUserInfoByToken")
-    public Result getUserInfoByToken(
-    ) {
+    public Result getUserInfoByToken() {
         return Result.success(TUserService.getUserInfoByToken());
     }
 
@@ -64,12 +63,10 @@ public class UserController {
             @RequestParam(name = "gender", required = false) Integer gender,
             @RequestParam(name = "enabled", required = false) Integer enabled,
             @RequestParam(name = "pageNum", required = true, defaultValue = "1") int pageNum,
-            @RequestParam(name = "pageSize", required = true, defaultValue = "10") int pageSize
-    ) {
+            @RequestParam(name = "pageSize", required = true, defaultValue = "10") int pageSize) {
 
         return Result.success(TUserService.getUserPageList(name, username, gender, enabled, pageNum, pageSize));
     }
-    
 
     @ApiLog(apiName = "删除用户", description = "根据用户ID删除用户信息")
     @PreAuthorize("hasAuthority('/user/delete')")
@@ -95,14 +92,14 @@ public class UserController {
     @PostMapping("/relevancyRoles")
     public Result relevancyRoles(
             @RequestParam(name = "id", required = true) Integer id,
-            @RequestParam(name = "roleIds", required = true) String roleIds
-    ) {
+            @RequestParam(name = "roleIds", required = true) String roleIds) {
         try {
             if (roleIds.isEmpty()) {
                 TUserService.relevancyRoles(id, new ArrayList<>());
             } else {
                 String[] strings = roleIds.split(",");
-                TUserService.relevancyRoles(id, Arrays.stream(strings).map(Integer::parseInt).collect(Collectors.toList()));
+                TUserService.relevancyRoles(id,
+                        Arrays.stream(strings).map(Integer::parseInt).collect(Collectors.toList()));
             }
         } catch (Exception e) {
             return Result.error("角色id格式错误");
@@ -110,9 +107,8 @@ public class UserController {
         return Result.success("操作成功");
     }
 
-
-    //@PreAuthorize("hasAuthority('/user/list')")
-    //@PreAuthorize("hasAnyRole('admin', 'normal')")
+    // @PreAuthorize("hasAuthority('/user/list')")
+    // @PreAuthorize("hasAnyRole('admin', 'normal')")
     @PostMapping("/logout")
     public Result logout(HttpServletRequest request, HttpServletResponse response) {
         // 退出登录
@@ -120,5 +116,12 @@ public class UserController {
         // 清除认证
         new SecurityContextLogoutHandler().logout(request, response, auth);
         return Result.success("操作成功");
+    }
+
+    // @PreAuthorize("hasAuthority('/user/list')")
+    @PostMapping("/getUserRoleListById")
+    public Result getUserRoleListById(
+            @RequestParam(name = "roleId", required = false) Integer roleId) {
+        return Result.success(TUserService.getUserRoleListById(roleId));
     }
 }

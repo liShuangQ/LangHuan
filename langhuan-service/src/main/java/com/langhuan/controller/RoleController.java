@@ -50,7 +50,7 @@ public class RoleController {
         return Result.success(TRoleService.change(role));
     }
 
-    @PreAuthorize("hasAuthority('/role/list')")
+    // @PreAuthorize("hasAuthority('/role/list')")
     @PostMapping("/getPageList")
     public Result getPageList(
             @RequestParam(name = "name", required = false, defaultValue = "") String name,

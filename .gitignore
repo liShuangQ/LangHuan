@@ -44,3 +44,4 @@ build/
 ### VS Code ###
 .vscode/
 langhuan-web/types/components.d.ts
+langhuan-web/static/使用手册.pdf

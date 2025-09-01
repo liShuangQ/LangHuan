@@ -21,7 +21,8 @@
                             ref="tableRef"
                             :data="shareList"
                             @selection-change="handleSelectionChange"
-                            style="width: 100%"
+                            height="300px"
+                            class="w-full"
                         >
                             <el-table-column type="selection" width="55" />
                             <el-table-column
@@ -95,6 +96,24 @@
                         label-width="120px"
                         class="share-form"
                     >
+                        <el-form-item label="共享角色">
+                            <el-select
+                                v-model="selectedRoleIds"
+                                placeholder="请选择共享角色"
+                                style="width: 100%"
+                                clearable
+                                multiple
+                                @change="handleRoleChange"
+                            >
+                                <el-option
+                                    v-for="role in roleOptions"
+                                    :key="role.id"
+                                    :label="role.name"
+                                    :value="role.id"
+                                />
+                            </el-select>
+                        </el-form-item>
+
                         <el-form-item label="共享用户" prop="sharedUsers">
                             <el-select
                                 v-model="shareForm.sharedUsers"
@@ -104,7 +123,6 @@
                                 multiple
                                 filterable
                                 remote
-                                @change="userChangeMethod"
                                 :remote-method="userRemoteMethod"
                             >
                                 <el-option
@@ -191,6 +209,14 @@ interface UserOption {
     value: string;
 }
 
+interface RoleUser {
+    user_id: string;
+    username: string;
+    name: string;
+    roleId: number;
+    roleName: string;
+}
+
 interface ShareItem {
     id: number;
     fileGroupId: number;
@@ -230,6 +256,8 @@ const activeTab = ref("unshare");
 // 共享表单相关
 const shareFormRef = ref<FormInstance>();
 const userOptions = ref<UserOption[]>([]);
+const roleOptions = ref<{ id: number; name: string }[]>([]);
+const selectedRoleIds = ref<number[]>([]);
 
 const shareForm = reactive<ShareForm>({
     sharedUsers: [],
@@ -285,29 +313,82 @@ const userRemoteMethod = (query: string) => {
     }, 500);
 };
 
-// 共享用户改变,获取用户当前的权限
-const userChangeMethod = (value: string) => {
-    http.request<any>({
-        url: "/rag/file-group/shareList",
+// 获取角色列表
+const getRoleList = async (roleId = null) => {
+    const res = await http.request<any>({
+        url: "/role/getPageList",
         method: "post",
         q_spinning: true,
         data: {
-            fileGroupId: props.fileGroupId,
-            sharedWith: value,
+            name: "",
+            remark: "",
+            pageNum: 1,
+            pageSize: 1000000,
         },
-    }).then((res) => {
-        if (res.data.length > 0) {
-            shareForm.canRead = res.data[0].canRead;
-            shareForm.canAdd = res.data[0].canAdd;
-            shareForm.canUpdate = res.data[0].canUpdate;
-            shareForm.canDelete = res.data[0].canDelete;
-        } else {
-            shareForm.canRead = false;
-            shareForm.canAdd = false;
-            shareForm.canUpdate = false;
-            shareForm.canDelete = false;
-        }
     });
+    return res.data;
+};
+// 获取角色列表
+const getUserListByRoleId = async (roleId: number) => {
+    const res = await http.request<any>({
+        url: "/user/getUserRoleListById",
+        method: "post",
+        q_spinning: true,
+        data: {
+            roleId: roleId,
+        },
+    });
+    return res.data;
+};
+
+// 获取角色列表
+const loadRoleOptions = async () => {
+    try {
+        const res = await getRoleList();
+        roleOptions.value = res.records.map((role: any) => ({
+            id: role.id,
+            name: role.name,
+        }));
+    } catch (error) {
+        console.error("获取角色列表失败:", error);
+        ElMessage.error("获取角色列表失败");
+    }
+};
+
+// 处理角色变更
+const handleRoleChange = async (roleIds: number[]) => {
+    // 如果没有选择角色，直接返回
+    if (!roleIds || roleIds.length === 0) {
+        return;
+    }
+
+    try {
+        // 存储所有选中角色的用户
+        const allUsers: UserOption[] = [];
+
+        // 查询当前选中的一个角色
+        const res = await getUserListByRoleId(roleIds[roleIds.length - 1]);
+        // 将角色下的用户添加到共享用户中
+        const users: UserOption[] = res.map((user: RoleUser) => ({
+            label: user.name,
+            value: user.username,
+        }));
+        allUsers.push(...users);
+
+        // 添加到userOptions中（如果不存在）
+        allUsers.forEach((user: UserOption) => {
+            if (!userOptions.value.some((u) => u.value === user.value)) {
+                userOptions.value.push(user);
+            }
+        });
+// sharedUsers。userOptions
+        // 将用户添加到共享用户中（去重）
+        const uniqueUsers = Array.from(new Set([...allUsers.map((u) => u.value),...shareForm.sharedUsers]));
+        shareForm.sharedUsers = uniqueUsers;
+    } catch (error) {
+        console.error("获取角色用户列表失败:", error);
+        ElMessage.error("获取角色用户列表失败");
+    }
 };
 
 // 获取共享列表
@@ -350,6 +431,7 @@ const handleSelectionChange = (selection: ShareItem[]) => {
 
 // 共享表单方法
 const resetShareForm = (data: ShareForm | null) => {
+    selectedRoleIds.value = [];
     shareForm.sharedUsers = [];
     shareForm.canRead = false;
     shareForm.canAdd = false;
@@ -461,6 +543,7 @@ defineExpose({
 
 onMounted(() => {
     nextTick(() => {
+        loadRoleOptions();
     });
 });
 </script>

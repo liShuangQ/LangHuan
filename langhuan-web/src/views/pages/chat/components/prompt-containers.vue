@@ -3,6 +3,7 @@ import { ref, nextTick, watch, computed } from "vue";
 import FeedbackDialog from "./feedback-dialog.vue";
 import RagDocumentDialog from "./rag-document-dialog.vue";
 import type { Message } from "../types";
+import { open } from "fs";
 
 const props = defineProps<{
     messages: Message[];
@@ -63,9 +64,7 @@ const processMessageContent = (content: string, messageId: string) => {
     return result;
 };
 
-const suggestions = [
-    { id: "optimizePrompt", text: "优化提示词" },
-];
+const suggestions = [{ id: "optimizePrompt", text: "优化提示词" }];
 
 const messageInput = ref("");
 const messageContainer = ref<HTMLDivElement | null>(null);
@@ -141,6 +140,10 @@ const assistantImage = require("../imgs/assistant.png");
 const handleRagRank = (type: "good" | "bad", document: any) => {
     emit("action", "documentRank", { type, document });
 };
+
+const openHelp = () => {
+    (window as any).open("../../../../../static/使用手册.pdf");
+};
 </script>
 
 <template>
@@ -210,6 +213,15 @@ const handleRagRank = (type: "good" | "bad", document: any) => {
                             📚 知识问答
                         </span>
                     </div>
+                    <div class="mt-4">
+                        首次使用？点此
+                        <span
+                            class="cursor-pointer text-blue-500"
+                            @click="openHelp"
+                        >
+                            查看帮助
+                        </span>
+                    </div>
                 </div>
             </div>
 
@@ -217,11 +229,13 @@ const handleRagRank = (type: "good" | "bad", document: any) => {
                 <!-- 消息主体部分-->
                 <div
                     class="flex flex-row px-2 py-4 sm:px-4"
-                    v-if="msg.sender === 'user' ? (
-                        msg?.showUserMessage !== undefined
+                    v-if="
+                        msg.sender === 'user'
+                            ? msg?.showUserMessage !== undefined
                                 ? msg.showUserMessage
                                 : true
-                    ) : true"
+                            : true
+                    "
                 >
                     <img
                         class="mr-2 flex h-8 w-8 rounded-full sm:mr-4"
@@ -236,6 +250,7 @@ const handleRagRank = (type: "good" | "bad", document: any) => {
                                     ? "用户"
                                     : msg.chatSettings?.fileGroupName ?? ""
                             }}
+                            {{ msg.timestamp }}
                         </div>
                         <div
                             :class="[
