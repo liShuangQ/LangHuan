@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.langhuan.common.Constant;
 import com.langhuan.config.MyJdbcChatMemoryRepository;
+import com.langhuan.config.MyMessageWindowChatMemory;
 import com.langhuan.config.MyPostgresChatMemoryRepositoryDialect;
 import com.langhuan.model.domain.TUserChatWindow;
 import com.langhuan.service.TUserChatWindowService;
@@ -67,12 +68,12 @@ public class ChatMemoryService {
     @Autowired
     public void setChatMemoryRepository() {
         // 创建聊天记忆仓库
-        ChatMemoryRepository chatMemoryRepository = JdbcChatMemoryRepository.builder()
+        MyJdbcChatMemoryRepository chatMemoryRepository = MyJdbcChatMemoryRepository.builder()
                 .jdbcTemplate(jdbcTemplate)
                 .dialect(myPostgresChatMemoryRepositoryDialect)
                 .build();
         // 构建ChatMemory以包含仓库
-        this.chatMemory = MessageWindowChatMemory.builder()
+        this.chatMemory = MyMessageWindowChatMemory.builder()
                 .chatMemoryRepository(chatMemoryRepository)
                 .maxMessages(Constant.MESSAGEWINDOWCHATMEMORYMAX)
                 .build();
@@ -127,7 +128,6 @@ public class ChatMemoryService {
         public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
 
             var content = rs.getString(1);
-            // var type = MessageType.valueOf(rs.getString(2));
             var time = rs.getString(3);
             return Map.of(
                     "messageType", rs.getString(2),
@@ -135,15 +135,6 @@ public class ChatMemoryService {
                     "text", content,
                     "time", time // 将时间属性添加到结果中
             );
-            // return switch (type) {
-            // case USER -> new UserMessage(content);
-            // case ASSISTANT -> new AssistantMessage(content);
-            // case SYSTEM -> new SystemMessage(content);
-            // // The content is always stored empty for ToolResponseMessages.
-            // // If we want to capture the actual content, we need to extend
-            // // AddBatchPreparedStatement to support it.
-            // case TOOL -> new ToolResponseMessage(List.of());
-            // };
         }
 
     }
