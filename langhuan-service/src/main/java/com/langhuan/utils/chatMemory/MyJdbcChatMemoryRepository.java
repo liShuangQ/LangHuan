@@ -1,4 +1,4 @@
-package com.langhuan.config;
+package com.langhuan.utils.chatMemory;
 
 import java.lang.reflect.Array;
 import java.sql.PreparedStatement;
@@ -6,19 +6,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
-import javax.sql.DataSource;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import org.springframework.ai.chat.memory.ChatMemoryRepository;
-import org.springframework.ai.chat.memory.repository.jdbc.JdbcChatMemoryRepository;
-import org.springframework.ai.chat.memory.repository.jdbc.JdbcChatMemoryRepositoryDialect;
 import org.springframework.ai.chat.messages.AssistantMessage;
 import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.messages.MessageType;
@@ -34,19 +27,8 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.Assert;
 
-import lombok.extern.log4j.Log4j;
 import lombok.extern.slf4j.Slf4j;
 
-/**
- * An implementation of {@link ChatMemoryRepository} for JDBC.
- *
- * @author Jonathan Leijendekker
- * @author Thomas Vitale
- * @author Linar Abzaltdinov
- * @author Mark Pollack
- * @author Yanming Zhou
- * @since 1.0.0
- */
 @Slf4j
 public final class MyJdbcChatMemoryRepository implements ChatMemoryRepository {
 
@@ -54,31 +36,62 @@ public final class MyJdbcChatMemoryRepository implements ChatMemoryRepository {
 
 	private final TransactionTemplate transactionTemplate;
 
-	private final JdbcChatMemoryRepositoryDialect dialect;
-
-	private MyJdbcChatMemoryRepository(JdbcTemplate jdbcTemplate, JdbcChatMemoryRepositoryDialect dialect,
-			PlatformTransactionManager txManager) {
+	private MyJdbcChatMemoryRepository(JdbcTemplate jdbcTemplate, PlatformTransactionManager txManager) {
 		Assert.notNull(jdbcTemplate, "jdbcTemplate cannot be null");
-		Assert.notNull(dialect, "dialect cannot be null");
 		this.jdbcTemplate = jdbcTemplate;
-		this.dialect = dialect;
 		this.transactionTemplate = new TransactionTemplate(
 				txManager != null ? txManager : new DataSourceTransactionManager(jdbcTemplate.getDataSource()));
+	}
+	
+	private String getSelectMessagesSql() {
+		return "SELECT content, type, timestamp FROM SPRING_AI_CHAT_MEMORY WHERE conversation_id = ? ORDER BY \"timestamp\"";
+	}
+
+	private String getInsertMessageSql() {
+		return "INSERT INTO SPRING_AI_CHAT_MEMORY (conversation_id, content, type, \"timestamp\") VALUES (?, ?, ?, ?)";
+	}
+
+	private String getSelectConversationIdsSql() {
+		return "SELECT DISTINCT conversation_id FROM SPRING_AI_CHAT_MEMORY";
+	}
+
+	private String getDeleteMessagesSql() {
+		return "DELETE FROM SPRING_AI_CHAT_MEMORY WHERE conversation_id = ?";
+	}
+
+	/**
+	 * 静态工厂方法，用于创建MyJdbcChatMemoryRepository实例
+	 *
+	 * @param jdbcTemplate JdbcTemplate实例
+	 * @param txManager 事务管理器
+	 * @return MyJdbcChatMemoryRepository实例
+	 */
+	public static MyJdbcChatMemoryRepository create(JdbcTemplate jdbcTemplate,
+			PlatformTransactionManager txManager) {
+		return new MyJdbcChatMemoryRepository(jdbcTemplate, txManager);
 	}
 
 	@Override
 	public List<String> findConversationIds() {
-		return this.jdbcTemplate.queryForList(dialect.getSelectConversationIdsSql(), String.class);
+		return this.jdbcTemplate.queryForList(getSelectConversationIdsSql(), String.class);
 	}
 
 	@Override
 	public List<Message> findByConversationId(String conversationId) {
 		Assert.hasText(conversationId, "conversationId cannot be null or empty");
-		return this.jdbcTemplate.query(this.dialect.getSelectMessagesSql(), new MessageRowMapper(), conversationId);
+		return this.jdbcTemplate.query(this.getSelectMessagesSql(), new MessageRowMapper(), conversationId);
+	}
+
+	public List<Map<String, Object>> myFindByConversationId(String conversationId) {
+		Assert.hasText(conversationId, "conversationId cannot be null or empty");
+		return this.jdbcTemplate.query(
+				this.getSelectMessagesSql(),
+				new MyMessageRowMapper(), conversationId);
 	}
 
 	/**
 	 * 新增，对应MyMessageWindowChatMemory的add方法
+	 * 
 	 * @param conversationId
 	 * @param messages
 	 */
@@ -89,7 +102,7 @@ public final class MyJdbcChatMemoryRepository implements ChatMemoryRepository {
 
 		// 只添加最新的对话，不用之前的全部删除在添加的方式
 		this.transactionTemplate.execute(status -> {
-			this.jdbcTemplate.batchUpdate(this.dialect.getInsertMessageSql(),
+			this.jdbcTemplate.batchUpdate(this.getInsertMessageSql(),
 					new AddBatchPreparedStatement(conversationId, List.of(messages.getLast())));
 			return null;
 		});
@@ -103,7 +116,7 @@ public final class MyJdbcChatMemoryRepository implements ChatMemoryRepository {
 
 		this.transactionTemplate.execute(status -> {
 			deleteByConversationId(conversationId);
-			this.jdbcTemplate.batchUpdate(this.dialect.getInsertMessageSql(),
+			this.jdbcTemplate.batchUpdate(this.getInsertMessageSql(),
 					new AddBatchPreparedStatement(conversationId, messages));
 			return null;
 		});
@@ -113,11 +126,7 @@ public final class MyJdbcChatMemoryRepository implements ChatMemoryRepository {
 	@Override
 	public void deleteByConversationId(String conversationId) {
 		Assert.hasText(conversationId, "conversationId cannot be null or empty");
-		this.jdbcTemplate.update(this.dialect.getDeleteMessagesSql(), conversationId);
-	}
-
-	public static Builder builder() {
-		return new Builder();
+		this.jdbcTemplate.update(this.getDeleteMessagesSql(), conversationId);
 	}
 
 	private record AddBatchPreparedStatement(String conversationId, List<Message> messages,
@@ -164,98 +173,25 @@ public final class MyJdbcChatMemoryRepository implements ChatMemoryRepository {
 
 	}
 
-	public static final class Builder {
+	/**
+	 * 见 JdbcChatMemoryRepository 提供的MessageRowMapper。
+	 * 自定义回复参数，这时候已经改变了返回格式，注意类型为SYSTEM和TOOL的类型需要特殊处理（当前因为没需求，数据库不存储这种类型，所以不处理）
+	 */
+	private static class MyMessageRowMapper implements RowMapper<Map<String, Object>> {
 
-		private JdbcTemplate jdbcTemplate;
+		@Override
+		@Nullable
+		public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
 
-		private JdbcChatMemoryRepositoryDialect dialect;
-
-		private DataSource dataSource;
-
-		private PlatformTransactionManager platformTransactionManager;
-
-		private static final Logger logger = LoggerFactory.getLogger(Builder.class);
-
-		private Builder() {
-		}
-
-		public Builder jdbcTemplate(JdbcTemplate jdbcTemplate) {
-			this.jdbcTemplate = jdbcTemplate;
-			return this;
-		}
-
-		public Builder dialect(JdbcChatMemoryRepositoryDialect dialect) {
-			this.dialect = dialect;
-			return this;
-		}
-
-		public Builder dataSource(DataSource dataSource) {
-			this.dataSource = dataSource;
-			return this;
-		}
-
-		public Builder transactionManager(PlatformTransactionManager txManager) {
-			this.platformTransactionManager = txManager;
-			return this;
-		}
-
-		public MyJdbcChatMemoryRepository build() {
-			DataSource effectiveDataSource = resolveDataSource();
-			JdbcChatMemoryRepositoryDialect effectiveDialect = resolveDialect(effectiveDataSource);
-			return new MyJdbcChatMemoryRepository(resolveJdbcTemplate(), effectiveDialect,
-					this.platformTransactionManager);
-		}
-
-		private JdbcTemplate resolveJdbcTemplate() {
-			if (this.jdbcTemplate != null) {
-				return this.jdbcTemplate;
-			}
-			if (this.dataSource != null) {
-				return new JdbcTemplate(this.dataSource);
-			}
-			throw new IllegalArgumentException("DataSource must be set (either via dataSource() or jdbcTemplate())");
-		}
-
-		private DataSource resolveDataSource() {
-			if (this.dataSource != null) {
-				return this.dataSource;
-			}
-			if (this.jdbcTemplate != null && this.jdbcTemplate.getDataSource() != null) {
-				return this.jdbcTemplate.getDataSource();
-			}
-			throw new IllegalArgumentException("DataSource must be set (either via dataSource() or jdbcTemplate())");
-		}
-
-		private JdbcChatMemoryRepositoryDialect resolveDialect(DataSource dataSource) {
-			if (this.dialect == null) {
-				try {
-					return JdbcChatMemoryRepositoryDialect.from(dataSource);
-				} catch (Exception ex) {
-					throw new IllegalStateException("Could not detect dialect from datasource", ex);
-				}
-			} else {
-				warnIfDialectMismatch(dataSource, this.dialect);
-				return this.dialect;
-			}
-		}
-
-		/**
-		 * Logs a warning if the explicitly set dialect differs from the dialect
-		 * detected
-		 * from the DataSource.
-		 */
-		private void warnIfDialectMismatch(DataSource dataSource, JdbcChatMemoryRepositoryDialect explicitDialect) {
-			try {
-				JdbcChatMemoryRepositoryDialect detected = JdbcChatMemoryRepositoryDialect.from(dataSource);
-				if (!detected.getClass().equals(explicitDialect.getClass())) {
-					logger.warn("Explicitly set dialect {} will be used instead of detected dialect {} from datasource",
-							explicitDialect.getClass().getSimpleName(), detected.getClass().getSimpleName());
-				}
-			} catch (Exception ex) {
-				logger.debug("Could not detect dialect from datasource", ex);
-			}
+			var content = rs.getString(1);
+			var time = rs.getString(3);
+			return Map.of(
+					"messageType", rs.getString(2),
+					"media", Array.newInstance(Object.class, 0),
+					"text", content,
+					"time", time // 将时间属性添加到结果中
+			);
 		}
 
 	}
-
 }

@@ -70,10 +70,11 @@
             <artifactId>spring-ai-tika-document-reader</artifactId>
             <version>1.0.0</version>
         </dependency>
-        <dependency>
+        <!-- 不好用 转为自己实现 -->
+        <!-- <dependency>
             <groupId>org.springframework.ai</groupId>
             <artifactId>spring-ai-starter-model-chat-memory-repository-jdbc</artifactId>
-        </dependency>
+        </dependency> -->
 <!--        <dependency>-->
 <!--            <groupId>software.amazon.awssdk</groupId>-->
 <!--            <artifactId>s3</artifactId>-->
@@ -150,6 +151,10 @@
             <groupId>com.baomidou</groupId>
             <artifactId>mybatis-plus-spring-boot3-starter</artifactId>
             <version>3.5.7</version>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.annotation</groupId>
+            <artifactId>jakarta.annotation-api</artifactId>
         </dependency>
     </dependencies>
 

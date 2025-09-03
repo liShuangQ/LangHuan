@@ -3,42 +3,25 @@ package com.langhuan.serviceai;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.langhuan.common.Constant;
-import com.langhuan.config.MyJdbcChatMemoryRepository;
-import com.langhuan.config.MyMessageWindowChatMemory;
-import com.langhuan.config.MyPostgresChatMemoryRepositoryDialect;
 import com.langhuan.model.domain.TUserChatWindow;
 import com.langhuan.service.TUserChatWindowService;
+import com.langhuan.utils.chatMemory.MyJdbcChatMemoryRepository;
+import com.langhuan.utils.chatMemory.MyMessageWindowChatMemory;
 import com.langhuan.utils.other.SecurityUtils;
 
 import cn.hutool.core.util.IdUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.memory.ChatMemory;
-import org.springframework.ai.chat.memory.ChatMemoryRepository;
-import org.springframework.ai.chat.memory.MessageWindowChatMemory;
-import org.springframework.ai.chat.memory.repository.jdbc.JdbcChatMemoryRepository;
-import org.springframework.ai.chat.messages.AssistantMessage;
-import org.springframework.ai.chat.messages.Message;
-import org.springframework.ai.chat.messages.MessageType;
-import org.springframework.ai.chat.messages.SystemMessage;
-import org.springframework.ai.chat.messages.ToolResponseMessage;
-import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
-import org.springframework.lang.Nullable;
 
-import java.lang.reflect.Array;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
+import jakarta.annotation.PostConstruct;
 import java.util.List;
 import java.util.Map;
 
 /**
  * 聊天记忆管理服务类
- * 
+ *
  * 负责聊天窗口管理、历史记录管理和持久化存储
  *
  * @author lishuangqi
@@ -49,34 +32,17 @@ import java.util.Map;
 public class ChatMemoryService {
 
     private final TUserChatWindowService userChatWindowService;
-    private final MyPostgresChatMemoryRepositoryDialect myPostgresChatMemoryRepositoryDialect;
-    private final JdbcTemplate jdbcTemplate;
-    private ChatMemory chatMemory;
+    @Autowired
+    private MyJdbcChatMemoryRepository myJdbcChatMemoryRepository;
+    private MyMessageWindowChatMemory chatMemory;
 
-    public ChatMemoryService(TUserChatWindowService userChatWindowService,
-            MyPostgresChatMemoryRepositoryDialect myPostgresChatMemoryRepositoryDialect, JdbcTemplate jdbcTemplate) {
+    public ChatMemoryService(TUserChatWindowService userChatWindowService) {
         this.userChatWindowService = userChatWindowService;
-        this.myPostgresChatMemoryRepositoryDialect = myPostgresChatMemoryRepositoryDialect;
-        this.jdbcTemplate = jdbcTemplate;
     }
 
-    /**
-     * 设置聊天记忆仓库
-     * 
-     * @param repository 聊天记忆仓库
-     */
-    @Autowired
-    public void setChatMemoryRepository() {
-        // 创建聊天记忆仓库
-        MyJdbcChatMemoryRepository chatMemoryRepository = MyJdbcChatMemoryRepository.builder()
-                .jdbcTemplate(jdbcTemplate)
-                .dialect(myPostgresChatMemoryRepositoryDialect)
-                .build();
-        // 构建ChatMemory以包含仓库
-        this.chatMemory = MyMessageWindowChatMemory.builder()
-                .chatMemoryRepository(chatMemoryRepository)
-                .maxMessages(Constant.MESSAGEWINDOWCHATMEMORYMAX)
-                .build();
+    @PostConstruct
+    public void init() {
+        this.chatMemory = new MyMessageWindowChatMemory(myJdbcChatMemoryRepository, Constant.MESSAGEWINDOWCHATMEMORYMAX);
     }
 
     /**
@@ -118,28 +84,6 @@ public class ChatMemoryService {
     }
 
     /**
-     * 见 JdbcChatMemoryRepository 提供的MessageRowMapper。
-     * 自定义回复参数，这时候已经改变了返回格式，注意类型为SYSTEM和TOOL的类型需要特殊处理（当前因为没需求，数据库不存储这种类型，所以不处理）
-     */
-    private static class MessageRowMapper implements RowMapper<Map<String, Object>> {
-
-        @Override
-        @Nullable
-        public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
-
-            var content = rs.getString(1);
-            var time = rs.getString(3);
-            return Map.of(
-                    "messageType", rs.getString(2),
-                    "media", Array.newInstance(Object.class, 0),
-                    "text", content,
-                    "time", time // 将时间属性添加到结果中
-            );
-        }
-
-    }
-
-    /**
      * 获取指定会话的聊天历史
      *
      * @param id 会话ID
@@ -147,12 +91,8 @@ public class ChatMemoryService {
      */
     public List<Map<String, Object>> getChatMemoryMessages(String id) {
         log.info("ChatMemory-get-messages: {}", id);
-        // 为了添加时间呈现改为直接在sql中获取，跳过chatMemory提供的封装方法，原理一致
-        return this.jdbcTemplate.query(
-                this.myPostgresChatMemoryRepositoryDialect.getSelectMessagesSql(),
-                new MessageRowMapper(), id);
         // 提供的管理方式
-        // return chatMemory.get(id);
+        return chatMemory.myGet(id);
     }
 
     /**

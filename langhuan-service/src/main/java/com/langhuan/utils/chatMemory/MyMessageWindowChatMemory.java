@@ -1,8 +1,9 @@
-package com.langhuan.config;
+package com.langhuan.utils.chatMemory;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.springframework.ai.chat.memory.ChatMemory;
@@ -23,7 +24,7 @@ public final class MyMessageWindowChatMemory implements ChatMemory {
 
 	private final int maxMessages;
 
-	private MyMessageWindowChatMemory(MyJdbcChatMemoryRepository chatMemoryRepository, int maxMessages) {
+	public MyMessageWindowChatMemory(MyJdbcChatMemoryRepository chatMemoryRepository, int maxMessages) {
 		Assert.notNull(chatMemoryRepository, "chatMemoryRepository cannot be null");
 		Assert.isTrue(maxMessages > 0, "maxMessages must be greater than 0");
 		this.chatMemoryRepository = chatMemoryRepository;
@@ -46,6 +47,11 @@ public final class MyMessageWindowChatMemory implements ChatMemory {
 	public List<Message> get(String conversationId) {
 		Assert.hasText(conversationId, "conversationId cannot be null or empty");
 		return this.chatMemoryRepository.findByConversationId(conversationId);
+	}
+
+	public List<Map<String, Object>> myGet(String conversationId) {
+		Assert.hasText(conversationId, "conversationId cannot be null or empty");
+		return this.chatMemoryRepository.myFindByConversationId(conversationId);
 	}
 
 	@Override
@@ -86,39 +92,4 @@ public final class MyMessageWindowChatMemory implements ChatMemory {
 
 		return trimmedMessages;
 	}
-
-	public static Builder builder() {
-		return new Builder();
-	}
-
-	public static final class Builder {
-
-		private MyJdbcChatMemoryRepository chatMemoryRepository;
-
-		private int maxMessages = DEFAULT_MAX_MESSAGES;
-
-		private Builder() {
-		}
-
-		public Builder chatMemoryRepository(MyJdbcChatMemoryRepository chatMemoryRepository) {
-			this.chatMemoryRepository = chatMemoryRepository;
-			return this;
-		}
-
-		public Builder maxMessages(int maxMessages) {
-			this.maxMessages = maxMessages;
-			return this;
-		}
-
-		public MyMessageWindowChatMemory build() {
-			if (this.chatMemoryRepository == null) {
-				log.error("自定义MyMessageWindowChatMemory，必须指定chatMemoryRepository仓库。");
-				throw new IllegalArgumentException("chatMemoryRepository cannot be null");
-				// this.chatMemoryRepository = new InMemoryChatMemoryRepository();
-			}
-			return new MyMessageWindowChatMemory(this.chatMemoryRepository, this.maxMessages);
-		}
-
-	}
-
 }
