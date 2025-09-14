@@ -177,12 +177,13 @@ const sendMessageExpertMode = async (windowId: string, message: string) => {
     });
 };
 
-const handleSendMessage = (windowId: string, message: string) => {
+const handleSendMessage = (windowId: string, messageData: any) => {
     if (settings.value.isExpertMode) {
-        sendMessageExpertMode(windowId, message);
+        sendMessageExpertMode(windowId, messageData.text);
     } else {
-        sendMessage(windowId, message, {
+        sendMessage(windowId, messageData.text,{
             ...getChatParams.value,
+            imageunderstanding : messageData.imageunderstanding,
             fileGroupName: settings.value.ragGroup?.name,
         });
     }

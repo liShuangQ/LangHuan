@@ -35,8 +35,8 @@ public class PostRequestUtils {
      */
     public static String sendPostRequest(String url, String jsonData, Map<String, String> headers) throws Exception {
         log.debug("Sending POST request to URL: " + url);
-        log.debug("Request JSON data: " + jsonData);
-        log.debug("Request headers: " + headers);
+//        log.debug("Request JSON data: " + jsonData);
+//        log.debug("Request headers: " + headers);
 
         URL obj = new URI(url).toURL();
         HttpURLConnection con = (HttpURLConnection) obj.openConnection();

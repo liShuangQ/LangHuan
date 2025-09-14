@@ -9,9 +9,7 @@ import type {
     ChatSettings,
 } from "../types";
 import { ElMessage } from "element-plus";
-import { data } from "autoprefixer";
 import { documentRankHandleApi } from "@/api/rag";
-import { tr } from "element-plus/es/locale";
 
 const BASE_PROJECT_NAME_CN = computed(() => {
     return process.env.BASE_PROJECT_NAME_CN as string;
@@ -91,7 +89,7 @@ export function useChat() {
                     ragGroupId: "",
                     isFunction: false,
                     modelName: "",
-                    imageunderstanding:["https://dashscope.oss-cn-beijing.aliyuncs.com/images/dog_and_girl.jpeg"],
+                    imageunderstanding:[],
                     ...chatParams,
                 },
                 axiosCancel.token

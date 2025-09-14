@@ -3,7 +3,18 @@ import { ref, nextTick, watch, computed } from "vue";
 import FeedbackDialog from "./feedback-dialog.vue";
 import RagDocumentDialog from "./rag-document-dialog.vue";
 import type { Message } from "../types";
-import { open } from "fs";
+import { ElMessage } from "element-plus";
+import { Upload } from "@element-plus/icons-vue";
+import { fileToBase64 } from "@/utils/imgFile";
+
+// 文件上传相关类型定义
+interface UploadFile {
+  file: File;
+  id: string;
+  url: string;
+  name: string;
+  size: number;
+}
 
 const props = defineProps<{
     messages: Message[];
@@ -12,7 +23,7 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-    (e: "send-message", message: string): void;
+    (e: "send-message", messageData: any): void;
     (e: "action", type: string, payload?: any): void;
 }>();
 
@@ -72,12 +83,48 @@ const getMessageInput = () => messageInput.value;
 const setMessageInput = (value: string) => {
     messageInput.value = value;
 };
-const handleSubmit = (e: Event) => {
-    e.preventDefault();
-    if (!props.canSend || !messageInput.value.trim()) return;
 
-    emit("send-message", messageInput.value);
-    messageInput.value = "";
+// 文件上传相关变量
+const selectedFiles = ref<UploadFile[]>([]);
+const isDragging = ref(false);
+const fileInputRef = ref<HTMLInputElement | null>(null);
+
+// 文件上传限制配置
+const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+const MAX_FILE_COUNT = 3;
+const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+const handleSubmit = async (e: Event) => {
+    e.preventDefault();
+    if (!props.canSend || (!messageInput.value.trim() && selectedFiles.value.length === 0)) {
+        ElMessage.warning("请输入问题或选择图片");
+        return;
+    }
+
+    try {
+        // 将选中的文件转换为Base64格式
+        const base64Files = await Promise.all(
+            selectedFiles.value.map(async (file) => {
+                const base64Url = await fileToBase64(file.file);
+                return base64Url
+            })
+        );
+
+        // 发送消息时包含文件信息
+        const messageData = {
+            text: messageInput.value,
+            imageunderstanding: base64Files
+        };
+
+        emit("send-message", messageData);
+        messageInput.value = "";
+
+        // 清空已选择的文件
+        selectedFiles.value.forEach(file => URL.revokeObjectURL(file.url));
+        selectedFiles.value = [];
+    } catch (error) {
+        ElMessage.error("文件转换失败，请重试");
+        console.error("File conversion error:", error);
+    }
 };
 
 const scrollToBottom = () => {
@@ -143,6 +190,126 @@ const handleRagRank = (type: "good" | "bad", document: any) => {
 
 const openHelp = () => {
     (window as any).open("../../../../../static/使用手册.pdf");
+};
+
+// 文件上传相关函数
+const generateFileId = () => {
+  return Date.now().toString() + Math.random().toString(36).substr(2, 9);
+};
+
+const validateFile = (file: File): string | null => {
+  // 检查文件类型
+  if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+    return `文件 "${file.name}" 格式不支持，仅支持图片格式 (JPEG, PNG, GIF, WebP)`;
+  }
+
+  // 检查文件大小
+  if (file.size > MAX_FILE_SIZE) {
+    return `文件 "${file.name}" 超过10MB大小限制`;
+  }
+
+  return null;
+};
+
+const processFiles = (files: FileList | File[]) => {
+  const newFiles: UploadFile[] = [];
+  const errors: string[] = [];
+
+  // 检查总文件数量
+  const totalFiles = selectedFiles.value.length + files.length;
+  if (totalFiles > MAX_FILE_COUNT) {
+    ElMessage.error(`最多只能上传 ${MAX_FILE_COUNT} 个文件，当前已选择 ${selectedFiles.value.length} 个`);
+    return;
+  }
+
+  Array.from(files).forEach(file => {
+    const error = validateFile(file);
+    if (error) {
+      errors.push(error);
+    } else {
+      const fileId = generateFileId();
+      const url = URL.createObjectURL(file);
+      newFiles.push({
+        file,
+        id: fileId,
+        url,
+        name: file.name,
+        size: file.size
+      });
+    }
+  });
+
+  // 显示错误信息
+  if (errors.length > 0) {
+    errors.forEach(error => ElMessage.error(error));
+  }
+
+  // 添加有效文件
+  if (newFiles.length > 0) {
+    selectedFiles.value.push(...newFiles);
+  }
+};
+
+const handleFileSelect = (event: Event) => {
+  const target = event.target as HTMLInputElement;
+  if (target.files) {
+    processFiles(target.files);
+    // 清空input值，允许重复选择相同文件
+    target.value = '';
+  }
+};
+
+const handleFileUploadClick = () => {
+  fileInputRef.value?.click();
+};
+
+const removeFile = (fileId: string) => {
+  const fileIndex = selectedFiles.value.findIndex(f => f.id === fileId);
+  if (fileIndex > -1) {
+    const file = selectedFiles.value[fileIndex];
+    URL.revokeObjectURL(file.url); // 释放内存
+    selectedFiles.value.splice(fileIndex, 1);
+  }
+};
+
+// 拖拽相关函数
+const handleDragEnter = (event: DragEvent) => {
+  event.preventDefault();
+  isDragging.value = true;
+};
+
+const handleDragLeave = (event: DragEvent) => {
+  event.preventDefault();
+  // 检查是否真的离开了拖拽区域
+  const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
+  const x = event.clientX;
+  const y = event.clientY;
+
+  if (x < rect.left || x > rect.right || y < rect.top || y > rect.bottom) {
+    isDragging.value = false;
+  }
+};
+
+const handleDragOver = (event: DragEvent) => {
+  event.preventDefault();
+};
+
+const handleDrop = (event: DragEvent) => {
+  event.preventDefault();
+  isDragging.value = false;
+
+  if (event.dataTransfer?.files) {
+    processFiles(event.dataTransfer.files);
+  }
+};
+
+// 格式化文件大小
+const formatFileSize = (bytes: number): string => {
+  if (bytes === 0) return '0 Bytes';
+  const k = 1024;
+  const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 };
 </script>
 
@@ -212,6 +379,11 @@ const openHelp = () => {
                         >
                             📚 知识问答
                         </span>
+                          <span
+                            class="px-3 py-1 bg-red-100 dark:bg-green-900 text-green-800 dark:text-green-200 rounded-full text-sm"
+                        >
+                            🖼️ 图片识别
+                        </span>
                     </div>
                     <div class="mt-4">
                         首次使用？点此
@@ -269,7 +441,9 @@ const openHelp = () => {
                                     class="flex items-center space-x-2"
                                 >
                                     <!-- 闪烁效果 - 文字闪烁 -->
-                                    <span class="animate-pulse text-gray-500">{{ msg.content }}</span>
+                                    <span class="animate-pulse text-gray-500">{{
+                                        msg.content
+                                    }}</span>
 
                                     <!-- 脉冲效果 - 文字大小变化 (取消注释即可使用) -->
                                     <!-- <span class="animate-text-pulse text-gray-500">{{ msg.content }}</span> -->
@@ -454,7 +628,7 @@ const openHelp = () => {
         </div>
 
         <!-- 底部输入区域,当有窗口时才显示 -->
-        <div v-if="hasWindows" class="mt-4 flex-shrink-0">
+        <div v-if="hasWindows" class="mt-2 flex-shrink-0">
             <!-- Prompt suggestions -->
             <div
                 class="flex w-full gap-x-2 overflow-x-auto whitespace-nowrap text-xs text-slate-600 dark:text-slate-300 sm:text-sm"
@@ -468,44 +642,81 @@ const openHelp = () => {
                     {{ item.text }}
                 </button>
             </div>
+            <!-- 文件列表显示 -->
+            <div v-if="selectedFiles.length > 0" class="mt-2">
+                <div class="flex flex-wrap gap-2 p-2 bg-slate-100 dark:bg-slate-700 rounded-lg">
+                    <div
+                        v-for="file in selectedFiles"
+                        :key="file.id"
+                        class="relative group"
+                    >
+                        <div class="w-16 h-16 rounded-lg overflow-hidden border-2 border-slate-300 dark:border-slate-600">
+                            <img
+                                :src="file.url"
+                                :alt="file.name"
+                                class="w-full h-full object-cover"
+                            />
+                        </div>
+                        <div class="absolute -top-2 -right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <button
+                                @click="removeFile(file.id)"
+                                class="w-5 h-5 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center text-xs"
+                            >
+                                ×
+                            </button>
+                        </div>
+                        <div class="text-xs text-slate-600 dark:text-slate-400 mt-1 truncate max-w-16">
+                            {{ file.name }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Prompt message input -->
-            <div class="mt-2">
+            <div class="my-2 relative"
+                 @dragenter="handleDragEnter"
+                 @dragleave="handleDragLeave"
+                 @dragover="handleDragOver"
+                 @drop="handleDrop">
+                <!-- 拖拽提示 -->
+                <div v-if="isDragging"
+                     class="absolute inset-0 z-10 flex items-center justify-center bg-blue-100 dark:bg-blue-900 bg-opacity-90 rounded-xl border-2 border-dashed border-blue-400 dark:border-blue-500">
+                    <div class="text-center">
+                        <p class="text-blue-700 dark:text-blue-300 font-medium">
+                            拖拽图片到此处上传
+                        </p>
+                        <p class="text-sm text-blue-600 dark:text-blue-400">
+                            支持 JPEG, PNG, GIF, WebP 格式，最大10MB
+                        </p>
+                    </div>
+                </div>
                 <label for="chat-input" class="sr-only"
                     >Enter your prompt</label
                 >
                 <div class="relative">
                     <button
                         type="button"
-                        class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-500 hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-600"
+                        @click="handleFileUploadClick"
+                        class="absolute inset-y-0 left-0 flex items-center px-3 text-slate-500 hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-600"
                     >
-                        <!-- <svg
-          aria-hidden="true"
-          class="h-5 w-5"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-          stroke-width="2"
-          stroke="currentColor"
-          fill="none"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        >
-          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-          <path
-            d="M9 2m0 3a3 3 0 0 1 3 -3h0a3 3 0 0 1 3 3v5a3 3 0 0 1 -3 3h0a3 3 0 0 1 -3 -3z"
-          ></path>
-          <path d="M5 10a7 7 0 0 0 14 0"></path>
-          <path d="M8 21l8 0"></path>
-          <path d="M12 17l0 4"></path>
-        </svg> -->
-                        <span class="sr-only">Use voice input</span>
+                        <el-icon size="18"><Upload /></el-icon>
                     </button>
+                    <!-- 隐藏的文件输入 -->
+                    <input
+                        ref="fileInputRef"
+                        type="file"
+                        multiple
+                        accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
+                        @change="handleFileSelect"
+                        class="hidden"
+                    />
                     <textarea
                         v-model="messageInput"
                         @keydown.enter="handleSubmit"
                         id="chat-input"
-                        class="block w-full resize-none rounded-xl border-none bg-slate-200 p-4 pl-10 pr-20 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-slate-800 dark:text-slate-200 dark:placeholder-slate-400 dark:focus:ring-blue-500 sm:text-base"
-                        placeholder="Enter your message"
-                        rows="1"
+                        class="block w-full resize-none rounded-xl border-none bg-slate-200 p-4 pl-12 pr-20 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-slate-800 dark:text-slate-200 dark:placeholder-slate-400 dark:focus:ring-blue-500 sm:text-base"
+                        placeholder="   请输入您的问题 (支持拖拽图片上传)"
+                        rows="2"
                         required
                     ></textarea>
                     <button
@@ -519,8 +730,7 @@ const openHelp = () => {
                                 : 'bg-slate-400 cursor-not-allowed',
                         ]"
                     >
-                        Send
-                        <span class="sr-only">Send message</span>
+                        发送
                     </button>
                 </div>
             </div>
@@ -539,3 +749,4 @@ const openHelp = () => {
         @rank="handleRagRank"
     />
 </template>
+
