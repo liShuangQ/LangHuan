@@ -4,7 +4,6 @@ import { Close } from "@element-plus/icons-vue";
 import type { ChatSettings, RagGroup } from "../types";
 import PersonalSpace from "./personal-space.vue";
 import userStore from "@/store/user";
-import { fa } from "element-plus/es/locale";
 const user = userStore();
 defineOptions({
     name: "SettingsSidebar",

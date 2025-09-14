@@ -7,13 +7,14 @@ import com.langhuan.common.Constant;
 import com.langhuan.functionTools.RestRequestTools;
 import com.langhuan.model.domain.TRagFile;
 import com.langhuan.model.domain.TRagFileGroup;
-
 import com.langhuan.model.dto.RagIntentionClassifierDTO;
 import com.langhuan.model.pojo.ChatModelResult;
 import com.langhuan.model.pojo.ChatRestOption;
-import com.langhuan.service.*;
+import com.langhuan.service.TPromptsService;
+import com.langhuan.service.TRagFileGroupService;
+import com.langhuan.service.TRagFileService;
+import com.langhuan.utils.imageunderstanding.ImageUnderstandingProcessorFactory;
 import com.langhuan.utils.other.SecurityUtils;
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
@@ -21,17 +22,18 @@ import org.springframework.ai.chat.client.advisor.SafeGuardAdvisor;
 import org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor;
 import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.chat.messages.Message;
+import org.springframework.ai.chat.messages.MessageType;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.document.Document;
 import org.springframework.ai.openai.OpenAiChatOptions;
 import org.springframework.ai.support.ToolCallbacks;
 import org.springframework.ai.tool.ToolCallback;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * AI聊天服务类
@@ -71,7 +73,7 @@ public class ChatService {
     @Autowired
     TRagFileGroupService fileGroupService;
     @Autowired
-    TUserService userService;
+    private ImageUnderstandingProcessorFactory imageUnderstandingProcessorFactory;
 
     public ChatService(ChatClient.Builder chatClientBuilder, RagService ragService) {
         this.ragService = ragService;
@@ -103,23 +105,46 @@ public class ChatService {
      * @throws BusinessException 当AI服务异常时抛出，向用户显示友好的错误消息
      */
     public ChatModelResult chat(ChatRestOption chatRestOption) throws Exception {
-        // 这里由于记忆在存入的时候 会自己在前面拼接用户名 然后窗口表存储的是用户名_会话ID，避免出现用户名重复的情况 采用下面操作
-        chatRestOption.setChatId(chatRestOption.getChatId().indexOf("_") > 0
-                ? chatRestOption.getChatId().substring(chatRestOption.getChatId().indexOf("_") + 1)
-                : chatRestOption.getChatId());
-        RagIntentionClassifierDTO ragIntentionClassifierDTO = ragIntentionClassifier(chatRestOption.getModelName(),
-                chatRestOption.getQuestion());
         try {
-            if (ragIntentionClassifierDTO.getIsAdd()) {
-                return toAddDocuments(ragIntentionClassifierDTO);
-            } else {
-                return toChat(chatRestOption);
+            // 图片理解
+            if (!chatRestOption.getImageunderstanding().isEmpty()) {
+                StringBuilder out = new StringBuilder();
+                StringBuilder imgUrls = new StringBuilder();
+                String prompt = chatRestOption.getQuestion() + "\n" + "请回答中文";
+                for (String item : chatRestOption.getImageunderstanding()) {
+                    imgUrls.append("![img]").append("(").append(item).append(")").append("\n");
+                    out.append(imageUnderstandingProcessorFactory.getProcessor().understandImage(item,
+                            prompt)).append("\n");
+                }
+                String chatOut = imgUrls + out.toString();
+                // 手动设置记忆。
+                // XXX：考虑是不是真的要压缩存储图片的url信息（可能很大）
+                chatMemory.add(chatRestOption.getChatId(), creatdMessage(chatRestOption.getQuestion(), Map.of(), MessageType.USER));
+                chatMemory.add(chatRestOption.getChatId(), creatdMessage(chatOut, Map.of(), MessageType.ASSISTANT));
+                return new ChatModelResult() {
+                    {
+                        {
+                            setChat(chatOut);
+                            setRag(List.of());
+                        }
+                    }
+                };
             }
+            // 文字理解
+            // 是否意图识别
+            if (Constant.RAGADDDOCUMENTINTENTION) {
+                String s = chatGeneralAssistanceService.ragAddDocumentIntentionClassifier(chatRestOption.getModelName(),
+                        chatRestOption.getQuestion());
+                RagIntentionClassifierDTO ragIntentionClassifierDTO = JSONUtil.toBean(s, RagIntentionClassifierDTO.class);
+                return ragIntentionClassifierDTO.getIsAdd() ? toAddDocuments(ragIntentionClassifierDTO) : toChat(chatRestOption);
+            }
+            // 文字
+            return toChat(chatRestOption);
         } catch (Exception e) {
             return new ChatModelResult() {
                 {
                     {
-                        setChat("个人空间意图识别错误");
+                        setChat(e.getMessage());
                         setRag(List.of());
                     }
                 }
@@ -127,9 +152,23 @@ public class ChatService {
         }
     }
 
-    public RagIntentionClassifierDTO ragIntentionClassifier(String modelName, String q) {
-        String s = chatGeneralAssistanceService.ragIntentionClassifier(modelName, q);
-        return JSONUtil.toBean(s, RagIntentionClassifierDTO.class);
+    public Message creatdMessage(String text, Map<String, Object> metadata, MessageType messageType) {
+        return new Message() {
+            @Override
+            public String getText() {
+                return text;
+            }
+
+            @Override
+            public Map<String, Object> getMetadata() {
+                return metadata;
+            }
+
+            @Override
+            public MessageType getMessageType() {
+                return messageType;
+            }
+        };
     }
 
     public ChatModelResult toAddDocuments(RagIntentionClassifierDTO ragIntentionClassifierDTO) throws Exception {
@@ -218,26 +257,8 @@ public class ChatService {
         }
     }
 
-    /**
-     * RAG模式聊天方法
-     *
-     * <p>
-     * 基于检索增强生成技术，先从向量数据库中检索相关文档，
-     * 然后将检索结果作为上下文提供给AI模型，生成更准确的回答。
-     * </p>
-     *
-     * @param id        聊天会话ID，用于标识对话历史
-     * @param p         系统提示词，用于指导AI的行为和回答风格
-     * @param q         用户问题内容
-     * @param groupId   RAG文档分组ID，用于限定检索范围
-     * @param modelName AI模型名称，如gpt-3.5-turbo、gpt-4等
-     * @param isReRank  是否启用重排序功能，提升检索结果的相关性
-     * @param tools     工具函数回调数组，支持函数调用功能
-     * @return ChatModelResult 聊天结果，包含AI回复和检索到的相关文档
-     * @throws Exception 当RAG检索或AI调用失败时抛出
-     */
     public ChatModelResult isRagChat(String id, String p, String q, String groupId, String modelName, Boolean isReRank,
-            ToolCallback[] tools) throws Exception {
+                                     ToolCallback[] tools) throws Exception {
         // 获取RAG专用提示词模板，优先使用缓存配置
         String AIDEFAULTQUESTIONANSWERADVISORRPROMPT = TPromptsService
                 .getCachedTPromptsByMethodName("AIDEFAULTQUESTIONANSWERADVISORRPROMPT");
@@ -260,11 +281,11 @@ public class ChatService {
 
         // 构建并发送AI请求
         String chat = this.chatClient.prompt(
-                new Prompt(
-                        ragPrompt + "\n" + p,
-                        OpenAiChatOptions.builder()
-                                .model(modelName)
-                                .build()))
+                        new Prompt(
+                                ragPrompt + "\n" + p,
+                                OpenAiChatOptions.builder()
+                                        .model(modelName)
+                                        .build()))
                 .user(q)
                 .system(TPromptsService.getCachedTPromptsByMethodName("ChatService"))
                 .advisors(a -> a.param(chatMemory.CONVERSATION_ID, id))
@@ -278,30 +299,15 @@ public class ChatService {
         return chatModelResult;
     }
 
-    /**
-     * 普通聊天模式（非RAG）
-     *
-     * <p>
-     * 不使用检索增强生成，直接基于系统提示词和用户问题进行对话。
-     * 适用于不需要外部知识库支持的一般性对话场景。
-     * </p>
-     *
-     * @param id        聊天会话ID，用于标识对话历史
-     * @param p         系统提示词，用于指导AI的行为和回答风格
-     * @param q         用户问题内容
-     * @param modelName AI模型名称，如gpt-3.5-turbo、gpt-4等
-     * @param tools     工具函数回调数组，支持函数调用功能
-     * @return ChatModelResult 聊天结果，包含AI回复（无相关文档）
-     */
     public ChatModelResult noRagChat(String id, String p, String q, String modelName, ToolCallback[] tools) {
 
         // 构建并发送AI请求，不包含RAG上下文
         String chat = this.chatClient.prompt(
-                new Prompt(
-                        p,
-                        OpenAiChatOptions.builder()
-                                .model(modelName)
-                                .build()))
+                        new Prompt(
+                                p,
+                                OpenAiChatOptions.builder()
+                                        .model(modelName)
+                                        .build()))
                 .user(q)
                 .system(TPromptsService.getCachedTPromptsByMethodName("ChatService"))
                 .advisors(a -> a.param(chatMemory.CONVERSATION_ID, id))

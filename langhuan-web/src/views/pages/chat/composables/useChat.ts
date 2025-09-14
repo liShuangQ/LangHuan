@@ -83,14 +83,15 @@ export function useChat() {
         try {
             const res = await api.sendChatMessage(
                 {
-                    id: windowId,
-                    p: "",
-                    q: message,
+                    chatId: windowId,
+                    prompt: "",
+                    question: message,
                     isRag: false,
                     isReRank: false,
-                    groupId: "",
+                    ragGroupId: "",
                     isFunction: false,
                     modelName: "",
+                    imageunderstanding:["https://dashscope.oss-cn-beijing.aliyuncs.com/images/dog_and_girl.jpeg"],
                     ...chatParams,
                 },
                 axiosCancel.token

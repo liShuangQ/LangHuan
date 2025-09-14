@@ -268,7 +268,12 @@ const openHelp = () => {
                                     v-if="msg.loading"
                                     class="flex items-center space-x-2"
                                 >
-                                    <span>{{ msg.content }}</span>
+                                    <!-- 闪烁效果 - 文字闪烁 -->
+                                    <span class="animate-pulse text-gray-500">{{ msg.content }}</span>
+
+                                    <!-- 脉冲效果 - 文字大小变化 (取消注释即可使用) -->
+                                    <!-- <span class="animate-text-pulse text-gray-500">{{ msg.content }}</span> -->
+
                                     <span
                                         class="loading loading-dots loading-sm"
                                     ></span>

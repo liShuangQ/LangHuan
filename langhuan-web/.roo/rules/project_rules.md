@@ -16,6 +16,7 @@
 # 语法和格式
 - 对于纯函数，请使用“function”关键字，以利用提升机制并提高清晰度。
 - 始终使用 Vue 组合式 API 的 script setup 风格。
+- 非最佳实现情况下，尽量减少使用watch或者computed属性。
 # 用户界面和样式
 - 使用 Element Plus、Sass (SCSS) 和 Tailwind 来构建组件和进行样式设计。
 - 使用 Tailwind CSS 实现响应式设计；采用PC端优先的方法。

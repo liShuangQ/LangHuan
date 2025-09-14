@@ -14,6 +14,7 @@ import org.springframework.ai.document.Document;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -53,32 +54,12 @@ public class ChatController {
     // NOTE:Flux<String>会和Security的拦截器冲突，所以要设置白名单 "/chat/chatFlux"
     @ApiLog(apiName = "聊天", description = "聊天", logResponse = true, logRequest = true)
     @PostMapping("/chat/chat")
-    public Result chat(@RequestParam(name = "id", required = true) String id,
-            @RequestParam(name = "p", required = true, defaultValue = ".") String p,
-            @RequestParam(name = "q", required = true) String q,
-            @RequestParam(name = "isRag", required = true) Boolean isRag,
-            @RequestParam(name = "isReRank", required = true) Boolean isReRank,
-            @RequestParam(name = "groupId", required = true, defaultValue = "") String groupId,
-            @RequestParam(name = "isFunction", required = true) Boolean isFunction,
-            @RequestParam(name = "modelName", required = true, defaultValue = "") String modelName) throws Exception {
-        id = SecurityUtils.getCurrentUsername() + "_" + id;
-
-        if (modelName.isEmpty()) {
-            modelName = defaultModelName;
+    public Result chat(@RequestBody ChatRestOption chatRestOption) throws Exception {
+        if (chatRestOption.getModelName().isEmpty()) {
+            chatRestOption.setModelName(defaultModelName);
         }
 
-        ChatRestOption chatRestOption = new ChatRestOption();
-        chatRestOption.setChatId(id);
-        chatRestOption.setPrompt(p);
-        chatRestOption.setQuestion(q);
-        chatRestOption.setIsRag(isRag);
-        chatRestOption.setIsReRank(isReRank);
-        chatRestOption.setRagGroupId(groupId);
-        chatRestOption.setIsFunction(isFunction);
-        chatRestOption.setModelName(modelName);
-
         //  系统 system prompt userMessage
-
         ChatModelResult chatModelResult = chatService.chat(chatRestOption);
 
         String chat = chatModelResult.getChat();

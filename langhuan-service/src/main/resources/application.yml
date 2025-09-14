@@ -5,7 +5,6 @@ server:
       charset: UTF-8
       enabled: true
       force: true
-
 mybatis:
   mapper-locations: classpath:mapper/*.xml
 spring:
@@ -52,10 +51,16 @@ spring:
     vectorstore:
       pgvector:
         remove-existing-vector-store-table: false
+# rerank模型
 rerank:
-  base-url: http://127.0.0.1:11434
-  api-key: 111
+  base-url: https://xx
+  api-key: xx
   model: gte-rerank-v2
+# 图片理解模型（例如阿里的 vl系列）
+image_understanding:
+  base-url: https://xx
+  api-key: xx
+  model: qwen-vl-plus
 logging:
   level:
     org:

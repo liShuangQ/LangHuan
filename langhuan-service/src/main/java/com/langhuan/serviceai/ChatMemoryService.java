@@ -104,16 +104,15 @@ public class ChatMemoryService {
         // 如果是新窗口 则创建新的会话ID，否则则肯定是从数据库中查询出来的会话ID
         if (id.equals("new")) {
             String uuid = IdUtil.randomUUID();
-            String conversationId = user_id + "_" + uuid;
             userChatWindowService.save(new TUserChatWindow() {
                 {
                     setUserId(user_id);
                     setConversationName(windowName);
                     // 会话ID = 用户名 + 会话ID。因为springai的记忆在存储的时候会这样。
-                    setConversationId(conversationId);
+                    setConversationId(uuid);
                 }
             });
-            return conversationId;
+            return uuid;
         }
         return id;
     }

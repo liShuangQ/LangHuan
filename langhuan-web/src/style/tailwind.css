@@ -8,3 +8,19 @@
         color: aliceblue;
     }
 }
+
+/* 自定义脉冲动画 - 文字大小变化效果 */
+@keyframes text-pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.8;
+  }
+}
+
+.animate-text-pulse {
+  animation: text-pulse 1.5s ease-in-out infinite;
+}

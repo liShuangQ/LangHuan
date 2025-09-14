@@ -8,20 +8,22 @@ import { CancelToken } from "axios";
  */
 export const sendChatMessage = (
     params: {
-        id: string;
-        p: string;
-        q: string;
+        chatId: string;
+        prompt: string;
+        question: string;
         isRag: boolean;
         isReRank: boolean;
-        groupId: string;
+        ragGroupId: string;
         isFunction: boolean;
         modelName: string;
+        imageunderstanding: string[];
     },
     cancelToken: CancelToken
 ) => {
     return http.request<any>({
         url: "chat/chat",
         method: "post",
+        q_contentType: "json",
         q_spinning: false,
         cancelToken,
         data: params,
@@ -33,13 +35,11 @@ export const sendChatMessage = (
  * @param params 聊天参数
  * @param cancelToken 用于取消请求的token
  */
-export const sendEasyChatMessage = (
-    params: {
-        p: string;
-        q: string;
-        modelName: string;
-    }
-) => {
+export const sendEasyChatMessage = (params: {
+    p: string;
+    q: string;
+    modelName: string;
+}) => {
     return http.request<any>({
         url: "chat/easyChat",
         method: "post",
@@ -47,7 +47,6 @@ export const sendEasyChatMessage = (
         data: params,
     });
 };
-
 
 /**
  * 优化提示词

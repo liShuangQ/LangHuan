@@ -6,18 +6,19 @@ import cn.hutool.json.JSONUtil;
 import com.langhuan.common.BusinessException;
 import com.langhuan.common.Constant;
 import com.langhuan.config.VectorStoreConfig;
+import com.langhuan.dao.TFileUrlDao;
+import com.langhuan.dao.VectorStoreRagDao;
 import com.langhuan.model.domain.TFileUrl;
 import com.langhuan.model.domain.TRagFile;
 import com.langhuan.service.CacheService;
 import com.langhuan.service.MinioService;
 import com.langhuan.service.TFileUrlService;
 import com.langhuan.service.TRagFileService;
-import com.langhuan.dao.VectorStoreRagDao;
-import com.langhuan.dao.TFileUrlDao;
 import com.langhuan.utils.other.NumberTool;
 import com.langhuan.utils.other.SecurityUtils;
 import com.langhuan.utils.rag.EtlPipeline;
 import com.langhuan.utils.rag.config.SplitConfig;
+import com.langhuan.utils.rerank.ReRankProcessorFactory;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.postgresql.util.PGobject;
@@ -43,11 +44,11 @@ public class RagService {
 
     private final TRagFileService ragFileService;
     private final VectorStore ragVectorStore;
-    private final ReRankModelService reRankModelService;
     private final EtlPipeline etlPipeline;
     private final TFileUrlService tFileUrlService;
     private final VectorStoreRagDao vectorStoreRagDao;
     private final TFileUrlDao tFileUrlDao;
+    private final ReRankProcessorFactory reRankProcessorFactory;
 
     @Value("${minio.img-bucket-name}")
     private String bucketName;
@@ -59,15 +60,15 @@ public class RagService {
     private MinioService minioService;
 
     public RagService(TRagFileService ragFileService, JdbcTemplate jdbcTemplate,
-            VectorStoreConfig vectorStoreConfig, ReRankModelService reRankModelService, EtlPipeline etlPipeline,
-            TFileUrlService tFileUrlService, VectorStoreRagDao vectorStoreRagDao, TFileUrlDao tFileUrlDao) {
+                      VectorStoreConfig vectorStoreConfig, EtlPipeline etlPipeline,
+                      TFileUrlService tFileUrlService, VectorStoreRagDao vectorStoreRagDao, TFileUrlDao tFileUrlDao, ReRankProcessorFactory reRankProcessorFactory) {
         this.ragFileService = ragFileService;
         this.ragVectorStore = vectorStoreConfig.ragVectorStore();
-        this.reRankModelService = reRankModelService;
         this.etlPipeline = etlPipeline;
         this.tFileUrlService = tFileUrlService;
         this.vectorStoreRagDao = vectorStoreRagDao;
         this.tFileUrlDao = tFileUrlDao;
+        this.reRankProcessorFactory = reRankProcessorFactory;
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -374,7 +375,8 @@ public class RagService {
     public List<Document> rank_linearWeighting(List<Document> searchDocuments, String q, Boolean isReRank)
             throws Exception {
         if (isReRank) {
-            searchDocuments = reRankModelService.chat(q, searchDocuments, searchDocuments.size());
+
+            searchDocuments = reRankProcessorFactory.getProcessor().rerank(q, searchDocuments, searchDocuments.size());
             // 修正归一化排名存储类型
             for (Document doc : searchDocuments) {
                 int rank = (int) doc.getMetadata().get("rank");

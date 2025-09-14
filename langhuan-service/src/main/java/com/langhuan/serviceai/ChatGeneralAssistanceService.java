@@ -80,7 +80,7 @@ public class ChatGeneralAssistanceService {
                                 .content();
         }
 
-        public String ragIntentionClassifier(String modelName, String q) {
+        public String ragAddDocumentIntentionClassifier(String modelName, String q) {
                 return chatClient.prompt(
                                 new Prompt(
                                                 """
