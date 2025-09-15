@@ -9,7 +9,6 @@ declare module 'vue' {
   export interface GlobalComponents {
     ElementFormC: typeof import('./../src/components/globalComponents/ElementFormC/index.vue')['default']
     ElementTableC: typeof import('./../src/components/globalComponents/ElementTableC/index.vue')['default']
-    ElIcon: typeof import('element-plus/es')['ElIcon']
     MessageNotification: typeof import('./../src/components/MessageNotification/index.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']

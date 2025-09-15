@@ -44,7 +44,7 @@ import java.io.*;
 @Component
 public class DocumentExtractor {
 
-    @Value("${project.folder:}")
+    @Value("${minio.folder.document-img}")
     private String minioFolder; // 在 MinIO 中模拟的“文件夹”前缀
 
     @Value("${minio.img-bucket-name}")

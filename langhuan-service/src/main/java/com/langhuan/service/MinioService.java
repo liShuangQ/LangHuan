@@ -59,4 +59,13 @@ public class MinioService {
     public boolean fileExists(String objectName, String bucketName){
         return minioUtils.fileExists(objectName, bucketName);
     }
+
+    // 生成minio访问链接
+    public String generateMinioUrl(String objectName, String bucketName) {
+        return minioUtils.generateMinioUrl(objectName, bucketName);
+    }
+    // 删除文件夹下所有文件和文件夹本身
+    public void deleteFolder(String folderName, String bucketName) throws Exception {
+        minioUtils.deleteFolder(folderName, bucketName);
+    }
 }

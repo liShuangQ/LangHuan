@@ -1,10 +1,14 @@
 package com.langhuan.utils.minio;
 
 import io.minio.*;
+import io.minio.messages.DeleteError;
+import io.minio.messages.DeleteObject;
+import io.minio.messages.Item;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 
 import java.io.InputStream;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * @author Afish
@@ -58,6 +62,11 @@ public class MinioUtils {
         );
     }
 
+    // 生成minio访问链接
+    public String generateMinioUrl(String objectName, String bucketName) {
+        return minioUrl + "/" + bucketName + "/" + objectName;
+    }
+
     /**
      * 从 URL 中提取 MinIO 的 objectName
      */
@@ -106,4 +115,50 @@ public class MinioUtils {
             return false;
         }
     }
+
+    /**
+     * 删除文件夹及其所有内容
+     */
+    public void deleteFolder(String folderName, String bucketName) throws Exception {
+        if (folderName == null || folderName.isEmpty()) {
+            throw new IllegalArgumentException("Folder name cannot be null or empty");
+        }
+
+        // 确保文件夹名以 / 结尾，表示一个目录
+        if (!folderName.endsWith("/")) {
+            folderName += "/";
+        }
+
+        // 列出该文件夹下的所有对象
+        List<DeleteObject> objectsToDelete = new LinkedList<>();
+        Iterable<Result<Item>> results = minioClient.listObjects(
+                ListObjectsArgs.builder()
+                        .bucket(bucketName)
+                        .prefix(folderName)
+                        .recursive(true)
+                        .build()
+        );
+
+        for (Result<Item> result : results) {
+            Item item = result.get();
+            objectsToDelete.add(new DeleteObject(item.objectName()));
+        }
+
+        // 批量删除所有对象
+        if (!objectsToDelete.isEmpty()) {
+            Iterable<Result<DeleteError>> deleteErrors = minioClient.removeObjects(
+                    RemoveObjectsArgs.builder()
+                            .bucket(bucketName)
+                            .objects(objectsToDelete)
+                            .build()
+            );
+
+            // 检查是否有删除错误
+            for (Result<DeleteError> deleteError : deleteErrors) {
+                DeleteError error = deleteError.get();
+                log.error("Error deleting object: {} - {}", error.objectName(), error.message());
+            }
+        }
+    }
+
 }

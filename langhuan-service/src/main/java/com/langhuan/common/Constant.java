@@ -60,5 +60,5 @@ public class Constant {
         // 定义固定的缓存键
         public static final String CACHE_KEY = "file_id_cache";
         // 是否开启个人知识库持久化
-        public static final Boolean RAGADDDOCUMENTINTENTION = false;
+        public static final Boolean RAGADDDOCUMENTINTENTION = true;
 }

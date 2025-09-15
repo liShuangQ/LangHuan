@@ -1,27 +1,29 @@
 package com.langhuan.serviceai;
 
+import cn.hutool.core.util.IdUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.langhuan.common.Constant;
+import com.langhuan.model.domain.TFileUrl;
 import com.langhuan.model.domain.TUserChatWindow;
+import com.langhuan.service.MinioService;
 import com.langhuan.service.TUserChatWindowService;
 import com.langhuan.utils.chatMemory.MyJdbcChatMemoryRepository;
 import com.langhuan.utils.chatMemory.MyMessageWindowChatMemory;
 import com.langhuan.utils.other.SecurityUtils;
-
-import cn.hutool.core.util.IdUtil;
+import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import jakarta.annotation.PostConstruct;
 import java.util.List;
 import java.util.Map;
 
 /**
  * 聊天记忆管理服务类
- *
+ * <p>
  * 负责聊天窗口管理、历史记录管理和持久化存储
  *
  * @author lishuangqi
@@ -34,6 +36,13 @@ public class ChatMemoryService {
     private final TUserChatWindowService userChatWindowService;
     @Autowired
     private MyJdbcChatMemoryRepository myJdbcChatMemoryRepository;
+    @Autowired
+    private MinioService minioService;
+    @Value("${minio.img-bucket-name}")
+    private String bucket;
+    @Value("${minio.folder.chat-memory-img}")
+    private String chatMemoryImgFold;
+
     private MyMessageWindowChatMemory chatMemory;
 
     public ChatMemoryService(TUserChatWindowService userChatWindowService) {
@@ -41,8 +50,12 @@ public class ChatMemoryService {
     }
 
     @PostConstruct
-    public void init() {
+    public void init() throws Exception {
         this.chatMemory = new MyMessageWindowChatMemory(myJdbcChatMemoryRepository, Constant.MESSAGEWINDOWCHATMEMORYMAX);
+        // 在初始化方法中调用 ensureBucketExists
+        if (minioService != null) {
+            minioService.ensureBucketExists(bucket);
+        }
     }
 
     /**
@@ -122,14 +135,15 @@ public class ChatMemoryService {
      * @param id 会话ID
      * @return 清除结果提示信息
      */
-    public String clearChatMemory(String id) {
+    public String clearChatMemory(String id) throws Exception {
         log.info("ChatMemory-clear: {}", id);
         // 清除聊天记忆
         chatMemory.clear(id);
         // 删除用户聊天窗口记录
         userChatWindowService
                 .remove(new LambdaQueryWrapper<TUserChatWindow>().eq(TUserChatWindow::getConversationId, id));
-
+        // 删除记忆中的图片
+        minioService.deleteFolder(chatMemoryImgFold + "/" + id, bucket);
         return "清除成功";
     }
 }

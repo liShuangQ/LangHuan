@@ -124,7 +124,7 @@ public class ChatController {
     }
 
     @PostMapping("/chat/clearChatMemory")
-    public Result clearChatMemory(@RequestParam String id) {
+    public Result clearChatMemory(@RequestParam String id) throws Exception {
         return Result.success(chatMemoryService.clearChatMemory(id));
     }
 

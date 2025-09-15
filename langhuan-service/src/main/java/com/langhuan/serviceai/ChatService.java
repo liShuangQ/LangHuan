@@ -1,5 +1,6 @@
 package com.langhuan.serviceai;
 
+import cn.hutool.core.lang.UUID;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.langhuan.common.BusinessException;
@@ -10,12 +11,14 @@ import com.langhuan.model.domain.TRagFileGroup;
 import com.langhuan.model.dto.RagIntentionClassifierDTO;
 import com.langhuan.model.pojo.ChatModelResult;
 import com.langhuan.model.pojo.ChatRestOption;
+import com.langhuan.service.MinioService;
 import com.langhuan.service.TPromptsService;
 import com.langhuan.service.TRagFileGroupService;
 import com.langhuan.service.TRagFileService;
 import com.langhuan.utils.imageunderstanding.ImageUnderstandingProcessorFactory;
 import com.langhuan.utils.other.ImgUtil;
 import com.langhuan.utils.other.SecurityUtils;
+import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
@@ -30,6 +33,7 @@ import org.springframework.ai.openai.OpenAiChatOptions;
 import org.springframework.ai.support.ToolCallbacks;
 import org.springframework.ai.tool.ToolCallback;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -75,6 +79,20 @@ public class ChatService {
     TRagFileGroupService fileGroupService;
     @Autowired
     private ImageUnderstandingProcessorFactory imageUnderstandingProcessorFactory;
+    @Autowired
+    private MinioService minioService;
+    @Value("${minio.img-bucket-name}")
+    private String bucket;
+    @Value("${minio.folder.chat-memory-img}")
+    private String chatMemoryImgFold;
+
+    @PostConstruct
+    public void init() throws Exception {
+        // 在初始化方法中调用 ensureBucketExists
+        if (minioService != null) {
+            minioService.ensureBucketExists(bucket);
+        }
+    }
 
     public ChatService(ChatClient.Builder chatClientBuilder, RagService ragService) {
         this.ragService = ragService;
@@ -111,28 +129,7 @@ public class ChatService {
             ImgUtil.MarkdownImageResult imageResult = ImgUtil.extractMarkdownImageUrls(chatRestOption.getQuestion());
             // 图片理解，当前只是纯理解 不走rag等。
             if (imageResult != null && !imageResult.getUrls().isEmpty()) {
-                // 手动设置记忆
-                // XXX：考虑是不是真的要压缩存储图片的imageUrls信息（可能很大）
-                chatMemory.add(chatRestOption.getChatId(),
-                        createdMessage(chatRestOption.getQuestion(), Map.of(), MessageType.USER));
-                StringBuilder out = new StringBuilder();
-                String prompt = imageResult.getCleanedContent() + "\n" + "请回答中文";
-                for (String item : imageResult.getUrls()) {
-                    out.append(imageUnderstandingProcessorFactory.getProcessor().understandImage(item,
-                            prompt)).append("\n");
-                }
-                String chatOut = out.toString();
-                // 手动设置记忆
-                chatMemory.add(chatRestOption.getChatId(),
-                        createdMessage(out.toString(), Map.of(), MessageType.ASSISTANT));
-                return new ChatModelResult() {
-                    {
-                        {
-                            setChat(chatOut);
-                            setRag(List.of());
-                        }
-                    }
-                };
+                return toImageUnderstanding(chatRestOption, imageResult);
             }
             // 文字理解
             // 是否意图识别 （后续考虑意图识别放在最前面，例如是要理解图片？还是添加个人知识空间？ 如果都不识别成功，就默认走文字对话。）
@@ -228,6 +225,36 @@ public class ChatService {
         chatModelResult.setChat("已被存入个人空间");
         chatModelResult.setRag(List.of());
         return chatModelResult;
+    }
+
+    public ChatModelResult toImageUnderstanding(ChatRestOption chatRestOption, ImgUtil.MarkdownImageResult imageResult) throws Exception {
+        StringBuilder out = new StringBuilder();
+        String prompt = imageResult.getCleanedContent() + "\n" + "请回答中文";
+        StringBuilder minioChatImgs = new StringBuilder();
+        for (String item : imageResult.getUrls()) {
+            String objectName = chatMemoryImgFold + "/" + chatRestOption.getChatId() + "/" + UUID.randomUUID().toString() + "." + ImgUtil.getImageFormatFromBase64(item);
+            minioService.handleUpload(objectName, ImgUtil.base64ToInputStream(item), -1, bucket);
+            minioChatImgs.append("![img](url)".replace("url", minioService.generateMinioUrl(objectName, bucket))).append("\n");
+            out.append(imageUnderstandingProcessorFactory.getProcessor().understandImage(item,
+                    prompt)).append("\n");
+        }
+        String chatInStr = minioChatImgs.toString() + imageResult.getCleanedContent();
+        String chatOutStr = out.toString();
+
+        // 手动设置记忆
+        chatMemory.add(chatRestOption.getChatId(),
+                createdMessage(chatInStr, Map.of(), MessageType.USER));
+
+        chatMemory.add(chatRestOption.getChatId(),
+                createdMessage(chatOutStr, Map.of(), MessageType.ASSISTANT));
+        return new ChatModelResult() {
+            {
+                {
+                    setChat(chatOutStr);
+                    setRag(List.of());
+                }
+            }
+        };
     }
 
     public ChatModelResult toChat(ChatRestOption chatRestOption) {

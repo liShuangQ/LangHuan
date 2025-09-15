@@ -76,8 +76,9 @@ minio:
   secret-key: minio123456
   img-bucket-name: langhuan-img
   file-bucket-name: langhuan-file
-project:
-  folder: uploads
+  folder:
+    document-img: uploads
+    chat-memory-img: chatMemoryImgFold
 task:
   schedule:
     documents: 0 0 2 */7 * ?

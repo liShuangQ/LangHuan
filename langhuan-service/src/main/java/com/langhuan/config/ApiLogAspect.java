@@ -6,7 +6,7 @@ import com.langhuan.common.ApiLog;
 import com.langhuan.model.domain.TApiLog;
 import com.langhuan.service.TApiLogService;
 import com.langhuan.utils.date.DateTimeUtils;
-
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -18,22 +18,21 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-import jakarta.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import java.util.Objects;
 
 /**
  * 接口调用日志AOP切面
  * 拦截带有@ApiLog注解的方法，记录接口调用日志
- *
+ * <p>
  * 使用示例：
+ *
+ * @author system
  * @ApiLog(apiName = "用户注册", description = "新用户注册接口", logResponse = false, logRequest = true)
  * public String register(String username, String password) {
- *     // 业务逻辑
- *     return "success";
+ * // 业务逻辑
+ * return "success";
  * }
- * 
- * @author system
  */
 @Slf4j
 @Aspect
@@ -140,7 +139,7 @@ public class ApiLogAspect {
      * @param errorMessage  错误信息
      */
     private void completeApiLog(TApiLog logEntity, ProceedingJoinPoint joinPoint, ApiLog apiLog,
-            Object result, long executionTime, boolean isSuccess, String errorMessage) {
+                                Object result, long executionTime, boolean isSuccess, String errorMessage) {
         // 设置执行结果
         logEntity.setExecutionTime(executionTime);
         logEntity.setIsSuccess(isSuccess);
@@ -184,13 +183,14 @@ public class ApiLogAspect {
                                 !(arg instanceof HttpServletRequest) &&
                                 !(arg instanceof jakarta.servlet.http.HttpServletResponse))
                         .toArray();
-
-                if (filteredArgs.length > 0) {
-                    String requestParams = objectMapper.writeValueAsString(filteredArgs);
-                    // HACK 过滤掉Markdown图片格式
-                    requestParams = requestParams.replaceAll("!\\[.*?\\]\\((.*?)\\)", "[非文字信息]");
-                    logEntity.setRequestParams(requestParams);
-                }
+                String requestParams = objectMapper.writeValueAsString(filteredArgs);
+                logEntity.setRequestParams(requestParams);
+//                if (filteredArgs.length > 0) {
+//                    String requestParams = objectMapper.writeValueAsString(filteredArgs);
+//                    // HACK 过滤掉Markdown图片格式
+//                    requestParams = requestParams.replaceAll("!\\[.*?\\]\\((.*?)\\)", "[非文字信息]");
+//                    logEntity.setRequestParams(requestParams);
+//                }
             }
         } catch (Exception e) {
             log.warn("序列化请求参数失败: {}", e.getMessage());
