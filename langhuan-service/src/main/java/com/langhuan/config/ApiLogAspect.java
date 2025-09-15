@@ -183,14 +183,14 @@ public class ApiLogAspect {
                                 !(arg instanceof HttpServletRequest) &&
                                 !(arg instanceof jakarta.servlet.http.HttpServletResponse))
                         .toArray();
-                String requestParams = objectMapper.writeValueAsString(filteredArgs);
-                logEntity.setRequestParams(requestParams);
-//                if (filteredArgs.length > 0) {
-//                    String requestParams = objectMapper.writeValueAsString(filteredArgs);
-//                    // HACK 过滤掉Markdown图片格式
-//                    requestParams = requestParams.replaceAll("!\\[.*?\\]\\((.*?)\\)", "[非文字信息]");
-//                    logEntity.setRequestParams(requestParams);
-//                }
+                // String requestParams = objectMapper.writeValueAsString(filteredArgs);
+                // logEntity.setRequestParams(requestParams);
+               if (filteredArgs.length > 0) {
+                   String requestParams = objectMapper.writeValueAsString(filteredArgs);
+                   // HACK 过滤掉Markdown图片格式
+                   requestParams = requestParams.replaceAll("!\\[.*?\\]\\((.*?)\\)", "[非文字信息]");
+                   logEntity.setRequestParams(requestParams);
+               }
             }
         } catch (Exception e) {
             log.warn("序列化请求参数失败: {}", e.getMessage());
