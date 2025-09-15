@@ -15,5 +15,4 @@ public class ChatRestOption {
     Boolean isReRank;
     Boolean isFunction;
     String modelName;
-    List<String> imageunderstanding;
 }

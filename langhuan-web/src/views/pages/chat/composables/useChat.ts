@@ -4,9 +4,9 @@ import dayjs from "dayjs";
 import axios, { CancelTokenSource } from "axios";
 import type {
     Message,
-    ChatMessage,
     ChatFeedback,
     ChatSettings,
+    ChatSendParam,
 } from "../types";
 import { ElMessage } from "element-plus";
 import { documentRankHandleApi } from "@/api/rag";
@@ -56,16 +56,16 @@ export function useChat() {
     const sendMessage = async (
         windowId: string,
         message: string,
-        chatParams: any = {}
+        chatParams: any = {} //其他补充信息
     ) => {
-        const assistantMessage = {
-            id: "loading-" + Date.now().toString(),
-            content: "正在思考中...",
-            sender: "assistant" as const,
-            timestamp: dayjs().format("YYYY-MM-DD HH:mm:ss"),
-            loading: true,
-        };
-
+        let imgInfo = "";
+        if ((chatParams?.imageunderstanding ?? []).length > 0) {
+            chatParams.imageunderstanding.forEach((e: string) => {
+                imgInfo += `![img](${e}) \n`;
+            });
+        }
+        message = imgInfo + message;
+        chatParams["imageunderstanding"] = [];
         const userMessage = {
             id: Date.now().toString(),
             content: message,
@@ -73,11 +73,16 @@ export function useChat() {
             timestamp: dayjs().format("YYYY-MM-DD HH:mm:ss"),
             showUserMessage: chatParams.showUserMessage,
         };
-
-        axiosCancel = axios.CancelToken.source();
+        const assistantMessage = {
+            id: "loading-" + Date.now().toString(),
+            content: "正在思考中...",
+            sender: "assistant" as const,
+            timestamp: dayjs().format("YYYY-MM-DD HH:mm:ss"),
+            loading: true,
+        };
         messages.value.push(userMessage, assistantMessage);
+        axiosCancel = axios.CancelToken.source();
         canSend.value = false;
-
         try {
             const res = await api.sendChatMessage(
                 {
@@ -89,9 +94,8 @@ export function useChat() {
                     ragGroupId: "",
                     isFunction: false,
                     modelName: "",
-                    imageunderstanding:[],
                     ...chatParams,
-                },
+                } as ChatSendParam,
                 axiosCancel.token
             );
 

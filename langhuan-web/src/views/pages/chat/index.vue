@@ -20,6 +20,7 @@ import {
 } from "./config";
 import user from "@/store/user";
 import * as api from "./api";
+import { ChatSeedEmitMessageData, ChatSendParam } from "./types";
 
 const {
     messages,
@@ -177,7 +178,7 @@ const sendMessageExpertMode = async (windowId: string, message: string) => {
     });
 };
 
-const handleSendMessage = (windowId: string, messageData: any) => {
+const handleSendMessage = (windowId: string, messageData: ChatSeedEmitMessageData) => {
     if (settings.value.isExpertMode) {
         sendMessageExpertMode(windowId, messageData.text);
     } else {

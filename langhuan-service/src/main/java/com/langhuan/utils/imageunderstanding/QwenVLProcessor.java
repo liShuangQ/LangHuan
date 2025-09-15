@@ -2,6 +2,7 @@ package com.langhuan.utils.imageunderstanding;
 
 import cn.hutool.json.JSONUtil;
 import com.langhuan.utils.http.PostRequestUtils;
+import com.langhuan.utils.other.ImgUtil;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -47,10 +48,10 @@ public class QwenVLProcessor implements ImageUnderstandingProcessor {
         }
         
         // 将文件转换为base64编码
-        String base64Image = encodeFileToBase64(imageFile);
+        String base64Image = ImgUtil.encodeFileToBase64(imageFile);
         
         // 根据文件扩展名确定图片格式
-        String imageFormat = getImageFormat(imageFile);
+        String imageFormat = ImgUtil.getImageFormat(imageFile);
         
         // 构造base64 URL
         String base64Url = "data:image/" + imageFormat + ";base64," + base64Image;
@@ -107,51 +108,7 @@ public class QwenVLProcessor implements ImageUnderstandingProcessor {
         return qwenResponse.getChoices().get(0).getMessage().getContent();
     }
     
-    /**
-     * 将文件编码为base64字符串
-     * 
-     * @param file 文件
-     * @return base64编码的字符串
-     * @throws IOException IO异常
-     */
-    private String encodeFileToBase64(File file) throws IOException {
-        try (FileInputStream fis = new FileInputStream(file)) {
-            byte[] bytes = new byte[(int) file.length()];
-            fis.read(bytes);
-            return Base64.getEncoder().encodeToString(bytes);
-        }
-    }
-    
-    /**
-     * 根据文件扩展名获取图片格式
-     * 
-     * @param file 文件
-     * @return 图片格式（如png, jpeg等）
-     */
-    private String getImageFormat(File file) {
-        String fileName = file.getName();
-        String extension = "";
-        
-        int lastDotIndex = fileName.lastIndexOf('.');
-        if (lastDotIndex > 0) {
-            extension = fileName.substring(lastDotIndex + 1).toLowerCase();
-        }
-        
-        // 根据扩展名返回对应的MIME类型
-        switch (extension) {
-            case "jpg":
-            case "jpeg":
-                return "jpeg";
-            case "png":
-                return "png";
-            case "webp":
-                return "webp";
-            default:
-                // 默认返回jpeg
-                return "jpeg";
-        }
-    }
-    
+
     @Override
     public String getModelName() {
         return "qwen-vl";

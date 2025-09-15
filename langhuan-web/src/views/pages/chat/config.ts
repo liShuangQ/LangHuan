@@ -58,14 +58,34 @@ export const summarizePrompt = `
 `;
 
 export const upDateTip = `
-未来将不用点击保存记录按钮，你的所有问题都会被保存。但是为了节约内存等考虑 请不要堆积过多记录。  <p>
-添加针对对话窗口的修改名称功能  <p >
-  <p style="margin-bottom: 20px;">
+<h3 style="font-size: 18px; font-weight: bold; margin-bottom: 15px; color: #333;">重要功能更新</h3>
+<p style="margin-bottom: 20px; color: #666;">
+  未来将不用点击保存记录按钮，你的所有问题都会被保存。但是为了节约内存等考虑 请不要堆积过多记录。
+</p>
+
+<h3 style="font-size: 16px; font-weight: bold; margin: 20px 0 10px 0; color: #333;">新增功能</h3>
+<div style="margin-left: 15px;">
+  <p style="margin: 8px 0; color: #555;">✓ 新增图像理解处理器接口和具体实现（Qwen-VL模型）</p>
+  <p style="margin: 8px 0; color: #555;">✓ 实现图像理解API调用和结果处理</p>
+  <p style="margin: 8px 0; color: #555;">✓ 新增文件上传和拖拽功能</p>
+  <p style="margin: 8px 0; color: #555;">✓ 实现图片转换为Base64格式</p>
+  <p style="margin: 8px 0; color: #555;">✓ 更新聊天输入框支持图片上传</p>
+</div>
+
+<h3 style="font-size: 16px; font-weight: bold; margin: 20px 0 10px 0; color: #333;">优化改进</h3>
+<div style="margin-left: 15px;">
+  <p style="margin: 8px 0; color: #555;">✓ 优化聊天接口，支持图像理解功能</p>
+  <p style="margin: 8px 0; color: #555;">✓ 调整代码结构，提高可扩展性和可维护性</p>
+  <p style="margin: 8px 0; color: #555;">✓ 优化记忆代码处理，去除多余的用户的id前缀</p>
+  <p style="margin: 8px 0; color: #555;">✓ 修改消息发送接口支持图片数据</p>
+  <p style="margin: 8px 0; color: #555;">✓ 优化用户界面显示已上传图片</p>
+</div>
+
+<h3 style="font-size: 16px; font-weight: bold; margin: 20px 0 10px 0; color: #333;">用户体验</h3>
+<div style="margin-left: 15px;">
+  <p style="margin: 8px 0; color: #555;">✓ 添加针对对话窗口的修改名称功能</p>
+  <p style="margin: 8px 0 20px 0; color: #666;">
     对话窗口名称可以自定义，方便用户识别不同的对话。
   </p>
-<p>1，对话历史记录支持显示历史对话时间</p>
-<p>2，文件共享支持按角色筛选</p>
-<p>3，优化部分页面样式</p>
-<p>4，修改了提示词，更好的问答效果</p>
-<p>5，进行部分代码优化，修复了一些bug</p>
+</div>
 `;

@@ -108,7 +108,6 @@ public class ChatMemoryService {
                 {
                     setUserId(user_id);
                     setConversationName(windowName);
-                    // 会话ID = 用户名 + 会话ID。因为springai的记忆在存储的时候会这样。
                     setConversationId(uuid);
                 }
             });

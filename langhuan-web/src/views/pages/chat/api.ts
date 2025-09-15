@@ -1,5 +1,7 @@
 import { http } from "@/plugins/axios";
 import { CancelToken } from "axios";
+import { ChatSendParam } from "./types";
+
 
 /**
  * 发送聊天消息
@@ -7,17 +9,7 @@ import { CancelToken } from "axios";
  * @param cancelToken 用于取消请求的token
  */
 export const sendChatMessage = (
-    params: {
-        chatId: string;
-        prompt: string;
-        question: string;
-        isRag: boolean;
-        isReRank: boolean;
-        ragGroupId: string;
-        isFunction: boolean;
-        modelName: string;
-        imageunderstanding: string[];
-    },
+    params: ChatSendParam,
     cancelToken: CancelToken
 ) => {
     return http.request<any>({

@@ -187,6 +187,8 @@ public class ApiLogAspect {
 
                 if (filteredArgs.length > 0) {
                     String requestParams = objectMapper.writeValueAsString(filteredArgs);
+                    // HACK 过滤掉Markdown图片格式
+                    requestParams = requestParams.replaceAll("!\\[.*?\\]\\((.*?)\\)", "[非文字信息]");
                     logEntity.setRequestParams(requestParams);
                 }
             }

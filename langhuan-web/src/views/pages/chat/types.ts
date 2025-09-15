@@ -4,18 +4,22 @@ export interface ChatWindow {
     date: string;
     active?: boolean;
 }
+export interface ChatSeedEmitMessageData {
+    text: string;
+    imageunderstanding: string[]; // 图片理解
+}
 
-
-
-export interface ChatMessage {
-    id: string;
-    p: string;
-    q: string;
+export interface ChatSendParam {
+    chatId: string;
+    prompt: string;
+    question: string;
     isRag: boolean;
-    groupId: string;
+    isReRank: boolean;
+    ragGroupId: string;
     isFunction: boolean;
     modelName: string;
 }
+
 
 export interface ChatSettings {
     modelName: string;
@@ -35,7 +39,7 @@ export interface ChatSettings {
     expertConversationRounds: number; // 对话轮数
 }
 
-export interface Message{
+export interface Message {
     id: string;
     content: string;
     sender: "user" | "assistant";

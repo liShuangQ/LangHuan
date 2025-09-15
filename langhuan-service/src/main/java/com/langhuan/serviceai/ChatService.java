@@ -14,6 +14,7 @@ import com.langhuan.service.TPromptsService;
 import com.langhuan.service.TRagFileGroupService;
 import com.langhuan.service.TRagFileService;
 import com.langhuan.utils.imageunderstanding.ImageUnderstandingProcessorFactory;
+import com.langhuan.utils.other.ImgUtil;
 import com.langhuan.utils.other.SecurityUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
@@ -106,21 +107,24 @@ public class ChatService {
      */
     public ChatModelResult chat(ChatRestOption chatRestOption) throws Exception {
         try {
-            // 图片理解
-            if (!chatRestOption.getImageunderstanding().isEmpty()) {
+            // 提取用户消息（question）中是不是带md格式的图片信息
+            ImgUtil.MarkdownImageResult imageResult = ImgUtil.extractMarkdownImageUrls(chatRestOption.getQuestion());
+            // 图片理解，当前只是纯理解 不走rag等。
+            if (imageResult != null && !imageResult.getUrls().isEmpty()) {
+                // 手动设置记忆
+                // XXX：考虑是不是真的要压缩存储图片的imageUrls信息（可能很大）
+                chatMemory.add(chatRestOption.getChatId(),
+                        createdMessage(chatRestOption.getQuestion(), Map.of(), MessageType.USER));
                 StringBuilder out = new StringBuilder();
-                StringBuilder imgUrls = new StringBuilder();
-                String prompt = chatRestOption.getQuestion() + "\n" + "请回答中文";
-                for (String item : chatRestOption.getImageunderstanding()) {
-                    imgUrls.append("![img]").append("(").append(item).append(")").append("\n");
+                String prompt = imageResult.getCleanedContent() + "\n" + "请回答中文";
+                for (String item : imageResult.getUrls()) {
                     out.append(imageUnderstandingProcessorFactory.getProcessor().understandImage(item,
                             prompt)).append("\n");
                 }
-                String chatOut = imgUrls + out.toString();
-                // 手动设置记忆。
-                // XXX：考虑是不是真的要压缩存储图片的url信息（可能很大）
-                chatMemory.add(chatRestOption.getChatId(), creatdMessage(chatRestOption.getQuestion(), Map.of(), MessageType.USER));
-                chatMemory.add(chatRestOption.getChatId(), creatdMessage(chatOut, Map.of(), MessageType.ASSISTANT));
+                String chatOut = out.toString();
+                // 手动设置记忆
+                chatMemory.add(chatRestOption.getChatId(),
+                        createdMessage(out.toString(), Map.of(), MessageType.ASSISTANT));
                 return new ChatModelResult() {
                     {
                         {
@@ -131,12 +135,14 @@ public class ChatService {
                 };
             }
             // 文字理解
-            // 是否意图识别
+            // 是否意图识别 （后续考虑意图识别放在最前面，例如是要理解图片？还是添加个人知识空间？ 如果都不识别成功，就默认走文字对话。）
             if (Constant.RAGADDDOCUMENTINTENTION) {
                 String s = chatGeneralAssistanceService.ragAddDocumentIntentionClassifier(chatRestOption.getModelName(),
                         chatRestOption.getQuestion());
-                RagIntentionClassifierDTO ragIntentionClassifierDTO = JSONUtil.toBean(s, RagIntentionClassifierDTO.class);
-                return ragIntentionClassifierDTO.getIsAdd() ? toAddDocuments(ragIntentionClassifierDTO) : toChat(chatRestOption);
+                RagIntentionClassifierDTO ragIntentionClassifierDTO = JSONUtil.toBean(s,
+                        RagIntentionClassifierDTO.class);
+                return ragIntentionClassifierDTO.getIsAdd() ? toAddDocuments(ragIntentionClassifierDTO)
+                        : toChat(chatRestOption);
             }
             // 文字
             return toChat(chatRestOption);
@@ -152,7 +158,7 @@ public class ChatService {
         }
     }
 
-    public Message creatdMessage(String text, Map<String, Object> metadata, MessageType messageType) {
+    public Message createdMessage(String text, Map<String, Object> metadata, MessageType messageType) {
         return new Message() {
             @Override
             public String getText() {
