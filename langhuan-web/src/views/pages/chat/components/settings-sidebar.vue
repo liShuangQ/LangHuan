@@ -37,6 +37,13 @@ const promptTemplate = computed({
 });
 // 初始化RAG文件组的默认值，无值去找是不是有默认重置，有值后将长度>0 满足直接清空
 let ragGroupOnceBase: string[] = [];
+// 配置的默认文件组，${username}会被替换为用户名
+const GROUP_BASE_NAMES = computed(() => {
+    return process.env.GROUP_BASE_NAMES?.replaceAll(
+        "${username}",
+        user.info.user.username
+    )?.split(",") as string[];
+});
 const emitUpdateRagGroup = (value: any) => {
     const selectedGroup = {
         id: value.join(","),
@@ -59,6 +66,7 @@ const emitUpdateRagGroup = (value: any) => {
     }
     emit("update:modelValue", newSettings);
 };
+
 // 文件组-修改计算属性处理方式
 const ragGroup = computed({
     get: () => {
@@ -72,13 +80,13 @@ const ragGroup = computed({
             if (ragGroupOnceBase.length > 0) {
                 ragGroupOnceBase = [];
             } else {
-                ragGroupOnceBase = [
-                    props.ragGroups.find(
-                        (g) =>
-                            g.name ===
-                            user.info.user.username + "_知识空间文件组"
-                    )?.id || "",
-                ].filter((e) => !!e);
+                ragGroupOnceBase = GROUP_BASE_NAMES.value
+                    .map((e: string) => {
+                        return (
+                            props.ragGroups.find((g) => g.name === e)?.id || ""
+                        );
+                    })
+                    .filter((e) => !!e);
             }
             return ragGroupOnceBase;
         }
