@@ -132,7 +132,7 @@ public class ChatService {
                 return toImageUnderstanding(chatRestOption, imageResult);
             }
             // 文字理解
-            // 是否意图识别 （后续考虑意图识别放在最前面，例如是要理解图片？还是添加个人知识空间？ 如果都不识别成功，就默认走文字对话。）
+            // 是否意图识别 （后续考虑意图识别放在最前面，例如是要理解图片？还是添加个人知识空间？还是将图片内容添加到个人知识库？ 如果都不识别成功，就默认走文字对话。）
             if (Constant.RAGADDDOCUMENTINTENTION) {
                 String s = chatGeneralAssistanceService.ragAddDocumentIntentionClassifier(chatRestOption.getModelName(),
                         chatRestOption.getQuestion());

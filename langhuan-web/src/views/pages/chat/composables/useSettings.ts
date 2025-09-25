@@ -44,7 +44,7 @@ export function useSettings() {
         modelName: settings.value.modelName,
         p: settings.value.promptTemplate,
         isRag: !!settings.value.ragGroup?.id,
-        groupId: settings.value.ragGroup?.id || "",
+        ragGroupId: settings.value.ragGroup?.id || "",
         isReRank: settings.value.isReRank,
     }));
 

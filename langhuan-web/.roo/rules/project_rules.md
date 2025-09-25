@@ -50,3 +50,12 @@
        // 操作逻辑...
     })
 ```
+
+# 请求接口方式
+```javascript
+this.$https.requestServerPost('/ponResourceUsedRate/queryList', {
+        // 发送的数据
+      }).then(res => {
+        // 代码逻辑
+      })
+```

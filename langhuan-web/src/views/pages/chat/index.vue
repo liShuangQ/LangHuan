@@ -121,7 +121,7 @@ const sendMessageExpertMode = async (windowId: string, message: string) => {
         for (let index = 0; index < expertFileGroups.length; index++) {
             await sendMessage(windowId, `第${i + 1}轮问题：${newMessage}`, {
                 ...getChatParams.value,
-                groupId: expertFileGroups[index].id,
+                ragGroupId: expertFileGroups[index].id,
                 isRag: expertFileGroups[index].id === "observer" ? false : true,
                 p:
                     expertFileGroups[index].id === "observer"
@@ -167,7 +167,7 @@ const sendMessageExpertMode = async (windowId: string, message: string) => {
     // 完成后总结
     await sendMessage(windowId, `总结问题`, {
         ...getChatParams.value,
-        groupId: "",
+        ragGroupId: "",
         isRag: false,
         p: summarizePrompt.replaceAll(
             "{totalRounds}",
