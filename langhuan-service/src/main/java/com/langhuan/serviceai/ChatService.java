@@ -1,14 +1,12 @@
 package com.langhuan.serviceai;
 
 import cn.hutool.core.lang.UUID;
-import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.langhuan.common.BusinessException;
 import com.langhuan.common.Constant;
 import com.langhuan.functionTools.RestRequestTools;
 import com.langhuan.model.domain.TRagFile;
 import com.langhuan.model.domain.TRagFileGroup;
-import com.langhuan.model.dto.RagIntentionClassifierDTO;
 import com.langhuan.model.pojo.ChatModelResult;
 import com.langhuan.model.pojo.ChatRestOption;
 import com.langhuan.service.MinioService;
@@ -16,7 +14,6 @@ import com.langhuan.service.TPromptsService;
 import com.langhuan.service.TRagFileGroupService;
 import com.langhuan.service.TRagFileService;
 import com.langhuan.utils.imageunderstanding.ImageUnderstandingProcessorFactory;
-import com.langhuan.utils.other.ImgUtil;
 import com.langhuan.utils.other.SecurityUtils;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
@@ -35,6 +32,7 @@ import org.springframework.ai.tool.ToolCallback;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -123,26 +121,43 @@ public class ChatService {
      * @return ChatModelResult 聊天结果对象，包含AI回复内容和相关文档列表
      * @throws BusinessException 当AI服务异常时抛出，向用户显示友好的错误消息
      */
-    public ChatModelResult chat(ChatRestOption chatRestOption) throws Exception {
+    public ChatModelResult chat(ChatRestOption chatRestOption, MultipartFile[] accessory) throws Exception {
         try {
-            // 提取用户消息（question）中是不是带md格式的图片信息
-            ImgUtil.MarkdownImageResult imageResult = ImgUtil.extractMarkdownImageUrls(chatRestOption.getQuestion());
-            // 图片理解，当前只是纯理解 不走rag等。
-            if (imageResult != null && !imageResult.getUrls().isEmpty()) {
-                return toImageUnderstanding(chatRestOption, imageResult);
+            // 意图识别
+            String intention = chatGeneralAssistanceService.chatIntentionClassifier(chatRestOption.getModelName(), chatRestOption.getUserMessage());
+
+            // HACK 注意当前下面的能力都没判断附件是不是全是图片类型，但是前端有校验。以后加其他类型这里要注意
+            // TODO 未来考虑是不是添加文件类型分类器，当前附件都是图片直接调用图片模型没问题；但是如果有其他文件类型，考虑怎么意图识别和执行对应方法和拼接回答
+            // TODO 考虑意图能力是不是要原子化，例如先做什么后做什么
+            switch (intention) {
+                case "chat":
+                    return toChat(chatRestOption);
+                case "understand_image":
+                    return toImageUnderstanding(chatRestOption, accessory);
+                case "add_personal_knowledge_space":
+                    List<String> documentSegmentation1 = chatGeneralAssistanceService.documentSegmentation(chatRestOption.getModelName(), chatRestOption.getUserMessage());
+                    if (!documentSegmentation1.isEmpty()) {
+                        return toAddDocuments(documentSegmentation1);
+                    } else {
+                        return new ChatModelResult() {{
+                            setChat("未从文档中提取到知识信息，请重试");
+                            setRag(List.of());
+                        }};
+                    }
+                case "add_image_content_to_knowledge_base":
+                    String imgInfo = toImageUnderstandingToText(chatRestOption, accessory, "识别图片中文字信息，不需要描述图片是什么样子的，直接给我内容信息即可。");
+                    List<String> documentSegmentation2 = chatGeneralAssistanceService.documentSegmentation(chatRestOption.getModelName(), imgInfo);
+                    if (!documentSegmentation2.isEmpty()) {
+                        return toAddDocuments(documentSegmentation2);
+                    } else {
+                        return new ChatModelResult() {{
+                            setChat("未从文档中提取到知识信息，请重试");
+                            setRag(List.of());
+                        }};
+                    }
+                default:
+                    return toChat(chatRestOption);
             }
-            // 文字理解
-            // 是否意图识别 （后续考虑意图识别放在最前面，例如是要理解图片？还是添加个人知识空间？还是将图片内容添加到个人知识库？ 如果都不识别成功，就默认走文字对话。）
-            if (Constant.RAGADDDOCUMENTINTENTION) {
-                String s = chatGeneralAssistanceService.ragAddDocumentIntentionClassifier(chatRestOption.getModelName(),
-                        chatRestOption.getQuestion());
-                RagIntentionClassifierDTO ragIntentionClassifierDTO = JSONUtil.toBean(s,
-                        RagIntentionClassifierDTO.class);
-                return ragIntentionClassifierDTO.getIsAdd() ? toAddDocuments(ragIntentionClassifierDTO)
-                        : toChat(chatRestOption);
-            }
-            // 文字
-            return toChat(chatRestOption);
         } catch (Exception e) {
             return new ChatModelResult() {
                 {
@@ -174,7 +189,7 @@ public class ChatService {
         };
     }
 
-    public ChatModelResult toAddDocuments(RagIntentionClassifierDTO ragIntentionClassifierDTO) throws Exception {
+    public ChatModelResult toAddDocuments(List<String> documents) throws Exception {
         String user = SecurityUtils.getCurrentUsername();
         // HACK 和前端约定的知识空间文件组名称
         String setFileGroupName = user + "_知识空间文件组";
@@ -208,7 +223,7 @@ public class ChatService {
             ragFile.setFileName(setFileName);
             ragFile.setFileType("对话知识空间");
             ragFile.setFileSize("无");
-            ragFile.setDocumentNum(String.valueOf(ragIntentionClassifierDTO.getDocuments().size()));
+            ragFile.setDocumentNum(String.valueOf(documents.size()));
             ragFile.setFileDesc(setFileName + "。在对话中产生。");
             // fileGroupId已经在上面设置过了
             ragFile.setUploadedBy(user);
@@ -216,29 +231,33 @@ public class ChatService {
         } else {
             TRagFile first = fileList.getFirst();
             first.setDocumentNum(String.valueOf(
-                    Integer.parseInt(first.getDocumentNum()) + ragIntentionClassifierDTO.getDocuments().size()));
+                    Integer.parseInt(first.getDocumentNum()) + documents.size()));
             ragFile = first;
             fileService.updateById(first);
         }
-        ragService.writeDocumentsToVectorStore(ragIntentionClassifierDTO.getDocuments(), ragFile);
+        ragService.writeDocumentsToVectorStore(documents, ragFile);
         ChatModelResult chatModelResult = new ChatModelResult();
         chatModelResult.setChat("已被存入个人空间");
         chatModelResult.setRag(List.of());
         return chatModelResult;
     }
 
-    public ChatModelResult toImageUnderstanding(ChatRestOption chatRestOption, ImgUtil.MarkdownImageResult imageResult) throws Exception {
+    public ChatModelResult toImageUnderstanding(ChatRestOption chatRestOption, MultipartFile[] imageFiles) throws Exception {
         StringBuilder out = new StringBuilder();
-        String prompt = imageResult.getCleanedContent() + "\n" + "请回答中文";
+        String prompt = chatRestOption.getUserMessage() + "\n" + "请使用中文回答";
         StringBuilder minioChatImgs = new StringBuilder();
-        for (String item : imageResult.getUrls()) {
-            String objectName = chatMemoryImgFold + "/" + chatRestOption.getChatId() + "/" + UUID.randomUUID().toString() + "." + ImgUtil.getImageFormatFromBase64(item);
-            minioService.handleUpload(objectName, ImgUtil.base64ToInputStream(item), -1, bucket);
+        for (MultipartFile item : imageFiles) {
+            // 构建地址
+            String objectName = chatMemoryImgFold + "/" + chatRestOption.getChatId() + "/" + UUID.randomUUID().toString() + item.getOriginalFilename();
+            // 上传地址
+            minioService.handleUpload(objectName, item.getInputStream(), -1, bucket);
+            // 获取minio地址
             minioChatImgs.append("![img](url)".replace("url", minioService.generateMinioUrl(objectName, bucket))).append("\n");
+            // 模型回答
             out.append(imageUnderstandingProcessorFactory.getProcessor().understandImage(item,
                     prompt)).append("\n");
         }
-        String chatInStr = minioChatImgs.toString() + imageResult.getCleanedContent();
+        String chatInStr = minioChatImgs + chatRestOption.getUserMessage();
         String chatOutStr = out.toString();
 
         // 手动设置记忆
@@ -247,14 +266,22 @@ public class ChatService {
 
         chatMemory.add(chatRestOption.getChatId(),
                 createdMessage(chatOutStr, Map.of(), MessageType.ASSISTANT));
-        return new ChatModelResult() {
-            {
-                {
-                    setChat(chatOutStr);
-                    setRag(List.of());
-                }
-            }
-        };
+        return new ChatModelResult() {{
+            setChat(chatOutStr);
+            setRag(List.of());
+        }};
+    }
+
+    public String toImageUnderstandingToText(ChatRestOption chatRestOption, MultipartFile[] imageFiles, String imgPrompt) throws Exception {
+        StringBuilder out = new StringBuilder();
+        String prompt = imgPrompt + "\n" + "请使用中文回答";
+        for (MultipartFile item : imageFiles) {
+            // 模型回答
+            out.append(imageUnderstandingProcessorFactory.getProcessor().understandImage(item,
+                    prompt)).append("\n");
+        }
+
+        return out.toString();
     }
 
     public ChatModelResult toChat(ChatRestOption chatRestOption) {
@@ -272,7 +299,7 @@ public class ChatService {
 
         // 替换模板变量，生成最终的用户提示词
         String userPrompt = AINULLDEFAULTUSERPROMPT.replace("{user_prompt}",
-                chatRestOption.getQuestion());
+                chatRestOption.getUserMessage());
 
         try {
             // 根据是否启用RAG选择不同的聊天模式

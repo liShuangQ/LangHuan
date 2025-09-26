@@ -2,23 +2,30 @@ import { http } from "@/plugins/axios";
 import { CancelToken } from "axios";
 import { ChatSendParam } from "./types";
 
-
 /**
  * 发送聊天消息
  * @param params 聊天参数
  * @param cancelToken 用于取消请求的token
  */
 export const sendChatMessage = (
-    params: ChatSendParam,
+    params: {
+        option: ChatSendParam;
+        accessory: any;
+    },
     cancelToken: CancelToken
 ) => {
+    const sd = new FormData();
+    sd.append("option", JSON.stringify(params.option));
+    params.accessory.forEach((item: any) => {
+        sd.append("accessory", item);
+    });
     return http.request<any>({
         url: "chat/chat",
         method: "post",
-        q_contentType: "json",
+        q_contentType: "formfile",
         q_spinning: false,
         cancelToken,
-        data: params,
+        data: sd,
     });
 };
 

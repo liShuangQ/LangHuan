@@ -2,6 +2,7 @@ package com.langhuan.config;
 
 import cn.hutool.core.util.StrUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.langhuan.common.ApiLog;
 import com.langhuan.model.domain.TApiLog;
 import com.langhuan.service.TApiLogService;
@@ -17,7 +18,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.Socket;
 import java.util.Arrays;
 import java.util.Objects;
 
@@ -37,11 +43,18 @@ import java.util.Objects;
 @Slf4j
 @Aspect
 @Component
-@RequiredArgsConstructor
 public class ApiLogAspect {
 
     private final TApiLogService apiLogService;
     private final ObjectMapper objectMapper;
+    
+    // 构造函数中配置ObjectMapper
+    public ApiLogAspect(TApiLogService apiLogService, ObjectMapper objectMapper) {
+        this.apiLogService = apiLogService;
+        this.objectMapper = objectMapper;
+        // 配置ObjectMapper忽略空的beans，避免序列化失败
+        this.objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+    }
 
     /**
      * 环绕通知，拦截带有@ApiLog注解的方法
@@ -181,14 +194,15 @@ public class ApiLogAspect {
                 Object[] filteredArgs = Arrays.stream(args)
                         .filter(arg -> Objects.nonNull(arg) &&
                                 !(arg instanceof HttpServletRequest) &&
-                                !(arg instanceof jakarta.servlet.http.HttpServletResponse))
+                                !(arg instanceof jakarta.servlet.http.HttpServletResponse) &&
+                                !(arg instanceof File) &&
+                                !(arg instanceof InputStream) &&
+                                !(arg instanceof OutputStream) &&
+                                !(arg instanceof Socket) &&
+                                !(arg instanceof MultipartFile))
                         .toArray();
-                // String requestParams = objectMapper.writeValueAsString(filteredArgs);
-                // logEntity.setRequestParams(requestParams);
                if (filteredArgs.length > 0) {
                    String requestParams = objectMapper.writeValueAsString(filteredArgs);
-                   // HACK 过滤掉Markdown图片格式
-                   requestParams = requestParams.replaceAll("!\\[.*?\\]\\((.*?)\\)", "[非文字信息]");
                    logEntity.setRequestParams(requestParams);
                }
             }
@@ -205,6 +219,16 @@ public class ApiLogAspect {
      * @param result    方法执行结果
      */
     private void setResponseData(TApiLog logEntity, Object result) {
+        // 过滤掉不可序列化的对象
+        if (result instanceof File ||
+                result instanceof InputStream ||
+                result instanceof OutputStream ||
+                result instanceof Socket ||
+                result instanceof MultipartFile) {
+            logEntity.setResponseData("不可序列化的对象类型: " + result.getClass().getName());
+            return;
+        }
+
         try {
             String responseData = objectMapper.writeValueAsString(result);
             logEntity.setResponseData(responseData);

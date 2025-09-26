@@ -168,7 +168,7 @@ public class RagService {
             // 1. 从缓存中获取 extract 阶段生成的临时 fileId
             Integer tempFileId = cacheService.getId(SecurityUtils.getCurrentUsername() + CACHE_KEY);
             if (tempFileId == null) {
-                log.warn("未找到缓存的临时 file_id，跳过 t_file_url 更新");
+                log.info("纯文本添加 或 未找到缓存的临时file_id，跳过t_file_url更新");
             } else {
                 // 2. 使用 SQL 批量更新 t_file_url 表
                 int updatedRows = tFileUrlDao.updateFileIdAndStatus(

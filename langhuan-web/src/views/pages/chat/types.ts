@@ -5,22 +5,20 @@ export interface ChatWindow {
     active?: boolean;
 }
 export interface ChatSeedEmitMessageData {
-    text: string;
-    imageunderstanding: string[]; // 图片理解
+    userMessage: string;
+    accessory: File[];
 }
 
 export interface ChatSendParam {
     chatId: string;
     prompt: string;
-    question: string;
+    userMessage: string;
     isRag: boolean;
     isReRank: boolean;
     ragGroupId: string;
     isFunction: boolean;
     modelName: string;
 }
-
-
 export interface ChatSettings {
     modelName: string;
     promptTemplate: string;
@@ -38,7 +36,10 @@ export interface ChatSettings {
     }[]; // 文件组（多选）
     expertConversationRounds: number; // 对话轮数
 }
-
+export interface ChatOption extends Partial<ChatSeedEmitMessageData & ChatSendParam & ChatSettings>{
+    fileGroupName?:string
+    showUserMessage?:boolean
+}
 export interface Message {
     id: string;
     content: string;

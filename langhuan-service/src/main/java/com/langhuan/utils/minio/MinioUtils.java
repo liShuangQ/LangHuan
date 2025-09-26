@@ -5,15 +5,13 @@ import io.minio.messages.DeleteError;
 import io.minio.messages.DeleteObject;
 import io.minio.messages.Item;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.InputStream;
 import java.util.LinkedList;
 import java.util.List;
 
-/**
- * @author Afish
- * @date 2025/7/29 09:25
- */
+
 @Slf4j
 public class MinioUtils {
 
@@ -42,6 +40,20 @@ public class MinioUtils {
                         .stream(inputStream, size, 10 * 1024 * 1024)
                         .build()
         );
+    }
+
+    /**
+     * 上传MultipartFile格式的文件到MinIO
+     *
+     * @param objectName 文件对象名称（即路径+文件名）
+     * @param file       MultipartFile格式的文件
+     * @param bucketName 存储桶名称
+     * @throws Exception 上传过程中可能抛出的异常
+     */
+    public void uploadFile(String objectName, MultipartFile file, String bucketName) throws Exception {
+        try (InputStream inputStream = file.getInputStream()) {
+            uploadFile(objectName, inputStream, file.getSize(), bucketName);
+        }
     }
 
     public InputStream downloadFile(String objectName, String bucketName) throws Exception {

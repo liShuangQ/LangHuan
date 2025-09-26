@@ -119,26 +119,27 @@ const sendMessageExpertMode = async (windowId: string, message: string) => {
         }
         // 一轮信息
         for (let index = 0; index < expertFileGroups.length; index++) {
-            await sendMessage(windowId, `第${i + 1}轮问题：${newMessage}`, {
+            await sendMessage(windowId, {
                 ...getChatParams.value,
                 ragGroupId: expertFileGroups[index].id,
                 isRag: expertFileGroups[index].id === "observer" ? false : true,
-                p:
+                prompt:
                     expertFileGroups[index].id === "observer"
                         ? observerPrompt.replaceAll(
-                              "{currentRound}",
-                              String(i + 1)
-                          )
+                            "{currentRound}",
+                            String(i + 1)
+                        )
                         : expertPrompt
-                              .replaceAll("{currentRound}", String(i + 1))
-                              .replaceAll(
-                                  "{fileGroupName}",
-                                  expertFileGroups[index].name
-                              ) +
-                          "\n" +
-                          getChatParams.value.p,
+                            .replaceAll("{currentRound}", String(i + 1))
+                            .replaceAll(
+                                "{fileGroupName}",
+                                expertFileGroups[index].name
+                            ) +
+                        "\n" +
+                        getChatParams.value.prompt,
                 fileGroupName: expertFileGroups[index].name,
                 showUserMessage: index === 0,
+                userMessage: `第${i + 1}轮问题：${newMessage}`,
             });
         }
 
@@ -165,26 +166,27 @@ const sendMessageExpertMode = async (windowId: string, message: string) => {
     }
 
     // 完成后总结
-    await sendMessage(windowId, `总结问题`, {
+    await sendMessage(windowId, {
         ...getChatParams.value,
         ragGroupId: "",
         isRag: false,
-        p: summarizePrompt.replaceAll(
+        prompt: summarizePrompt.replaceAll(
             "{totalRounds}",
             String(settings.value.expertConversationRounds)
         ),
         fileGroupName: "总结者",
         showUserMessage: true,
+        userMessage: `总结问题`,
     });
 };
 
 const handleSendMessage = (windowId: string, messageData: ChatSeedEmitMessageData) => {
     if (settings.value.isExpertMode) {
-        sendMessageExpertMode(windowId, messageData.text);
+        sendMessageExpertMode(windowId, messageData.userMessage);
     } else {
-        sendMessage(windowId, messageData.text,{
+        sendMessage(windowId, {
             ...getChatParams.value,
-            imageunderstanding : messageData.imageunderstanding,
+            ...messageData,
             fileGroupName: settings.value.ragGroup?.name,
         });
     }
@@ -199,31 +201,18 @@ onMounted(async () => {
 </script>
 
 <template>
-    <main
-        :class="
-            nowIsChat
-                ? ['flex', 'h-screen', 'w-full', 'min-w-0', 'overflow-hidden']
-                : ['flex', 'h-full', 'w-full', 'min-w-0', 'overflow-hidden']
-        "
-    >
+    <main :class="nowIsChat
+        ? ['flex', 'h-screen', 'w-full', 'min-w-0', 'overflow-hidden']
+        : ['flex', 'h-full', 'w-full', 'min-w-0', 'overflow-hidden']
+        ">
         <Sidebar :chat-list="chatList" @action="handleSidebarAction" />
         <div class="min-w-0 flex-1 h-full">
-            <PromptContainers
-                ref="PromptContainersRef"
-                :messages="messages"
-                :can-send="canSend"
-                :has-windows="chatList.length > 0"
-                @send-message="(msg: any) => handleSendMessage(currentWindowId, msg)"
-                @action="handlePromptAction"
-            />
+            <PromptContainers ref="PromptContainersRef" :messages="messages" :can-send="canSend"
+                :has-windows="chatList.length > 0" @send-message="(msg: any) => handleSendMessage(currentWindowId, msg)"
+                @action="handlePromptAction" />
         </div>
-        <SettingsSidebar
-            v-if="showSettings"
-            v-model="settings"
-            :available-models="availableModels"
-            :rag-groups="ragGroups"
-            @close="toggleSettings"
-        />
+        <SettingsSidebar v-if="showSettings" v-model="settings" :available-models="availableModels"
+            :rag-groups="ragGroups" @close="toggleSettings" />
         <UpdateTip />
     </main>
 </template>

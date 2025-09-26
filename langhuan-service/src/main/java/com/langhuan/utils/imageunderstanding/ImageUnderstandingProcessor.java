@@ -1,5 +1,7 @@
 package com.langhuan.utils.imageunderstanding;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import java.io.File;
 
 /**
@@ -26,7 +28,7 @@ public interface ImageUnderstandingProcessor {
      * @return 图像理解结果
      * @throws Exception 处理过程中的异常
      */
-    String understandImage(File imageFile, String prompt) throws Exception;
+    String understandImage(MultipartFile imageFile, String prompt) throws Exception;
     
     /**
      * 获取该处理器支持的模型名称

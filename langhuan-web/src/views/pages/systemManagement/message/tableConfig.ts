@@ -55,53 +55,43 @@ export let tableColumnConfig = ref<TableColumnConfig[]>([
   {
     label: "通知级别",
     prop: "notificationLevel",
-    width: "100",
   },
   {
     label: "通知类型",
     prop: "notificationType",
-    width: "100",
   },
   {
     label: "通知范围",
     prop: "userTypeText",
-    width: "100",
   },
   {
     label: "用户名",
     prop: "userName",
-    width: "120",
   },
   {
     label: "状态",
     prop: "statusText",
-    width: "80",
   },
   {
     label: "创建时间",
     prop: "formatCreatedAt",
-    width: "160",
   },
   {
     label: "过期时间",
     prop: "formatExpiresAt",
-    width: "160",
   },
   {
     label: "引用ID",
     prop: "referenceId",
-    width: "100",
   },
   {
     label: "引用类型",
     prop: "referenceType",
-    width: "100",
   },
   {
     label: '操作',
     prop: 'buttonSlot',
     contentSlot: true,
-    width: '120',
   },
 ]);
 

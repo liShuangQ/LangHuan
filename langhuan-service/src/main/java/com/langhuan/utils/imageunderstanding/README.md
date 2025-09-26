@@ -8,7 +8,7 @@
 ### 1. ImageUnderstandingProcessor 接口
 所有图像理解模型处理器的基类接口，定义了标准的方法：
 - `understandImage(String imageUrl, String prompt)`: 执行图像理解操作
-- `understandImage(File imageFile, String prompt)`: 执行图像理解操作（文件上传方式）
+- `understandImage(MultipartFile imageFile, String prompt)`: 执行图像理解操作（文件上传方式）
 - `getModelName()`: 获取支持的模型名称
 
 ### 2. ImageUnderstandingProcessorFactory 工厂类
@@ -35,7 +35,7 @@ public class NewModelImageUnderstandingProcessor implements ImageUnderstandingPr
     }
     
     @Override
-    public String understandImage(File imageFile, String prompt) throws Exception {
+    public String understandImage(MultipartFile imageFile, String prompt) throws Exception {
         // 实现具体的图像理解逻辑（文件上传方式）
         // 1. 将文件转换为base64编码
         // 2. 调用模型API

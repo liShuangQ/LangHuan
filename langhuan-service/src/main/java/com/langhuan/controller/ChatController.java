@@ -1,22 +1,19 @@
 package com.langhuan.controller;
 
+import cn.hutool.json.JSONUtil;
 import com.langhuan.common.ApiLog;
 import com.langhuan.common.Constant;
 import com.langhuan.common.Result;
 import com.langhuan.model.pojo.ChatModelResult;
 import com.langhuan.model.pojo.ChatRestOption;
 import com.langhuan.serviceai.*;
-import com.langhuan.utils.other.SecurityUtils;
-
-import cn.hutool.json.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.document.Document;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.net.URI;
@@ -43,7 +40,7 @@ public class ChatController {
     private String openApiKey;
 
     public ChatController(ChatService chatService, ChatMemoryService chatMemoryService, ChatGeneralAssistanceService chatGeneralAssistanceService,
-            StanfordChatService stanfordChatService, RagService ragService) {
+                          StanfordChatService stanfordChatService, RagService ragService) {
         this.chatService = chatService;
         this.chatMemoryService = chatMemoryService;
         this.chatGeneralAssistanceService = chatGeneralAssistanceService;
@@ -52,21 +49,26 @@ public class ChatController {
     }
 
     // NOTE:Flux<String>会和Security的拦截器冲突，所以要设置白名单 "/chat/chatFlux"
-    @ApiLog(apiName = "聊天", description = "聊天", logResponse = true, logRequest = true)
+//    @ApiLog(apiName = "聊天", description = "聊天", logResponse = true, logRequest = true)
     @PostMapping("/chat/chat")
-    public Result chat(@RequestBody ChatRestOption chatRestOption) throws Exception {
+    public Result chat(
+            @RequestParam(name = "option", required = true) String option,
+            @RequestParam(name = "accessory", required = false) MultipartFile[] accessory
+    ) throws Exception {
+        ChatRestOption chatRestOption = JSONUtil.toBean(option, ChatRestOption.class);
+
         if (chatRestOption.getModelName().isEmpty()) {
             chatRestOption.setModelName(defaultModelName);
         }
-
         //  系统 system prompt userMessage
-        ChatModelResult chatModelResult = chatService.chat(chatRestOption);
+        ChatModelResult chatModelResult = chatService.chat(chatRestOption, accessory);
 
         String chat = chatModelResult.getChat();
-        if (chat.startsWith("***tools***")) {
-            log.info("***tools***,工具询问二次询问模型");
-            chat = chatGeneralAssistanceService.tools(chat);
-        }
+        // HACK 关于工具的开发
+//        if (chat.startsWith("***tools***")) {
+//            log.info("***tools***,工具询问二次询问模型");
+//            chat = chatGeneralAssistanceService.tools(chat);
+//        }
 
         return Result.success(Map.of(
                 "chat", chat,
@@ -119,7 +121,7 @@ public class ChatController {
 
     @PostMapping("/chat/saveChatMemory")
     public Result saveChatMemory(@RequestParam String id,
-            @RequestParam String name) {
+                                 @RequestParam String name) {
         return Result.success(chatMemoryService.saveChatMemory(id, name));
     }
 
@@ -130,11 +132,11 @@ public class ChatController {
 
     @PostMapping("/onlyRag/chat")
     public Result onlyRagChat(@RequestParam(name = "id", required = true) String id,
-            @RequestParam(name = "p", required = true, defaultValue = ".") String p,
-            @RequestParam(name = "q", required = true) String q,
-            @RequestParam(name = "isRag", required = true) Boolean isRag,
-            @RequestParam(name = "groupId", required = true, defaultValue = "") String groupId,
-            @RequestParam(name = "isFunction", required = true) Boolean isFunction) throws Exception {
+                              @RequestParam(name = "p", required = true, defaultValue = ".") String p,
+                              @RequestParam(name = "q", required = true) String q,
+                              @RequestParam(name = "isRag", required = true) Boolean isRag,
+                              @RequestParam(name = "groupId", required = true, defaultValue = "") String groupId,
+                              @RequestParam(name = "isFunction", required = true) Boolean isFunction) throws Exception {
 
         List<Document> documentList = ragService.ragSearch(q, groupId, "", Constant.ISRAGRERANK);
         StringBuilder contents = new StringBuilder();
@@ -145,7 +147,7 @@ public class ChatController {
         }
         return Result.success(Map.of(
                 "chat", contents.toString()
-        // "recommend", chatGeneralAssistanceService.otherQuestionsRecommended(q)
+                // "recommend", chatGeneralAssistanceService.otherQuestionsRecommended(q)
         ));
     }
 

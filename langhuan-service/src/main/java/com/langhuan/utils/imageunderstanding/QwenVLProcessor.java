@@ -7,6 +7,7 @@ import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -41,14 +42,14 @@ public class QwenVLProcessor implements ImageUnderstandingProcessor {
     }
     
     @Override
-    public String understandImage(File imageFile, String prompt) throws Exception {
+    public String understandImage(MultipartFile imageFile, String prompt) throws Exception {
         // 检查文件大小
-        if (imageFile.length() > MAX_FILE_SIZE) {
+        if (imageFile.getSize() > MAX_FILE_SIZE) {
             throw new IllegalArgumentException("图像文件大小不能超过10MB");
         }
         
         // 将文件转换为base64编码
-        String base64Image = ImgUtil.encodeFileToBase64(imageFile);
+        String base64Image = ImgUtil.encodeMultipartFileToBase64(imageFile);
         
         // 根据文件扩展名确定图片格式
         String imageFormat = ImgUtil.getImageFormat(imageFile);

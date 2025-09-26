@@ -42,7 +42,7 @@ export function useSettings() {
     // HACK 根据后端参数改变
     const getChatParams = computed(() => ({
         modelName: settings.value.modelName,
-        p: settings.value.promptTemplate,
+        prompt: settings.value.promptTemplate,
         isRag: !!settings.value.ragGroup?.id,
         ragGroupId: settings.value.ragGroup?.id || "",
         isReRank: settings.value.isReRank,

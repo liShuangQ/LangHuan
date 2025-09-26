@@ -81,3 +81,85 @@ export function getImageDataUrlPrefix(mimeType: string): string {
   if (type.includes('gif')) return 'data:image/gif;base64,';
   return `data:${mimeType};base64,`;
 }
+
+/**
+ * 将Blob对象拆分为指定大小的块
+ * @param blob - 要拆分的Blob对象
+ * @param chunkSize - 每个块的大小（字节），默认为1MB
+ * @returns Promise<Blob[]> - 拆分后的Blob块数组
+ */
+export async function splitBlob(blob: Blob, chunkSize: number = 1024 * 1024): Promise<Blob[]> {
+  const chunks: Blob[] = [];
+  const totalSize = blob.size;
+
+  // 如果blob大小小于等于chunkSize，直接返回原blob
+  if (totalSize <= chunkSize) {
+    return [blob];
+  }
+
+  // 计算需要拆分的块数
+  const chunkCount = Math.ceil(totalSize / chunkSize);
+
+  for (let i = 0; i < chunkCount; i++) {
+    const start = i * chunkSize;
+    const end = Math.min(start + chunkSize, totalSize);
+    const chunk = blob.slice(start, end, blob.type);
+    chunks.push(chunk);
+  }
+
+  return chunks;
+}
+
+/**
+ * 将Blob对象拆分为指定大小的块并转换为Base64格式
+ * @param blob - 要拆分的Blob对象
+ * @param chunkSize - 每个块的大小（字节），默认为1MB
+ * @returns Promise<string[]> - 拆分后的Base64格式字符串数组
+ */
+export async function splitBlobToBase64(blob: Blob, chunkSize: number = 1024 * 1024): Promise<string[]> {
+  const chunks = await splitBlob(blob, chunkSize);
+  const base64Promises = chunks.map(chunk => blobToBase64(chunk));
+  return Promise.all(base64Promises);
+}
+
+/**
+ * 将Blob对象转换为Base64格式
+ * @param blob - 要转换的Blob对象
+ * @returns Promise<string> - Base64格式的URL
+ */
+export function blobToBase64(blob: Blob): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      const base64String = reader.result as string;
+      // 提取Base64编码部分（去掉data:*/*;base64,前缀）
+      const base64Data = base64String.split(',')[1];
+
+      // 根据Blob类型添加相应的前缀
+      let dataUrl: string;
+      const blobType = blob.type.toLowerCase();
+
+      if (blobType.includes('png')) {
+        dataUrl = `data:image/png;base64,${base64Data}`;
+      } else if (blobType.includes('jpeg') || blobType.includes('jpg')) {
+        dataUrl = `data:image/jpeg;base64,${base64Data}`;
+      } else if (blobType.includes('webp')) {
+        dataUrl = `data:image/webp;base64,${base64Data}`;
+      } else if (blobType.includes('gif')) {
+        dataUrl = `data:image/gif;base64,${base64Data}`;
+      } else {
+        // 对于其他格式，使用通用格式
+        dataUrl = `data:${blob.type};base64,${base64Data}`;
+      }
+
+      resolve(dataUrl);
+    };
+
+    reader.onerror = () => {
+      reject(new Error('Failed to convert blob to base64'));
+    };
+
+    reader.readAsDataURL(blob);
+  });
+}

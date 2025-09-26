@@ -7,10 +7,11 @@ import type {
     ChatFeedback,
     ChatSettings,
     ChatSendParam,
+    ChatOption,
 } from "../types";
 import { ElMessage } from "element-plus";
 import { documentRankHandleApi } from "@/api/rag";
-
+import { blobToBase64 } from "@/utils/imgFile";
 const BASE_PROJECT_NAME_CN = computed(() => {
     return process.env.BASE_PROJECT_NAME_CN as string;
 });
@@ -55,55 +56,67 @@ export function useChat() {
 
     const sendMessage = async (
         windowId: string,
-        message: string,
-        chatParams: any = {} //其他补充信息
+        chatParams: ChatOption = {} //其他信息
     ) => {
         let imgInfo = "";
-        if ((chatParams?.imageunderstanding ?? []).length > 0) {
-            chatParams.imageunderstanding.forEach((e: string) => {
-                imgInfo += `![img](${e}) \n`;
-            });
+
+        if (chatParams.accessory) {
+            const files = chatParams.accessory as Blob[];
+            for (let index = 0; index < files.length; index++) {
+                const file: Blob = files[index];
+                if (file.type.indexOf("image") > -1) {
+                    imgInfo += `![img](${await blobToBase64(file)}) \n`;
+                }
+            }
         }
-        message = imgInfo + message;
-        chatParams["imageunderstanding"] = [];
-        const userMessage = {
+
+        const userMessageInfo = {
             id: Date.now().toString(),
-            content: message,
+            content: imgInfo + chatParams.userMessage,
             sender: "user" as const,
             timestamp: dayjs().format("YYYY-MM-DD HH:mm:ss"),
             showUserMessage: chatParams.showUserMessage,
         };
-        const assistantMessage = {
+
+        const assistantMessageInfo = {
             id: "loading-" + Date.now().toString(),
             content: "正在思考中...",
             sender: "assistant" as const,
             timestamp: dayjs().format("YYYY-MM-DD HH:mm:ss"),
             loading: true,
         };
-        messages.value.push(userMessage, assistantMessage);
+        messages.value.push(userMessageInfo, assistantMessageInfo);
         axiosCancel = axios.CancelToken.source();
         canSend.value = false;
+
+        const accessory = chatParams.accessory;
+        delete chatParams.accessory;
+        let sendChatMessageParam = {
+            chatId: windowId,
+            prompt: "",
+            userMessage: chatParams.userMessage,
+            isRag: false,
+            isReRank: false,
+            ragGroupId: "",
+            isFunction: false,
+            modelName: "",
+            ...chatParams,
+        } as ChatSendParam;
+
         try {
             const res = await api.sendChatMessage(
                 {
-                    chatId: windowId,
-                    prompt: "",
-                    question: message,
-                    isRag: false,
-                    isReRank: false,
-                    ragGroupId: "",
-                    isFunction: false,
-                    modelName: "",
-                    ...chatParams,
-                } as ChatSendParam,
-                axiosCancel.token
+                    option: sendChatMessageParam,
+                    accessory: accessory,
+                },
+                axiosCancel!.token
             );
 
-            lastMessageContent = message;
+            lastMessageContent = chatParams?.userMessage ?? "";
 
             // 替换loading消息
             const index = messages.value.findIndex(
-                (m) => m.id === assistantMessage.id
+                (m) => m.id === assistantMessageInfo.id
             );
             if (index !== -1) {
                 messages.value[index] = {
