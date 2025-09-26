@@ -71,14 +71,14 @@ public class Constant {
         add(new IntentionItem() {{
             setId("chat");
             setTask("聊天");
-            setExamples(List.of("你好", "今天天气如何", "讲个笑话", "回答这个问题"));
+            setExamples(List.of("你好", "回答这个问题", "什么是xxx"));
             setDescription("无任何特定功能需求的日常闲聊问答等");
         }});
         add(new IntentionItem() {{
             setId("understand_image");
             setTask("理解图片");
             setExamples(List.of("解释这张图", "图里有什么", "识别图片文字"));
-            setDescription("用户需要解析、描述或提取图片内容");
+            setDescription("用户需要解析、描述或提取图片内容。注意是图片信息，当没提到图的时候应该是chat");
         }});
         add(new IntentionItem() {{
             setId("add_personal_knowledge_space");
