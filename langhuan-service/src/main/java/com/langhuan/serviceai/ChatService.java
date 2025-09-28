@@ -137,15 +137,17 @@ public class ChatService {
                     StringBuilder simulationThink1 = new StringBuilder();
                     simulationThink1.append("<think>");
                     simulationThink1.append("意图识别结果：添加文字信息到知识库").append("\n");
-                    simulationThink1.append("文字提取知识：").append("\n");
+                    simulationThink1.append("文字提取知识").append("\n");
                     simulationThink1.append("文字识别结果：").append("\n");
+                    simulationThink1.append("---------").append("\n");
                     List<String> documentSegmentation1 = chatGeneralAssistanceService.documentSegmentation(chatRestOption.getModelName(), chatRestOption.getUserMessage());
                     for (String string : documentSegmentation1) {
                         simulationThink1.append(string)
                                 .append("\n")
-                                .append("-----------------------------------------------------")
+                                .append("---")
                                 .append("\n");
                     }
+                    simulationThink1.append("---------").append("\n");
                     if (!documentSegmentation1.isEmpty()) {
                         simulationThink1.append("添加到知识库").append("\n");
                         simulationThink1.append("添加到知识库成功").append("\n");
@@ -167,15 +169,17 @@ public class ChatService {
                     StringBuilder simulationThink2 = new StringBuilder();
                     simulationThink2.append("<think>");
                     simulationThink2.append("意图识别结果：添加图片知识到知识库").append("\n");
-                    simulationThink2.append("图片提取知识：").append("\n");
+                    simulationThink2.append("图片提取知识").append("\n");
                     simulationThink2.append("图片识别结果：").append("\n");
+                    simulationThink2.append("---------").append("\n");
                     List<String> imageUnderstandingToText = toImageUnderstandingToText(chatRestOption, accessory, "");
                     for (String string : imageUnderstandingToText) {
                         simulationThink2.append(string)
                                 .append("\n")
-                                .append("-----------------------------------------------------")
+                                .append("---")
                                 .append("\n");
                     }
+                    simulationThink2.append("---------").append("\n");
                     if (!imageUnderstandingToText.isEmpty()) {
                         simulationThink2.append("添加到知识库").append("\n");
                         simulationThink2.append("添加到知识库成功").append("\n");
