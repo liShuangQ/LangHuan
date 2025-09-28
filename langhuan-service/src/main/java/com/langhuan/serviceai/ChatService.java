@@ -125,7 +125,6 @@ public class ChatService {
         try {
             // 意图识别
             String intention = chatGeneralAssistanceService.chatIntentionClassifier(chatRestOption.getModelName(), chatRestOption.getUserMessage());
-
             // HACK 注意当前下面的能力都没判断附件是不是全是图片类型，但是前端有校验。以后加其他类型这里要注意
             // TODO 未来考虑是不是添加文件类型分类器，当前附件都是图片直接调用图片模型没问题；但是如果有其他文件类型，考虑怎么意图识别和执行对应方法和拼接回答
             // TODO 考虑意图能力是不是要原子化，例如先做什么后做什么
@@ -135,9 +134,27 @@ public class ChatService {
                 case "understand_image":
                     return toImageUnderstanding(chatRestOption, accessory);
                 case "add_personal_knowledge_space":
+                    StringBuilder simulationThink1 = new StringBuilder();
+                    simulationThink1.append("<think>");
+                    simulationThink1.append("意图识别结果：添加文字信息到知识库").append("\n");
+                    simulationThink1.append("文字提取知识：").append("\n");
+                    simulationThink1.append("文字识别结果：").append("\n");
                     List<String> documentSegmentation1 = chatGeneralAssistanceService.documentSegmentation(chatRestOption.getModelName(), chatRestOption.getUserMessage());
+                    for (String string : documentSegmentation1) {
+                        simulationThink1.append(string)
+                                .append("\n")
+                                .append("-----------------------------------------------------")
+                                .append("\n");
+                    }
                     if (!documentSegmentation1.isEmpty()) {
-                        return toAddDocuments(documentSegmentation1);
+                        simulationThink1.append("添加到知识库").append("\n");
+                        simulationThink1.append("添加到知识库成功").append("\n");
+                        simulationThink1.append("</think>");
+                        ChatModelResult addDocuments = toAddDocuments(documentSegmentation1);
+                        return new ChatModelResult() {{
+                            setChat(simulationThink1 + addDocuments.getChat());
+                            setRag(List.of());
+                        }};
                     } else {
                         return new ChatModelResult() {{
                             setChat("未从文档中提取到知识信息，请重试");
@@ -145,10 +162,29 @@ public class ChatService {
                         }};
                     }
                 case "add_image_content_to_knowledge_base":
-                    String imgInfo = toImageUnderstandingToText(chatRestOption, accessory, "识别图片中文字信息，不需要描述图片是什么样子的，直接给我内容信息即可。");
-                    List<String> documentSegmentation2 = chatGeneralAssistanceService.documentSegmentation(chatRestOption.getModelName(), imgInfo);
-                    if (!documentSegmentation2.isEmpty()) {
-                        return toAddDocuments(documentSegmentation2);
+                    // XXX 当前一个图片的信息就是一个知识，不使用模型拆分了
+//                    List<String> documentSegmentation2 = chatGeneralAssistanceService.documentSegmentation(chatRestOption.getModelName(), imgInfo);
+                    StringBuilder simulationThink2 = new StringBuilder();
+                    simulationThink2.append("<think>");
+                    simulationThink2.append("意图识别结果：添加图片知识到知识库").append("\n");
+                    simulationThink2.append("图片提取知识：").append("\n");
+                    simulationThink2.append("图片识别结果：").append("\n");
+                    List<String> imageUnderstandingToText = toImageUnderstandingToText(chatRestOption, accessory, "");
+                    for (String string : imageUnderstandingToText) {
+                        simulationThink2.append(string)
+                                .append("\n")
+                                .append("-----------------------------------------------------")
+                                .append("\n");
+                    }
+                    if (!imageUnderstandingToText.isEmpty()) {
+                        simulationThink2.append("添加到知识库").append("\n");
+                        simulationThink2.append("添加到知识库成功").append("\n");
+                        simulationThink2.append("</think>");
+                        ChatModelResult addDocuments = toAddDocuments(imageUnderstandingToText);
+                        return new ChatModelResult() {{
+                            setChat(simulationThink2 + addDocuments.getChat());
+                            setRag(List.of());
+                        }};
                     } else {
                         return new ChatModelResult() {{
                             setChat("未从文档中提取到知识信息，请重试");
@@ -272,16 +308,32 @@ public class ChatService {
         }};
     }
 
-    public String toImageUnderstandingToText(ChatRestOption chatRestOption, MultipartFile[] imageFiles, String imgPrompt) throws Exception {
-        StringBuilder out = new StringBuilder();
+    public List<String> toImageUnderstandingToText(ChatRestOption chatRestOption, MultipartFile[] imageFiles, String imgPrompt) throws Exception {
+        if (imgPrompt.isEmpty()) {
+            imgPrompt = """
+                    请对图片进行详细解析，提取其中的知识信息：
+                    如果图片是文字内容，请完整、准确地提取所有文字信息，确保无遗漏。
+                    如果图片是流程图、结构图、思维导图等图形，请用清晰的文字描述其结构、逻辑关系、关键节点和流程步骤，确保信息完整、逻辑清晰，便于后续存储为文字知识。
+                    如果图片包含图表、表格、数据，请提取其中的关键数据、指标、趋势，并用简洁的文字进行说明。
+                    如果图片是混合类型（如图文结合），请分别提取文字和图形信息，并整合为一段完整的文字描述。
+                    请确保提取的内容准确、简洁、结构化，便于直接存入知识库。
+                    输出格式建议如下：
+                    
+                    （用清晰、简洁的文字描述图片中的知识信息）
+                    【关键词】：
+                    （提取3-5个关键词，便于后续检索）
+                    
+                    请根据上述要求处理以下图片。
+                    """;
+        }
+        List<String> out = new ArrayList<>();
         String prompt = imgPrompt + "\n" + "请使用中文回答";
         for (MultipartFile item : imageFiles) {
-            // 模型回答
-            out.append(imageUnderstandingProcessorFactory.getProcessor().understandImage(item,
-                    prompt)).append("\n");
+            out.add(imageUnderstandingProcessorFactory.getProcessor().understandImage(item,
+                    prompt));
         }
 
-        return out.toString();
+        return out;
     }
 
     public ChatModelResult toChat(ChatRestOption chatRestOption) {

@@ -182,7 +182,7 @@ public class ApiLogAspect {
 
     /**
      * 设置请求参数
-     *
+     * HACK 注意屏蔽的类型
      * @param logEntity 日志对象
      * @param joinPoint 连接点
      */
@@ -199,7 +199,8 @@ public class ApiLogAspect {
                                 !(arg instanceof InputStream) &&
                                 !(arg instanceof OutputStream) &&
                                 !(arg instanceof Socket) &&
-                                !(arg instanceof MultipartFile))
+                                !(arg instanceof MultipartFile) &&
+                                !(arg instanceof MultipartFile[]))
                         .toArray();
                if (filteredArgs.length > 0) {
                    String requestParams = objectMapper.writeValueAsString(filteredArgs);
@@ -224,7 +225,8 @@ public class ApiLogAspect {
                 result instanceof InputStream ||
                 result instanceof OutputStream ||
                 result instanceof Socket ||
-                result instanceof MultipartFile) {
+                result instanceof MultipartFile ||
+                result instanceof MultipartFile[]) {
             logEntity.setResponseData("不可序列化的对象类型: " + result.getClass().getName());
             return;
         }

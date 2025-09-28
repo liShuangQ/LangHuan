@@ -49,7 +49,7 @@ public class ChatController {
     }
 
     // NOTE:Flux<String>会和Security的拦截器冲突，所以要设置白名单 "/chat/chatFlux"
-//    @ApiLog(apiName = "聊天", description = "聊天", logResponse = true, logRequest = true)
+    @ApiLog(apiName = "聊天", description = "聊天", logResponse = true, logRequest = true)
     @PostMapping("/chat/chat")
     public Result chat(
             @RequestParam(name = "option", required = true) String option,

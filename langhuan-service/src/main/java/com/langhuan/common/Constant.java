@@ -78,7 +78,7 @@ public class Constant {
             setId("understand_image");
             setTask("理解图片");
             setExamples(List.of("解释这张图", "图里有什么", "识别图片文字"));
-            setDescription("用户需要解析、描述或提取图片内容。注意是图片信息，当没提到图的时候应该是chat");
+            setDescription("用户需要解析、描述或提取图片内容。注意文字要提到是图片信息，当没提到图的时候应该是chat");
         }});
         add(new IntentionItem() {{
             setId("add_personal_knowledge_space");
@@ -90,7 +90,7 @@ public class Constant {
             setId("add_image_content_to_knowledge_base");
             setTask("将图片内容添加到个人知识库");
             setExamples(List.of("把这张图存到知识库", "图片入库", "保存这张图到我的笔记"));
-            setDescription("用户希望将图片解析后的内容写入已有个人知识库");
+            setDescription("用户希望将图片解析后的内容写入已有个人知识库，注意要提到了图片信息");
         }});
     }};
 }

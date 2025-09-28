@@ -75,7 +75,10 @@ const processMessageContent = (content: string, messageId: string) => {
     return result;
 };
 
-const suggestions = [{ id: "optimizePrompt", text: "优化提示词" }];
+const suggestions = [
+    { id: "optimizePrompt", text: "优化提示词" },
+    { id: "exportChatMessage", text: "导出聊天记录" },
+];
 
 const messageInput = ref("");
 const messageContainer = ref<HTMLDivElement | null>(null);
@@ -133,7 +136,14 @@ const handleSubmit = async (e: Event) => {
         console.error("File conversion error:", error);
     }
 };
-
+const suggestionsClick = (suggestion: string) => {
+    if (suggestion === "optimizePrompt") {
+        emit("action", suggestion, null);
+    }
+    if (suggestion === "exportChatMessage") {
+        emit("action", suggestion, messageContainer);
+    }
+};
 const scrollToBottom = () => {
     nextTick(() => {
         if (messageContainer.value) {
@@ -409,7 +419,7 @@ const formatFileSize = (bytes: number): string => {
                                     <!-- 闪烁效果 - 文字闪烁 -->
                                     <span class="animate-pulse text-gray-500">{{
                                         msg.content
-                                        }}</span>
+                                    }}</span>
                                     <!-- 脉冲效果 - 文字大小变化 (取消注释即可使用) -->
                                     <!-- <span class="animate-text-pulse text-gray-500">{{ msg.content }}</span> -->
 
@@ -506,7 +516,7 @@ part, partIndex
             <!-- Prompt suggestions -->
             <div
                 class="flex w-full gap-x-2 overflow-x-auto whitespace-nowrap text-xs text-slate-600 dark:text-slate-300 sm:text-sm">
-                <button v-for="item in suggestions" :key="item.id" @click="$emit('action', item.id)"
+                <button v-for="item in suggestions" :key="item.id" @click="suggestionsClick(item.id)"
                     class="rounded-lg bg-slate-200 p-2 hover:bg-blue-600 hover:text-slate-200 dark:bg-slate-800 dark:hover:bg-blue-600 dark:hover:text-slate-50">
                     {{ item.text }}
                 </button>

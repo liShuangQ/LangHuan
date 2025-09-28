@@ -4,11 +4,13 @@ export default {
 };
 </script>
 <script setup lang="ts">
-import { onMounted } from "vue";
+import { onMounted, ref } from "vue";
+import { ElLoading, ElMessageBox, ElMessage } from "element-plus";
 import Sidebar from "./components/sidebar.vue";
 import SettingsSidebar from "./components/settings-sidebar.vue";
 import PromptContainers from "./components/prompt-containers.vue";
 import UpdateTip from "./components/updateTip.vue";
+import { exportElementToHtml, generateExportFilename } from "@/utils/exportHtml";
 import { useChat } from "./composables/useChat";
 import { useWindow } from "./composables/useWindow";
 import { useSettings } from "./composables/useSettings";
@@ -51,6 +53,7 @@ const {
 const PromptContainersRef = ref<InstanceType<typeof PromptContainers> | null>(
     null
 );
+const messageContainer = ref<HTMLElement | null>(null);
 const router = useRouter();
 const nowIsChat = router.currentRoute.value.path === "/chat";
 
@@ -88,6 +91,49 @@ const handlePromptAction = async (type: string, payload?: any) => {
                 )
             );
         }
+    } else if (type === "exportChatMessage") {
+        const loading = ElLoading.service({
+            lock: true,
+            text: '正在导出聊天记录...',
+            background: 'rgba(0, 0, 0, 0.7)',
+        });
+
+        try {
+            if (payload && payload.value) {
+                // 弹出输入框让用户输入文件名
+                const { value: fileName } = await ElMessageBox.prompt('请输入导出文件名', '导出聊天记录', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    inputPlaceholder: '例如：我的聊天记录',
+                    inputValidator: (value: string) => {
+                        if (!value || !value.trim()) {
+                            return '文件名不能为空';
+                        }
+                        return true;
+                    },
+                });
+
+                if (fileName) {
+                    const cleanFileName = fileName.trim();
+                    const filename = generateExportFilename(cleanFileName);
+                    await exportElementToHtml(payload.value, filename, cleanFileName);
+                    ElMessage.success('聊天记录导出成功');
+                }
+            } else {
+                ElMessage.warning('无法获取聊天内容，请稍后重试');
+            }
+        } catch (error: any) {
+            if (error === 'cancel') {
+                // 用户取消了输入
+                loading.close();
+                return;
+            }
+            console.error('导出聊天记录失败:', error);
+            ElMessage.error('导出聊天记录失败');
+        } finally {
+            loading.close();
+        }
+
     } else if (["like", "dislike", "copy"].includes(type)) {
         await handleMessageAction(type, payload, settings.value);
     } else if (type === "documentRank") {
