@@ -127,6 +127,7 @@ public class ChatService {
             String intention = chatGeneralAssistanceService.chatIntentionClassifier(chatRestOption.getModelName(), chatRestOption.getUserMessage());
             // HACK 注意当前下面的能力都没判断附件是不是全是图片类型，但是前端有校验。以后加其他类型这里要注意
             // TODO 未来考虑是不是添加文件类型分类器，当前附件都是图片直接调用图片模型没问题；但是如果有其他文件类型，考虑怎么意图识别和执行对应方法和拼接回答
+            // TODO 只需要区分是不是要添加知识即可，自动根据附件文件类型区分和拼接知识
             // TODO 考虑意图能力是不是要原子化，例如先做什么后做什么
             switch (intention) {
                 case "chat":
@@ -323,7 +324,8 @@ public class ChatService {
                     请确保提取的内容准确、简洁、结构化，便于直接存入知识库。
                     输出格式建议如下：
                     
-                    （用清晰、简洁的文字描述图片中的知识信息）
+                    【信息】：
+                    （用清晰、简洁的文字描述图片中的知识信息。这里直接呈现知识信息。）
                     【关键词】：
                     （提取3-5个关键词，便于后续检索）
                     

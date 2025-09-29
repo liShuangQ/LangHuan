@@ -65,10 +65,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (claims == null) {
             throw new BaseException(ResponseCodeEnum.BAD_REQUEST, "token异常");
         }
-        // 检查token是否已过期
-        if (jwtUtil.isTokenExpired(claims.getExpiration())) {
-            throw new BaseException(ResponseCodeEnum.BAD_REQUEST, "token已过期");
-        }
 
         // 从claims中获取用户名
         String username = claims.getSubject();

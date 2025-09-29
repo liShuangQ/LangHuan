@@ -34,7 +34,7 @@ public enum ResponseCodeEnum {
     }
 
     public String getMessage() {
-        return getMessage();
+        return message;
     }
 
 }

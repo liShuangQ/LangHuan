@@ -1,5 +1,6 @@
 package com.langhuan.common;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -48,4 +49,15 @@ public class GlobalExceptionHandler {
         return Result.error(HttpStatus.FORBIDDEN.value(), ex.getMessage());
     }
 
+    @ExceptionHandler(TokenExpiredException.class)
+    public Result<?> handleTokenExpiredException(TokenExpiredException ex) {
+        log.error("TokenExpiredException请求异常：", ex);
+        return Result.error(ex.getResponseCode().getCode(), ex.getResponseCode().getMessage());
+    }
+
+    @ExceptionHandler(ExpiredJwtException.class)
+    public Result<?> handleExpiredJwtException(ExpiredJwtException ex) {
+        log.error("ExpiredJwtException请求异常：", ex);
+        return Result.error(ResponseCodeEnum.UNAUTHORIZED.getCode(), "Token已过期，请重新登录");
+    }
 }
