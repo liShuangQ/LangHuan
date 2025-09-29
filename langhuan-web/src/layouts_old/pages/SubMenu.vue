@@ -1,5 +1,5 @@
 <template>
-    <el-sub-menu :index="SubItem.path" popper-class="custom-submenu-popper">
+    <el-sub-menu :index="SubItem.path">
         <template #title>
             <el-icon v-if="SubItem.icon && SubItem.icon !== ''">
                 <component :is="SubItem.icon"></component>
@@ -23,51 +23,6 @@
         </template>
     </el-sub-menu>
 </template>
-
 <script setup lang="ts">
 const props = defineProps(["SubItem"]);
 </script>
-
-<style>
-/* 自定义下拉菜单样式 */
-.custom-submenu-popper {
-    background-color: #ffffff !important;
-    border: 1px solid #e4e7ed !important;
-    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1) !important;
-}
-
-.custom-submenu-popper .el-menu {
-    background-color: #ffffff;
-    border: none;
-}
-
-.custom-submenu-popper .el-menu-item {
-    height: 40px;
-    line-height: 40px;
-    color: #333333;
-    background-color: #ffffff;
-}
-
-.custom-submenu-popper .el-menu-item:hover {
-    background-color: #f5f5f5;
-    color: #0089fa;
-}
-
-.custom-submenu-popper .el-menu-item.is-active {
-    background-color: #f0f9ff;
-    color: #0089fa;
-    font-weight: 500;
-}
-
-.custom-submenu-popper .el-sub-menu__title {
-    height: 40px;
-    line-height: 40px;
-    color: #333333;
-    background-color: #ffffff;
-}
-
-.custom-submenu-popper .el-sub-menu__title:hover {
-    background-color: #f5f5f5;
-    color: #0089fa;
-}
-</style>

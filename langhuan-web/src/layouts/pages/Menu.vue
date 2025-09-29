@@ -1,21 +1,22 @@
 <template>
     <div class="w-full h-full overflow-hidden">
-        <div class="w-[calc(100%-1px)] h-[40px] text-center leading-10 bg-[#001f37] text-white font-bold">
-            {{ BASE_PROJECT_NAME }}
-        </div>
-        <el-menu
-            style="height:calc(100% - 40px);"
-            class="el-menu-vertical-demo"
-            :collapse="isCollapse"
-            :unique-opened="true"
-            ref="menuRef"
-            @select="menuSelect"
-            :default-active="getNowMenu('path')"
-            :default-openeds="getNowMenu('faPath')"
-            background-color="#001624"
-            text-color="#fff"
-            active-text-color="#0089fa"
-        >
+        <div class="h-full flex items-center bg-white">
+            <div class="px-6 flex items-center text-gray-800 font-bold border-r border-gray-200 whitespace-nowrap">
+                {{ BASE_PROJECT_NAME }}
+            </div>
+            <el-menu
+                class="el-menu-horizontal-demo flex-1"
+                mode="horizontal"
+                :collapse="isCollapse"
+                :unique-opened="true"
+                ref="menuRef"
+                @select="menuSelect"
+                :default-active="getNowMenu('path') as string"
+                :default-openeds="getNowMenu('faPath') as string[]"
+                background-color="#ffffff"
+                text-color="#333333"
+                active-text-color="#0089fa"
+            >
             <!--      router-->
             <template v-for="(item) in menuData as any" :key="item.path">
                 <template v-if="!item.children || item.children === 0">
@@ -31,13 +32,13 @@
                     <sub-menu :key="item.path" :SubItem='item'></sub-menu>
                 </template>
             </template>
-            <el-icon @click="isCollapse = !isCollapse"
-                     style="height: 40px;font-size: 24px;text-align: center;width: 100%;color: #fff;cursor: pointer"
-            >
-                <Expand v-show="isCollapse"/>
-                <Fold v-show="!isCollapse"/>
-            </el-icon>
-        </el-menu>
+            </el-menu>
+             <!-- <el-icon @click="isCollapse = !isCollapse" -->
+            <!--          class="h-[40px] text-[24px] text-gray-600 cursor-pointer flex items-center justify-center w-[40px] flex-shrink-0 hover:text-gray-800"-->
+            <!--     <Expand v-show="isCollapse"/>-->
+            <!--     <Fold v-show="!isCollapse"/>-->
+            <!-- </el-icon>-->
+        </div>
     </div>
 </template>
 
@@ -74,7 +75,7 @@ export default defineComponent({
             }
         }
 
-        const menuSelect = (index: string, indexPath: string[], item: object, routeResult: object) => {
+        const menuSelect = (index: string, indexPath: string[], item: any, routeResult: any) => {
             // console.log(index,indexPath,item,routeResult)
             router.push({path: index});
         }
@@ -88,8 +89,75 @@ export default defineComponent({
 </script>
 
 <style>
-.el-menu-vertical-demo:not(.el-menu--collapse) {
-    width: 200px;
-    min-height: 400px;
+.el-menu-horizontal-demo {
+    border-bottom: none;
+}
+
+.el-menu-horizontal-demo:not(.el-menu--collapse) {
+    min-height: 40px;
+    display: flex;
+    align-items: center;
+}
+
+/* 横版菜单样式调整 */
+.el-menu--horizontal .el-menu-item {
+    height: 40px;
+    line-height: 40px;
+    border-bottom: 2px solid transparent;
+    color: #333333;
+}
+
+.el-menu--horizontal .el-menu-item.is-active {
+    border-bottom-color: #0089fa;
+    color: #0089fa;
+    font-weight: 500;
+}
+
+.el-menu--horizontal .el-menu-item:hover {
+    background-color: #f5f5f5;
+    color: #0089fa;
+}
+
+.el-menu--horizontal .el-sub-menu__title {
+    height: 40px;
+    line-height: 40px;
+    border-bottom: 2px solid transparent;
+    color: #333333;
+}
+
+.el-menu--horizontal .el-sub-menu.is-active > .el-sub-menu__title {
+    border-bottom-color: #0089fa;
+    color: #0089fa;
+    font-weight: 500;
+}
+
+.el-menu--horizontal .el-sub-menu__title:hover {
+    background-color: #f5f5f5;
+    color: #0089fa;
+}
+
+/* 下拉菜单样式 */
+.el-menu--horizontal .el-menu {
+    background-color: #ffffff;
+    border: 1px solid #e4e7ed;
+    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+}
+
+.el-menu--horizontal .el-menu .el-menu-item {
+    height: 40px;
+    line-height: 40px;
+    background-color: #ffffff;
+    color: #333333;
+}
+
+.el-menu--horizontal .el-menu .el-menu-item:hover {
+    background-color: #f5f5f5;
+    color: #0089fa;
+}
+
+.el-menu--horizontal .el-menu .el-menu-item.is-active {
+    background-color: #f0f9ff;
+    color: #0089fa;
+    font-weight: 500;
 }
 </style>

@@ -1,22 +1,18 @@
 <template>
     <div class="common-layout h-screen bg-gray-100">
-        <el-container class="h-screen flex-col">
-            <!-- 顶部横版菜单 -->
-            <el-header :style="{ display: fullScreenValue ? 'none' : 'block', padding: '0', height: '46px' }"
-                class="border-b border-gray-200">
+        <el-container>
+            <el-aside :style="{ display: fullScreenValue ? 'none' : 'block', width: 'auto' }" class="h-screen">
                 <Menu></Menu>
-            </el-header>
-
-            <!-- 主要内容区域 -->
-            <el-container class="flex-1">
+            </el-aside>
+            <el-container>
                 <el-header
                     :style="{ display: fullScreenValue ? 'none' : 'block', height: 'max-content', padding: '0' }">
-                    <div class="h-[40px] flex justify-between items-center bg-white border-b border-gray-300">
+                    <div class="h-[40px] flex justify-between items-center bg-white mb-2">
                         <Breadcrumb></Breadcrumb>
                         <BarUtil @pageFullScreen="pageFullScreen" @refreshPage="refreshPage">
                         </BarUtil>
                     </div>
-                    <!-- <div class="flex items-center justify-between ml-1">
+                    <div class="flex items-center justify-between ml-1">
                         <div>
                             <HistoryTags></HistoryTags>
                         </div>
@@ -24,9 +20,9 @@
                             <SearchMenu></SearchMenu>
                             <MenuUtil></MenuUtil>
                         </div>
-                    </div> -->
+                    </div>
                 </el-header>
-                <el-main style="padding: 0px;overflow: hidden;height: calc(100vh - 155px)">
+                <el-main style="padding: 8px;overflow: hidden;height: calc(100vh - 75px)">
                     <router-view v-slot="{ Component }" class="h-full w-full bg-white overflow-auto">
                         <Transition appear enter-active-class="animate__animated animate__fadeIn">
                             <!-- <keep-alive> -->
@@ -35,6 +31,8 @@
                         </Transition>
                     </router-view>
                 </el-main>
+
+
             </el-container>
         </el-container>
     </div>
@@ -82,19 +80,8 @@ const pageFullScreen = () => {
 
 </script>
 <style scoped>
-/* 横版菜单布局样式 */
-.el-header {
-    padding: 0;
-    margin: 0;
-}
-
-/* 确保容器占满高度 */
-.common-layout {
-    height: 100vh;
-    overflow: hidden;
-}
-
-.el-container {
-    height: 100%;
+.el-menu-vertical-demo:not(.el-menu--collapse) {
+    width: 200px;
+    min-height: 400px;
 }
 </style>
