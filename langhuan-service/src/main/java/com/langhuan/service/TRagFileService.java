@@ -31,14 +31,12 @@ public class TRagFileService extends ServiceImpl<TRagFileMapper, TRagFile> {
     private final TRagFileGroupService ragFileGroupService;
     private final TRagFileDao ragFileDao;
     private final EtlPipeline etlPipeline;
-    private final RagService ragService;
 
     public TRagFileService(TRagFileGroupService ragFileGroupService, TRagFileDao ragFileDao,
-                           RagFileVectorUtils ragFileVectorUtils, EtlPipeline etlPipeline, RagService ragService) {
+                           RagFileVectorUtils ragFileVectorUtils, EtlPipeline etlPipeline) {
         this.ragFileGroupService = ragFileGroupService;
         this.ragFileDao = ragFileDao;
         this.etlPipeline = etlPipeline;
-        this.ragService = ragService;
     }
 
     /**
