@@ -41,6 +41,18 @@ public class ChatGeneralAssistanceService {
                 .call().content();
     }
 
+    public String easyChatNoMd(String p, String q, String modelName) {
+        return this.chatClient.prompt(
+                        new Prompt(
+                                p,
+                                OpenAiChatOptions.builder()
+                                        .model(modelName)
+                                        .build()))
+                .user(q)
+                .call().content();
+    }
+
+
     public String tools(String p) {
         return chatClient
                 .prompt(p)
@@ -160,6 +172,13 @@ public class ChatGeneralAssistanceService {
                                              ```
                                            - 示例：
                                              ["水的沸点是100℃","xxx","yyy"]
+                                        
+                                        3. **输入输出案例**：
+                                            - 输入 （"将文档内容添加到知识库","添加文件信息到知识库"）
+                                            - 输出 （[]）
+                                            ---
+                                            - 输入 （"将文档内容添加到知识库。记录一条知识：太阳在银河系。"）
+                                            - 输出 （["太阳在银河系。"]）
                                         """,
                                 OpenAiChatOptions.builder()
                                         .model(modelName)
@@ -175,5 +194,23 @@ public class ChatGeneralAssistanceService {
             log.info("文档提取拆分结果解析错误-返回完整信息");
             return List.of(q);
         }
+    }
+
+    public String documentUnderstand(String q, String modelName) {
+        return this.chatClient.prompt(
+                        new Prompt(
+                                """
+                                        根据要求处理文档。
+                                        本任务仅涉及文本处理。
+                                        请过滤掉所有涉及图像、图片、图表、图示、视觉内容分析的关键词与指令，专注于文字部分的解析与处理。
+                                        注意回答不要提及这些要求，只是输出要求的内容。
+                                        例如不可携带类似的话（'以下是对所提供文档的纯文字解析，已过滤所有涉及图像、图表、视觉内容分析的相关描述，仅保留可处理的文字信息'）
+                                        """,
+                                OpenAiChatOptions.builder()
+                                        .model(modelName)
+                                        .build()))
+                .user(q)
+                .system("回答必须使用 Markdown 格式（如标题、列表、加粗等），不得嵌套任何 JSON、XML 等结构化格式，不得使用```markdown  ```代码块标记；")
+                .call().content();
     }
 }

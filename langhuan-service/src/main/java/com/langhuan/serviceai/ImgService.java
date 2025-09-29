@@ -44,7 +44,7 @@ public class ImgService {
      */
     public ChatImageUnderstandingRes chat_imageUnderstanding(ChatRestOption chatRestOption, MultipartFile[] imageFiles) throws Exception {
         StringBuilder out = new StringBuilder();
-        String prompt = chatRestOption.getUserMessage() + "\n" + "请使用中文回答";
+        String prompt = chatRestOption.getUserMessage() + "\n" + "请使用中文回答，回答必须使用 Markdown 格式（如标题、列表、加粗等），不得嵌套任何 JSON、XML 等结构化格式，不得使用```markdown  ```代码块标记；";
         StringBuilder minioChatImgs = new StringBuilder();
         for (MultipartFile item : imageFiles) {
             // 构建地址
@@ -57,11 +57,10 @@ public class ImgService {
             out.append(imageUnderstandingProcessorFactory.getProcessor().understandImage(item,
                     prompt)).append("\n");
         }
-        String chatInStr = minioChatImgs + chatRestOption.getUserMessage();
         String chatOutStr = out.toString();
 
         return new ChatImageUnderstandingRes() {{
-            setChatInStr(chatInStr);
+            setChatInStr(minioChatImgs.toString());
             setChatOutStr(chatOutStr);
         }};
     }

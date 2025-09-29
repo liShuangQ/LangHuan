@@ -66,6 +66,8 @@ export function useChat() {
                 const file: Blob = files[index];
                 if (file.type.indexOf("image") > -1) {
                     imgInfo += `![img](${await blobToBase64(file)}) \n`;
+                }else{
+                    imgInfo += `**${file.name}** \n`;
                 }
             }
         }

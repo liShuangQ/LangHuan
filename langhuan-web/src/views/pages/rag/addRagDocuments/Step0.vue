@@ -37,7 +37,7 @@
                                     文件上传
                                 </div>
                                 <div class="text-sm text-gray-500">
-                                    支持上传txt、pdf、docx等格式文件
+                                    支持上传txt、pdf、docx、md等格式文件
                                 </div>
                             </div>
                         </div>

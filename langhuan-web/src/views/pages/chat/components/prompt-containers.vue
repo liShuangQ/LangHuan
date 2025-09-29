@@ -93,14 +93,17 @@ const isDragging = ref(false);
 const fileInputRef = ref<HTMLInputElement | null>(null);
 
 // 文件上传限制配置
-const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const MAX_FILE_COUNT = 3;
 const ALLOWED_IMAGE_TYPES = [
     "image/jpeg",
     "image/jpg",
     "image/png",
-    "image/gif",
     "image/webp",
+    'text/plain', // .txt
+    'text/markdown', // .markdown
+    'text/x-markdown', // .md
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document' // .docx
 ];
 const handleSubmit = async (e: Event) => {
     e.preventDefault();
@@ -108,13 +111,13 @@ const handleSubmit = async (e: Event) => {
         !props.canSend ||
         (!messageInput.value.trim() && selectedFiles.value.length === 0)
     ) {
-        ElMessage.warning("请输入问题或选择图片");
+        ElMessage.warning("请输入问题或选择文件");
         return;
     }
 
     try {
 
-        // 构建附件信息，未来可能不止是图片
+        // 构建附件信息
         let accessory: File[] = selectedFiles.value.map((file) => {
             return file.file;
         })
@@ -217,12 +220,12 @@ const generateFileId = () => {
 const validateFile = (file: File): string | null => {
     // 检查文件类型
     if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
-        return `文件 "${file.name}" 格式不支持，仅支持图片格式 (JPEG, PNG, GIF, WebP)`;
+        return `文件 "${file.name}" 格式不支持`;
     }
 
     // 检查文件大小
     if (file.size > MAX_FILE_SIZE) {
-        return `文件 "${file.name}" 超过10MB大小限制`;
+        return `文件 "${file.name}" 超过5MB大小限制`;
     }
 
     return null;
@@ -329,6 +332,54 @@ const formatFileSize = (bytes: number): string => {
     const sizes = ["Bytes", "KB", "MB", "GB"];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
+};
+
+// 获取文件类型对应的图标和显示方式
+const getFileDisplayInfo = (file: UploadFile) => {
+    const fileType = file.file.type;
+
+    // 图片文件类型
+    if (fileType.startsWith('image/')) {
+        return {
+            type: 'image',
+            icon: null,
+            color: 'bg-blue-100 dark:bg-blue-900'
+        };
+    }
+
+    // 文本文件
+    if (fileType === 'text/plain') {
+        return {
+            type: 'text',
+            icon: '📄',
+            color: 'bg-gray-100 dark:bg-gray-800'
+        };
+    }
+
+    // Markdown文件
+    if (fileType.includes('markdown')) {
+        return {
+            type: 'markdown',
+            icon: '📝',
+            color: 'bg-orange-100 dark:bg-orange-900'
+        };
+    }
+
+    // Word文档
+    if (fileType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
+        return {
+            type: 'docx',
+            icon: '📄',
+            color: 'bg-blue-100 dark:bg-blue-900'
+        };
+    }
+
+    // 默认情况
+    return {
+        type: 'default',
+        icon: '📎',
+        color: 'bg-gray-100 dark:bg-gray-800'
+    };
 };
 </script>
 
@@ -525,9 +576,17 @@ part, partIndex
             <div v-if="selectedFiles.length > 0" class="mt-2">
                 <div class="flex flex-wrap gap-2 p-2 bg-slate-100 dark:bg-slate-700 rounded-lg">
                     <div v-for="file in selectedFiles" :key="file.id" class="relative group">
-                        <div
-                            class="w-16 h-16 rounded-lg overflow-hidden border-2 border-slate-300 dark:border-slate-600">
-                            <img :src="file.url" :alt="file.name" class="w-full h-full object-cover" />
+                        <div :class="[
+                            'w-16 h-16 rounded-lg overflow-hidden border-2 border-slate-300 dark:border-slate-600 flex items-center justify-center',
+                            getFileDisplayInfo(file).color
+                        ]">
+                            <!-- 图片文件显示图片预览 -->
+                            <img v-if="getFileDisplayInfo(file).type === 'image'" :src="file.url" :alt="file.name"
+                                class="w-full h-full object-cover" />
+                            <!-- 其他文件类型显示对应图标 -->
+                            <div v-else class="text-4xl">
+                                {{ getFileDisplayInfo(file).icon }}
+                            </div>
                         </div>
                         <div class="absolute -top-2 -right-2 opacity-0 group-hover:opacity-100 transition-opacity">
                             <button @click="removeFile(file.id)"
@@ -550,10 +609,10 @@ part, partIndex
                     class="absolute inset-0 z-10 flex items-center justify-center bg-blue-100 dark:bg-blue-900 bg-opacity-90 rounded-xl border-2 border-dashed border-blue-400 dark:border-blue-500">
                     <div class="text-center">
                         <p class="text-blue-700 dark:text-blue-300 font-medium">
-                            拖拽图片到此处上传
+                            拖拽文件到此处上传
                         </p>
                         <p class="text-sm text-blue-600 dark:text-blue-400">
-                            支持 JPEG, PNG, GIF, WebP 格式，最大10MB
+                            支持 JPEG, PNG, TXT, Markdown, DOCX 等格式，最大5MB
                         </p>
                     </div>
                 </div>
@@ -567,11 +626,10 @@ part, partIndex
                     </button>
                     <!-- 隐藏的文件输入 -->
                     <input ref="fileInputRef" type="file" multiple
-                        accept="image/jpeg,image/jpg,image/png,image/gif,image/webp" @change="handleFileSelect"
-                        class="hidden" />
+                        :accept="ALLOWED_IMAGE_TYPES.join(',')" @change="handleFileSelect" class="hidden" />
                     <textarea v-model="messageInput" @keydown.enter="handleSubmit" id="chat-input"
                         class="block w-full resize-none rounded-xl border-none bg-slate-200 p-4 pl-12 pr-20 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-slate-800 dark:text-slate-200 dark:placeholder-slate-400 dark:focus:ring-blue-500 sm:text-base"
-                        placeholder="   请输入您的问题 (支持拖拽图片上传)" rows="2" required></textarea>
+                        placeholder="   请输入您的问题 (支持拖拽文件上传)" rows="2" required></textarea>
                     <button type="submit" @click="handleSubmit" :disabled="!canSend" :class="[
                         'absolute bottom-2 right-2.5 rounded-lg px-4 py-2 text-sm font-medium text-slate-200 focus:outline-none focus:ring-4 sm:text-base',
                         canSend

@@ -8,6 +8,7 @@
             :on-exceed="handleExceed"
             :before-upload="beforeUpload"
             :on-remove="handleRemove"
+            accept=".txt,.md,.markdown,.docx"
         >
             <el-icon class="el-icon--upload"><upload-filled /></el-icon>
             <div class="el-upload__text">
@@ -18,7 +19,7 @@
             </div>
             <template #tip>
                 <div class="el-upload__tip">
-                    推荐上传docx格式文件。支持上传txt、markdown、pdf等格式文件，文件大小不超过10MB。
+                    推荐上传docx格式文件。支持上传txt、markdown、docx格式文件，文件大小不超过10MB。
                 </div>
             </template>
         </el-upload>
@@ -46,10 +47,25 @@ const handleRemove = () => {
 
 const beforeUpload = (file: File) => {
     const maxSize = 10 * 1024 * 1024; // 10MB
+    const allowedTypes = [
+        'text/plain', // .txt
+        'text/markdown', // .markdown
+        'text/x-markdown', // .md
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document' // .docx
+    ];
+
+    // 检查文件大小
     if (file.size > maxSize) {
         ElMessage.error("文件大小不能超过10MB");
         return false;
     }
+
+    // 检查文件类型
+    if (!allowedTypes.includes(file.type)) {
+        ElMessage.error("只支持txt、markdown、docx格式的文件");
+        return false;
+    }
+
     return true;
 };
 

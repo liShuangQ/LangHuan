@@ -68,7 +68,6 @@
         <dependency>
             <groupId>org.springframework.ai</groupId>
             <artifactId>spring-ai-tika-document-reader</artifactId>
-            <version>1.0.0</version>
         </dependency>
         <!-- 不好用 转为自己实现 -->
         <!-- <dependency>
@@ -84,6 +83,17 @@
             <groupId>io.minio</groupId>
             <artifactId>minio</artifactId>
             <version>8.4.0</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.commons</groupId>
+                    <artifactId>commons-compress</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-compress</artifactId>
+            <version>1.26.1</version>
         </dependency>
         <dependency>
             <groupId>org.apache.poi</groupId>

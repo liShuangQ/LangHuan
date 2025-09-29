@@ -75,23 +75,23 @@ public class Constant {
             setDescription("无任何特定功能需求的日常闲聊问答等");
         }});
         add(new IntentionItem() {{
-            setId("understand_image");
-            setTask("理解图片");
-            setExamples(List.of("解释这张图", "图里有什么", "识别图片文字"));
-            setDescription("用户需要解析、描述或提取图片内容。注意文字要提到是图片信息，当没提到图的时候应该是chat");
+            setId("understand");
+            setTask("理解文件");
+            setExamples(List.of("解释文档内容", "文档里有什么", "理解这张图", "图里有什么", "识别图片文字"));
+            setDescription("用户需要解析、描述或提取图片或者文档（文件）内容。注意文字要提到是图片或者文档信息，当没提到的时候应该是chat");
         }});
         add(new IntentionItem() {{
             setId("add_personal_knowledge_space");
-            setTask("添加个人知识空间");
+            setTask("添加到个人知识空间");
             setExamples(List.of("添加知识库", "添加到个人文档", "添加到我的空间", "记录知识"));
-            setDescription("用户明确请求新建个人知识存储区域");
+            setDescription("用户明确请求添加知识到个人知识存储区域");
         }});
-        add(new IntentionItem() {{
-            setId("add_image_content_to_knowledge_base");
-            setTask("将图片内容添加到个人知识库");
-            setExamples(List.of("把这张图存到知识库", "图片入库", "保存这张图到我的笔记"));
-            setDescription("用户希望将图片解析后的内容写入已有个人知识库，注意要提到了图片信息");
-        }});
+//        add(new IntentionItem() {{
+//            setId("add_image_content_to_knowledge_base");
+//            setTask("将图片内容添加到个人知识库");
+//            setExamples(List.of("把这张图存到知识库", "图片入库", "保存这张图到我的笔记"));
+//            setDescription("用户希望将图片解析后的内容写入已有个人知识库，注意要提到了图片信息");
+//        }});
     }};
 }
 
