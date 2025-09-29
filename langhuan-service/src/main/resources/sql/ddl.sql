@@ -60,7 +60,7 @@ CREATE TABLE t_user
 
 COMMENT ON TABLE t_user IS '用户表';
 COMMENT ON COLUMN t_user.name IS '姓名';
-COMMENT ON COLUMN t_user.username IS '用户名(不可修改)';
+COMMENT ON COLUMN t_user.username IS '用户名(不可修改,在代码中实际作为主键使用)';
 COMMENT ON COLUMN t_user.password IS '密码';
 COMMENT ON COLUMN t_user.phone IS '手机号';
 COMMENT ON COLUMN t_user.gender IS '性别';
@@ -269,7 +269,6 @@ CREATE TABLE t_notifications (
 
 
 COMMENT ON TABLE t_notifications IS '系统通知表，用于存储发送给用户的各类通知信息';
-
 COMMENT ON COLUMN t_notifications.id IS '通知唯一标识，使用UUID确保全局唯一性';
 COMMENT ON COLUMN t_notifications.user_id IS '接收通知的用户ID，关联到users表。为空就为全局通知';
 COMMENT ON COLUMN t_notifications.template_id IS '';

@@ -1,28 +1,19 @@
 package com.langhuan.serviceai;
 
-import cn.hutool.core.lang.UUID;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.langhuan.common.BusinessException;
 import com.langhuan.common.Constant;
 import com.langhuan.functionTools.RestRequestTools;
-import com.langhuan.model.domain.TRagFile;
-import com.langhuan.model.domain.TRagFileGroup;
 import com.langhuan.model.pojo.ChatModelResult;
 import com.langhuan.model.pojo.ChatRestOption;
-import com.langhuan.service.MinioService;
 import com.langhuan.service.TPromptsService;
-import com.langhuan.service.TRagFileGroupService;
 import com.langhuan.service.TRagFileService;
-import com.langhuan.utils.imageunderstanding.ImageUnderstandingProcessorFactory;
-import com.langhuan.utils.other.SecurityUtils;
-import jakarta.annotation.PostConstruct;
+import com.langhuan.utils.chatMemory.ChatMemoryUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
 import org.springframework.ai.chat.client.advisor.SafeGuardAdvisor;
 import org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor;
 import org.springframework.ai.chat.memory.ChatMemory;
-import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.messages.MessageType;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.document.Document;
@@ -30,7 +21,6 @@ import org.springframework.ai.openai.OpenAiChatOptions;
 import org.springframework.ai.support.ToolCallbacks;
 import org.springframework.ai.tool.ToolCallback;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -66,31 +56,12 @@ public class ChatService {
     ChatMemory chatMemory;
 
     @Autowired
-    private ChatMemoryService chatMemoryService;
-    @Autowired
     RagService ragService;
     @Autowired
     ChatGeneralAssistanceService chatGeneralAssistanceService;
     @Autowired
-    TRagFileService fileService;
-    @Autowired
-    TRagFileGroupService fileGroupService;
-    @Autowired
-    private ImageUnderstandingProcessorFactory imageUnderstandingProcessorFactory;
-    @Autowired
-    private MinioService minioService;
-    @Value("${minio.img-bucket-name}")
-    private String bucket;
-    @Value("${minio.folder.chat-memory-img}")
-    private String chatMemoryImgFold;
+    private ImgService imgService;
 
-    @PostConstruct
-    public void init() throws Exception {
-        // 在初始化方法中调用 ensureBucketExists
-        if (minioService != null) {
-            minioService.ensureBucketExists(bucket);
-        }
-    }
 
     public ChatService(ChatClient.Builder chatClientBuilder, RagService ragService) {
         this.ragService = ragService;
@@ -133,7 +104,17 @@ public class ChatService {
                 case "chat":
                     return toChat(chatRestOption);
                 case "understand_image":
-                    return toImageUnderstanding(chatRestOption, accessory);
+                    ImgService.ChatImageUnderstandingRes chatImageUnderstandingRes = imgService.chat_imageUnderstanding(chatRestOption, accessory);
+                    // 手动设置记忆
+                    chatMemory.add(chatRestOption.getChatId(),
+                            ChatMemoryUtils.createdMessage(chatImageUnderstandingRes.getChatInStr(), Map.of(), MessageType.USER));
+
+                    chatMemory.add(chatRestOption.getChatId(),
+                            ChatMemoryUtils.createdMessage(chatImageUnderstandingRes.getChatOutStr(), Map.of(), MessageType.ASSISTANT));
+                    return new ChatModelResult() {{
+                        setChat(chatImageUnderstandingRes.getChatOutStr());
+                        setRag(List.of());
+                    }};
                 case "add_personal_knowledge_space":
                     StringBuilder simulationThink1 = new StringBuilder();
                     simulationThink1.append("<think>");
@@ -151,13 +132,22 @@ public class ChatService {
                     simulationThink1.append("---------").append("\n");
                     if (!documentSegmentation1.isEmpty()) {
                         simulationThink1.append("添加到知识库").append("\n");
-                        simulationThink1.append("添加到知识库成功").append("\n");
-                        simulationThink1.append("</think>");
-                        ChatModelResult addDocuments = toAddDocuments(documentSegmentation1);
-                        return new ChatModelResult() {{
-                            setChat(simulationThink1 + addDocuments.getChat());
-                            setRag(List.of());
-                        }};
+                        Boolean isAddDocuments = ragService.addDocumentToMySpace(documentSegmentation1);
+                        if (isAddDocuments) {
+                            simulationThink1.append("添加到知识库成功").append("\n");
+                            simulationThink1.append("</think>");
+                            return new ChatModelResult() {{
+                                setChat(simulationThink1 + "已成功添加到个人知识空间");
+                                setRag(List.of());
+                            }};
+                        } else {
+                            simulationThink1.append("添加到知识库失败").append("\n");
+                            simulationThink1.append("</think>");
+                            return new ChatModelResult() {{
+                                setChat("添加到个人知识空间失败");
+                                setRag(List.of());
+                            }};
+                        }
                     } else {
                         return new ChatModelResult() {{
                             setChat("未从文档中提取到知识信息，请重试");
@@ -173,7 +163,7 @@ public class ChatService {
                     simulationThink2.append("图片提取知识").append("\n");
                     simulationThink2.append("图片识别结果：").append("\n");
                     simulationThink2.append("---------").append("\n");
-                    List<String> imageUnderstandingToText = toImageUnderstandingToText(chatRestOption, accessory, "");
+                    List<String> imageUnderstandingToText = imgService.chat_imageUnderstandingToText(accessory, "");
                     for (String string : imageUnderstandingToText) {
                         simulationThink2.append(string)
                                 .append("\n")
@@ -183,13 +173,24 @@ public class ChatService {
                     simulationThink2.append("---------").append("\n");
                     if (!imageUnderstandingToText.isEmpty()) {
                         simulationThink2.append("添加到知识库").append("\n");
-                        simulationThink2.append("添加到知识库成功").append("\n");
-                        simulationThink2.append("</think>");
-                        ChatModelResult addDocuments = toAddDocuments(imageUnderstandingToText);
-                        return new ChatModelResult() {{
-                            setChat(simulationThink2 + addDocuments.getChat());
-                            setRag(List.of());
-                        }};
+
+                        Boolean isAddDocuments = ragService.addDocumentToMySpace(imageUnderstandingToText);
+                        if (isAddDocuments) {
+                            simulationThink2.append("添加到知识库成功").append("\n");
+                            simulationThink2.append("</think>");
+                            return new ChatModelResult() {{
+                                setChat(simulationThink2 + "已成功添加到个人知识空间");
+                                setRag(List.of());
+                            }};
+                        } else {
+                            simulationThink2.append("添加到知识库失败").append("\n");
+                            simulationThink2.append("</think>");
+                            return new ChatModelResult() {{
+                                setChat("添加到个人知识空间失败");
+                                setRag(List.of());
+                            }};
+                        }
+
                     } else {
                         return new ChatModelResult() {{
                             setChat("未从文档中提取到知识信息，请重试");
@@ -209,137 +210,6 @@ public class ChatService {
                 }
             };
         }
-    }
-
-    public Message createdMessage(String text, Map<String, Object> metadata, MessageType messageType) {
-        return new Message() {
-            @Override
-            public String getText() {
-                return text;
-            }
-
-            @Override
-            public Map<String, Object> getMetadata() {
-                return metadata;
-            }
-
-            @Override
-            public MessageType getMessageType() {
-                return messageType;
-            }
-        };
-    }
-
-    public ChatModelResult toAddDocuments(List<String> documents) throws Exception {
-        String user = SecurityUtils.getCurrentUsername();
-        // HACK 和前端约定的知识空间文件组名称
-        String setFileGroupName = user + "_知识空间文件组";
-        String setFileName = user + "_知识空间";
-        TRagFile ragFile = new TRagFile();
-
-        List<TRagFileGroup> fileGroupList = fileGroupService
-                .list(new LambdaQueryWrapper<TRagFileGroup>().eq(TRagFileGroup::getGroupName, setFileGroupName));
-
-        if (fileGroupList.isEmpty()) {
-            TRagFileGroup ragFileGroup = new TRagFileGroup();
-            ragFileGroup.setGroupName(setFileGroupName);
-            ragFileGroup.setGroupType("个人知识空间");
-            ragFileGroup.setGroupDesc("对话知识空间生成");
-            ragFileGroup.setCreatedBy(user);
-            ragFileGroup.setVisibility("private");
-            fileGroupService.save(ragFileGroup);
-            TRagFileGroup fileGroup = fileGroupService.getOne(new LambdaQueryWrapper<TRagFileGroup>()
-                    .eq(TRagFileGroup::getGroupName, setFileGroupName));
-            ragFile.setFileGroupId(String.valueOf(fileGroup.getId()));
-        } else {
-            // 如果文件组已存在，使用现有文件组的ID
-            TRagFileGroup existingGroup = fileGroupList.get(0);
-            ragFile.setFileGroupId(String.valueOf(existingGroup.getId()));
-        }
-
-        // 文件操作
-        List<TRagFile> fileList = fileService
-                .list(new LambdaQueryWrapper<TRagFile>().eq(TRagFile::getFileName, setFileName));
-        if (fileList.isEmpty()) {
-            ragFile.setFileName(setFileName);
-            ragFile.setFileType("对话知识空间");
-            ragFile.setFileSize("无");
-            ragFile.setDocumentNum(String.valueOf(documents.size()));
-            ragFile.setFileDesc(setFileName + "。在对话中产生。");
-            // fileGroupId已经在上面设置过了
-            ragFile.setUploadedBy(user);
-            fileService.save(ragFile);
-        } else {
-            TRagFile first = fileList.getFirst();
-            first.setDocumentNum(String.valueOf(
-                    Integer.parseInt(first.getDocumentNum()) + documents.size()));
-            ragFile = first;
-            fileService.updateById(first);
-        }
-        ragService.writeDocumentsToVectorStore(documents, ragFile);
-        ChatModelResult chatModelResult = new ChatModelResult();
-        chatModelResult.setChat("已被存入个人空间");
-        chatModelResult.setRag(List.of());
-        return chatModelResult;
-    }
-
-    public ChatModelResult toImageUnderstanding(ChatRestOption chatRestOption, MultipartFile[] imageFiles) throws Exception {
-        StringBuilder out = new StringBuilder();
-        String prompt = chatRestOption.getUserMessage() + "\n" + "请使用中文回答";
-        StringBuilder minioChatImgs = new StringBuilder();
-        for (MultipartFile item : imageFiles) {
-            // 构建地址
-            String objectName = chatMemoryImgFold + "/" + chatRestOption.getChatId() + "/" + UUID.randomUUID().toString() + item.getOriginalFilename();
-            // 上传地址
-            minioService.handleUpload(objectName, item.getInputStream(), -1, bucket);
-            // 获取minio地址
-            minioChatImgs.append("![img](url)".replace("url", minioService.generateMinioUrl(objectName, bucket))).append("\n");
-            // 模型回答
-            out.append(imageUnderstandingProcessorFactory.getProcessor().understandImage(item,
-                    prompt)).append("\n");
-        }
-        String chatInStr = minioChatImgs + chatRestOption.getUserMessage();
-        String chatOutStr = out.toString();
-
-        // 手动设置记忆
-        chatMemory.add(chatRestOption.getChatId(),
-                createdMessage(chatInStr, Map.of(), MessageType.USER));
-
-        chatMemory.add(chatRestOption.getChatId(),
-                createdMessage(chatOutStr, Map.of(), MessageType.ASSISTANT));
-        return new ChatModelResult() {{
-            setChat(chatOutStr);
-            setRag(List.of());
-        }};
-    }
-
-    public List<String> toImageUnderstandingToText(ChatRestOption chatRestOption, MultipartFile[] imageFiles, String imgPrompt) throws Exception {
-        if (imgPrompt.isEmpty()) {
-            imgPrompt = """
-                    请对图片进行详细解析，提取其中的知识信息：
-                    如果图片是文字内容，请完整、准确地提取所有文字信息，确保无遗漏。
-                    如果图片是流程图、结构图、思维导图等图形，请用清晰的文字描述其结构、逻辑关系、关键节点和流程步骤，确保信息完整、逻辑清晰，便于后续存储为文字知识。
-                    如果图片包含图表、表格、数据，请提取其中的关键数据、指标、趋势，并用简洁的文字进行说明。
-                    如果图片是混合类型（如图文结合），请分别提取文字和图形信息，并整合为一段完整的文字描述。
-                    请确保提取的内容准确、简洁、结构化，便于直接存入知识库。
-                    输出格式建议如下：
-                    
-                    【信息】：
-                    （用清晰、简洁的文字描述图片中的知识信息。这里直接呈现知识信息。）
-                    【关键词】：
-                    （提取3-5个关键词，便于后续检索）
-                    
-                    请根据上述要求处理以下图片。
-                    """;
-        }
-        List<String> out = new ArrayList<>();
-        String prompt = imgPrompt + "\n" + "请使用中文回答";
-        for (MultipartFile item : imageFiles) {
-            out.add(imageUnderstandingProcessorFactory.getProcessor().understandImage(item,
-                    prompt));
-        }
-
-        return out;
     }
 
     public ChatModelResult toChat(ChatRestOption chatRestOption) {
@@ -397,6 +267,10 @@ public class ChatService {
         String ragPrompt = AIDEFAULTQUESTIONANSWERADVISORRPROMPT
                 .replace("{question_answer_context}", ragContents.toString());
 
+        String system = TPromptsService.getCachedTPromptsByMethodName("ChatService");
+        if (system == null) {
+            system = Constant.AINULLDEFAULTSYSTEMPROMPT;
+        }
         // 构建并发送AI请求
         String chat = this.chatClient.prompt(
                         new Prompt(
@@ -405,7 +279,7 @@ public class ChatService {
                                         .model(modelName)
                                         .build()))
                 .user(q)
-                .system(TPromptsService.getCachedTPromptsByMethodName("ChatService"))
+                .system(system)
                 .advisors(a -> a.param(chatMemory.CONVERSATION_ID, id))
                 .toolCallbacks(tools)
                 .call().content();
@@ -419,6 +293,10 @@ public class ChatService {
 
     public ChatModelResult noRagChat(String id, String p, String q, String modelName, ToolCallback[] tools) {
 
+        String system = TPromptsService.getCachedTPromptsByMethodName("ChatService");
+        if (system == null) {
+            system = Constant.AINULLDEFAULTSYSTEMPROMPT;
+        }
         // 构建并发送AI请求，不包含RAG上下文
         String chat = this.chatClient.prompt(
                         new Prompt(
@@ -427,7 +305,7 @@ public class ChatService {
                                         .model(modelName)
                                         .build()))
                 .user(q)
-                .system(TPromptsService.getCachedTPromptsByMethodName("ChatService"))
+                .system(system)
                 .advisors(a -> a.param(chatMemory.CONVERSATION_ID, id))
                 .toolCallbacks(tools)
                 .call().content();

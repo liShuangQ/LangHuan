@@ -2,24 +2,23 @@ package com.langhuan.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.langhuan.common.BusinessException;
+import com.langhuan.common.Constant;
 import com.langhuan.dao.TRagFileDao;
 import com.langhuan.model.domain.TRagFile;
 import com.langhuan.model.domain.TRagFileGroup;
 import com.langhuan.model.mapper.TRagFileMapper;
+import com.langhuan.serviceai.RagService;
+import com.langhuan.utils.other.SecurityUtils;
 import com.langhuan.utils.rag.EtlPipeline;
 import com.langhuan.utils.rag.RagFileVectorUtils;
-import com.langhuan.utils.other.SecurityUtils;
-
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
-
-import org.springframework.core.io.InputStreamResource;
-import org.springframework.stereotype.Service;
 
 /**
  * @author lishuangqi
@@ -32,17 +31,19 @@ public class TRagFileService extends ServiceImpl<TRagFileMapper, TRagFile> {
     private final TRagFileGroupService ragFileGroupService;
     private final TRagFileDao ragFileDao;
     private final EtlPipeline etlPipeline;
+    private final RagService ragService;
 
     public TRagFileService(TRagFileGroupService ragFileGroupService, TRagFileDao ragFileDao,
-            RagFileVectorUtils ragFileVectorUtils, EtlPipeline etlPipeline) {
+                           RagFileVectorUtils ragFileVectorUtils, EtlPipeline etlPipeline, RagService ragService) {
         this.ragFileGroupService = ragFileGroupService;
         this.ragFileDao = ragFileDao;
         this.etlPipeline = etlPipeline;
+        this.ragService = ragService;
     }
 
     /**
      * 查询文件列表（带权限控制）
-     * 
+     *
      * @param fileName      文件名（模糊查询）
      * @param fileType      文件类型（模糊查询）
      * @param fileGroupName 文件组名（模糊查询）
@@ -51,7 +52,7 @@ public class TRagFileService extends ServiceImpl<TRagFileMapper, TRagFile> {
      * @return 分页结果
      */
     public IPage<Map<String, Object>> queryFiles(String fileName, String fileType, String fileGroupName, int pageNum,
-            int pageSize) {
+                                                 int pageSize) {
         String currentUser = SecurityUtils.getCurrentUsername();
         boolean isAdmin = SecurityUtils.hasAdminRole();
 
@@ -66,7 +67,7 @@ public class TRagFileService extends ServiceImpl<TRagFileMapper, TRagFile> {
 
     /**
      * 根据文件ID生成文档流
-     * 
+     *
      * @param fileId 文件ID
      * @return 文档输入流资源
      */
@@ -89,4 +90,5 @@ public class TRagFileService extends ServiceImpl<TRagFileMapper, TRagFile> {
     public List<Integer> getAllFileIdsForExport() {
         return ragFileDao.queryAllFileIds(); // 返回 List<Integer>
     }
+
 }

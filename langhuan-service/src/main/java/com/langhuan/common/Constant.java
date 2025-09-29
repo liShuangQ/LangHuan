@@ -18,8 +18,6 @@ public class Constant {
     // 访问白名单
     public static final String[] URL_WHITELIST = {"/favicon.ico", "/user/login", "/user/register", "/user/logout",
             "/service/user/login", "/service/user/register"};
-    // ai的rag默认拆分规则
-    public static final String DEFAULT_RAG_SPLIT_PATTERN = "(?:={6})\\s*"; // "[;；]+\\s*"
     // ai的rag默认导出的分隔符
     public static final String DEFAULT_RAG_EXPORT_SPLIT = "======";
     // ai的单id最大记忆消息数 必须大于0
@@ -62,8 +60,10 @@ public class Constant {
     public static final double[] LINEARWEIGHTING = {0.3, 0.2, 0.2, 0.3};
     // 定义固定的缓存键
     public static final String CACHE_KEY = "file_id_cache";
-    // 是否开启个人知识库持久化
-    public static final Boolean RAGADDDOCUMENTINTENTION = true;
+    // 个人空间的默认文件组名 （和前端约定好，前端按这个名字查询）
+    public static final String DEFAULTFILEGROUPNAME = "${user}_知识空间文件组";
+    // 个人空间的默认文件名 （和前端约定好，前端按这个名字查询）
+    public static final String DEFAULTFILEGROUPFILE = "${user}_知识空间";
     // 意图识别的类别
     public static final String DEFAULTINTENTIONTYPEID = "chat";
     // 可扩展，若未来新增任务，请严格保持「id / task / examples / description」四字段结构。

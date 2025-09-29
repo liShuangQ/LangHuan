@@ -3,6 +3,7 @@ package com.langhuan.serviceai;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.langhuan.common.BusinessException;
 import com.langhuan.common.Constant;
 import com.langhuan.config.VectorStoreConfig;
@@ -10,10 +11,8 @@ import com.langhuan.dao.TFileUrlDao;
 import com.langhuan.dao.VectorStoreRagDao;
 import com.langhuan.model.domain.TFileUrl;
 import com.langhuan.model.domain.TRagFile;
-import com.langhuan.service.CacheService;
-import com.langhuan.service.MinioService;
-import com.langhuan.service.TFileUrlService;
-import com.langhuan.service.TRagFileService;
+import com.langhuan.model.domain.TRagFileGroup;
+import com.langhuan.service.*;
 import com.langhuan.utils.other.NumberTool;
 import com.langhuan.utils.other.SecurityUtils;
 import com.langhuan.utils.rag.EtlPipeline;
@@ -42,6 +41,7 @@ import static com.langhuan.common.Constant.CACHE_KEY;
 @Slf4j
 public class RagService {
 
+    private final TRagFileGroupService ragFileGroupService;
     private final TRagFileService ragFileService;
     private final VectorStore ragVectorStore;
     private final EtlPipeline etlPipeline;
@@ -59,10 +59,11 @@ public class RagService {
     @Resource
     private MinioService minioService;
 
-    public RagService(TRagFileService ragFileService, JdbcTemplate jdbcTemplate,
+    public RagService(TRagFileService ragFileService, JdbcTemplate jdbcTemplate, TRagFileGroupService ragFileGroupService,
                       VectorStoreConfig vectorStoreConfig, EtlPipeline etlPipeline,
                       TFileUrlService tFileUrlService, VectorStoreRagDao vectorStoreRagDao, TFileUrlDao tFileUrlDao, ReRankProcessorFactory reRankProcessorFactory) {
         this.ragFileService = ragFileService;
+        this.ragFileGroupService = ragFileGroupService;
         this.ragVectorStore = vectorStoreConfig.ragVectorStore();
         this.etlPipeline = etlPipeline;
         this.tFileUrlService = tFileUrlService;
@@ -362,6 +363,63 @@ public class RagService {
         return searchDocuments.subList(0, Math.min(Constant.LLM_RAG_TOPN, searchDocuments.size()));
     }
 
+
+    /**
+     * 添加文档到个人知识空间
+     *
+     * @param documents
+     * @return
+     * @throws Exception
+     */
+    public Boolean addDocumentToMySpace(List<String> documents) throws Exception {
+        String user = SecurityUtils.getCurrentUsername();
+        // HACK 和前端约定的知识空间文件组名称
+        String setFileGroupName = Constant.DEFAULTFILEGROUPNAME.replace("${user}", user);
+        String setFileName = Constant.DEFAULTFILEGROUPFILE.replace("${user}", user);
+        TRagFile ragFile = new TRagFile();
+
+        List<TRagFileGroup> fileGroupList = ragFileGroupService
+                .list(new LambdaQueryWrapper<TRagFileGroup>().eq(TRagFileGroup::getGroupName, setFileGroupName));
+
+        if (fileGroupList.isEmpty()) {
+            TRagFileGroup ragFileGroup = new TRagFileGroup();
+            ragFileGroup.setGroupName(setFileGroupName);
+            ragFileGroup.setGroupType("个人知识空间");
+            ragFileGroup.setGroupDesc("对话知识空间生成");
+            ragFileGroup.setCreatedBy(user);
+            ragFileGroup.setVisibility("private");
+            ragFileGroupService.save(ragFileGroup);
+            TRagFileGroup fileGroup = ragFileGroupService.getOne(new LambdaQueryWrapper<TRagFileGroup>()
+                    .eq(TRagFileGroup::getGroupName, setFileGroupName));
+            ragFile.setFileGroupId(String.valueOf(fileGroup.getId()));
+        } else {
+            // 如果文件组已存在，使用现有文件组的ID
+            TRagFileGroup existingGroup = fileGroupList.get(0);
+            ragFile.setFileGroupId(String.valueOf(existingGroup.getId()));
+        }
+
+        // 文件操作
+        List<TRagFile> fileList = ragFileService.list(new LambdaQueryWrapper<TRagFile>().eq(TRagFile::getFileName, setFileName));
+        if (fileList.isEmpty()) {
+            ragFile.setFileName(setFileName);
+            ragFile.setFileType("对话知识空间");
+            ragFile.setFileSize("无");
+            ragFile.setDocumentNum(String.valueOf(documents.size()));
+            ragFile.setFileDesc(setFileName + "。在对话中产生。");
+            // fileGroupId已经在上面设置过了
+            ragFile.setUploadedBy(user);
+            ragFileService.save(ragFile);
+        } else {
+            TRagFile first = fileList.getFirst();
+            first.setDocumentNum(String.valueOf(
+                    Integer.parseInt(first.getDocumentNum()) + documents.size()));
+            ragFile = first;
+            ragFileService.updateById(first);
+        }
+        String s = writeDocumentsToVectorStore(documents, ragFile);
+        return s.contains("成功");
+    }
+
     /**
      * 线性加权法
      * score（Double类型） -> spring ai的得分 searchDocuments.get(0).get("score");
@@ -430,5 +488,6 @@ public class RagService {
 
         return searchDocuments;
     }
+
 
 }
