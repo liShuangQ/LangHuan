@@ -166,6 +166,9 @@ function createHtmlDocument(content: string, styles: string, title: string = 'è
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             padding: 20px;
         }
+        .chat-container>div {
+            overflow-x: auto;
+        }
         .message {
             margin-bottom: 15px;
             padding: 10px;

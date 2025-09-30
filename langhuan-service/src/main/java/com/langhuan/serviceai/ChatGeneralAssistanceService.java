@@ -1,6 +1,5 @@
 package com.langhuan.serviceai;
 
-import cn.hutool.json.JSONUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.langhuan.common.Constant;
@@ -12,8 +11,6 @@ import org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.openai.OpenAiChatOptions;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Slf4j
 @Service
@@ -152,34 +149,21 @@ public class ChatGeneralAssistanceService {
         }
     }
 
-    public List<String> documentSegmentation(String modelName, String q) {
+    public String documentSegmentation(String modelName, String q) {
         log.info("提取知识信息: {}", q);
         String out = chatClient.prompt(
                         new Prompt(
                                 """
-                                        你是一个RAG文档提取拆分器，严格按以下规则处理：
+                                        你是一个RAG文档提取器，严格按以下规则处理：
                                         1. **文档提取规则**：
                                              a) 移除意图引导词（如"真实应该是"/"记录一条知识"/"加到知识库"等）
                                              b) 移除其他知识无关提示词（如"识别图片中xxx"/"文件中xxx"/"图中xxx"等）
-                                             C) 保留核心文本作为单个chunk（例：输入"将水的沸点是100℃加到知识库" → 提取"水的沸点是100℃"）
-                                             d) 多段文本按句子含义拆分为多个chunk（例：输入"添加知识：1.xxx 2.yyy" → 提取  ["xxx","yyy"] ）
-                                             e) 无可用知识信息返回空数组
-                                        
+                                             c) 无可用知识信息返回空字符串
                                         2. **输出规范**：
-                                           - 必须返回纯JSON，无任何额外字符/解释
-                                           - 格式严格遵循：
-                                             ```json
-                                             ["chunk1","chunk2"]
-                                             ```
-                                           - 示例：
-                                             ["水的沸点是100℃","xxx","yyy"]
-                                        
+                                           - 必须返回提取后的纯文字，无任何额外字符/解释
                                         3. **输入输出案例**：
-                                            - 输入 （"将文档内容添加到知识库","添加文件信息到知识库"）
-                                            - 输出 （[]）
-                                            ---
                                             - 输入 （"将文档内容添加到知识库。记录一条知识：xxxxxx"）
-                                            - 输出 （["xxxxxx"]）
+                                            - 输出 （"xxxxxx"）
                                             ---
                                             - 输入 （"识别图片中关于经济的信息，添加到知识库。记录一条知识：yyyyyy。"）
                                             - 输出 （["yyyyyy"]）
@@ -193,10 +177,10 @@ public class ChatGeneralAssistanceService {
 
         try {
             log.info("文档提取拆分结果解析成功: {}", out);
-            return JSONUtil.parseArray(out).toList(String.class);
+            return out;
         } catch (Exception e) {
             log.info("文档提取拆分结果解析错误-返回完整信息");
-            return List.of(q);
+            return q;
         }
     }
 

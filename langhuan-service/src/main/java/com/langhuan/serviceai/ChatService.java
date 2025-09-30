@@ -168,7 +168,7 @@ public class ChatService {
                 simulationThink.append("识别结果：").append("\n");
                 simulationThink.append("---------").append("\n");
                 // 处理对话中文字
-                List<String> textDocument = chatGeneralAssistanceService.documentSegmentation(chatRestOption.getModelName(), chatRestOption.getUserMessage());
+                List<String> textDocument = List.of(chatGeneralAssistanceService.documentSegmentation(chatRestOption.getModelName(), chatRestOption.getUserMessage()));
                 // 处理图
                 List<String> imageDocument = imgService.chat_imageUnderstandingToText(imageRes, chatRestOption.getUserMessage());
                 // 处理文档
@@ -185,6 +185,7 @@ public class ChatService {
                 allDocument.addAll(textDocument);
                 allDocument.addAll(imageDocument);
                 allDocument.addAll(docDocument);
+                allDocument = allDocument.stream().filter(s -> !s.isEmpty()).toList();
                 // 打印文档
                 for (String string : allDocument) {
                     simulationThink.append(string)
