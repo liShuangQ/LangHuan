@@ -66,7 +66,7 @@ export function useChat() {
                 const file: Blob = files[index];
                 if (file.type.indexOf("image") > -1) {
                     imgInfo += `![img](${await blobToBase64(file)}) \n`;
-                }else{
+                } else {
                     imgInfo += `**${file.name}** \n`;
                 }
             }
@@ -90,9 +90,12 @@ export function useChat() {
         messages.value.push(userMessageInfo, assistantMessageInfo);
         axiosCancel = axios.CancelToken.source();
         canSend.value = false;
+        const accessory = chatParams?.accessory??[];
 
-        const accessory = chatParams.accessory;
-        delete chatParams.accessory;
+        if (chatParams.accessory) {
+            delete chatParams.accessory;
+        }
+
         let sendChatMessageParam = {
             chatId: windowId,
             prompt: "",

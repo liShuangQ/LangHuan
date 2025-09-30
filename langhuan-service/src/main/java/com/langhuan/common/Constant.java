@@ -75,23 +75,29 @@ public class Constant {
             setDescription("无任何特定功能需求的日常闲聊问答等");
         }});
         add(new IntentionItem() {{
+            setId("add_personal_knowledge_space");
+            setTask("添加到个人知识空间");
+            setExamples(List.of("xxx，添加知识库，xxx", "xxx，添加到个人文档，xxx", "添加到我的空间", "记录知识"));
+            setDescription("用户明确请求添加知识到个人知识存储区域。注意例子（Examples）中的前后可能含有其他信息（例如：理解xxx的信息，添加知识库，xxxx），也可能不带（例如：添加知识库，···）。");
+        }});
+        add(new IntentionItem() {{
             setId("understand");
             setTask("理解文件");
             setExamples(List.of("解释文档内容", "文档里有什么", "理解这张图", "图里有什么", "识别图片文字"));
-            setDescription("用户需要解析、描述或提取图片或者文档（文件）内容。注意文字要提到是图片或者文档信息，当没提到的时候应该是chat");
+            setDescription("用户需要解析、描述或提取图片或者文档（文件）内容。注意文字要提到是图片或者文档信息。");
         }});
         add(new IntentionItem() {{
-            setId("add_personal_knowledge_space");
-            setTask("添加到个人知识空间");
-            setExamples(List.of("添加知识库", "添加到个人文档", "添加到我的空间", "记录知识"));
-            setDescription("用户明确请求添加知识到个人知识存储区域");
+            setId("feedback_information_yes");
+            setTask("满意的积极的反馈信息");
+            setExamples(List.of("回答的不错", "很满意", "你越来越好了"));
+            setDescription("用户对系统、知识、回答等进行反馈，满意的积极的信息");
         }});
-//        add(new IntentionItem() {{
-//            setId("add_image_content_to_knowledge_base");
-//            setTask("将图片内容添加到个人知识库");
-//            setExamples(List.of("把这张图存到知识库", "图片入库", "保存这张图到我的笔记"));
-//            setDescription("用户希望将图片解析后的内容写入已有个人知识库，注意要提到了图片信息");
-//        }});
+        add(new IntentionItem() {{
+            setId("feedback_information_no");
+            setTask("消极的不满意的反馈信息");
+            setExamples(List.of("不好的回答", "你说的不对", "没有说到我要的回答", "回答有问题"));
+            setDescription("用户对系统、知识、回答等进行反馈，不满意的消极的信息");
+        }});
     }};
 }
 

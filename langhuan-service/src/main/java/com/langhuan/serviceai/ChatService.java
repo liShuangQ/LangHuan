@@ -3,11 +3,14 @@ package com.langhuan.serviceai;
 import com.langhuan.common.BusinessException;
 import com.langhuan.common.Constant;
 import com.langhuan.functionTools.RestRequestTools;
+import com.langhuan.model.domain.TChatFeedback;
 import com.langhuan.model.pojo.ChatModelResult;
 import com.langhuan.model.pojo.ChatRestOption;
+import com.langhuan.service.TChatFeedbackService;
 import com.langhuan.service.TPromptsService;
 import com.langhuan.utils.chatMemory.ChatMemoryUtils;
 import com.langhuan.utils.other.FileUtil;
+import com.langhuan.utils.other.SecurityUtils;
 import com.langhuan.utils.rag.config.SplitConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
@@ -29,6 +32,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * AI聊天服务类
@@ -62,7 +66,9 @@ public class ChatService {
     @Autowired
     ChatGeneralAssistanceService chatGeneralAssistanceService;
     @Autowired
-    private ImgService imgService;
+    ImgService imgService;
+    @Autowired
+    TChatFeedbackService tChatFeedbackService;
 
 
     public ChatService(ChatClient.Builder chatClientBuilder, RagService ragService) {
@@ -100,116 +106,145 @@ public class ChatService {
             FileUtil.FileCategory fileCategory = FileUtil.categorizeFiles(accessory);
             MultipartFile[] imageRes = fileCategory.getImages();
             MultipartFile[] documentRes = fileCategory.getDocuments();
-
             // 意图识别
             String intention = chatGeneralAssistanceService.chatIntentionClassifier(chatRestOption.getModelName(), chatRestOption.getUserMessage());
-            // HACK 注意当前下面的能力都没判断附件是不是全是图片类型，但是前端有校验。以后加其他类型这里要注意
-            switch (intention) {
-                case "chat":
+            // 处理对应意图 注意分支内要return
+            if (Objects.equals(intention, "chat")) {
+                return toChat(chatRestOption);
+            }
+            if (Objects.equals(intention, "understand")) {
+                if (accessory.length == 0) {
                     return toChat(chatRestOption);
-                case "understand":
-                    // 设置记忆信息 拼接处理结果
-                    StringBuilder memoryIn = new StringBuilder();
-                    StringBuilder memoryOut = new StringBuilder();
+                }
+                // 设置记忆信息 拼接处理结果
+                StringBuilder memoryIn = new StringBuilder();
+                StringBuilder memoryOut = new StringBuilder();
 
-                    // 处理图 - 模型解析理解后的
-                    ImgService.ChatImageUnderstandingRes imageUnderstandingRes = imgService.chat_imageUnderstanding(chatRestOption, imageRes);
-                    memoryIn.append(imageUnderstandingRes.getChatInStr());
-                    memoryOut.append(imageUnderstandingRes.getChatOutStr());
-                    // 处理文档 - 使用工具拆出的 没使用模型
-                    StringBuilder documentResStr = new StringBuilder();
-                    StringBuilder documentFileNames = new StringBuilder();
-                    for (MultipartFile file : documentRes) {
-                        documentFileNames.append(file.getOriginalFilename()).append("\n");
-                        // 将文件内容读取到字节数组中，避免InputStream多次读取问题
-                        byte[] fileBytes = file.getBytes();
-                        TikaDocumentReader tikaDocumentReader = new TikaDocumentReader(new org.springframework.core.io.ByteArrayResource(fileBytes));
-                        List<Document> documents = tikaDocumentReader.read();
-                        for (Document s : documents) {
-                            documentResStr.append(s.getFormattedContent()).append("\n");
-                        }
+                // 处理图 - 模型解析理解后的
+                ImgService.ChatImageUnderstandingRes imageUnderstandingRes = imgService.chat_imageUnderstanding(chatRestOption, imageRes);
+                memoryIn.append(imageUnderstandingRes.getChatInStr());
+                memoryOut.append(imageUnderstandingRes.getChatOutStr());
+                // 处理文档 - 使用工具拆出的 没使用模型
+                StringBuilder documentResStr = new StringBuilder();
+                StringBuilder documentFileNames = new StringBuilder();
+                for (MultipartFile file : documentRes) {
+                    documentFileNames.append(file.getOriginalFilename()).append("\n");
+                    // 将文件内容读取到字节数组中，避免InputStream多次读取问题
+                    byte[] fileBytes = file.getBytes();
+                    TikaDocumentReader tikaDocumentReader = new TikaDocumentReader(new org.springframework.core.io.ByteArrayResource(fileBytes));
+                    List<Document> documents = tikaDocumentReader.read();
+                    for (Document s : documents) {
+                        documentResStr.append(s.getFormattedContent()).append("\n");
                     }
-                    // 将信息解析后的信息给大语言模型理解，图信息已经被模型理解过了，这里单独解读下文档信息
-                    // XXX 考虑是不是把图片信息也一起给模型处理
-                    String documentChatResStr = "";
-                    if (!documentResStr.isEmpty()) {
-                        String userPrompt = chatRestOption.getUserMessage() + "\n" + "文档如下：" + "\n" + documentResStr;
-                        documentChatResStr = chatGeneralAssistanceService.documentUnderstand(userPrompt, chatRestOption.getModelName());
-                    }
-                    if (!documentChatResStr.isEmpty()) {
-                        memoryIn.append("\n").append("**").append(documentFileNames).append("**");
-                        memoryOut.append("\n").append(documentChatResStr);
-                    }
-                    //  整合记忆信息
-                    memoryIn.append("\n").append(chatRestOption.getUserMessage());
-                    chatMemory.add(chatRestOption.getChatId(),
-                            ChatMemoryUtils.createdMessage(memoryIn.toString(), Map.of(), MessageType.USER));
-                    chatMemory.add(chatRestOption.getChatId(),
-                            ChatMemoryUtils.createdMessage(memoryOut.toString(), Map.of(), MessageType.ASSISTANT));
-                    return new ChatModelResult() {{
-                        setChat(memoryOut.toString());
-                        setRag(List.of());
-                    }};
-                case "add_personal_knowledge_space":
-                    StringBuilder simulationThink = new StringBuilder();
-                    simulationThink.append("<think>");
-                    simulationThink.append("意图识别结果：添加信息到知识库（add_personal_knowledge_space）").append("\n");
-                    simulationThink.append("提取知识").append("\n");
-                    simulationThink.append("识别结果：").append("\n");
-                    simulationThink.append("---------").append("\n");
-                    // 处理对话中文字
-                    List<String> textDocument = chatGeneralAssistanceService.documentSegmentation(chatRestOption.getModelName(), chatRestOption.getUserMessage());
-                    // 处理图
-                    List<String> imageDocument = imgService.chat_imageUnderstandingToText(imageRes, "");
-                    // 处理文档
-                    List<String> docDocument = new ArrayList<>();
-                    for (MultipartFile file : documentRes) {
-                        // HACK 当前默认使用 ====== 的拆分方式，后续考虑模型拆分等
-                        SplitConfig documentSplitConfig = new SplitConfig("PatternTokenTextSplitter", Map.of("splitPattern", "(?:={6})\\s*"));
-                        List<String> documents = ragService.readAndSplitDocument(file, documentSplitConfig);
-                        // TODO 检测单块大小 太大按固定数拆分
-                        docDocument.addAll(documents);
-                    }
-                    // 集合全部的文档
-                    List<String> allDocument = new ArrayList<>();
-                    allDocument.addAll(textDocument);
-                    allDocument.addAll(imageDocument);
-                    allDocument.addAll(docDocument);
-                    // 打印文档
-                    for (String string : allDocument) {
-                        simulationThink.append(string)
-                                .append("\n")
-                                .append("---")
-                                .append("\n");
-                    }
-                    simulationThink.append("---------").append("\n");
-                    if (!allDocument.isEmpty()) {
-                        simulationThink.append("添加到知识库").append("\n");
-                        Boolean isAddDocuments = ragService.addDocumentToMySpace(allDocument);
-                        if (isAddDocuments) {
-                            simulationThink.append("添加到知识库成功").append("\n");
-                            simulationThink.append("</think>");
-                            return new ChatModelResult() {{
-                                setChat(simulationThink + "已成功添加到个人知识空间");
-                                setRag(List.of());
-                            }};
-                        } else {
-                            simulationThink.append("添加到知识库失败").append("\n");
-                            simulationThink.append("</think>");
-                            return new ChatModelResult() {{
-                                setChat("添加到个人知识空间失败");
-                                setRag(List.of());
-                            }};
-                        }
-                    } else {
+                }
+                // 将信息解析后的信息给大语言模型理解，图信息已经被模型理解过了，这里单独解读下文档信息
+                // XXX 考虑是不是把图片信息也一起给模型处理
+                String documentChatResStr = "";
+                if (!documentResStr.isEmpty()) {
+                    String userPrompt = chatRestOption.getUserMessage() + "\n" + "文档如下：" + "\n" + documentResStr;
+                    documentChatResStr = chatGeneralAssistanceService.documentUnderstand(userPrompt, chatRestOption.getModelName());
+                }
+                if (!documentChatResStr.isEmpty()) {
+                    memoryIn.append("\n").append("**").append(documentFileNames).append("**");
+                    memoryOut.append("\n").append(documentChatResStr);
+                }
+                //  整合记忆信息
+                memoryIn.append("\n").append(chatRestOption.getUserMessage());
+                chatMemory.add(chatRestOption.getChatId(),
+                        ChatMemoryUtils.createdMessage(memoryIn.toString(), Map.of(), MessageType.USER));
+                chatMemory.add(chatRestOption.getChatId(),
+                        ChatMemoryUtils.createdMessage(memoryOut.toString(), Map.of(), MessageType.ASSISTANT));
+                return new ChatModelResult() {{
+                    setChat(memoryOut.toString());
+                    setRag(List.of());
+                }};
+
+            }
+            if (Objects.equals(intention, "add_personal_knowledge_space")) {
+                StringBuilder simulationThink = new StringBuilder();
+                simulationThink.append("<think>");
+                simulationThink.append("意图识别结果：添加信息到知识库（add_personal_knowledge_space）").append("\n");
+                simulationThink.append("提取知识").append("\n");
+                simulationThink.append("识别结果：").append("\n");
+                simulationThink.append("---------").append("\n");
+                // 处理对话中文字
+                List<String> textDocument = chatGeneralAssistanceService.documentSegmentation(chatRestOption.getModelName(), chatRestOption.getUserMessage());
+                // 处理图
+                List<String> imageDocument = imgService.chat_imageUnderstandingToText(imageRes, chatRestOption.getUserMessage());
+                // 处理文档
+                List<String> docDocument = new ArrayList<>();
+                for (MultipartFile file : documentRes) {
+                    // HACK 当前默认使用 ====== 的拆分方式，后续考虑模型拆分等
+                    SplitConfig documentSplitConfig = new SplitConfig("PatternTokenTextSplitter", Map.of("splitPattern", "(?:={6})\\s*"));
+                    List<String> documents = ragService.readAndSplitDocument(file, documentSplitConfig);
+                    // TODO 检测单块大小 太大按固定数拆分
+                    docDocument.addAll(documents);
+                }
+                // 集合全部的文档
+                List<String> allDocument = new ArrayList<>();
+                allDocument.addAll(textDocument);
+                allDocument.addAll(imageDocument);
+                allDocument.addAll(docDocument);
+                // 打印文档
+                for (String string : allDocument) {
+                    simulationThink.append(string)
+                            .append("\n")
+                            .append("---")
+                            .append("\n");
+                }
+                simulationThink.append("---------").append("\n");
+                if (!allDocument.isEmpty()) {
+                    simulationThink.append("添加到知识库").append("\n");
+                    Boolean isAddDocuments = ragService.addDocumentToMySpace(allDocument);
+                    if (isAddDocuments) {
+                        simulationThink.append("添加到知识库成功").append("\n");
+                        simulationThink.append("</think>");
                         return new ChatModelResult() {{
-                            setChat("未从文档中提取到知识信息，请重试");
+                            setChat(simulationThink + "已成功添加到个人知识空间");
+                            setRag(List.of());
+                        }};
+                    } else {
+                        simulationThink.append("添加到知识库失败").append("\n");
+                        simulationThink.append("</think>");
+                        return new ChatModelResult() {{
+                            setChat("添加到个人知识空间失败");
                             setRag(List.of());
                         }};
                     }
-                default:
-                    return toChat(chatRestOption);
+                } else {
+                    return new ChatModelResult() {{
+                        setChat("未从文档中提取到知识信息，请重试");
+                        setRag(List.of());
+                    }};
+                }
             }
+            if (intention.contains("feedback_information")) {
+                TChatFeedback tChatFeedback = new TChatFeedback();
+                tChatFeedback.setUserId(SecurityUtils.getCurrentUsername());
+                tChatFeedback.setSuggestion(chatRestOption.getUserMessage());
+                tChatFeedback.setQuestionId(chatRestOption.getChatId());
+                tChatFeedback.setQuestionContent("对话中反馈" + "对话id:" + chatRestOption.getChatId());
+                tChatFeedback.setAnswerContent("对话中反馈" + "对话id:" + chatRestOption.getChatId());
+                tChatFeedback.setKnowledgeBaseIds("");
+                if (Objects.equals(intention, "feedback_information_yes")) {
+                    tChatFeedback.setInteraction("like");
+                }
+                if (Objects.equals(intention, "feedback_information_no")) {
+                    tChatFeedback.setInteraction("dislike");
+                }
+                boolean save = tChatFeedbackService.save(tChatFeedback);
+                if (!save) {
+                    return new ChatModelResult() {{
+                        setChat("反馈信息保存失败");
+                        setRag(List.of());
+                    }};
+                }
+                return new ChatModelResult() {{
+                    setChat("感谢支持，您的反馈已被提交。请继续使用");
+                    setRag(List.of());
+                }};
+            }
+            return toChat(chatRestOption);
         } catch (Exception e) {
             return new ChatModelResult() {
                 {

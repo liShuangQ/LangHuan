@@ -7,15 +7,9 @@ export {}
 
 declare module 'vue' {
   export interface GlobalComponents {
-    ElContainer: typeof import('element-plus/es')['ElContainer']
     ElementFormC: typeof import('./../src/components/globalComponents/ElementFormC/index.vue')['default']
     ElementTableC: typeof import('./../src/components/globalComponents/ElementTableC/index.vue')['default']
-    ElHeader: typeof import('element-plus/es')['ElHeader']
     ElIcon: typeof import('element-plus/es')['ElIcon']
-    ElMain: typeof import('element-plus/es')['ElMain']
-    ElMenu: typeof import('element-plus/es')['ElMenu']
-    ElMenuItem: typeof import('element-plus/es')['ElMenuItem']
-    ElSubMenu: typeof import('element-plus/es')['ElSubMenu']
     ElUpload: typeof import('element-plus/es')['ElUpload']
     MessageNotification: typeof import('./../src/components/MessageNotification/index.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
