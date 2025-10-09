@@ -170,7 +170,7 @@ public class ChatService {
                 // 处理对话中文字
                 List<String> textDocument = List.of(chatGeneralAssistanceService.documentSegmentation(chatRestOption.getModelName(), chatRestOption.getUserMessage()));
                 // 处理图
-                List<String> imageDocument = imgService.chat_imageUnderstandingToText(imageRes, chatRestOption.getUserMessage());
+                String imageDocument = imgService.chat_imageUnderstandingToText(imageRes, chatRestOption.getUserMessage());
                 // 处理文档
                 List<String> docDocument = new ArrayList<>();
                 for (MultipartFile file : documentRes) {
@@ -183,7 +183,7 @@ public class ChatService {
                 // 集合全部的文档
                 List<String> allDocument = new ArrayList<>();
                 allDocument.addAll(textDocument);
-                allDocument.addAll(imageDocument);
+                allDocument.add(imageDocument);
                 allDocument.addAll(docDocument);
                 allDocument = allDocument.stream().filter(s -> !s.isEmpty()).toList();
                 // 打印文档

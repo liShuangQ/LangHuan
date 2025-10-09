@@ -20,7 +20,7 @@ public class VectorStoreConfig {
         this.embeddingModel = embeddingModel;
     }
 
-//    TODO: 重写 VectorStore
+//    TODO: 模仿PgVectorStore 继承重写 VectorStore
     @Bean
     public VectorStore ragVectorStore() {
         return PgVectorStore.builder(jdbcTemplate, embeddingModel)

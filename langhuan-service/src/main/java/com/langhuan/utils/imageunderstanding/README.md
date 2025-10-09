@@ -7,8 +7,8 @@
 
 ### 1. ImageUnderstandingProcessor 接口
 所有图像理解模型处理器的基类接口，定义了标准的方法：
-- `understandImage(String imageUrl, String prompt)`: 执行图像理解操作
-- `understandImage(MultipartFile imageFile, String prompt)`: 执行图像理解操作（文件上传方式）
+- `understandImage(List<String> imageUrl, String prompt)`: 执行图像理解操作，支持多个图像URL
+- `understandImage(MultipartFile[] imageFile, String prompt)`: 执行图像理解操作（文件上传方式），支持多个文件
 - `getModelName()`: 获取支持的模型名称
 
 ### 2. ImageUnderstandingProcessorFactory 工厂类
@@ -25,28 +25,7 @@
 ```java
 @Component
 public class NewModelImageUnderstandingProcessor implements ImageUnderstandingProcessor {
-    
-    @Override
-    public String understandImage(String imageUrl, String prompt) throws Exception {
-        // 实现具体的图像理解逻辑
-        // 1. 调用模型API
-        // 2. 解析返回结果
-        // 3. 返回图像理解结果
-    }
-    
-    @Override
-    public String understandImage(MultipartFile imageFile, String prompt) throws Exception {
-        // 实现具体的图像理解逻辑（文件上传方式）
-        // 1. 将文件转换为base64编码
-        // 2. 调用模型API
-        // 3. 解析返回结果
-        // 4. 返回图像理解结果
-    }
-    
-    @Override
-    public String getModelName() {
-        return "newmodel"; // 返回模型标识符
-    }
+   
 }
 ```
 
@@ -55,14 +34,40 @@ public class NewModelImageUnderstandingProcessor implements ImageUnderstandingPr
 
 ```java
 @Data
-public class NewModelImageUnderstandingResult {
-    private List<NewModelResult> results;
-    
+public class QwenVLResponse {
+    private List<Choice> choices;
+    private String object;
+    private Usage usage;
+    private Long created;
+    private String system_fingerprint;
+    private String model;
+    private String id;
+
     @Data
-    public static class NewModelResult {
-        private int index;
-        private double score;
-        // 其他字段...
+    public static class Choice {
+        private Message message;
+        private String finish_reason;
+        private Integer index;
+        private Object logprobs;
+
+        @Data
+        public static class Message {
+            private String content;
+            private String role;
+        }
+    }
+
+    @Data
+    public static class Usage {
+        private Integer prompt_tokens;
+        private Integer completion_tokens;
+        private Integer total_tokens;
+        private PromptTokensDetails prompt_tokens_details;
+
+        @Data
+        public static class PromptTokensDetails {
+            private Integer cached_tokens;
+        }
     }
 }
 ```
@@ -72,8 +77,8 @@ public class NewModelImageUnderstandingResult {
 
 ```yaml
 image_understanding:
-  model: newmodel-v1  # 模型名称
-  base-url: https://api.newmodel.com/image-understanding
+  model: qwen-vl-plus  # 模型名称
+  base-url: https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions
   api-key: your-api-key
 ```
 
@@ -99,19 +104,17 @@ image_understanding:
 @Service
 public class SomeService {
     @Autowired
-    private ImageUnderstandingService imageUnderstandingService;
+    private ImageUnderstandingProcessorFactory processorFactory;
     
-    public void example() throws Exception {
-        // URL方式
-        String imageUrl = "https://example.com/image.jpg";
-        String prompt = "图片中有什么？";
-        String result = imageUnderstandingService.understandImage(imageUrl, prompt);
-        System.out.println("图像理解结果: " + result);
-        
-        // 文件上传方式
-        File imageFile = new File("path/to/image.jpg");
-        String result2 = imageUnderstandingService.understandImage(imageFile, prompt);
-        System.out.println("图像理解结果: " + result2);
+    public void exampleWithUrl() throws Exception {
+        ImageUnderstandingProcessor processor = processorFactory.getProcessor();
+        List<String> imageUrls = Arrays.asList("http://example.com/image1.jpg", "http://example.com/image2.jpg");
+        String result = processor.understandImage(imageUrls, "请描述这些图片的内容");
+    }
+    
+    public void exampleWithFiles(MultipartFile[] imageFiles) throws Exception {
+        ImageUnderstandingProcessor processor = processorFactory.getProcessor();
+        String result = processor.understandImage(imageFiles, "请描述这些图片的内容");
     }
 }
 ```

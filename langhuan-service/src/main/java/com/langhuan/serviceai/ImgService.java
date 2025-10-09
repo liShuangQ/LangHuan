@@ -53,10 +53,10 @@ public class ImgService {
             minioService.handleUpload(objectName, item.getInputStream(), -1, bucket);
             // 获取minio地址
             minioChatImgs.append("![img](url)".replace("url", minioService.generateMinioUrl(objectName, bucket))).append("\n");
-            // 模型回答
-            out.append(imageUnderstandingProcessorFactory.getProcessor().understandImage(item,
-                    prompt)).append("\n");
         }
+        // 模型回答
+        out.append(imageUnderstandingProcessorFactory.getProcessor().understandImage(imageFiles,
+                prompt)).append("\n");
         String chatOutStr = out.toString();
 
         return new ChatImageUnderstandingRes() {{
@@ -72,8 +72,7 @@ public class ImgService {
      * @param imgPrompt  提示词，传递空字符串有默认值
      * @return 提取的图片信息
      */
-    public List<String> chat_imageUnderstandingToText(MultipartFile[] imageFiles, String imgPrompt) throws Exception {
-        List<String> out = new ArrayList<>();
+    public String chat_imageUnderstandingToText(MultipartFile[] imageFiles, String imgPrompt) throws Exception {
         String prompt = """
                 请对图片进行详细解析，提取其中的知识信息：
                 如果图片是文字内容，请完整、准确地提取所有文字信息，确保无遗漏。
@@ -89,12 +88,8 @@ public class ImgService {
                 ---
                 请根据上述要求处理以下图片。请使用中文回答。
                 """.replace("{$imgPrompt}", imgPrompt);
-        for (MultipartFile item : imageFiles) {
-            out.add(imageUnderstandingProcessorFactory.getProcessor().understandImage(item,
-                    prompt));
-        }
-
-        return out;
+        return imageUnderstandingProcessorFactory.getProcessor().understandImage(imageFiles,
+                prompt);
     }
 
     @Data

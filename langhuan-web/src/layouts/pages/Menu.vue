@@ -2,38 +2,34 @@
     <div class="w-full h-full overflow-hidden">
         <div class="h-full flex items-center bg-white">
             <div class="px-6 flex items-center text-gray-800 font-bold border-r border-gray-200 whitespace-nowrap">
-                {{ BASE_PROJECT_NAME }}
+                <div v-if="BASE_PROJECT_LOGO_URL_BIG" class="w-full h-full">
+                    <img :src="BASE_PROJECT_LOGO_URL_BIG" alt="logo" class="h-10"></img>
+                </div>
+                <div v-else>
+                    {{ BASE_PROJECT_NAME }}
+                </div>
             </div>
-            <el-menu
-                class="el-menu-horizontal-demo flex-1"
-                mode="horizontal"
-                :collapse="isCollapse"
-                :unique-opened="true"
-                ref="menuRef"
-                @select="menuSelect"
-                :default-active="getNowMenu('path') as string"
-                :default-openeds="getNowMenu('faPath') as string[]"
-                background-color="#ffffff"
-                text-color="#333333"
-                active-text-color="#0089fa"
-            >
-            <!--      router-->
-            <template v-for="(item) in menuData as any" :key="item.path">
-                <template v-if="!item.children || item.children === 0">
-                    <el-menu-item :index="item.path">
-                        <el-icon v-if="item.icon && item.icon !== ''">
-                            <component :is="item.icon"></component>
-                        </el-icon>
-                        <div v-else style="width: 24px"></div>
-                        <span>{{ item.title }}</span>
-                    </el-menu-item>
+            <el-menu class="el-menu-horizontal-demo flex-1" mode="horizontal" :collapse="isCollapse"
+                :unique-opened="true" ref="menuRef" @select="menuSelect" :default-active="getNowMenu('path') as string"
+                :default-openeds="getNowMenu('faPath') as string[]" background-color="#ffffff" text-color="#333333"
+                active-text-color="#0089fa">
+                <!--      router-->
+                <template v-for="(item) in menuData as any" :key="item.path">
+                    <template v-if="!item.children || item.children === 0">
+                        <el-menu-item :index="item.path">
+                            <el-icon v-if="item.icon && item.icon !== ''">
+                                <component :is="item.icon"></component>
+                            </el-icon>
+                            <div v-else style="width: 24px"></div>
+                            <span>{{ item.title }}</span>
+                        </el-menu-item>
+                    </template>
+                    <template v-else>
+                        <sub-menu :key="item.path" :SubItem='item'></sub-menu>
+                    </template>
                 </template>
-                <template v-else>
-                    <sub-menu :key="item.path" :SubItem='item'></sub-menu>
-                </template>
-            </template>
             </el-menu>
-             <!-- <el-icon @click="isCollapse = !isCollapse" -->
+            <!-- <el-icon @click="isCollapse = !isCollapse" -->
             <!--          class="h-[40px] text-[24px] text-gray-600 cursor-pointer flex items-center justify-center w-[40px] flex-shrink-0 hover:text-gray-800"-->
             <!--     <Expand v-show="isCollapse"/>-->
             <!--     <Fold v-show="!isCollapse"/>-->
@@ -43,7 +39,7 @@
 </template>
 
 <script lang="ts">
-import {PagesMenu} from '@/router/menu'
+import { PagesMenu } from '@/router/menu'
 import SubMenu from "./SubMenu.vue";
 import router from "@/router";
 import menu from "@/store/menu";
@@ -56,6 +52,12 @@ export default defineComponent({
         const BASE_PROJECT_NAME = computed(() => {
             return process.env.BASE_PROJECT_NAME as string
         })
+
+        const BASE_PROJECT_LOGO_URL_BIG = computed(() => {
+            return process.env.BASE_PROJECT_LOGO_URL_BIG as string;
+        })
+
+
         const isCollapse = ref<boolean>(false)
         let menuRef = ref(null)
         const menuData = ref<PagesMenu[] | null>(null)
@@ -74,14 +76,15 @@ export default defineComponent({
                 return type === 'faPath' ? ("" as string).split(',') : "" as string
             }
         }
-
         const menuSelect = (index: string, indexPath: string[], item: any, routeResult: any) => {
             // console.log(index,indexPath,item,routeResult)
-            router.push({path: index});
+            router.push({ path: index });
         }
 
+
+
         return {
-            BASE_PROJECT_NAME, menuData, isCollapse, menuRef, menuSelect, getNowMenu
+            BASE_PROJECT_NAME, BASE_PROJECT_LOGO_URL_BIG, menuData, isCollapse, menuRef, menuSelect, getNowMenu
         }
     }
 })
@@ -125,7 +128,7 @@ export default defineComponent({
     color: #333333;
 }
 
-.el-menu--horizontal .el-sub-menu.is-active > .el-sub-menu__title {
+.el-menu--horizontal .el-sub-menu.is-active>.el-sub-menu__title {
     border-bottom-color: #0089fa;
     color: #0089fa;
     font-weight: 500;
