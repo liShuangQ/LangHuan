@@ -84,11 +84,14 @@ ALTER COLUMN embedding TYPE vector USING embedding::vector;
 #### minio
 - docker pull minio/minio:RELEASE.2025-04-22T22-12-26Z
 ```txt
-docker run -p 9000:9000 -p 9001:9001 \
+docker run -d \
   --name minio \
-  -v /xxxx/docker/minio:/data \
-  -e "MINIO_ROOT_USER=minio" \
-  -e "MINIO_ROOT_PASSWORD=minio123456" \
+  -p 9000:9000 \
+  -p 9001:9001 \
+  -e MINIO_ROOT_USER=minio \
+  -e MINIO_ROOT_PASSWORD=minio123456 \
+  -v /etc/localtime:/etc/localtime:ro \
+  -v /usr/share/zoneinfo/Asia/Shanghai:/etc/timezone:ro \
   minio/minio:RELEASE.2025-04-22T22-12-26Z server /data --console-address ":9001"
 ```
 #### 升级spring版本
