@@ -71,32 +71,42 @@ public class Constant {
         add(new IntentionItem() {{
             setId("chat");
             setTask("聊天");
-            setExamples(List.of("你好", "回答这个问题", "什么是xxx"));
             setDescription("无任何特定功能需求的日常闲聊问答等");
+            setExamples(List.of("你好", "回答这个问题", "什么是xxx"));
+            setNotExamples(List.of());
+            setAttention("当不符合其他任务的时候，默认选择这个");
         }});
         add(new IntentionItem() {{
             setId("add_personal_knowledge_space");
-            setTask("添加到个人知识空间");
-            setExamples(List.of("xxx，添加知识库，xxx", "xxx，添加到个人文档，xxx", "添加到我的空间", "记录知识"));
-            setDescription("用户明确请求添加知识到个人知识存储区域。注意例子（Examples）中的前后可能含有其他信息（例如：理解xxx的信息，添加知识库，xxxx），也可能不带（例如：添加知识库，···）。");
+            setTask("添加个人知识空间");
+            setDescription("用户明确请求添加知识到个人知识存储区域。");
+            setExamples(List.of("xxx添加知识库xxx", "xxx添加到个人文档xxx", "添加到我的空间", "记录知识"));
+            setNotExamples(List.of());
+            setAttention("注意例子（Examples）中的添加或者记录等字样的关键字前后可能含有其他信息（例如：理解xxx的信息，添加知识库xxxx），也可能不带（例如：添加知识库，···）。");
         }});
         add(new IntentionItem() {{
             setId("understand");
             setTask("理解文件");
+            setDescription("用户需要解析、描述或提取图片或者文档（文件）内容。");
             setExamples(List.of("解释文档内容", "文档里有什么", "理解这张图", "图里有什么", "识别图片文字"));
-            setDescription("用户需要解析、描述或提取图片或者文档（文件）内容。注意文字要提到是图片或者文档信息。");
+            setNotExamples(List.of("xxx是什么","xxx是什么表"));
+            setAttention("注意文字关键字中要提到图片或者文档信息。");
         }});
         add(new IntentionItem() {{
             setId("feedback_information_yes");
             setTask("满意的积极的反馈信息");
-            setExamples(List.of("回答的不错", "很满意", "你越来越好了"));
             setDescription("用户对系统、知识、回答等进行反馈，满意的积极的信息");
+            setExamples(List.of("回答的不错", "很满意", "你越来越好了"));
+            setNotExamples(List.of());
+            setAttention("");
         }});
         add(new IntentionItem() {{
             setId("feedback_information_no");
             setTask("消极的不满意的反馈信息");
-            setExamples(List.of("不好的回答", "你说的不对", "没有说到我要的回答", "回答有问题"));
             setDescription("用户对系统、知识、回答等进行反馈，不满意的消极的信息");
+            setExamples(List.of("不好的回答", "你说的不对", "没有说到我要的回答", "回答有问题"));
+            setNotExamples(List.of());
+            setAttention("");
         }});
     }};
 }

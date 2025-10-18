@@ -1,0 +1,35 @@
+package com.langhuan.utils.rag.splitter
+
+class SlidingWindowTextSplitter(
+    private val windowSize: Int,
+    private val overlapSize: Int
+) : TextSplitter {
+
+    override fun apply(text: String): List<String> {
+        val documents = mutableListOf<String>()
+        val length = text.length
+        var start = 0
+
+        // 分批处理，减少内存占用
+        val batchSize = 1000 // 每批处理的大小可以根据实际情况调整
+        val batch = mutableListOf<String>()
+
+        while (start < length) {
+            val end = minOf(start + windowSize, length)
+            val chunk = text.substring(start, end)
+            batch.add(chunk)
+            start += windowSize - overlapSize
+
+            // 当达到一批的大小时，将批处理的结果添加到最终结果中
+            if (batch.size >= batchSize) {
+                documents.addAll(batch)
+                batch.clear()
+            }
+        }
+
+        // 添加剩余的批处理结果
+        documents.addAll(batch)
+
+        return documents
+    }
+}

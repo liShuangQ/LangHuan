@@ -86,7 +86,7 @@ ALTER COLUMN embedding TYPE vector USING embedding::vector;
 ```txt
 docker run -p 9000:9000 -p 9001:9001 \
   --name minio \
-  -v /Users/lishuangqi/docker/minio:/data \
+  -v /xxxx/docker/minio:/data \
   -e "MINIO_ROOT_USER=minio" \
   -e "MINIO_ROOT_PASSWORD=minio123456" \
   minio/minio:RELEASE.2025-04-22T22-12-26Z server /data --console-address ":9001"

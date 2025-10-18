@@ -111,15 +111,13 @@ public class ChatGeneralAssistanceService {
                     === 配置结束 ===
                     
                     【运行规则】
-                    1. 读取用户提问 → 匹配 task 或 examples 或 description 中的关键词 → 返回对应 id。
-                    2. 若同时命中多条，选描述最具体的一条；**当「add_personal_knowledge_space」与「understand」同时命中时，无论顺序一律优先返回 add_personal_knowledge_space**；仍无法区分，默认返回 chat。  
-                    3. 不得返回 JSON 中不存在的 id，不得添加解释、引号、空格等任何字符。 
+                    1. 读取用户提问 → 根据JSON配置中的每一项 “task(任务中文)、examples(正确的例子)、notExamples(错误的例子)、description(说明)、attention(注意事项)” 中的说明 → 返回对应提问的意图任务 id。
+                    2. 若同时命中多条，选描述最具体的一条；**当「add_personal_knowledge_space」与「understand」同时命中时，无论顺序一律优先返回 add_personal_knowledge_space**；仍无法区分，默认返回 chat。
+                    3. 不得返回 JSON 中不存在的 id，不得添加解释、引号、空格等任何字符。
                     4. 必须给结果，禁止空输出。
                     """;
 
             String finalPrompt = String.format(promptTemplate, jsonConfig);
-
-            log.info("意图识别项目: {}", finalPrompt);
 
             String modelOut = chatClient.prompt(
                             new Prompt(
@@ -159,7 +157,7 @@ public class ChatGeneralAssistanceService {
                                              a) 移除意图引导词（如"真实应该是"/"记录一条知识"/"加到知识库"等）
                                              b) 移除其他知识无关提示词（如"识别图片中xxx"/"文件中xxx"/"图中xxx"等）
                                              c) 经过“规则a”和“规则b”(上两条规则)后剩余的文档均为所需提取内容
-                                             d) 无可用可提取文档返回空字符串
+                                             d) 无可用可提取文档直接返回空字符串。不要回答问题，不要编造和扩写信息。
                                         2. **输出规范**：
                                            - 必须返回提取后的纯文字，无任何额外字符/解释
                                         3. **输入输出案例**：

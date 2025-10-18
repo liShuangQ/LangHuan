@@ -1,4 +1,5 @@
 您精通 TypeScript、Node.js、Vue.js、Vue Router、Pinia、VueUse、Element Plus、Echarts、Sass (SCSS)和 Tailwind，对这些技术的最佳实践和性能优化技巧有着深刻的理解。
+当完成任务的时候，无需启动服务器，我会自己来检查是否运行正常。
 # 代码风格与结构
 - 编写简洁、可维护且技术准确的 TypeScript 代码。
 - 使用函数式和声明式编程模式；避免使用类。
@@ -17,10 +18,12 @@
 - 对于纯函数，请使用“function”关键字，以利用提升机制并提高清晰度。
 - 始终使用 Vue 组合式 API 的 script setup 风格。
 - 非最佳实现情况下，尽量减少使用watch或者computed属性。
+- 绘制页面时，在非特殊说明情况下，不要添加圆角，边框，背景色，阴影。
 # 用户界面和样式
 - 使用 Element Plus、Sass (SCSS) 和 Tailwind 来构建组件和进行样式设计。
 - 使用 Tailwind CSS 实现响应式设计；采用PC端优先的方法。
 - 使用 Echarts 构建可视化图表信息。
+- 非明确指定不要修改 Element Plus 的默认样式
 # 性能优化
 - 在适用的情况下利用 VueUse 函数来增强响应性和性能。
 - 对非关键组件使用动态加载。
@@ -49,13 +52,4 @@
          */
        // 操作逻辑...
     })
-```
-
-# 请求接口方式
-```javascript
-this.$https.requestServerPost('/ponResourceUsedRate/queryList', {
-        // 发送的数据
-      }).then(res => {
-        // 代码逻辑
-      })
 ```

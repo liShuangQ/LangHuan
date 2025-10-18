@@ -1,0 +1,47 @@
+package com.langhuan.advisors
+
+import org.slf4j.LoggerFactory
+import org.springframework.ai.chat.client.advisor.api.*
+import reactor.core.publisher.Flux
+
+class ReReadingAdvisor : CallAroundAdvisor, StreamAroundAdvisor {
+    
+    companion object {
+        private const val DEFAULT_USER_TEXT_ADVISE = """
+            {re2_input_query}
+            Read the question again: {re2_input_query}
+            """
+        private val log = LoggerFactory.getLogger(ReReadingAdvisor::class.java)
+    }
+
+    override fun getName(): String {
+        return this::class.java.simpleName
+    }
+
+    // 通过设置 order 值来控制执行顺序。较低的值首先执行。
+    override fun getOrder(): Int {
+        return 0
+    }
+
+    private fun before(advisedRequest: AdvisedRequest): AdvisedRequest {
+        val inputQuery = advisedRequest.userText() // original user query
+
+        val params = advisedRequest.userParams().toMutableMap()
+        params["re2_input_query"] = inputQuery
+
+        log.debug("re2_input_query:$inputQuery")
+
+        return AdvisedRequest.from(advisedRequest)
+            .userText(DEFAULT_USER_TEXT_ADVISE)
+            .userParams(params)
+            .build()
+    }
+
+    override fun aroundCall(advisedRequest: AdvisedRequest, chain: CallAroundAdvisorChain): AdvisedResponse {
+        return chain.nextAroundCall(before(advisedRequest))
+    }
+
+    override fun aroundStream(advisedRequest: AdvisedRequest, chain: StreamAroundAdvisorChain): Flux<AdvisedResponse> {
+        return chain.nextAroundStream(before(advisedRequest))
+    }
+}

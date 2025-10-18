@@ -23,6 +23,7 @@ export function useSettings() {
             label: string;
             value: string;
         }[];
+        // 默认模型选择
         if (settings.value.modelName === "") {
             settings.value.modelName = availableModels.value[0].value;
         }

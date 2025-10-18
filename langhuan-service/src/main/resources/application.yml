@@ -5,6 +5,7 @@ server:
       charset: UTF-8
       enabled: true
       force: true
+
 mybatis:
   mapper-locations: classpath:mapper/*.xml
 spring:
@@ -13,7 +14,7 @@ spring:
       pool:
         size: 10
   datasource:
-    url: jdbc:postgresql://localhost:5432/postgres?serverTimezone=Asia/Shanghai&useTimezone=true
+    url: jdbc:postgresql://10.1.7.155:5432/postgres?serverTimezone=Asia/Shanghai&useTimezone=true
     username: postgres
     password: postgres
     driver-class-name: org.postgresql.Driver
@@ -38,28 +39,26 @@ spring:
           jdbc:
             initialize-schema: never
     openai:
-      base-url: http://127.0.0.1:11434
-      api-key: 111
+      base-url: http://10.1.7.155:7701
+      api-key: sk-4Ns69BHaV6quElPSF79243B3A2E440779c1cE9Cb9f8c97Cb
       chat:
         options:
-          model: qwen3:1.7b
+          model: qwen-max
       embedding:
         options:
-          model: dengcao/Qwen3-Embedding-0.6B:Q8_0
-        base-url: http://127.0.0.1:11434
-        api-key: 111
+          model: text-embedding-v3
+        base-url: http://10.1.7.155:7701
+        api-key: sk-4Ns69BHaV6quElPSF79243B3A2E440779c1cE9Cb9f8c97Cb
     vectorstore:
       pgvector:
         remove-existing-vector-store-table: false
-# rerank模型
 rerank:
-  base-url: https://xx
-  api-key: xx
+  base-url: https://dashscope.aliyuncs.com/api/v1/services/rerank/text-rerank/text-rerank
+  api-key: sk-54ffe14d69374a60a6a1fcb10e6dd294
   model: gte-rerank-v2
-# 图片理解模型（例如阿里的 vl系列）
 image_understanding:
-  base-url: https://xx
-  api-key: xx
+  base-url: https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions
+  api-key: sk-54ffe14d69374a60a6a1fcb10e6dd294
   model: qwen-vl-plus
 logging:
   level:
@@ -69,9 +68,8 @@ logging:
           chat:
             client:
               advisor: DEBUG
-
 minio:
-  url: http://localhost:9000
+  url: http://10.1.7.155:9002
   access-key: minio
   secret-key: minio123456
   img-bucket-name: langhuan-img

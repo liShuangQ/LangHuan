@@ -29,6 +29,9 @@ export default defineStore("aimodel", {
                                         e.id.indexOf("Embed") === -1
                                     );
                                 })
+                                .filter((e: any) => {
+                                    return e.id.indexOf("rerank") === -1;
+                                })
                                 .map((e: any) => {
                                     return {
                                         label: e.id,
@@ -54,6 +57,9 @@ export default defineStore("aimodel", {
                         this.modelOptions = res.data
                             .filter((e: any) => {
                                 return e.id.indexOf("embed") === -1;
+                            })
+                            .filter((e: any) => {
+                                return e.id.indexOf("rerank") === -1;
                             })
                             .map((e: any) => {
                                 return {

@@ -9,5 +9,7 @@ public class IntentionItem {
     String id;
     String task;
     List<String> examples;
+    List<String> notExamples;
     String description;
+    String attention;
 }

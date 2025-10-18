@@ -113,7 +113,11 @@ public class ChatService {
                 return toChat(chatRestOption);
             }
             if (Objects.equals(intention, "understand")) {
-                if (accessory.length == 0) {
+                StringBuilder simulationThink = new StringBuilder();
+                simulationThink.append("<think>");
+                simulationThink.append("意图识别结果：文件理解（understand）").append("\n");
+                simulationThink.append("</think>");
+                if (accessory.length == 0 || accessory == null) {
                     return toChat(chatRestOption);
                 }
                 // 设置记忆信息 拼接处理结果
@@ -121,9 +125,11 @@ public class ChatService {
                 StringBuilder memoryOut = new StringBuilder();
 
                 // 处理图 - 模型解析理解后的
-                ImgService.ChatImageUnderstandingRes imageUnderstandingRes = imgService.chat_imageUnderstanding(chatRestOption, imageRes);
-                memoryIn.append(imageUnderstandingRes.getChatInStr());
-                memoryOut.append(imageUnderstandingRes.getChatOutStr());
+                if (imageRes.length > 0) {
+                    ImgService.ChatImageUnderstandingRes imageUnderstandingRes = imgService.chat_imageUnderstanding(chatRestOption, imageRes);
+                    memoryIn.append(imageUnderstandingRes.getChatInStr());
+                    memoryOut.append(imageUnderstandingRes.getChatOutStr());
+                }
                 // 处理文档 - 使用工具拆出的 没使用模型
                 StringBuilder documentResStr = new StringBuilder();
                 StringBuilder documentFileNames = new StringBuilder();
@@ -155,7 +161,7 @@ public class ChatService {
                 chatMemory.add(chatRestOption.getChatId(),
                         ChatMemoryUtils.createdMessage(memoryOut.toString(), Map.of(), MessageType.ASSISTANT));
                 return new ChatModelResult() {{
-                    setChat(memoryOut.toString());
+                    setChat(simulationThink + memoryOut.toString());
                     setRag(List.of());
                 }};
 
@@ -170,7 +176,12 @@ public class ChatService {
                 // 处理对话中文字
                 List<String> textDocument = List.of(chatGeneralAssistanceService.documentSegmentation(chatRestOption.getModelName(), chatRestOption.getUserMessage()));
                 // 处理图
-                String imageDocument = imgService.chat_imageUnderstandingToText(imageRes, chatRestOption.getUserMessage());
+                String imageDocument;
+                if (imageRes.length > 0) {
+                    imageDocument = imgService.chat_imageUnderstandingToText(imageRes, chatRestOption.getUserMessage());
+                } else {
+                    imageDocument = "";
+                }
                 // 处理文档
                 List<String> docDocument = new ArrayList<>();
                 for (MultipartFile file : documentRes) {

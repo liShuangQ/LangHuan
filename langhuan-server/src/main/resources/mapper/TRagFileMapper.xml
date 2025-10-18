@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.langhuan.model.mapper.TRagFileMapper">
+
+    <resultMap id="BaseResultMap" type="com.langhuan.model.domain.TRagFile">
+            <id property="id" column="id" jdbcType="INTEGER"/>
+            <result property="fileName" column="file_name" jdbcType="VARCHAR"/>
+            <result property="fileType" column="file_type" jdbcType="VARCHAR"/>
+            <result property="fileSize" column="file_size" jdbcType="VARCHAR"/>
+            <result property="documentNum" column="document_num" jdbcType="VARCHAR"/>
+            <result property="fileDesc" column="file_desc" jdbcType="VARCHAR"/>
+            <result property="fileGroupId" column="file_group_id" jdbcType="VARCHAR"/>
+            <result property="uploadedBy" column="uploaded_by" jdbcType="VARCHAR"/>
+            <result property="uploadedAt" column="uploaded_at" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,file_name,file_type,
+        file_size,document_num,file_desc,
+        file_group_id,uploaded_by,uploaded_at
+    </sql>
+</mapper>
