@@ -39,26 +39,26 @@ spring:
           jdbc:
             initialize-schema: never
     openai:
-      base-url: http://10.1.7.155:7701
-      api-key: sk-4Ns69BHaV6quElPSF79243B3A2E440779c1cE9Cb9f8c97Cb
+      base-url: xx
+      api-key: xx
       chat:
         options:
           model: qwen-max
       embedding:
         options:
           model: text-embedding-v3
-        base-url: http://10.1.7.155:7701
-        api-key: sk-4Ns69BHaV6quElPSF79243B3A2E440779c1cE9Cb9f8c97Cb
+        base-url: xx
+        api-key: xx
     vectorstore:
       pgvector:
         remove-existing-vector-store-table: false
 rerank:
-  base-url: https://dashscope.aliyuncs.com/api/v1/services/rerank/text-rerank/text-rerank
-  api-key: sk-54ffe14d69374a60a6a1fcb10e6dd294
+  base-url: xx
+  api-key: xx
   model: gte-rerank-v2
 image_understanding:
-  base-url: https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions
-  api-key: sk-54ffe14d69374a60a6a1fcb10e6dd294
+  base-url: xxx
+  api-key: xx
   model: qwen-vl-plus
 logging:
   level:

@@ -9,7 +9,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com</groupId>
-    <artifactId>langhuan-server</artifactId>
+    <artifactId>langhuan-service</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>langhuan</name>
     <description>Demo project for Spring Boot</description>
@@ -189,6 +189,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
+                    <mainClass>com.langhuan.LanghuanApplicationKt</mainClass>
                     <excludes>
                         <exclude>
                             <groupId>org.projectlombok</groupId>
