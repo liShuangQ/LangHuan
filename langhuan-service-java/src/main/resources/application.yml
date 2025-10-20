@@ -1,0 +1,83 @@
+server:
+  port: 9077
+  servlet:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+spring:
+  task:
+    scheduling:
+      pool:
+        size: 10
+  datasource:
+    url: jdbc:postgresql://10.1.7.155:5432/postgres?serverTimezone=Asia/Shanghai&useTimezone=true
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+  application:
+    name: aiAgent
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: Asia/Shanghai
+  # 全局时区配置
+  jpa:
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: Asia/Shanghai
+  # 基础属性配置
+  ai:
+    chat:
+      client:
+        enabled: true
+      memory:
+        repository:
+          jdbc:
+            initialize-schema: never
+    openai:
+      base-url: xx
+      api-key: xx
+      chat:
+        options:
+          model: qwen-max
+      embedding:
+        options:
+          model: text-embedding-v3
+        base-url: xx
+        api-key: xx
+    vectorstore:
+      pgvector:
+        remove-existing-vector-store-table: false
+rerank:
+  base-url: https://dashscope.aliyuncs.com/api/v1/services/rerank/text-rerank/text-rerank
+  api-key: xx
+  model: gte-rerank-v2
+image_understanding:
+  base-url: https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions
+  api-key: xx
+  model: qwen-vl-plus
+logging:
+  level:
+    org:
+      springframework:
+        ai:
+          chat:
+            client:
+              advisor: DEBUG
+minio:
+  url: http://10.1.7.155:9002
+  access-key: minio
+  secret-key: minio123456
+  img-bucket-name: langhuan-img
+  file-bucket-name: langhuan-file
+  folder:
+    document-img: uploads
+    chat-memory-img: chatMemoryImgFold
+task:
+  schedule:
+    documents: 0 0 2 */15 * ?
+    image: 0 0 0 * * ?

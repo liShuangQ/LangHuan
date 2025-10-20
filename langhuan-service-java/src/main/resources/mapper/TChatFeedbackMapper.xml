@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.langhuan.model.mapper.TChatFeedbackMapper">
+
+    <resultMap id="BaseResultMap" type="com.langhuan.model.domain.TChatFeedback">
+            <id property="id" column="id" jdbcType="INTEGER"/>
+            <result property="userId" column="user_id" jdbcType="VARCHAR"/>
+            <result property="userInfo" column="user_info" jdbcType="OTHER"/>
+            <result property="questionId" column="question_id" jdbcType="VARCHAR"/>
+            <result property="questionContent" column="question_content" jdbcType="VARCHAR"/>
+            <result property="answerContent" column="answer_content" jdbcType="VARCHAR"/>
+            <result property="interaction" column="interaction" jdbcType="VARCHAR"/>
+            <result property="interactionTime" column="interaction_time" jdbcType="TIMESTAMP"/>
+            <result property="knowledgeBaseIds" column="knowledge_base_ids" jdbcType="VARCHAR"/>
+            <result property="suggestion" column="suggestion" jdbcType="VARCHAR"/>
+            <result property="usePrompt" column="use_prompt" jdbcType="VARCHAR"/>
+            <result property="useModel" column="use_model" jdbcType="VARCHAR"/>
+            <result property="useFileGroupId" column="use_file_group_id" jdbcType="VARCHAR"/>
+            <result property="useRank" column="use_rank" jdbcType="BOOLEAN"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,user_id,user_info,
+        question_id,question_content,answer_content,
+        interaction,interaction_time,knowledge_base_ids,
+        suggestion,use_prompt,use_model,use_file_group_id,use_rank
+    </sql>
+</mapper>

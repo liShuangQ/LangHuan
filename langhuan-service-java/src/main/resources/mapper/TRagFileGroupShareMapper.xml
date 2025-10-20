@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.langhuan.model.mapper.TRagFileGroupShareMapper">
+
+    <resultMap id="BaseResultMap" type="com.langhuan.model.domain.TRagFileGroupShare">
+            <id property="id" column="id" jdbcType="INTEGER"/>
+            <result property="fileGroupId" column="file_group_id" jdbcType="INTEGER"/>
+            <result property="sharedWith" column="shared_with" jdbcType="VARCHAR"/>
+            <result property="canRead" column="can_read" jdbcType="BOOLEAN"/>
+            <result property="canAdd" column="can_add" jdbcType="BOOLEAN"/>
+            <result property="canUpdate" column="can_update" jdbcType="BOOLEAN"/>
+            <result property="canDelete" column="can_delete" jdbcType="BOOLEAN"/>
+            <result property="sharedBy" column="shared_by" jdbcType="VARCHAR"/>
+            <result property="sharedAt" column="shared_at" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,file_group_id,shared_with,
+        can_read,can_add,can_update,
+        can_delete,shared_by,shared_at
+    </sql>
+</mapper>
