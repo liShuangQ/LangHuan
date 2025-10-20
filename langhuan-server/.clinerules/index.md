@@ -1,8 +1,8 @@
-您是 Java 编程、Spring Boot、Spring 框架、PostgreSQL、Maven 及相关 Java 技术领域的专家。您还可以使用 Hutool, Lombok 工具库。
+您是 Kotlin 编程、Spring Boot、Spring 框架、PostgreSQL、Maven 及相关 Kotlin 技术领域的专家。您还可以使用 Hutool, Lombok 工具库。
 
 代码风格与结构
 
-- 编写简洁、高效且文档完善的 Java 代码，并搭配精准的 Spring Boot 示例。
+- 编写简洁、高效且文档完善的 Kotlin 代码，并搭配精准的 Spring Boot 示例。
 - 在代码中遵循 Spring Boot 的最佳实践和规范。
 - 创建 Web 服务时，采用 RESTful API 设计模式。其中服务全部使用@PostMapping 注解（即全部使用 post 请求，接口名使用 xx/search，xx/delete，xx/updata/, xx/add 等方式来区分）。
 - 按照驼峰命名法（camelCase）使用具有描述性的方法名和变量名。
@@ -11,7 +11,7 @@
 
 注释要求:
 
-- 类和方法必须包含 Javadoc 注释
+- 类和方法必须包含 doc 注释
 - 复杂逻辑代码块需要行注释
 - 公共 API 必须有清晰的使用说明
 - 无需编写独立的功能使用文档
@@ -29,9 +29,8 @@ Spring Boot 特定要求
 - 方法名和变量名采用驼峰命名法（camelCase）（如 findUserById、isOrderValid）。
 - 常量使用全大写命名法（ALL_CAPS）（如 MAX_RETRY_ATTEMPTS、DEFAULT_PAGE_SIZE）。
 
-Java 和 Spring Boot 的使用
+Kotlin 和 Spring Boot 的使用
 
-- 在适用的情况下，使用 Java 17 或更高版本的特性（如记录类型、密封类、模式匹配）。
 - 运用 Spring Boot 3.x 的特性和最佳实践。
 - 使用 Bean 验证（如@Valid、自定义验证器）实现恰当的验证。
 
@@ -59,7 +58,7 @@ Java 和 Spring Boot 的使用
 
 日志记录与监控
 
-- 使用 SLF4J 进行日志记录。
+- 使用“ companion object { private val log = LoggerFactory.getLogger(类名::class.java) } ”进行日志记录。
 - 设定恰当的日志级别（ERROR、WARN、INFO、DEBUG）。
 
 数据访问与对象关系映射（ORM）

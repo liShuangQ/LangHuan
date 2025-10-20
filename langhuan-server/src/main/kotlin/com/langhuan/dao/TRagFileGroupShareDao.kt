@@ -29,7 +29,7 @@ class TRagFileGroupShareDao(
         log.info("Getting file group shares: fileGroupId={}, sharedWith={}", fileGroupId, sharedWith)
         
         val sql = StringBuilder()
-        val params = ArrayList<Any>()
+        val params = mutableListOf<Any>()
         
         sql.append("""
             SELECT 
@@ -63,6 +63,6 @@ class TRagFileGroupShareDao(
         
         sql.append(" ORDER BY fgs.shared_at DESC")
         
-        return jdbcTemplate.queryForList(sql.toString(), params.toArray())
+        return jdbcTemplate.queryForList(sql.toString(), *params.toTypedArray())
     }
 }

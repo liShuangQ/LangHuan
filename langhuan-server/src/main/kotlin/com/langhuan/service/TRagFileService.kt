@@ -20,9 +20,7 @@ import org.springframework.stereotype.Service
  */
 @Service
 class TRagFileService(
-    private val ragFileGroupService: TRagFileGroupService,
     private val ragFileDao: TRagFileDao,
-    ragFileVectorUtils: RagFileVectorUtils,
     private val etlPipeline: EtlPipeline
 ) : ServiceImpl<TRagFileMapper, TRagFile>() {
     

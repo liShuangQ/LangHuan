@@ -61,7 +61,7 @@ class RagFileGroupController(
     fun deleteFileGroup(@RequestParam id: Long): Result<Any> {
         val count = ragFileService.count(
             QueryWrapper<TRagFile>()
-                .eq("fileGroupId", id.toString())
+                .eq("file_group_id", id.toString())
         )
         if (count > 0) {
             return Result.error("文件组下存在文件，无法删除")

@@ -10,6 +10,7 @@ import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Service
 import org.springframework.beans.factory.annotation.Autowired
 import java.time.LocalDateTime
+import java.util.Map
 
 /**
  * 接口调用日志统计服务实现类
@@ -27,7 +28,7 @@ class TApiLogService : ServiceImpl<TApiLogMapper, TApiLog>() {
     private val tApiLogDao: TApiLogDao? = null
 
     fun search(apiName: String?, username: String?, startTime: LocalDateTime?, endTime: LocalDateTime?, pageNum: Int, pageSize: Int): IPage<Map<String, Any>> {
-        return tApiLogDao!!.searchApiLogs(apiName, username, startTime, endTime, pageNum, pageSize) as IPage<Map<String, Any>>
+        return tApiLogDao!!.searchApiLogs(apiName, username, startTime, endTime, pageNum, pageSize)
     }
 
     fun saveApiLog(apiLog: TApiLog): Boolean {

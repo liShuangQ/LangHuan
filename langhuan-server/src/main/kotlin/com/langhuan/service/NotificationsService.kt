@@ -301,6 +301,6 @@ class NotificationsService {
         return notificationsDao!!.getAllNotifications(
             username, notificationLevel, notificationType,
             isRead, isArchived, pageNum, pageSize
-        ) as IPage<Map<String, Any>>
+        )
     }
 }

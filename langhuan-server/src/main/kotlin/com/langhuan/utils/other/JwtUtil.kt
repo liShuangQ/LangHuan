@@ -97,14 +97,3 @@ class JwtUtil {
     }
 }
 
-fun main(args: Array<String>) {
-    val jwtUtil = JwtUtil()
-    val token = jwtUtil.generateToken("admin")
-    println("token = $token")
-
-    val claims = jwtUtil.getClaimsByToken(token)
-    println("claims = $claims")
-
-    val username = jwtUtil.getClaimFiled(token, "username")
-    println("username = $username")
-}

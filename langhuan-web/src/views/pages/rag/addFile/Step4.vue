@@ -49,7 +49,7 @@ const init = async () => {
     ])
 }
 const formHandle = (type: string, key: string, data: any, other: any) => {
-    console.log(type, key, data, other);
+    return;
 };
 const submit = () => {
     if (!fileFormRef.value!.submitForm()) {

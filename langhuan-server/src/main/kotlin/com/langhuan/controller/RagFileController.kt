@@ -72,7 +72,7 @@ class RagFileController(
     @PostMapping("/file/getFilesByGroupId")
     fun getFilesByGroupId(@RequestParam(required = true) groupId: String): Result<*> {
         return Result.success(ragFileService.list(
-            QueryWrapper<TRagFile>().eq("fileGroupId", groupId)
+            QueryWrapper<TRagFile>().eq("file_group_id", groupId)
         ))
     }
 

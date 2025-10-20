@@ -53,8 +53,8 @@ class TRagFileGroupShareService(
         // 检查是否已经分享过
         val existingShare = this.getOne(
             QueryWrapper<TRagFileGroupShare>()
-                .eq("fileGroupId", fileGroupId)
-                .eq("sharedWith", sharedWith)
+                .eq("file_group_id", fileGroupId)
+                .eq("shared_with", sharedWith)
         )
 
         return if (existingShare != null) {
@@ -149,8 +149,8 @@ class TRagFileGroupShareService(
 
             val batchResult = this.remove(
                 QueryWrapper<TRagFileGroupShare>()
-                    .eq("fileGroupId", fileGroupId)
-                    .`in`("sharedWith", batchUsers)
+                    .eq("file_group_id", fileGroupId)
+                    .`in`("shared_with", batchUsers)
             )
 
             if (batchResult) {

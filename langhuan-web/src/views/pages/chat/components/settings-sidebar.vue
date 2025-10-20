@@ -202,7 +202,7 @@ onMounted(() => {
                         class="block text-sm font-medium text-slate-700 dark:text-slate-300 pb-1"
                         >使用的模型</label
                     >
-                    <el-select v-model="modelName" size="small" class="w-full" >
+                    <el-select v-model="modelName" size="small" class="w-full" filterable>
                         <el-option
                             v-for="model in availableModels"
                             :key="model.value"

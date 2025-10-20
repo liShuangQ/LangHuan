@@ -62,8 +62,9 @@ class ChatFeedbackController(
 
     @PreAuthorize("hasAuthority('/chatFeedback/queryDocumentsByIds')")
     @PostMapping(path = ["/queryDocumentsByIds"])
-    fun queryDocumentsByIds(@RequestParam(name = "fileIds", required = false) fileIds: String?): Result<*> {
-        return Result.success(fileIds?.let { ragService.queryDocumentsByIds(it) })
+    fun queryDocumentsByIds(@RequestParam(name = "fileIds", required = false) fileIds: String?): Result<Any> {
+        if (fileIds == null || fileIds.isEmpty()) return Result.error<Any>("请输入知识库片段ID")
+        return Result.success(ragService.queryDocumentsByIds(fileIds))
     }
 
     @PreAuthorize("hasAuthority('/chatFeedback/changeInteractionToEnd')")

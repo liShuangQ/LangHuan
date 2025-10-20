@@ -39,7 +39,7 @@ object FileUtil {
         
         if (!files.isNullOrEmpty()) {
             for (file in files) {
-                if (file == null || file.isEmpty) {
+                if (file.isEmpty) {
                     continue
                 }
                 

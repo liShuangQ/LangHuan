@@ -4,17 +4,14 @@ import cn.hutool.json.JSONUtil
 import com.langhuan.common.ApiLog
 import com.langhuan.common.Constant
 import com.langhuan.common.Result
-import com.langhuan.model.pojo.ChatModelResult
 import com.langhuan.model.pojo.ChatRestOption
 import com.langhuan.serviceai.*
 import org.slf4j.LoggerFactory
-import org.springframework.ai.document.Document
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.multipart.MultipartFile
-
 import java.io.IOException
 import java.net.URI
 import java.net.http.HttpClient
@@ -176,6 +173,11 @@ class ChatController(
             log.error("获取模型列表失败", e)
             return Result.success(mapOf("data" to listOf(mapOf("id" to defaultModelName))))
         }
+    }
+
+    @PostMapping("/chat/getBaseModel")
+    fun getBaseModel(): Result<*> {
+        return Result.success(defaultModelName)
     }
 
     @PostMapping("/chat/stanford")

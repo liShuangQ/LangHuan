@@ -27,12 +27,12 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.multipart.MultipartFile
-import java.util.*
+import java.util.Date
 
 @Service
 class RagService(
     private val ragFileService: TRagFileService,
-    ragFileGroupService: TRagFileGroupService,
+    private val ragFileGroupService: TRagFileGroupService,
     vectorStoreConfig: VectorStoreConfig,
     private val etlPipeline: EtlPipeline,
     private val tFileUrlService: TFileUrlService,
@@ -45,8 +45,7 @@ class RagService(
         private val log = LoggerFactory.getLogger(RagService::class.java)
     }
 
-    private val ragFileGroupService: TRagFileGroupService
-    private val ragVectorStore: VectorStore
+    private val ragVectorStore: VectorStore = vectorStoreConfig.ragVectorStore()
 
     @Value("\${minio.img-bucket-name}")
     private var bucketName: String? = null
@@ -56,11 +55,6 @@ class RagService(
 
     @Resource
     private var minioService: MinioService? = null
-
-    init {
-        this.ragFileGroupService = ragFileGroupService
-        this.ragVectorStore = vectorStoreConfig.ragVectorStore()
-    }
 
     @Transactional(rollbackFor = [Exception::class])
     @Throws(Exception::class)
@@ -112,7 +106,7 @@ class RagService(
 
         val fileUrlList = tFileUrlDao.selectByFileId(ragFile.id as Int)
 
-        if (fileUrlList != null && fileUrlList.isNotEmpty()) {
+        if (fileUrlList.isNotEmpty()) {
             deleteImage(fileUrlList)
 
             val deleteCount = tFileUrlDao.deleteByFileId(ragFile.id as Int)

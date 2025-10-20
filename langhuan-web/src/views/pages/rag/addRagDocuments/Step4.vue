@@ -141,7 +141,6 @@ const init = async () => {
 };
 // HACK
 const formHandle = (type: string, key: string, data: any, other: any) => {
-    console.log(type, key, data, other);
     if (
         (stepData.value.fileType === "text" ||
             stepData.value.fileType === "html") &&

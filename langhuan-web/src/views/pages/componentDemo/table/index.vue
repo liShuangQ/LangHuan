@@ -119,7 +119,7 @@ const tableRowClassName = (
 };
 
 const tableHandle = (t: string, d: any, key: string) => {
-    console.log("tableHandle:::", t, d, key);
+
 };
 const indexMethod = (index: number, fn: Function) => {
     fn('-' + index)

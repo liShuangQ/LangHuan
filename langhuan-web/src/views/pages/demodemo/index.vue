@@ -74,14 +74,14 @@ const formComRef = ref<FormDefineExpose>();
 const tableComRef = ref<TableDefineExpose>();
 
 const formHandle = (type: string, key: string, data: any, other: any) => {
-    console.log(type, key, data, other);
+    console.log("formHandle", type, key, data, other);
 };
 const addAndChangeFormHandle = (type: string, key: string, data: any, other: any) => {
-    console.log(type, key, data, other);
+    console.log("addAndChangeFormHandle", type, key, data, other);
 };
 
 const tableHandle = (t: string, d: any, key: string) => {
-    console.log("tableHandle:::", t, d, key);
+    console.log("demo_tableHandle:::", t, d, key);
     if (t === 'handleCurrentChange' || t === 'handleSizeChange') {
         getUserPageList()
     }

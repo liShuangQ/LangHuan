@@ -28,6 +28,12 @@ class PatternTokenTextSplitter(private val splitPattern: Pattern) : TextSplitter
 //                documents.add(new Document(sentence, metadata));
             }
         }
+        // XXX 临时处理
+        if (documents[0].contains("source: Invalid source URI")) {
+            documents[0] = documents[0].replace(
+                "source: Invalid source URI: InputStream resource [resource loaded through InputStream] cannot be resolved to URL",
+                "").trim()
+        }
         // 返回包含所有创建的Document对象的列表
         return documents
     }

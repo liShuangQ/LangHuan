@@ -130,7 +130,7 @@ class MinioUtils(private val minioClient: MinioClient, private val minioUrl: Str
     @Throws(Exception::class)
     fun deleteFolder(folderName: String, bucketName: String?) {
         var folderName = folderName
-        require(!(folderName == null || folderName.isEmpty())) { "Folder name cannot be null or empty" }
+        require(!(folderName.isEmpty())) { "Folder name cannot be null or empty" }
 
         // 确保文件夹名以 / 结尾，表示一个目录
         if (!folderName.endsWith("/")) {

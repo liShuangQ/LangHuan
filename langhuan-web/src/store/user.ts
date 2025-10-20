@@ -44,7 +44,6 @@ export default defineStore("user", {
                 })
                 .catch((err) => {
                     ElMessage.error(err);
-                    console.log(err);
                 });
         },
         //获取用户信息

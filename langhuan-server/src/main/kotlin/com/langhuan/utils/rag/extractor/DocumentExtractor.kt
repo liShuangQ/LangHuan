@@ -31,6 +31,7 @@ import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.*
 import java.net.HttpURLConnection
+import java.net.URI
 
 
 /**
@@ -167,7 +168,7 @@ class DocumentExtractor(
     private fun handleImage(pictureData: XWPFPictureData, fileUrlList: MutableList<TFileUrl>, randomId: Int): Optional<String> {
         val extension = pictureData.suggestFileExtension()
         val fileName = UUID.randomUUID().toString() + "." + extension
-        val objectName = (if (minioFolder != null) minioFolder + "/" else "") + fileName
+        val objectName = (minioFolder + "/") + fileName
 
         try {
             ByteArrayInputStream(pictureData.data).use { inputStream ->
@@ -258,7 +259,7 @@ class DocumentExtractor(
             if (!filename.contains(".")) {
                 filename += ".jpg" // 默认扩展名
             }
-            val objectName = (if (minioFolder != null) minioFolder + "/" else "") + filename
+            val objectName = (minioFolder + "/") + filename
 
             try {
                 imageUrl.openStream().use { `in` ->

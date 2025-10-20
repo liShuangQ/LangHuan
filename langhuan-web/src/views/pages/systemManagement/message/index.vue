@@ -103,15 +103,15 @@ let addAndChangeFormDialogTit = ref("");
 let addOrChange = ref("add");
 
 const formHandle = (type: string, key: string, data: any, other: any) => {
-    console.log(type, key, data, other);
+    return;
 };
 
 const changeFormHandle = (type: string, key: string, data: any, other: any) => {
-    console.log(type, key, data, other);
+    return;
 };
 
 const tableHandle = (t: string, d: any, key: string) => {
-    console.log("tableHandle:::", t, d, key);
+
     if (t === "handleCurrentChange" || t === "handleSizeChange") {
         getNotificationList();
     }

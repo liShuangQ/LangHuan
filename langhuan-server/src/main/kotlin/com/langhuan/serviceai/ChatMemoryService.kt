@@ -82,7 +82,7 @@ class ChatMemoryService {
         log.info("ChatMemory-set-windows-name")
         return userChatWindowService.update(
             UpdateWrapper<TUserChatWindow>()
-                .eq("conversationId", conversationId)
+                .eq("conversation_id", conversationId)
                 .set("conversationName", conversationName)
         )
     }
@@ -147,7 +147,7 @@ class ChatMemoryService {
         chatMemory.clear(id)
         // 删除用户聊天窗口记录
         userChatWindowService.remove(
-            QueryWrapper<TUserChatWindow>().eq("conversationId", id)
+            QueryWrapper<TUserChatWindow>().eq("conversation_id", id)
         )
         // 删除记忆中的图片
         minioService.deleteFolder("$chatMemoryImgFold/$id", bucket)

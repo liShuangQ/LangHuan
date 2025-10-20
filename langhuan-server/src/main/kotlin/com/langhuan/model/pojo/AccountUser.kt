@@ -4,7 +4,6 @@ import cn.hutool.core.lang.Assert
 import lombok.extern.slf4j.Slf4j
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
-import java.util.Collection
 
 @Slf4j
 class AccountUser : UserDetails {
@@ -15,15 +14,15 @@ class AccountUser : UserDetails {
     private var userId: Integer? = null
     private var password: String? = null
     private var username: String? = null
-    private var authorities: Collection<out GrantedAuthority>? = null
+    private var authorities: MutableCollection<out GrantedAuthority>? = null
     private var accountNonExpired: Boolean = false
     private var accountNonLocked: Boolean = false
     private var credentialsNonExpired: Boolean = false
     private var enabled: Boolean = false
 
-    constructor(userId: Integer?, username: String?, password: String?, authorities: Collection<out GrantedAuthority>?) : this(userId, username, password, true, true, true, true, authorities)
+    constructor(userId: Integer?, username: String?, password: String?, authorities: MutableCollection<out GrantedAuthority>?) : this(userId, username, password, true, true, true, true, authorities)
 
-    constructor(userId: Integer?, username: String?, password: String?, enabled: Boolean, accountNonExpired: Boolean, credentialsNonExpired: Boolean, accountNonLocked: Boolean, authorities: Collection<out GrantedAuthority>?) {
+    constructor(userId: Integer?, username: String?, password: String?, enabled: Boolean, accountNonExpired: Boolean, credentialsNonExpired: Boolean, accountNonLocked: Boolean, authorities: MutableCollection<out GrantedAuthority>?) {
         Assert.isTrue(username != null && "" != username && password != null, "Cannot pass null or empty values to constructor")
         this.userId = userId
         this.username = username
@@ -36,7 +35,7 @@ class AccountUser : UserDetails {
     }
 
     override fun getAuthorities(): MutableCollection<out GrantedAuthority> {
-        return this.authorities as? MutableCollection<out GrantedAuthority> ?: mutableListOf()
+        return this.authorities ?: mutableListOf()
     }
 
     fun getUserId(): Integer? {

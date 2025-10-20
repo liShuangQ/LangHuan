@@ -9,7 +9,6 @@ import {
 import { http } from "@/plugins/axios";
 const changeFormHandle = (type: string, key: string, data: any, other: any) => {
     return
-    // console.log(type, key, data, other);
 };
 const addAndChangeFormComRef = ref<FormDefineExpose>();
 const emit = defineEmits(['handle'])

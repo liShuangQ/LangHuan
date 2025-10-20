@@ -15,19 +15,19 @@ import org.springframework.stereotype.Service
 
 @Service
 class ChatGeneralAssistanceService(chatClientBuilder: ChatClient.Builder) {
-    private val chatClient: ChatClient
+    private var chatClient: ChatClient = chatClientBuilder
+        .defaultAdvisors(
+            SafeGuardAdvisor(Constant.AIDEFAULTSAFEGUARDADVISOR),
+            SimpleLoggerAdvisor()
+        )
+        .build();
 
     companion object {
         private val log = LoggerFactory.getLogger(ChatGeneralAssistanceService::class.java)
     }
 
     init {
-        chatClient = chatClientBuilder
-            .defaultAdvisors(
-                SafeGuardAdvisor(Constant.AIDEFAULTSAFEGUARDADVISOR),
-                SimpleLoggerAdvisor()
-            )
-            .build()
+
     }
 
     fun easyChat(p: String?, q: String, modelName: String?): String? {

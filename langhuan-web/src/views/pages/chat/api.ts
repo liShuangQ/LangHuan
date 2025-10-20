@@ -1,7 +1,16 @@
 import { http } from "@/plugins/axios";
 import { CancelToken } from "axios";
 import { ChatSendParam } from "./types";
-
+/**
+ * 获取默认模型
+ */
+export const getBaseModel = () => {
+    return http.request<any>({
+        url: "chat/getBaseModel",
+        method: "post",
+        q_spinning: false,
+    });
+};
 /**
  * 发送聊天消息
  * @param params 聊天参数

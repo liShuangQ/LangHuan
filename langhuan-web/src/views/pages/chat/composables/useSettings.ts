@@ -19,14 +19,14 @@ export function useSettings() {
 
     const ragGroups = ref<RagGroup[]>([]);
     const getSetInfo = async () => {
-        availableModels.value = await aimodel().getModelOptions() as {
+        availableModels.value = (await aimodel().getModelOptions()) as {
             label: string;
             value: string;
         }[];
+
         // 默认模型选择
-        if (settings.value.modelName === "") {
-            settings.value.modelName = availableModels.value[0].value;
-        }
+        const getBaseModelRes = await api.getBaseModel();
+        settings.value.modelName = getBaseModelRes.data;
         api.getRagGroupOptionList().then((res) => {
             ragGroups.value = res.data.map((item: any) => ({
                 id: String(item.id),

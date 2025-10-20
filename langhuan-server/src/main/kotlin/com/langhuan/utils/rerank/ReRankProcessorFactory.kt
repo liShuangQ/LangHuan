@@ -21,10 +21,13 @@ class ReRankProcessorFactory {
     constructor(processors: List<ReRankProcessor>) {
         // 将所有处理器注册到map中，key为模型名称
         this.processorMap = processors.stream()
-                .collect(Collectors.toMap(
-                        { obj: ReRankProcessor -> obj.getModelName() },
-                        Function.identity()
-                ))
+            .collect(
+                Collectors.toMap(
+                    { obj: ReRankProcessor -> obj.getModelName() },
+                    Function.identity()
+                )
+            )
+
     }
 
     /**

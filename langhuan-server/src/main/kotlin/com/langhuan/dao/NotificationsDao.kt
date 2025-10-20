@@ -40,7 +40,7 @@ class NotificationsDao(
         isArchived: Boolean?,
         pageNum: Int,
         pageSize: Int
-    ): IPage<java.util.Map<String, Any>> {
+    ): IPage<Map<String, Any>> {
 
         // 构建查询条件
         val condition = JdbcPaginationHelper.QueryCondition()
@@ -72,6 +72,6 @@ class NotificationsDao(
 
         // 执行分页查询
         @Suppress("UNCHECKED_CAST")
-        return paginationHelper.selectPageForMap(sql, condition.getParams(), pageNum.toLong(), pageSize.toLong()) as IPage<java.util.Map<String, Any>>
+        return paginationHelper.selectPageForMap(sql, condition.getParams(), pageNum.toLong(), pageSize.toLong())
     }
 }

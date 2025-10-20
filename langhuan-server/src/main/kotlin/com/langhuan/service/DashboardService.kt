@@ -136,7 +136,7 @@ class DashboardService(
         val weekChatLogs = tApiLogService.list(
             QueryWrapper<TApiLog>()
                 .eq("api_url", "/chat/chat")
-                .ge("createTime", startOfWeek)
+                .ge("create_time", startOfWeek)
         )
 
         // 查询所有用户

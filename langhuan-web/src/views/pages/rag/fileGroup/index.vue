@@ -156,7 +156,7 @@ const shareManageDialogVisible = ref(false);
 const currentFileGroupId = ref<string | number>("");
 const currentFileGroupData = ref<any>({});
 const formHandle = (type: string, key: string, data: any, other: any) => {
-    console.log(type, key, data, other);
+    return;
 };
 const addAndChangeFormHandle = (
     type: string,
@@ -164,11 +164,11 @@ const addAndChangeFormHandle = (
     data: any,
     other: any
 ) => {
-    console.log(type, key, data, other);
+    return;
 };
 
 const tableHandle = (t: string, d: any, key: string) => {
-    console.log("tableHandle:::", t, d, key);
+
     if (t === "handleCurrentChange" || t === "handleSizeChange") {
         getUserPageList();
     }

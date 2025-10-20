@@ -370,15 +370,15 @@ nextTick(async () => {
                         @keyup.enter="sendMessage()"></el-input>
                 </div>
                 <!-- 下功能区 -->
-                <div class=" flex justify-end">
-                    <div class=" flex justify-between items-center ">
-                        <div class="text-sm font-medium text-gray-700 mr-2 w-20">选择文件组</div>
+                <div class=" flex justify-end w-full">
+                    <div class=" flex justify-between items-center w-max">
+                        <div class="text-sm font-medium text-gray-700 mr-2 w-80">选择文件组</div>
                         <el-select v-model="ragGroup" :disabled="isTyping" @change="ragGroupChange" placeholder="选择文件组"
                             class="mr-2">
                             <el-option v-for="item in ragGroupOption" :key="item.value" :label="item.label"
                                 :value="item.value" />
                         </el-select>
-                        <div class="text-sm font-medium text-gray-700 mr-2 w-20 ">选择文件</div>
+                        <div class="text-sm font-medium text-gray-700 mr-2 w-60">选择文件</div>
                         <el-select v-model="ragFile" clearable :disabled="isTyping" placeholder="选择文件"
                             class="mr-2 w-80">
                             <el-option v-for="item in ragFileOption" :key="item.value" :label="item.label"

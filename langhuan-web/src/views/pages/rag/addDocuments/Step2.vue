@@ -51,7 +51,6 @@ const init = async () => {
     ]);
 };
 const formHandle = (type: string, key: string, data: any, other: any) => {
-    console.log(type, key, data, other);
     if (type === "change") {
         if (key === "fileName") {
             fileChangeSelectData = fileNowOptionCache.value.find(

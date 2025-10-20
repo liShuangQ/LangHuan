@@ -45,7 +45,7 @@ class ApiLogController(private val apiLogService: TApiLogService) {
         @RequestParam(required = false) username: String?,
         @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") startTime: LocalDateTime?,
         @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") endTime: LocalDateTime?
-    ): Result<IPage<Map<String, Any>>> {
+    ): Result<Any> {
         return Result.success(
             apiLogService.search(apiName, username, startTime, endTime, current.toInt(), size.toInt())
         )

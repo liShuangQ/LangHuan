@@ -66,7 +66,7 @@ docker run -it -d --rm --name postgres -p 5432:5432 -e POSTGRES_USER=postgres -e
 - docker pull minio/minio:RELEASE.2025-04-22T22-12-26Z
 
 ```txt
-podman run -d \
+docker run -d \
   --name minio \
   -p 9000:9000 \
   -p 9001:9001 \

@@ -13,7 +13,7 @@ docker compose up -d --no-deps --build web
 -----------------------------------
 
 开启关闭
-docker-compose down
+docker compose down
 docker rmi 镜像
-docker-compose up -d
+docker compose up -d
 

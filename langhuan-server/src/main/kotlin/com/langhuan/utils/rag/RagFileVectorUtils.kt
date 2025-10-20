@@ -90,7 +90,7 @@ class RagFileVectorUtils(
 
         if (documentText.contains("source: Invalid source URI")) {
             documentText = documentText.replace(
-                    "(?m)^\\s*source: Invalid source URI: InputStream resource \\[resource loaded through InputStream\\] cannot be resolved to URL\\s*$",
+                    "source: Invalid source URI: InputStream resource [resource loaded through InputStream] cannot be resolved to URL",
                     "").trim()
         }
 

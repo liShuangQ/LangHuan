@@ -1,29 +1,22 @@
 <template>
     <div>
-        <ElementFormC
-            ref="formComRef"
-            :formConfig="formConfig"
-            :formItemConfig="formItemConfig"
-            @handle="formHandle"
-        >
+        <ElementFormC ref="formComRef" :formConfig="formConfig" :formItemConfig="formItemConfig" @handle="formHandle">
             <template #prepend-inputkey>11</template>
             <template #append-inputkey>22</template>
-            <template #optionCustom-selectkey="{item}">
+            <template #optionCustom-selectkey="{ item }">
                 <span style="float: left">{{ item.label }}</span>
                 <span style="float: right;color: var(--el-text-color-secondary);font-size: 13px;">
-                                    {{ item.value }}
+                    {{ item.value }}
                 </span>
             </template>
 
 
             <template #custom-customkey="props">
-                <span class="text-red-300 float-left leading-8"
-                >自定义插槽{{ props }}</span
-                >
+                <span class="text-red-300 float-left leading-8">自定义插槽{{ props }}</span>
             </template>
             <template #suffix-autocompletekey>
                 <el-icon class="el-input__icon">
-                    <edit/>
+                    <edit />
                 </el-icon>
             </template>
             <template #action-switchkey>T</template>
@@ -42,7 +35,7 @@ export default {
 };
 </script>
 <script lang="ts" setup>
-import {formConfig, formItemConfig} from "./config";
+import { formConfig, formItemConfig } from "./config";
 import {
     FormConfig,
     FormDefineExpose,
@@ -89,9 +82,9 @@ const getFromValue = () => {
     console.log(formComRef.value!.getFromValue());
 };
 const formHandle = (type: string, key: string, data: any, other: any) => {
-    console.log(type, key, data, other);
+    console.log("formHandle", type, key, data, other);
     if (type === 'autocomplete' && key === 'autocompletekey') {
-        other([{value: '1'}, {value: '2'}])
+        other([{ value: '1' }, { value: '2' }])
     }
 };
 </script>

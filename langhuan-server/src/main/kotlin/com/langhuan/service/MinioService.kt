@@ -62,12 +62,12 @@ class MinioService {
     }
 
     fun fileExists(objectName: String, bucketName: String): Boolean {
-        return minioUtils.fileExists(objectName, bucketName) as Boolean
+        return minioUtils.fileExists(objectName, bucketName)
     }
 
     // 生成minio访问链接
     fun generateMinioUrl(objectName: String, bucketName: String): String {
-        return minioUtils.generateMinioUrl(objectName, bucketName) as String
+        return minioUtils.generateMinioUrl(objectName, bucketName)
     }
     
     // 删除文件夹下所有文件和文件夹本身

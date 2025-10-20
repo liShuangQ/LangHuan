@@ -329,7 +329,7 @@ const addToUsePrompt = async (t: string, d: any = null) => {
 
 // 初始化执行
 nextTick(async () => {
-    modelOptions.value = toRaw(aimodel().getModelOptions()) as any
+    modelOptions.value = toRaw(await aimodel().getModelOptions()) as any
     await getPromptOptionList()
 })
 </script>

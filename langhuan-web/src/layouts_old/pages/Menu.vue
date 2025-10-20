@@ -75,7 +75,6 @@ export default defineComponent({
         }
 
         const menuSelect = (index: string, indexPath: string[], item: object, routeResult: object) => {
-            // console.log(index,indexPath,item,routeResult)
             router.push({path: index});
         }
 
