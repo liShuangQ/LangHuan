@@ -4,16 +4,16 @@ export default {
 };
 </script>
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
-import { ElLoading, ElMessageBox, ElMessage } from "element-plus";
+import {onMounted, ref} from "vue";
+import {ElLoading, ElMessageBox, ElMessage} from "element-plus";
 import Sidebar from "./components/sidebar.vue";
 import SettingsSidebar from "./components/settings-sidebar.vue";
 import PromptContainers from "./components/prompt-containers.vue";
 import UpdateTip from "./components/updateTip.vue";
-import { exportElementToHtml, generateExportFilename } from "@/utils/exportHtml";
-import { useChat } from "./composables/useChat";
-import { useWindow } from "./composables/useWindow";
-import { useSettings } from "./composables/useSettings";
+import {exportElementToHtml, generateExportFilename} from "@/utils/exportHtml";
+import {useChat} from "./composables/useChat";
+import {useWindow} from "./composables/useWindow";
+import {useSettings} from "./composables/useSettings";
 import {
     expertPrompt,
     observerPrompt,
@@ -22,7 +22,7 @@ import {
 } from "./config";
 import user from "@/store/user";
 import * as api from "./api";
-import { ChatSeedEmitMessageData, ChatSendParam } from "./types";
+import {ChatSeedEmitMessageData, ChatSendParam} from "./types";
 
 const {
     messages,
@@ -101,7 +101,7 @@ const handlePromptAction = async (type: string, payload?: any) => {
         try {
             if (payload && payload.value) {
                 // 弹出输入框让用户输入文件名
-                const { value: fileName } = await ElMessageBox.prompt('请输入导出文件名', '导出聊天记录', {
+                const {value: fileName} = await ElMessageBox.prompt('请输入导出文件名', '导出聊天记录', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
                     inputPlaceholder: '例如：我的聊天记录',
@@ -251,14 +251,15 @@ onMounted(async () => {
         ? ['flex', 'h-screen', 'w-full', 'min-w-0', 'overflow-hidden']
         : ['flex', 'h-full', 'w-full', 'min-w-0', 'overflow-hidden']
         ">
-        <Sidebar :chat-list="chatList" @action="handleSidebarAction" />
+        <Sidebar :chat-list="chatList" @action="handleSidebarAction"/>
         <div class="min-w-0 flex-1 h-full">
             <PromptContainers ref="PromptContainersRef" :messages="messages" :can-send="canSend"
-                :has-windows="chatList.length > 0" @send-message="(msg: any) => handleSendMessage(currentWindowId, msg)"
-                @action="handlePromptAction" />
+                              :has-windows="chatList.length > 0"
+                              @send-message="(msg: any) => handleSendMessage(currentWindowId, msg)"
+                              @action="handlePromptAction"/>
         </div>
         <SettingsSidebar v-if="showSettings" v-model="settings" :available-models="availableModels"
-            :rag-groups="ragGroups" @close="toggleSettings" />
-        <UpdateTip />
+                         :rag-groups="ragGroups" @close="toggleSettings"/>
+        <UpdateTip/>
     </main>
 </template>

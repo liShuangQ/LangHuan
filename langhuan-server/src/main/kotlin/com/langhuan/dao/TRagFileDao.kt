@@ -175,7 +175,7 @@ class TRagFileDao(
                 (fg.visibility = 'public'  -- 公开文件组的文件
                 OR fg.created_by = ?      -- 自己创建的文件组的文件
                 OR fgs.id IS NOT NULL)     -- 被分享文件组的文件
-            """.trimIndent()
+            """
         )
 
         countSql.append(
@@ -188,10 +188,11 @@ class TRagFileDao(
                 (fg.visibility = 'public'  -- 公开文件组的文件
                 OR fg.created_by = ?      -- 自己创建的文件组的文件
                 OR fgs.id IS NOT NULL)     -- 被分享文件组的文件
-            """.trimIndent()
+            """
         )
 
         // 添加CASE语句中的参数（按顺序）
+        dataParams.add(currentUser)
         dataParams.add(currentUser)
         dataParams.add(currentUser)
         dataParams.add(currentUser)

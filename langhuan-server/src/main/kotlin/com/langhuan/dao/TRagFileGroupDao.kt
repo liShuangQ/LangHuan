@@ -36,7 +36,7 @@ class TRagFileGroupDao(
             FROM t_rag_file_group fg
             LEFT JOIN t_user u ON fg.created_by = u.username
             WHERE 1=1
-            """.trimIndent()
+            """
 
         val queryForList = jdbcTemplate.queryForList(sql)
 
@@ -66,7 +66,7 @@ class TRagFileGroupDao(
                 FROM t_rag_file_group fg
                 LEFT JOIN t_user u ON fg.created_by = u.username
                 LEFT JOIN t_rag_file_group_share fgs ON fg.id = fgs.file_group_id AND fgs.shared_with = ?
-                """.trimIndent())
+                """)
         if (isRead) {
             dataSql.append("AND fgs.can_read = TRUE")
         }
@@ -80,13 +80,13 @@ class TRagFileGroupDao(
                 fg.visibility = 'public'  -- 公开的文件组
                 OR fg.created_by = ?      -- 自己创建的文件组
                 OR fgs.id IS NOT NULL     -- 被分享的文件组
-            """.trimIndent())
+            """)
 
         // 添加参数（按顺序）
         dataParams.add(currentUser)
         dataParams.add(currentUser)
 
-        val queryForList = jdbcTemplate.queryForList(dataSql.toString(), dataParams.toArray())
+        val queryForList = jdbcTemplate.queryForList(dataSql.toString(), *dataParams.toTypedArray())
 
         return queryForList.stream()
             .map { e -> mapOf("id" to e["id"]!!, "groupName" to e["groupName"]!!) }
@@ -131,13 +131,13 @@ class TRagFileGroupDao(
             FROM t_rag_file_group fg
             LEFT JOIN t_user u ON fg.created_by = u.username
             WHERE 1=1
-            """.trimIndent())
+            """)
 
         countSql.append("""
             SELECT COUNT(*)
             FROM t_rag_file_group fg
             WHERE 1=1
-            """.trimIndent())
+            """)
 
         // 构建WHERE条件
         if (!groupName.isNullOrBlank()) {
@@ -216,7 +216,7 @@ class TRagFileGroupDao(
                     fg.visibility = 'public'  -- 公开的文件组
                     OR fg.created_by = ?      -- 自己创建的文件组
                     OR fgs.id IS NOT NULL     -- 被分享的文件组
-                """.trimIndent())
+                """)
 
         countSql.append(
             """
@@ -227,7 +227,7 @@ class TRagFileGroupDao(
                     fg.visibility = 'public'  -- 公开的文件组
                     OR fg.created_by = ?      -- 自己创建的文件组
                     OR fgs.id IS NOT NULL     -- 被分享的文件组
-                """.trimIndent())
+                """)
 
         // 添加基础参数（按顺序）
         dataParams.add(currentUser) // LEFT JOIN中的shared_with

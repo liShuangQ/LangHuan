@@ -26,27 +26,30 @@ object Constant {
     // ai的单id最大记忆消息数 必须大于0
     const val MESSAGEWINDOWCHATMEMORYMAX = 10
 
-    // ai系统默认提示词数据库定时刷新时间
+    // ai系统默认提示词数据库缓存定时刷新时间
     const val AIDEFAULTSYSTEMPROMPTRECTIME = 1000 * 60 * 60 * 2
 
     // ai系统默认提示词
-    const val AINULLDEFAULTSYSTEMPROMPT = "你是一个人工智能，请根据要求回答用户的问题。"
+    const val AINULLDEFAULTSYSTEMPROMPT = """
+        你的名字是琅嬛，你是一个智能问答助手，始终以清晰、准确、简洁的方式回答用户问题。
+        你的回答必须使用 Markdown 格式，包括适当的标题、列表、代码块（如需要）和段落结构，避免以 "```" 格式开头出现。
+        避免冗余解释，直接提供有用信息。如果问题涉及事实性内容，请确保信息可靠；如果不确定，请明确说明。
+    """
 
-    // ai系统默认用户级别提示词
-    const val AINULLDEFAULTUSERPROMPT = "{user_prompt}"
+    // ai系统默认问答顾问提示词
+    const val AIDEFAULTQUESTIONANSWERADVISORRPROMPT = """
+        以下是从知识库中检索到的相关上下文（使用 --------------------- 包围，可能为空或不相关）：
+        ---------------------
+        {question_answer_context}
+        ---------------------
+        请基于上述上下文回答用户问题。
+        如果上下文为空、与问题无关，或未包含足以回答问题的信息，请明确告知用户“未在知识库中找到相关信息”，然后基于你自身的知识直接回答问题。
+    """
 
     // ai系统默认安全顾问 （后期考虑放数据库）
     val AIDEFAULTSAFEGUARDADVISOR = listOf<String>()
 
-    // ai系统默认问答顾问提示词
-    const val AIDEFAULTQUESTIONANSWERADVISORRPROMPT = """
-            上下文信息rag，在下面用 --------------------- 包围。
-            鉴于上下文信息rag和提供的历史信息而非先验知识，回复用户，并且不要体现这个信息是在上下文信息rag中拿到的。
-            如果问题和上下文信息rag无关或者答案不在上下文信息rag中，则你自己回答这个问题。并且在回答中不要提示没找到信息，无需解释。
-            ---------------------
-            {question_answer_context}
-            ---------------------
-            """
+
     val CATEGORYENUM = listOf(
         mapOf("label" to "默认", "value" to "default"),
         mapOf("label" to "系统", "value" to "system"),

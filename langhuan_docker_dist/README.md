@@ -95,6 +95,21 @@ docker-compose down -v
 docker system prune -f
 ```
 
+### 建议的日常维护命令
+
+- 清理悬空镜像
+docker image prune -f
+
+- 清理停止的容器（可选）
+docker container prune -f
+
+- 清理无用网络（可选）
+docker network prune -f
+
+- 清理所有未使用的资源（镜像、容器、网络、构建缓存）
+docker system prune -f
+
+
 ## 数据持久化
 
 项目使用以下数据卷进行数据持久化：
@@ -219,7 +234,6 @@ docker-compose up -d --build
 2. 更新镜像文件
 3. 重新构建：`docker-compose up -d --build`
 4. 验证服务状态：`docker-compose ps`
-
 
 ---
 

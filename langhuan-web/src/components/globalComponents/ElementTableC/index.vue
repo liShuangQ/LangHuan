@@ -4,80 +4,51 @@
 <!-- 合计功能考虑没必要，后端返回或自己计算即可-->
 <!-- 合并单元格后续考虑加入-->
 <!-- XXX：后续经过使用补全el-table和el-table-column的属性-->
+<!-- :max-height="props.tableConfig.maxHeight || null" -->
+
 <!---->
 <template>
-    <el-table
-        ref="tableRef"
-        :border="props.tableConfig.border || false"
-        :data="props.tableData"
-        :highlight-current-row="props.tableConfig.highlightCurrentRow || false"
-        :row-class-name="tableRowClassNameFun"
-        :size="props.tableConfig.size || 'default'"
-        :stripe="props.tableConfig.stripe || false"
+    <el-table ref="tableRef" :border="props.tableConfig.border || false" :data="props.tableData"
+        :highlight-current-row="props.tableConfig.highlightCurrentRow || false" :row-class-name="tableRowClassNameFun"
+        :size="props.tableConfig.size || 'default'" :stripe="props.tableConfig.stripe || false"
         :table-layout="props.tableConfig.tableLayout || 'auto'"
-        :max-height="props.tableConfig.maxHeight || null"
-        style="width: 100%; height: calc(100% - 48px)"
-        @selection-change="(e) => emit('handle', 'selection', e,'selection')"
-        @current-change="(e) => emit('handle', 'current', e,'current')"
-    >
+        style="width: 100%; height: calc(100% - 48px);max-height: 100%;"
+        @selection-change="(e) => emit('handle', 'selection', e, 'selection')"
+        @current-change="(e) => emit('handle', 'current', e, 'current')">
 
         <!--        功能区-->
-        <el-table-column
-            v-if="props.tableConfig.index || false"
-            :index="indexMethodFun"
-            :align="props.tableConfig.align || 'center'"
-            type="index"
-        />
+        <el-table-column v-if="props.tableConfig.index || false" :index="indexMethodFun"
+            :align="props.tableConfig.align || 'center'" type="index" />
         <el-table-column v-if="props.tableConfig.expand || false" type="expand">
             <template #default="props">
                 <slot :row="props.row" name="expand"></slot>
             </template>
         </el-table-column>
-        <el-table-column
-            v-if="props.tableConfig.selection || false"
-            :align="props.tableConfig.align || 'center'"
-            header-align="center"
-            type="selection"
-            width="50"
-        />
+        <el-table-column v-if="props.tableConfig.selection || false" :align="props.tableConfig.align || 'center'"
+            header-align="center" type="selection" width="50" />
         <!--         ----->
-        <template
-            v-for="item in props.tableColumnConfig"
-            :key="item.prop"
-        >
-            <sub-column
-                :columnConfig="item"
-                :faEmit="emit"
-                :tooltip="props.tableConfig.tooltip || false"
-                :fa-emit="emit"
-                :fa-slots="slots"
-            >
-                <template v-for="(val , code) in slots" #[code]="scope" :key="code">
-                    <slot :name="code" v-bind="{...scope}"></slot>
+        <template v-for="item in props.tableColumnConfig" :key="item.prop">
+            <sub-column :columnConfig="item" :faEmit="emit" :tooltip="props.tableConfig.tooltip || false"
+                :fa-emit="emit" :fa-slots="slots">
+                <template v-for="(val, code) in slots" #[code]="scope" :key="code">
+                    <slot :name="code" v-bind="{ ...scope }"></slot>
                 </template>
             </sub-column>
         </template>
     </el-table>
-    <el-pagination
-        v-model:current-page="pageData.currentPage"
-        v-model:page-size="pageData.pageSize"
-        :background="pageData.background"
-        :disabled="pageData.disabled"
-        :layout="pageData.layout || 'total, sizes, prev, pager, next, jumper'"
-        :page-sizes="[10, 20, 50, 100, 200, 500]"
-        :small="pageData.small"
-        :total="pageData.total"
-        class="mt-4 float-right"
-        @size-change="(e:number)=>emit('handle', 'handleSizeChange', {val:e,currentPage:pageData.currentPage,pageSize:pageData.pageSize},'handleSizeChange')"
-        @current-change="(e:number)=>emit('handle', 'handleCurrentChange', {val:e,currentPage:pageData.currentPage,pageSize:pageData.pageSize},'handleCurrentChange')"
-    />
+    <el-pagination v-model:current-page="pageData.currentPage" v-model:page-size="pageData.pageSize"
+        :background="pageData.background" :disabled="pageData.disabled"
+        :layout="pageData.layout || 'total, sizes, prev, pager, next, jumper'" :page-sizes="[10, 20, 50, 100, 200, 500]"
+        :small="pageData.small" :total="pageData.total" class="mt-4 float-right"
+        @size-change="(e: number) => emit('handle', 'handleSizeChange', { val: e, currentPage: pageData.currentPage, pageSize: pageData.pageSize }, 'handleSizeChange')"
+        @current-change="(e: number) => emit('handle', 'handleCurrentChange', { val: e, currentPage: pageData.currentPage, pageSize: pageData.pageSize }, 'handleCurrentChange')" />
 
 </template>
 
 <script lang="ts" setup>
-import {PaginationConfig, TableColumnConfig, TableConfig, TableDefineExpose,} from "./table-component";
+import { PaginationConfig, TableColumnConfig, TableConfig, TableDefineExpose, } from "./table-component";
 import subColumn from "@/components/globalComponents/ElementTableC/subColumn.vue";
-import {ElTable} from "element-plus";
+import { ElTable } from "element-plus";
 
 const props = withDefaults(
     defineProps<{

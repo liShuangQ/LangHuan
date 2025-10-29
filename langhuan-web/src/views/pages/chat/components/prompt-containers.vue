@@ -208,10 +208,6 @@ const handleRagRank = (type: "good" | "bad", document: any) => {
     emit("action", "documentRank", { type, document });
 };
 
-const openHelp = () => {
-    (window as any).open("../../../../../static/使用手册.pdf");
-};
-
 // 文件上传相关函数
 const generateFileId = () => {
     return Date.now().toString() + Math.random().toString(36).substr(2, 9);
@@ -427,12 +423,6 @@ const getFileDisplayInfo = (file: UploadFile) => {
                         <span
                             class="px-3 py-1 bg-red-100 dark:bg-green-900 text-green-800 dark:text-green-200 rounded-full text-sm">
                             🖼️ 图片识别
-                        </span>
-                    </div>
-                    <div class="mt-4">
-                        首次使用？点此
-                        <span class="cursor-pointer text-blue-500" @click="openHelp">
-                            查看帮助
                         </span>
                     </div>
                 </div>

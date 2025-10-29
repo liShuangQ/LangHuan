@@ -162,6 +162,7 @@ export const formItemConfig = (
                 type: "select",
                 option: [],
                 label: "文件组",
+                filterable: true,
                 rule: [
                     {
                         required: true,

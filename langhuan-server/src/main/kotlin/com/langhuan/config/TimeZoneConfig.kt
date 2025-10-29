@@ -2,7 +2,6 @@ package com.langhuan.config
 
 import com.langhuan.common.GlobalExceptionHandler
 import com.langhuan.utils.date.DateTimeUtils
-import lombok.extern.slf4j.Slf4j
 import org.slf4j.LoggerFactory
 import org.springframework.boot.CommandLineRunner
 import org.springframework.context.annotation.Configuration

@@ -18,7 +18,7 @@ export interface TableConfig {
     /**
      * 通过设置 max-height 属性为 el-table 指定最大高度。 此时若表格所需的高度大于最大高度，则会显示一个滚动条。
      */
-    maxHeight?: number | string
+    // maxHeight?: number | string
     /**
      * show-overflow-tooltip属性。 默认情况下，如果单元格内容过长，会占用多行显示。 若需要单行显示可以使用 show-overflow-tooltip 属性，它接受一个 Boolean， 为 true 时多余的内容会在 hover 时以 tooltip 的形式显示出来。
      */

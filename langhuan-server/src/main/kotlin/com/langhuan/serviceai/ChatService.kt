@@ -78,12 +78,18 @@ class ChatService(
     @Autowired
     fun setAdvisor(chatMemoryService: ChatMemoryService) {
         this.chatMemory = chatMemoryService.getChatMemory()
+        // 系统级提示词
+        var system: String? = TPromptsService.getCachedTPromptsByMethodName("AINULLDEFAULTSYSTEMPROMPT")
+        if (system == null) {
+            system = Constant.AINULLDEFAULTSYSTEMPROMPT
+        }
         this.chatClient = this.chatClient.mutate()
             .defaultAdvisors(
                 SafeGuardAdvisor(Constant.AIDEFAULTSAFEGUARDADVISOR),
                 SimpleLoggerAdvisor(),
-                MessageChatMemoryAdvisor.builder(chatMemory).build()
+                MessageChatMemoryAdvisor.builder(chatMemory).build(),
             )
+            .defaultSystem(system)
             .build()
     }
 
@@ -290,34 +296,18 @@ class ChatService(
         // 根据配置决定是否启用工具函数调用
         val tools = if (chatRestOption.isFunction == true) ToolCallbacks.from(RestRequestTools::class.java)
         else ToolCallbacks.from()
-
-        // 获取用户提示词模板，优先使用缓存中的配置，否则使用默认值
-        var aiNullDefaultUserPrompt = TPromptsService
-            .getCachedTPromptsByMethodName("AINULLDEFAULTUSERPROMPT")
-        if (aiNullDefaultUserPrompt == null) {
-            aiNullDefaultUserPrompt = Constant.AINULLDEFAULTUSERPROMPT
-        }
-
-        // 替换模板变量，生成最终的用户提示词
-        val userPrompt = chatRestOption.userMessage?.let {
-            aiNullDefaultUserPrompt.replace(
-                "{user_prompt}",
-                it
-            )
-        }
-
         return try {
             // 根据是否启用RAG选择不同的聊天模式
             if (chatRestOption.isRag == true) {
                 this.isRagChat(
                     chatRestOption.chatId ?: "", chatRestOption.prompt ?: "",
-                    userPrompt ?: "", chatRestOption.ragGroupId ?: "",
+                    chatRestOption.userMessage ?: "", chatRestOption.ragGroupId ?: "",
                     chatRestOption.modelName ?: "", chatRestOption.isReRank ?: false, tools
                 )
             } else {
                 this.noRagChat(
                     chatRestOption.chatId ?: "", chatRestOption.prompt ?: "",
-                    userPrompt ?: "", chatRestOption.modelName ?: "", tools
+                    chatRestOption.userMessage ?: "", chatRestOption.modelName ?: "", tools
                 )
             }
         } catch (e: Exception) {
@@ -332,13 +322,13 @@ class ChatService(
         tools: Array<ToolCallback>
     ): ChatModelResult {
         // 获取RAG专用提示词模板，优先使用缓存配置
-        var aiDefaultQuestionAnswerAdvisorPrompt = TPromptsService
+        var aiDefaultQuestionAnswerAdvisorPrompt: String? = TPromptsService
             .getCachedTPromptsByMethodName("AIDEFAULTQUESTIONANSWERADVISORRPROMPT")
         if (aiDefaultQuestionAnswerAdvisorPrompt == null) {
             aiDefaultQuestionAnswerAdvisorPrompt = Constant.AIDEFAULTQUESTIONANSWERADVISORRPROMPT
         }
 
-        // 使用排序后的结果手动喂给ai
+        // 手动获取召回信息
         val documentList = ragService.ragSearch(q, groupId, "", isReRank)
 
         // 将检索到的文档内容拼接成上下文字符串
@@ -348,14 +338,10 @@ class ChatService(
         }
 
         // 替换模板变量，构建包含检索上下文的提示词
-        val ragPrompt = aiDefaultQuestionAnswerAdvisorPrompt
-            .replace("{question_answer_context}", ragContents.toString())
+        val ragPrompt =
+            aiDefaultQuestionAnswerAdvisorPrompt.replace("{question_answer_context}", ragContents.toString())
 
-        var system = TPromptsService.getCachedTPromptsByMethodName("ChatService")
-        if (system == null) {
-            system = Constant.AINULLDEFAULTSYSTEMPROMPT
-        }
-        // 构建并发送AI请求
+        // 构建附带用户其他提示词，发送AI请求
         val chatResponse = this.chatClient.prompt(
             Prompt(
                 ragPrompt + "\n" + p,
@@ -365,7 +351,6 @@ class ChatService(
             )
         )
             .user(q)
-            .system(system)
             .advisors { a -> a.param(ChatMemory.CONVERSATION_ID, id) }
             .toolCallbacks(*tools)
             .call()
@@ -381,28 +366,16 @@ class ChatService(
 
     fun noRagChat(id: String, p: String, q: String, modelName: String, tools: Array<ToolCallback>): ChatModelResult {
 
-
-        // 将检索到的文档内容拼接成上下文字符串
-        val ragContents = java.lang.StringBuilder()
-
-        // 替换模板变量，构建包含检索上下文的提示词
-        val ragPrompt = Constant.AIDEFAULTQUESTIONANSWERADVISORRPROMPT
-            .replace("{question_answer_context}", ragContents.toString())
-        var system = TPromptsService.getCachedTPromptsByMethodName("ChatService")
-        if (system == null) {
-            system = Constant.AINULLDEFAULTSYSTEMPROMPT
-        }
         // 构建并发送AI请求，不包含RAG上下文
         val chatResponse = this.chatClient.prompt(
             Prompt(
-                ragPrompt + "\n" + p,
+                p,
                 OpenAiChatOptions.builder()
                     .model(modelName)
                     .build()
             )
         )
             .user(q)
-            .system(system)
             .advisors { a -> a.param(ChatMemory.CONVERSATION_ID, id) }
             .toolCallbacks(*tools)
             .call()

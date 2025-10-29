@@ -6,6 +6,14 @@
     .success-row {
         --el-table-tr-bg-color: var(--el-color-success-light-9);
     }
+    .el-table__body-wrapper {
+        .el-scrollbar {
+            .el-scrollbar__wrap {
+                height: 100% !important;
+                max-height: 100% !important;
+            }
+        }
+    }
 }
 .el-dialog__header {
     .el-dialog__headerbtn {
@@ -17,6 +25,6 @@
         background-color: #ffffff !important;
     }
 }
-.el-menu--horizontal.el-menu{
+.el-menu--horizontal.el-menu {
     border-bottom: none;
 }
