@@ -170,7 +170,7 @@ class NotificationsService {
         )
             .eq(includeRead != null, "is_read", includeRead)
             .eq("is_archived", false)
-            .eq(notificationLevel != null, "notificationLevel", notificationLevel)
+            .eq(notificationLevel != null, "notification_level", notificationLevel)
             .eq(notificationType != null, notificationType, notificationType)
             .and({ wrapper ->
                 wrapper.isNull("expires_at")
