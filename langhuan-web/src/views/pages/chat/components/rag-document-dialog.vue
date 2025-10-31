@@ -26,11 +26,12 @@ const handleRank = (type: 'good' | 'bad', document: any) => {
                 </div>
                 <div>
                     <div class="flex justify-start items-center gap-1 mb-1">
-                        <el-tag>手工排名：{{ item.metadata.rank }}</el-tag>
-                        <el-tag v-if="item.metadata.relevance_score">ReRank距离：{{ item.metadata.relevance_score
+                        <el-tag v-if="item.metadata.relevance_score">ReRank得分：{{ item.metadata.relevance_score
                         }}</el-tag>
-                        <el-tag>RAG得分：{{ item.score }}</el-tag>
-                        <el-tag>向量距离：{{ item.metadata.distance }}</el-tag>
+                        <el-tag>加权得分：{{ item.metadata.weightedScore }}</el-tag>
+                        <el-tag>向量得分：{{ item.metadata.normalizedSpringAiScore }}</el-tag>
+                        <el-tag>关键字得分：{{ item.metadata.normalizedBm25Score }}</el-tag>
+                        <el-tag>手工排名：{{ item.metadata.normalizedRankScore }}</el-tag>
                     </div>
                     <div class="flex justify-start items-center gap-1">
                         <el-tag>文件名：{{ item.metadata.filename }}</el-tag>

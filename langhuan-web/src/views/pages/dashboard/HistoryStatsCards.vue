@@ -12,13 +12,9 @@ defineProps<Props>();
 <template>
     <div>
         <!-- 使用情况统计卡片-总体情况 -->
-        <div
-            class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 mb-8"
-        >
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 mb-8">
             <!-- 历史总提问卡片 -->
-            <div
-                class="stats-card bg-white rounded-lg shadow-md p-6 border-l-4 border-green-500"
-            >
+            <div class="stats-card bg-white rounded-lg shadow-md p-6 border-l-4 border-green-500">
                 <div class="flex items-center justify-between">
                     <div>
                         <h3 class="text-lg font-semibold text-gray-700 mb-2">
@@ -37,9 +33,7 @@ defineProps<Props>();
                 </div>
             </div>
             <!-- 历史总有效回答卡片 -->
-            <div
-                class="stats-card bg-white rounded-lg shadow-md p-6 border-l-4 border-purple-500"
-            >
+            <div class="stats-card bg-white rounded-lg shadow-md p-6 border-l-4 border-purple-500">
                 <div class="flex items-center justify-between">
                     <div>
                         <h3 class="text-lg font-semibold text-gray-700 mb-2">
@@ -58,9 +52,7 @@ defineProps<Props>();
                 </div>
             </div>
             <!-- 文件组统计卡片 -->
-            <div
-                class="stats-card bg-white rounded-lg shadow-md p-6 border-l-4 border-blue-500"
-            >
+            <div class="stats-card bg-white rounded-lg shadow-md p-6 border-l-4 border-blue-500">
                 <div class="flex items-center justify-between">
                     <div>
                         <h3 class="text-lg font-semibold text-gray-700 mb-2">
@@ -77,9 +69,7 @@ defineProps<Props>();
                 </div>
             </div>
             <!-- 历史问题反馈卡片 -->
-            <div
-                class="stats-card bg-white rounded-lg shadow-md p-6 border-l-4 border-orange-500"
-            >
+            <div class="stats-card bg-white rounded-lg shadow-md p-6 border-l-4 border-orange-500">
                 <div class="flex items-center justify-between">
                     <div>
                         <h3 class="text-lg font-semibold text-gray-700 mb-2">
@@ -98,9 +88,7 @@ defineProps<Props>();
                 </div>
             </div>
             <!-- 反馈统计卡片 -->
-            <div
-                class="stats-card bg-white rounded-lg shadow-md p-6 border-l-4 border-green-500"
-            >
+            <div class="stats-card bg-white rounded-lg shadow-md p-6 border-l-4 border-green-500">
                 <div class="flex items-center justify-between">
                     <div>
                         <h3 class="text-lg font-semibold text-gray-700 mb-2">
@@ -114,19 +102,19 @@ defineProps<Props>();
                 <div class="mt-4 grid grid-cols-3 gap-2 text-base">
                     <div class="text-center">
                         <p class="font-semibold text-green-600">
-                            {{ usageData.feedbackTypeStats.like }}
+                            {{ usageData.feedbackTypeStats?.like ?? 0 }}
                         </p>
                         <p class="text-gray-500 text-sm">点赞</p>
                     </div>
                     <div class="text-center">
                         <p class="font-semibold text-red-600">
-                            {{ usageData.feedbackTypeStats.dislike }}
+                            {{ usageData.feedbackTypeStats?.dislike ?? 0 }}
                         </p>
                         <p class="text-gray-500 text-sm">点踩</p>
                     </div>
                     <div class="text-center">
                         <p class="font-semibold text-gray-600">
-                            {{ usageData.feedbackTypeStats.end }}
+                            {{ usageData.feedbackTypeStats?.end ?? 0 }}
                         </p>
                         <p class="text-gray-500 text-sm">结束</p>
                     </div>

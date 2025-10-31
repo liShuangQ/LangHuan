@@ -24,7 +24,7 @@ class ChatController(
     private val chatMemoryService: ChatMemoryService,
     private val chatGeneralAssistanceService: ChatGeneralAssistanceService,
     private val stanfordChatService: StanfordChatService,
-    private val ragService: RagService
+    private val ragCallBackService: RagCallBackService
 ) {
 
     companion object {
@@ -140,7 +140,7 @@ class ChatController(
         @RequestParam(name = "groupId", required = true, defaultValue = "") groupId: String,
         @RequestParam(name = "isFunction", required = true) isFunction: Boolean
     ): Result<*> {
-        val documentList = ragService.ragSearch(q, groupId, "", Constant.ISRAGRERANK)
+        val documentList = ragCallBackService.ragSearch(q, groupId, "", false)
         val contents = StringBuilder()
         var i = 0
         for (document in documentList) {

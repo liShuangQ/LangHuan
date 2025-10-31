@@ -82,8 +82,6 @@ CREATE TABLE IF NOT EXISTS vector_store_rag (
 
 CREATE INDEX ON vector_store_rag USING HNSW (embedding vector_cosine_ops);
 
-
-
 -- 创建提示词表
 CREATE TABLE t_prompts
 (

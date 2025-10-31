@@ -81,3 +81,7 @@ task:
   schedule:
     documents: 0 0 2 */15 * ?
     image: 0 0 0 * * ?
+  lucene:
+    cron: 0 0 2 */2 * ?
+lucene:
+  index-path: ./lucene_index

@@ -19,6 +19,7 @@ services:
       - "9077:9077"
     volumes:
       - ./logs:/app/logs
+      - ./lucene_index:/app/lucene_index
     depends_on:
       - db
     environment:

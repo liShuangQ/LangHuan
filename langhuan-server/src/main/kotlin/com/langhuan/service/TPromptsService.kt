@@ -29,7 +29,7 @@ class TPromptsService : ServiceImpl<TPromptsMapper, TPrompts>() {
         fun getCachedTPromptsByMethodName(method_name: String): String? {
             val content = cachedPrompts[method_name]
             if (content.isNullOrEmpty()) {
-                log.error("No valid content found for method name {}", method_name)
+                log.debug("No valid content found for method name {}", method_name)
                 return null
             }
             return content

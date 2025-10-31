@@ -9,6 +9,7 @@ import com.langhuan.model.domain.TRagFile
 import com.langhuan.model.pojo.RagChangeDocumentsReq
 import com.langhuan.model.pojo.RagDeleteDocumentsReq
 import com.langhuan.model.pojo.RagWriteDocumentsReq
+import com.langhuan.serviceai.RagCallBackService
 import com.langhuan.serviceai.RagService
 import com.langhuan.utils.rag.config.SplitConfig
 import org.slf4j.LoggerFactory
@@ -21,7 +22,10 @@ import org.springframework.web.multipart.MultipartFile
 import javax.validation.Valid
 
 @RestController
-class RagController(private val ragService: RagService) {
+class RagController(
+    private val ragService: RagService,
+    private val ragCallBackService: RagCallBackService
+) {
 
     companion object {
         private val log = LoggerFactory.getLogger(RagController::class.java)
@@ -152,7 +156,7 @@ class RagController(private val ragService: RagService) {
         @RequestParam(name = "fileId", required = true) fileId: String
     ): Result<*> {
         val out = mutableListOf<Map<String, Any>>()
-        val documentList = ragService.ragSearch(q, groupId, fileId, Constant.ISRAGRERANK)
+        val documentList = ragCallBackService.ragSearch(q, groupId, fileId, false)
         for (document in documentList) {
             out.add(
                 mapOf(

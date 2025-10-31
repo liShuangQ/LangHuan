@@ -12,33 +12,30 @@ import com.langhuan.model.domain.TFileUrl
 import com.langhuan.model.domain.TRagFile
 import com.langhuan.model.domain.TRagFileGroup
 import com.langhuan.service.*
-import com.langhuan.utils.other.NumberTool
 import com.langhuan.utils.other.SecurityUtils
 import com.langhuan.utils.rag.EtlPipeline
 import com.langhuan.utils.rag.config.SplitConfig
-import com.langhuan.utils.rerank.ReRankProcessorFactory
 import jakarta.annotation.Resource
 import org.postgresql.util.PGobject
 import org.slf4j.LoggerFactory
 import org.springframework.ai.document.Document
-import org.springframework.ai.vectorstore.SearchRequest
 import org.springframework.ai.vectorstore.VectorStore
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.multipart.MultipartFile
-import java.util.Date
+import java.util.*
 
 @Service
 class RagService(
+    vectorStoreConfig: VectorStoreConfig,
     private val ragFileService: TRagFileService,
     private val ragFileGroupService: TRagFileGroupService,
-    vectorStoreConfig: VectorStoreConfig,
     private val etlPipeline: EtlPipeline,
     private val tFileUrlService: TFileUrlService,
     private val vectorStoreRagDao: VectorStoreRagDao,
     private val tFileUrlDao: TFileUrlDao,
-    private val reRankProcessorFactory: ReRankProcessorFactory
+    private val ragCallBackService: RagCallBackService
 ) {
 
     companion object {
@@ -294,81 +291,6 @@ class RagService(
     }
 
     @Throws(Exception::class)
-    fun ragSearch(q: String, groupId: String, fileId: String, isReRank: Boolean?): List<Document> {
-        val searchDocuments: MutableList<Document> = ArrayList()
-        val actualIsReRank = isReRank ?: Constant.ISRAGRERANK
-        try {
-            if (groupId.isEmpty()) {
-                val searchResults = ragVectorStore.similaritySearch(
-                    SearchRequest.builder().query(q).topK(Constant.RAGWITHTOPK)
-                        .similarityThreshold(Constant.RAGWITHSIMILARITYTHRESHOLD).build() // 单独设置多一些
-                )
-                searchDocuments.addAll(searchResults)
-            } else {
-                // HACK: 要么组查询 要么文件查询 文件id是唯一的
-                val sql: String
-                sql = if (fileId.isNotEmpty()) {
-                    "fileId == '$fileId'"
-                } else {
-                    // 处理多个groupId的情况，支持逗号分割
-                    val groupIds = groupId.split(",").toTypedArray()
-                    // 过滤掉空字符串元素，处理 ",1,2" 这种情况
-                    val validGroupIds: MutableList<String> = ArrayList()
-                    for (id in groupIds) {
-                        val trimmedId = id.trim { it <= ' ' }
-                        if (trimmedId.isNotEmpty()) {
-                            validGroupIds.add(trimmedId)
-                        }
-                    }
-
-                    if (validGroupIds.isEmpty()) {
-                        // 如果没有有效的groupId，抛出异常
-                        throw BusinessException("groupId不能为空")
-                    } else if (validGroupIds.size == 1) {
-                        // 单个有效groupId的情况
-                        "groupId == '" + validGroupIds[0] + "'"
-                    } else {
-                        // 多个有效groupId的情况，构建OR条件
-                        val sqlBuilder = StringBuilder("(")
-                        for (i in validGroupIds.indices) {
-                            if (i > 0) {
-                                sqlBuilder.append(" OR ")
-                            }
-                            sqlBuilder.append("groupId == '").append(validGroupIds[i]).append("'")
-                        }
-                        sqlBuilder.append(")")
-                        sqlBuilder.toString()
-                    }
-                }
-                val searchResults = ragVectorStore.similaritySearch(
-                    SearchRequest.builder().query(q).topK(Constant.RAGWITHTOPK)
-                        .similarityThreshold(Constant.RAGWITHSIMILARITYTHRESHOLD)
-                        .filterExpression(sql)// 设置过滤条件
-                        .build()
-                )
-                searchDocuments.addAll(searchResults)
-            }
-        } catch (e: Exception) {
-            log.error("ragSearch error: {}", e.message)
-            throw BusinessException("查询失败")
-        }
-        if ("linearWeighting" == Constant.RAGRANKMODULETYPE) {
-            val rankedDocuments = rankLinearWeighting(searchDocuments, q, actualIsReRank)
-            searchDocuments.clear()
-            searchDocuments.addAll(rankedDocuments)
-        }
-        // 最后结果一定是LLM_RAG_TOPN的数量
-        return searchDocuments.subList(0, minOf(Constant.LLM_RAG_TOPN, searchDocuments.size))
-    }
-
-    /**
-     * 添加文档到个人知识空间
-     *
-     * @param documents
-     * @return
-     * @throws Exception
-     */
-    @Throws(Exception::class)
     fun addDocumentToMySpace(documents: List<String>): Boolean {
         val user = SecurityUtils.getCurrentUsername()
         // HACK 和前端约定的知识空间文件组名称
@@ -419,73 +341,4 @@ class RagService(
         return s.contains("成功")
     }
 
-    /**
-     * 线性加权法
-     * score（Double类型） -> spring ai的得分 searchDocuments.get(0).get("score");
-     * distance（Float类型） -> 数据库向量距离
-     * searchDocuments.get(0).getMetadata().get("distance")
-     * relevance_score（Double类型） -> rerank模型距离
-     * searchDocuments.get(0).getMetadata().get("relevance_score")
-     * normalizationRank（Double类型） -> 手工排名
-     * searchDocuments.get(0).getMetadata().get("normalizationRank")
-     */
-    @Throws(Exception::class)
-    fun rankLinearWeighting(searchDocuments: List<Document>, q: String, isReRank: Boolean): List<Document> {
-        val processedDocuments = if (isReRank) {
-            val rerankedDocuments =
-                reRankProcessorFactory.getProcessor().rerank(q, searchDocuments, searchDocuments.size)
-            // 修正归一化排名存储类型
-            for (doc in rerankedDocuments) {
-                val rank = doc.metadata["rank"] as? Int ?: 0
-                doc.metadata["normalizationRank"] = rank * 0.01
-            }
-            rerankedDocuments
-        } else {
-            // 手工排名归一化指标 加入没relevance_score的情况
-            for (doc in searchDocuments) {
-                val rank = doc.metadata["rank"] as? Int ?: 0
-                doc.metadata["normalizationRank"] = rank * 0.01
-                doc.metadata["relevance_score"] = 1
-            }
-            searchDocuments
-        }
-
-        // 线性加权法计算综合得分
-        // LINEARWEIGHTING = {数据库向量距离，spring ai得分，rerank模型距离，手工排名}
-        for (doc in processedDocuments) {
-            // 获取各项指标值，安全地处理类型转换
-            val scoreObj = doc.score
-            val distanceObj = doc.metadata["distance"]
-            val rerankScoreObj = doc.metadata["relevance_score"]
-            val normalizedRankObj = doc.metadata["normalizationRank"]
-
-            // 安全转换为Double类型，处理可能的Integer、Float等类型
-            val springAiScore = NumberTool.convertToDouble(scoreObj, 0.0)
-            val vectorDistance = NumberTool.convertToDouble(distanceObj, 1.0)
-            val rerankScore = NumberTool.convertToDouble(rerankScoreObj, 1.0)
-            val normalizedRank = NumberTool.convertToDouble(normalizedRankObj, 0.0)
-
-            // 向量距离需要转换为相似度（距离越小，相似度越高）
-            // 这里使用 1 / (1 + distance) 进行转换，确保值在0-1之间
-            val distanceSimilarity = 1.0 / (1.0 + vectorDistance)
-
-            // 线性加权计算综合得分
-            // 权重顺序：{数据库向量距离，spring ai得分，rerank模型距离，手工排名}
-            val weightedScore = (Constant.LINEARWEIGHTING[0] * distanceSimilarity +
-                    Constant.LINEARWEIGHTING[1] * springAiScore +
-                    Constant.LINEARWEIGHTING[2] * rerankScore +
-                    Constant.LINEARWEIGHTING[3] * normalizedRank)
-
-            // 将计算出的综合得分存储到metadata中
-            doc.metadata["weightedScore"] = weightedScore
-        }
-
-        // 根据综合得分降序排序
-        val sortedDocuments = processedDocuments.sortedWith { doc1: Document, doc2: Document ->
-            val score1 = doc1.metadata["weightedScore"] as? Double ?: 0.0
-            val score2 = doc2.metadata["weightedScore"] as? Double ?: 0.0
-            score2.compareTo(score1) // 降序排序
-        }
-        return sortedDocuments
-    }
 }

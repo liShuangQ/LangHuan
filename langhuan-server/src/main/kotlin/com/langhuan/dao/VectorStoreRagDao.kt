@@ -143,4 +143,30 @@ class VectorStoreRagDao(
 
         return jdbcTemplate.queryForList(sql, *documentIds.toTypedArray())
     }
+
+    /**
+     * 根据文档ID列表查询向量存储记录
+     *
+     * @param ids rag向量表的id
+     * @return 查询结果列表
+     */
+    fun selectRagByIds(ids: List<String>): List<Map<String, Any>> {
+        if (ids.isEmpty()) {
+            return emptyList()
+        }
+
+        val sqlBuilder = StringBuilder(
+            "SELECT r.id as id, r.content as content, r.metadata as metadata FROM vector_store_rag r WHERE id IN ("
+        )
+        for (i in ids.indices) {
+            sqlBuilder.append("?::uuid")
+            if (i < ids.size - 1) {
+                sqlBuilder.append(",")
+            }
+        }
+        sqlBuilder.append(");")
+        val sql = sqlBuilder.toString()
+
+        return jdbcTemplate.queryForList(sql, *ids.toTypedArray())
+    }
 }

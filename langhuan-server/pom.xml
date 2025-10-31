@@ -168,6 +168,26 @@
             <artifactId>kotlin-test-junit5</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-core</artifactId>
+            <version>9.11.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-analyzers-common</artifactId>
+            <version>8.11.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-queryparser</artifactId>
+            <version>9.11.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.hankcs</groupId>
+            <artifactId>hanlp</artifactId>
+            <version>portable-1.8.6</version>
+        </dependency>
     </dependencies>
     <dependencyManagement>
         <dependencies>
@@ -219,5 +239,20 @@
             </plugin>
         </plugins>
     </build>
+
+
+    <!--    <repositories>-->
+    <!--        <repository>-->
+    <!--            <id>hanlp-repo</id>-->
+    <!--            <url>https://maven.hankcs.com/</url>-->
+    <!--        </repository>-->
+    <!--    </repositories>-->
+
+    <!--    <repositories>-->
+    <!--        <repository>-->
+    <!--            <id>apache-snapshots</id>-->
+    <!--            <url>https://repository.apache.org/content/repositories/snapshots</url>-->
+    <!--        </repository>-->
+    <!--    </repositories>-->
 
 </project>

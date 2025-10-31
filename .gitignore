@@ -4,10 +4,12 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 /logs/
+/lucene_index/
 /langhuan-service/logs/
 /node_modules/
 langhuan-web/node_modules
 langhuan-web/node_modules/*
+langhuan-server/lucene_index/*
 .DS_Store
 postgres-data/*
 postgres-data

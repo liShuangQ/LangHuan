@@ -60,22 +60,17 @@ object Constant {
     // 等，如果设置得过高，可能会没有结果返回；如果设置得过低，可能会返回大量不相关的结果
     const val RAGWITHSIMILARITYTHRESHOLD = 0.4
 
-    // rag的rank排序方法 linearWeighting
-    const val RAGRANKMODULETYPE = "linearWeighting"
+    // 各路召回的个数，例如设置为20，即为20个向量和20个关键字
+    const val RAGCALLBACKTOPK = 20
 
-    // 从向量库返回的设置返回的得分最高结果的数量（注意当使用linearWeighting的时候，这个数同时也是给rerank的数）
-    const val RAGWITHTOPK = 10
+    // 给rerank模型的数量
+    const val RAGRERANKTOPK = 20
 
-    // 经过手工排序筛选后给LLM的RAG topn。 实际输出数量。
-    // 给模型RAG的数量，也是召回等的结果，这个数量不能小于RAGRANKTOPK或RAGRERANKTOPN等值
+    // 给模型读的数量
     const val LLM_RAG_TOPN = 5
 
-    // 是否开启rerank，当接口中没传递的时候默认使用这个值
-    const val ISRAGRERANK = false
-
-    // --- 如果使用线性加权法（linearWeighting）方式配置如下参数 ---
-    // {数据库向量距离，spring ai得分，rerank模型距离，手工排名}
-    val LINEARWEIGHTING = doubleArrayOf(0.3, 0.2, 0.2, 0.3)
+    // {springai根据向量距离的得分，bm25得分，手工排名}
+    val LINEARWEIGHTING = doubleArrayOf(0.6, 0.4, 0.2)
 
     // 定义固定的缓存键
     const val CACHE_KEY = "file_id_cache"

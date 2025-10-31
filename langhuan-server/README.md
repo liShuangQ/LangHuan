@@ -9,7 +9,8 @@
 ### 基本环境
 
 - 推荐使用 jdk21
-- postgres数据库+pgvector
+- postgres数据库+pgvector+minio+模型
+- 启动时添加虚拟机选项 --add-modules jdk.incubator.vector --enable-native-access=ALL-UNNAMED
 
 ### 部署
 

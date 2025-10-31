@@ -30,21 +30,6 @@ import org.springframework.web.multipart.MultipartFile
 
 /**
  * AI聊天服务类
- *
- * <p>
- * 提供完整的AI聊天功能，包括：
- * </p>
- * <ul>
- * <li>基础聊天对话</li>
- * <li>基于RAG(检索增强生成)的智能问答</li>
- * <li>工具函数调用</li>
- * <li>意图识别和文档添加</li>
- * </ul>
- *
- * <p>
- * 该类整合了Spring AI框架，使用OpenAI作为底层大模型。
- * </p>
- *
  * @author LangHuan
  * @version 1.0
  * @since 2024-01-01
@@ -52,7 +37,8 @@ import org.springframework.web.multipart.MultipartFile
 @Service
 class ChatService(
     chatClientBuilder: ChatClient.Builder,
-    private val ragService: RagService
+    private val ragService: RagService,
+    private val ragCallBackService: RagCallBackService
 ) {
     companion object {
         private val log = LoggerFactory.getLogger(ChatService::class.java)
@@ -329,7 +315,7 @@ class ChatService(
         }
 
         // 手动获取召回信息
-        val documentList = ragService.ragSearch(q, groupId, "", isReRank)
+        val documentList = ragCallBackService.ragSearch(q, groupId, "", isReRank)
 
         // 将检索到的文档内容拼接成上下文字符串
         val ragContents = StringBuilder()
