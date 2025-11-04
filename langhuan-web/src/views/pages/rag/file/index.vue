@@ -1,148 +1,78 @@
 <template>
     <div class="box-border p-3 bg-white">
         <div class="mb-2">
-            <el-button type="primary" @click="addAndChangeFormShowFun('add')"
-                >新增</el-button
-            >
+            <el-button type="primary" @click="addAndChangeFormShowFun('add')">新增</el-button>
         </div>
         <div class="ml-1">
-            <ElementFormC
-                ref="formComRef"
-                :formConfig="formConfig"
-                :formItemConfig="formItemConfig"
-                @handle="formHandle"
-            >
+            <ElementFormC ref="formComRef" :formConfig="formConfig" :formItemConfig="formItemConfig"
+                @handle="formHandle">
                 <template #custom-button>
                     <div class="float-right">
-                        <el-button type="primary" @click="getUserPageList"
-                            >查询</el-button
-                        >
-                        <el-button @click="formComRef!.resetForm()"
-                            >重置</el-button
-                        >
+                        <el-button type="primary" @click="getUserPageList">查询</el-button>
+                        <el-button @click="formComRef!.resetForm()">重置</el-button>
                     </div>
                 </template>
             </ElementFormC>
         </div>
         <div style="height: calc(100% - 100px)" class="mt-2">
-            <ElementTableC
-                ref="tableComRef"
-                :paginationConfig="paginationConfig"
-                :tableColumnConfig="tableColumnConfig"
-                :tableConfig="tableConfig"
-                :tableData="tableData"
-                @handle="tableHandle"
-            >
+            <ElementTableC ref="tableComRef" :paginationConfig="paginationConfig" :tableColumnConfig="tableColumnConfig"
+                :tableConfig="tableConfig" :tableData="tableData" @handle="tableHandle">
                 <template #content-documentNum="props">
-                    <el-button
-                        link
-                        type="primary"
-                        @click="openDocumentNum(props.row)"
-                        >{{ props.row.documentNum }}
+                    <el-button link type="primary" @click="openDocumentNum(props.row)">{{ props.row.documentNum }}
                     </el-button>
                 </template>
                 <template #content-buttonSlot="props">
-                    <el-button
-                        link
-                        type="primary"
-                        :disabled="!props.row.canUpdate"
-                        @click="addAndChangeFormShowFun('change', props.row)"
-                        >修改
+                    <el-button link type="primary" :disabled="!props.row.canUpdate"
+                        @click="addAndChangeFormShowFun('change', props.row)">修改
                     </el-button>
-                    <el-button
-                        link
-                        type="primary"
-                        :disabled="!props.row.canDelete"
-                        @click="addAndChangeFormShowFun('delete', props.row)"
-                        >删除
+                    <el-button link type="primary" :disabled="!props.row.canDelete"
+                        @click="addAndChangeFormShowFun('delete', props.row)">删除
                     </el-button>
-                    <el-button
-                        link
-                        type="primary"
-                        @click="
-                            addAndChangeFormShowFun(
-                                'fileRecallTesting',
-                                props.row
-                            )
-                        "
-                        >文件召回
+                    <el-button link type="primary" @click="
+                        addAndChangeFormShowFun(
+                            'fileRecallTesting',
+                            props.row
+                        )
+                        ">文件召回
                     </el-button>
-                    <el-button
-                        link
-                        type="primary"
-                        @click="
-                            addAndChangeFormShowFun('fileExport', props.row)
-                        "
-                        >文件导出
+                    <el-button link type="primary" @click="
+                        addAndChangeFormShowFun('fileExport', props.row)
+                        ">文件导出
                     </el-button>
-                    <el-button
-                        v-if="pageConfig.relation"
-                        link
-                        type="primary"
-                        @click="addAndChangeFormShowFun('relation', props.row)"
-                        >{{ pageConfig.relationBtnName }}
+                    <el-button v-if="pageConfig.relation" link type="primary"
+                        @click="addAndChangeFormShowFun('relation', props.row)">{{ pageConfig.relationBtnName }}
                     </el-button>
                 </template>
             </ElementTableC>
         </div>
 
-        <el-dialog
-            v-model="addAndChangeFormVisible"
-            :title="addAndChangeFormDialogTit"
-            width="800"
-        >
-            <ElementFormC
-                ref="addAndChangeFormComRef"
-                :formConfig="addAndChangeFormConfig"
-                :formItemConfig="addAndChangeFormItemConfig"
-                @handle="addAndChangeFormHandle"
-            >
+        <el-dialog v-model="addAndChangeFormVisible" :title="addAndChangeFormDialogTit" width="800">
+            <ElementFormC ref="addAndChangeFormComRef" :formConfig="addAndChangeFormConfig"
+                :formItemConfig="addAndChangeFormItemConfig" @handle="addAndChangeFormHandle">
             </ElementFormC>
             <template #footer>
                 <div class="dialog-footer">
-                    <el-button @click="addAndChangeFormShowFun('close')"
-                        >取消</el-button
-                    >
-                    <el-button
-                        type="primary"
-                        @click="addAndChangeFormShowFun('save')"
-                    >
+                    <el-button @click="addAndChangeFormShowFun('close')">取消</el-button>
+                    <el-button type="primary" @click="addAndChangeFormShowFun('save')">
                         确定
                     </el-button>
                 </div>
             </template>
         </el-dialog>
 
-        <el-dialog
-            v-model="relevancyVisible"
-            :title="addAndChangeFormDialogTit"
-            width="800"
-        >
-            <el-checkbox
-                v-model="checkAll"
-                :indeterminate="isIndeterminate"
-                @change="handleCheckAllChange"
-            >
+        <el-dialog v-model="relevancyVisible" :title="addAndChangeFormDialogTit" width="800">
+            <el-checkbox v-model="checkAll" :indeterminate="isIndeterminate" @change="handleCheckAllChange">
                 Check all
             </el-checkbox>
-            <el-checkbox-group
-                v-model="checkedRoles"
-                @change="handleCheckedCitiesChange"
-            >
-                <el-checkbox
-                    v-for="item in relation"
-                    :key="item.relation_id"
-                    :label="item.relation_id"
-                    :value="item.relation_id"
-                >
+            <el-checkbox-group v-model="checkedRoles" @change="handleCheckedCitiesChange">
+                <el-checkbox v-for="item in relation" :key="item.relation_id" :label="item.relation_id"
+                    :value="item.relation_id">
                     {{ item.relation_name }}
                 </el-checkbox>
             </el-checkbox-group>
             <template #footer>
                 <div class="dialog-footer">
-                    <el-button @click="relevancyShowFun('close')"
-                        >取消</el-button
-                    >
+                    <el-button @click="relevancyShowFun('close')">取消</el-button>
                     <el-button type="primary" @click="relevancyShowFun('save')">
                         确定
                     </el-button>
@@ -153,94 +83,79 @@
             <div class="flex flex-col h-[70vh]">
                 <el-form :model="documentQueryForm" size="small" inline>
                     <el-form-item label="内容查询">
-                        <el-input
-                            style="width: 500px"
-                            v-model="documentQueryForm.content"
-                            placeholder="输入查询内容"
-                            clearable
-                        />
+                        <el-input style="width: 500px" v-model="documentQueryForm.content" placeholder="输入查询内容"
+                            clearable />
                     </el-form-item>
                     <el-form-item>
-                        <el-button type="primary" @click="handleDocumentQuery"
-                            >查询</el-button
-                        >
+                        <el-button type="primary" @click="handleDocumentQuery">查询</el-button>
                     </el-form-item>
                 </el-form>
                 <div class="flex-1 overflow-y-scroll">
-                    <div
-                        v-for="(item, index) in documentNumData"
-                        :key="index"
-                        class="mb-4"
-                    >
+                    <div v-for="(item, index) in documentNumData" :key="index" class="mb-4">
                         <div v-if="!item.isEditing">
                             <div>
                                 <div style="white-space: pre-wrap">
                                     {{ item.content }}
                                 </div>
                                 <div class="float-right">
-                                    <el-button
-                                        type="primary"
-                                        link
-                                        :disabled="!nowRow.canUpdate"
-                                        @click="
-                                            documentHandle('edit', index, item)
-                                        "
-                                        >修改</el-button
-                                    >
-                                    <el-button
-                                        type="primary"
-                                        link
-                                        :disabled="!nowRow.canDelete"
-                                        @click="
-                                            documentHandle(
-                                                'delete',
-                                                index,
-                                                item
-                                            )
-                                        "
-                                        >删除</el-button
-                                    >
+                                    <el-popover ref="sharePopoverRef" placement="bottom-end" :width="800"
+                                        trigger="click" @hide="sharePopoverHide">
+                                        <template #reference>
+                                            <el-button type="primary" link :disabled="!nowRow.canUpdate">分享</el-button>
+                                        </template>
+                                        <div class=" font-bold text-lg">
+                                            选择文件组：
+                                        </div>
+                                        <div class="h-[100px] overflow-y-auto pb-8">
+                                            <el-radio-group v-model="shareFileGroup" @change="shareFileGroupChange">
+                                                <el-radio v-for="item in fileGroupOption" :key="item.value"
+                                                    :label="item.label" :value="item.label" />
+                                            </el-radio-group>
+                                        </div>
+                                        <div class=" font-bold text-lg">
+                                            选择文件：
+                                        </div>
+                                        <div class="h-[100px] overflow-y-auto">
+                                            <el-radio-group v-model="shareFile">
+                                                <el-radio v-for="item in shareFileOption" :key="item.id"
+                                                    :label="item.fileName" :disabled="!item.canAdd" :value="item.id" />
+                                            </el-radio-group>
+                                        </div>
+                                        <el-button class="float-right mt-2" type="primary" @click="
+                                            documentHandle('share', index, item)
+                                            ">确定</el-button>
+                                    </el-popover>
+                                    <el-button type="primary" link :disabled="!nowRow.canUpdate" @click="
+                                        documentHandle('edit', index, item)
+                                        ">修改</el-button>
+                                    <el-button type="primary" link :disabled="!nowRow.canDelete" @click="
+                                        documentHandle(
+                                            'delete',
+                                            index,
+                                            item
+                                        )
+                                        ">删除</el-button>
                                 </div>
                             </div>
                         </div>
                         <div v-else>
-                            <el-input
-                                v-model="item.tempContent"
-                                type="textarea"
-                                :rows="7"
-                                class="mb-2"
-                            />
+                            <el-input v-model="item.tempContent" type="textarea" :rows="7" class="mb-2" />
                             <div class="flex justify-end gap-2">
-                                <el-button
-                                    size="small"
-                                    @click="
-                                        documentHandle('cancel', index, item)
-                                    "
-                                    >取消</el-button
-                                >
-                                <el-button
-                                    size="small"
-                                    type="primary"
-                                    @click="documentHandle('save', index, item)"
-                                    >确定</el-button
-                                >
+                                <el-button size="small" @click="
+                                    documentHandle('cancel', index, item)
+                                    ">取消</el-button>
+                                <el-button size="small" type="primary"
+                                    @click="documentHandle('save', index, item)">确定</el-button>
                             </div>
                         </div>
                         <el-divider />
                     </div>
                 </div>
-                <el-pagination
-                    v-model:current-page="documentPagination.pageNum"
-                    class="mt-2"
-                    v-model:page-size="documentPagination.pageSize"
-                    :background="true"
-                    :layout="'total, sizes, prev, pager, next, jumper'"
-                    :page-sizes="[10, 20]"
-                    :small="true"
-                    :total="Number(documentPagination.total)"
-                    @size-change="handleDocumentPageChange"
-                    @current-change="handleDocumentPageChange"
-                />
+                <el-pagination v-model:current-page="documentPagination.pageNum" class="mt-2"
+                    v-model:page-size="documentPagination.pageSize" :background="true"
+                    :layout="'total, sizes, prev, pager, next, jumper'" :page-sizes="[10, 20]" :small="true"
+                    :total="Number(documentPagination.total)" @size-change="handleDocumentPageChange"
+                    @current-change="handleDocumentPageChange" />
             </div>
         </el-dialog>
     </div>
@@ -619,6 +534,35 @@ const handleDocumentQuery = () => {
 const handleDocumentPageChange = () => {
     fetchDocuments();
 };
+
+const shareFileGroup = ref<string>('');
+const shareFileOption = ref<any[]>([]);
+const shareFile = ref<string>('');
+const sharePopoverRef = ref<any>(null);
+const sharePopoverHide = () => {
+    shareFile.value = '';
+    shareFileGroup.value = '';
+    shareFileOption.value = []
+}
+const shareFileGroupChange = (value: any) => {
+    http
+        .request<any>({
+            url: pageConfig.searchUrl,
+            method: "post",
+            q_spinning: true,
+            data: {
+                fileGroupName: value,
+                pageNum: 1,
+                pageSize: 1000000,
+            },
+        })
+        .then((res) => {
+            shareFileOption.value = res.data.records
+        })
+        .catch((err) => {
+            console.log(err);
+        });
+};
 const documentHandle = (type: string, index: number, item: any) => {
     if (type === "edit") {
         documentNumData.value[index].isEditing = true;
@@ -677,6 +621,38 @@ const documentHandle = (type: string, index: number, item: any) => {
                 ElMessage.success(res.data);
             }
         });
+    }
+    if (type === "share") {
+        if (!shareFile.value) {
+            return;
+        }
+        const param = shareFileOption.value.find((e: any) => {
+            return e.id === shareFile.value
+        })
+        http
+            .request<any>({
+                url: '/rag/shareDocumentToOtherFile',
+                method: "post",
+                q_spinning: true,
+                q_contentType: "form",
+                data: {
+                    documentId: item.id,
+                    documentText: item.content,
+                    toGroupId: param.fileGroupId,
+                    toFileId: param.id,
+                    toFileName: param.fileName,
+                },
+            })
+            .then((res) => {
+                if (res.data.indexOf('成功') !== -1) {
+                    ElMessage.success(res.data);
+                } else {
+                    ElMessage.error(res.data);
+                }
+            })
+            .catch((err) => {
+                console.log(err);
+            });
     }
 };
 </script>

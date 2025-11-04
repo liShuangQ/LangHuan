@@ -36,7 +36,7 @@ class RagCallBackService(
     @Throws(Exception::class)
     fun ragSearch(text: String, groupId: String, fileId: String, isReRank: Boolean?): List<Document> {
         val embeddingCallBack: List<Document> = embeddingCallBack(text, groupId, fileId)
-        val bm25CallBack = bm25CallBack(text)
+        val bm25CallBack = bm25CallBack(text, groupId, fileId)
         var searchDocuments: MutableList<Document> =
             mergeDocumentsWithScores(embeddingCallBack, bm25CallBack).toMutableList();
         searchDocuments = rankLinearWeighting(searchDocuments).toMutableList();
@@ -45,6 +45,9 @@ class RagCallBackService(
             searchDocuments = searchDocuments.subList(0, minOf(Constant.RAGRERANKTOPK, searchDocuments.size))
             return reRankCallBack(text, searchDocuments);
         } else {
+            searchDocuments = searchDocuments.filter {
+                (it.metadata["weightedScore"] as? Double ?: 0.0) >= Constant.LINEARWEIGHTINGNUM
+            }.toMutableList();
             return searchDocuments.subList(0, minOf(Constant.LLM_RAG_TOPN, searchDocuments.size))
         }
     }
@@ -110,8 +113,9 @@ class RagCallBackService(
         return searchDocuments;
     }
 
-    fun bm25CallBack(text: String): MutableList<Document> {
-        val searchDocumentIds: List<SearchResult> = luceneIndexService.searchDocuments(text, Constant.RAGCALLBACKTOPK)
+    fun bm25CallBack(text: String, groupId: String, fileId: String): MutableList<Document> {
+        val searchDocumentIds: List<SearchResult> =
+            luceneIndexService.searchDocuments(text, groupId, fileId, Constant.RAGCALLBACKTOPK)
         val selectByIdsDocuments = vectorStoreRagDao.selectRagByIds(searchDocumentIds.map { it.id })
         val bm25Result: MutableList<Document> = mutableListOf()
         for (it1 in selectByIdsDocuments) {

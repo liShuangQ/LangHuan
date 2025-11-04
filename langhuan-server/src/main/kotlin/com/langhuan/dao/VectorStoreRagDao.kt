@@ -1,5 +1,7 @@
 package com.langhuan.dao
 
+import cn.hutool.json.JSONUtil
+import com.langhuan.model.pojo.RagMetaData
 import org.slf4j.LoggerFactory
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Repository
@@ -168,5 +170,53 @@ class VectorStoreRagDao(
         val sql = sqlBuilder.toString()
 
         return jdbcTemplate.queryForList(sql, *ids.toTypedArray())
+    }
+
+    /**
+     * 分享 文档
+     */
+    fun shareDocumentToOtherFile(documentId: String?, documentText: String?, ragMetaData: RagMetaData): Boolean {
+        val integer = jdbcTemplate.queryForObject(
+            "SELECT COUNT(*) FROM vector_store_rag WHERE metadata ->> 'fileId' = ? AND content = ?",
+            Int::class.java,
+            ragMetaData.fileId,
+            documentText
+        )
+        if (integer != null && integer <= 0) {
+            val update = jdbcTemplate.update(
+                """
+                            INSERT INTO
+                            vector_store_rag (content, metadata, embedding)
+                            SELECT
+                                    content,
+                                    ?::json AS metadata,
+                                    embedding
+                            FROM
+                                    vector_store_rag
+                            WHERE
+                                    id = ?::uuid
+                    
+                    """.trimIndent(), JSONUtil.toJsonStr(ragMetaData), documentId
+            )
+            if (update >= 1) {
+                upFileDocumentNumAddOne(ragMetaData.fileId ?: "")
+            }
+            return update >= 1
+        }
+        return false
+    }
+
+    fun upFileDocumentNumAddOne(fileId: String): Int {
+        return jdbcTemplate.update(
+            """
+                        UPDATE t_rag_file
+                        SET document_num = 
+                            CASE 
+                                WHEN document_num ~ '^\d+$' THEN (document_num::integer + 1)::varchar
+                                ELSE document_num
+                            END
+                        WHERE id = ?::integer
+                    """.trimIndent(), fileId
+        )
     }
 }

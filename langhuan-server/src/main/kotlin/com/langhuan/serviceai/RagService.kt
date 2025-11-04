@@ -11,6 +11,7 @@ import com.langhuan.dao.VectorStoreRagDao
 import com.langhuan.model.domain.TFileUrl
 import com.langhuan.model.domain.TRagFile
 import com.langhuan.model.domain.TRagFileGroup
+import com.langhuan.model.pojo.RagMetaData
 import com.langhuan.service.*
 import com.langhuan.utils.other.SecurityUtils
 import com.langhuan.utils.rag.EtlPipeline
@@ -18,7 +19,6 @@ import com.langhuan.utils.rag.config.SplitConfig
 import jakarta.annotation.Resource
 import org.postgresql.util.PGobject
 import org.slf4j.LoggerFactory
-import org.springframework.ai.document.Document
 import org.springframework.ai.vectorstore.VectorStore
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
@@ -341,4 +341,25 @@ class RagService(
         return s.contains("成功")
     }
 
+
+    /**
+     * 分享文档片段到其他文件
+     *
+     * @throws Exception
+     */
+    @Throws(java.lang.Exception::class)
+    fun shareDocumentToOtherFile(
+        documentId: String?,
+        documentText: String?,
+        toGroupId: String?,
+        toFileId: String?,
+        toFileName: String?
+    ): String {
+        return if (vectorStoreRagDao.shareDocumentToOtherFile(
+                documentId,
+                documentText,
+                RagMetaData(toFileName, toFileId, toGroupId, 0)
+            )
+        ) "操作成功" else "操作失败或当前文档已存在"
+    }
 }

@@ -3,7 +3,6 @@ package com.langhuan.controller
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.langhuan.common.ApiLog
-import com.langhuan.common.Constant
 import com.langhuan.common.Result
 import com.langhuan.model.domain.TRagFile
 import com.langhuan.model.pojo.RagChangeDocumentsReq
@@ -202,8 +201,29 @@ class RagController(
     fun deleteDocumentText(@RequestBody ragDeleteDocumentsReq: RagDeleteDocumentsReq): Result<*> {
         return Result.success(
             ragService.deleteDocumentText(
-                ragDeleteDocumentsReq.documentId as  String,
+                ragDeleteDocumentsReq.documentId as String,
                 ragDeleteDocumentsReq.ragFile as TRagFile
+            )
+        )
+    }
+
+    @ApiLog(apiName = "RAG分享文档文本", description = "分享文档文本", logResponse = true, logRequest = true)
+    @PostMapping("/rag/shareDocumentToOtherFile")
+    @Throws(java.lang.Exception::class)
+    fun shareDocumentToOtherFile(
+        @RequestParam(name = "documentId", required = true) documentId: String?,
+        @RequestParam(name = "documentText", required = true) documentText: String?,
+        @RequestParam(name = "toGroupId", required = true) toGroupId: String?,
+        @RequestParam(name = "toFileId", required = true) toFileId: String?,
+        @RequestParam(name = "toFileName", required = true) toFileName: String?
+    ): Result<String> {
+        return Result.success(
+            ragService.shareDocumentToOtherFile(
+                documentId,
+                documentText,
+                toGroupId,
+                toFileId,
+                toFileName
             )
         )
     }

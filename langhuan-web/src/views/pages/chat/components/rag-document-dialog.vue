@@ -26,6 +26,7 @@ const handleRank = (type: 'good' | 'bad', document: any) => {
                 </div>
                 <div>
                     <div class="flex justify-start items-center gap-1 mb-1">
+                           <el-tag>来源文件：{{ item.metadata.filename }}</el-tag>
                         <el-tag v-if="item.metadata.relevance_score">ReRank得分：{{ item.metadata.relevance_score
                         }}</el-tag>
                         <el-tag>加权得分：{{ item.metadata.weightedScore }}</el-tag>

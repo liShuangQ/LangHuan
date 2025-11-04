@@ -72,6 +72,9 @@ object Constant {
     // {springai根据向量距离的得分，bm25得分，手工排名}
     val LINEARWEIGHTING = doubleArrayOf(0.6, 0.4, 0.2)
 
+    // 可信结果分数阈值，大于这个分数才喂模型
+    const val LINEARWEIGHTINGNUM = 0.5
+
     // 定义固定的缓存键
     const val CACHE_KEY = "file_id_cache"
 

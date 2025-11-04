@@ -8,7 +8,10 @@ import org.apache.lucene.document.Document
 import org.apache.lucene.document.Field
 import org.apache.lucene.document.StringField
 import org.apache.lucene.document.TextField
-import org.apache.lucene.index.*
+import org.apache.lucene.index.DirectoryReader
+import org.apache.lucene.index.IndexWriter
+import org.apache.lucene.index.IndexWriterConfig
+import org.apache.lucene.index.Term
 import org.apache.lucene.queryparser.classic.QueryParser
 import org.apache.lucene.search.*
 import org.apache.lucene.store.Directory
@@ -152,7 +155,7 @@ class LuceneIndexService(
      * @param maxResults 最大返回结果数
      * @return 包含ID和分数的搜索结果列表
      */
-    fun searchDocuments(query: String, maxResults: Int = 10): List<SearchResult> {
+    fun searchDocuments(query: String, groupId: String, fileId: String, maxResults: Int = 10): List<SearchResult> {
         if (query.isBlank()) {
             return emptyList()
         }
@@ -167,7 +170,19 @@ class LuceneIndexService(
             val queryParser = QueryParser("content", analyzer)
             val luceneQuery = queryParser.parse(query.trim())
 
-            val topDocs: TopDocs = indexSearcher.search(luceneQuery, maxResults)
+            val builder = BooleanQuery.Builder()
+            builder.add(luceneQuery, BooleanClause.Occur.MUST)
+            if (!groupId.isEmpty()) {
+                val groupFilter1: Query = TermQuery(Term("groupId", groupId))
+                builder.add(groupFilter1, BooleanClause.Occur.FILTER)
+            }
+            if (!fileId.isEmpty()) {
+                val groupFilter2: Query = TermQuery(Term("fileId", fileId))
+                builder.add(groupFilter2, BooleanClause.Occur.FILTER)
+            }
+            val finalQuery: Query? = builder.build()
+
+            val topDocs = indexSearcher.search(finalQuery, maxResults)
 
             val result = mutableListOf<SearchResult>()
             for (scoreDoc in topDocs.scoreDocs) {
@@ -182,11 +197,11 @@ class LuceneIndexService(
             }
 
             indexReader.close()
-            log.debug("搜索 '{}' 返回 {} 个结果", query, result.size)
+            log.debug("BM25搜索 '{}' 返回 {} 个结果", query, result.size)
             result
 
         } catch (e: Exception) {
-            log.error("搜索文档失败: query='{}'", query, e)
+            log.error("BM25搜索文档失败: query='{}'", query, e)
             emptyList()
         }
     }
@@ -282,7 +297,7 @@ class LuceneIndexService(
 
             while (hasMoreData) {
                 val sql = """
-                    SELECT id, content
+                    SELECT id, content, metadata->>'groupId' AS groupId, metadata->>'fileId' AS fileId
                     FROM vector_store_rag
                     WHERE content IS NOT NULL
                     AND TRIM(content) != ''
@@ -292,8 +307,10 @@ class LuceneIndexService(
 
                 val documents = jdbcTemplate.query(sql, arrayOf(pageSize, offset)) { rs, _ ->
                     val id = rs.getString("id")
+                    val groupId = rs.getString("groupId")
+                    val fileId = rs.getString("fileId")
                     val content = rs.getString("content")
-                    DocumentData(id, content)
+                    DocumentData(id, groupId, fileId, content)
                 }
 
                 if (documents.isEmpty()) {
@@ -329,6 +346,17 @@ class LuceneIndexService(
             // 添加 ID 字段（存储但不分词）
             val idField = StringField("id", doc.id, Field.Store.YES)
             document.add(idField)
+
+
+            // 添加分组id字段（存储但不分词）
+            val groupIdField: Field = StringField("groupId", doc.groupId, Field.Store.YES)
+            document.add(groupIdField)
+
+
+            // 添加文件id字段（存储但不分词）
+            val fileIdField: Field = StringField("fileId", doc.fileId, Field.Store.YES)
+            document.add(fileIdField)
+
 
             // 添加内容字段（分词但不存储）
             val contentField = TextField("content", doc.content, Field.Store.NO)
@@ -406,6 +434,8 @@ class LuceneIndexService(
      */
     private data class DocumentData(
         val id: String,
+        val groupId: String,
+        val fileId: String,
         val content: String
     )
 }
