@@ -94,27 +94,18 @@ class ChatService(
     @Throws(Exception::class)
     fun chat(chatRestOption: ChatRestOption, accessory: Array<MultipartFile>?): ChatModelResult {
         return try {
-            // 区分文件类型 交给不同的方法处理
-            val fileCategory = FileUtil.categorizeFiles(accessory)
+            var fileCategory: FileUtil.FileCategory;
+            if (accessory == null || accessory.isEmpty()) {
+                fileCategory = FileUtil.categorizeFiles(arrayOf())
+            } else {
+                fileCategory = FileUtil.categorizeFiles(accessory)
+            }
             val imageRes = fileCategory.images
             val documentRes = fileCategory.documents
-            // 意图识别
-            val intention = chatGeneralAssistanceService.chatIntentionClassifier(
-                chatRestOption.modelName,
-                chatRestOption.userMessage as String
-            )
-            // 处理对应意图 注意分支内要return
-            if (intention == "chat") {
-                return toChat(chatRestOption)
-            }
-            if (intention == "understand") {
-                val simulationThink = StringBuilder()
-                simulationThink.append("<think>")
-                simulationThink.append("意图识别结果：文件理解（understand）").append("\n")
-                simulationThink.append("</think>")
-                if (accessory == null || accessory.isEmpty()) {
-                    return toChat(chatRestOption)
-                }
+
+            // ------------------------------------------------------------------------------
+            // 只要有文件就调用解读，不调用RAG
+            if (imageRes?.isNotEmpty() == true || documentRes?.isNotEmpty() == true) {
                 // 设置记忆信息 拼接处理结果
                 val memoryIn = StringBuilder()
                 val memoryOut = StringBuilder()
@@ -128,7 +119,7 @@ class ChatService(
                     }
                 }
                 // 处理文档 - 使用工具拆出的 没使用模型
-                val documentResStr = StringBuilder()
+                var documentResStr = StringBuilder()
                 val documentFileNames = StringBuilder()
                 if (documentRes != null) {
                     for (file in documentRes) {
@@ -147,9 +138,15 @@ class ChatService(
                 // XXX 考虑是不是把图片信息也一起给模型处理
                 var documentChatResStr = ""
                 if (documentResStr.isNotEmpty()) {
-                    val userPrompt = chatRestOption.userMessage + "\n" + "文档如下：" + "\n" + documentResStr
-                    documentChatResStr =
-                        chatGeneralAssistanceService.documentUnderstand(userPrompt, chatRestOption.modelName) as String
+                    var userPrompt = "文档内容如下：\n$documentResStr\n-------------------".replace(
+                        "source: Invalid source URI: Byte array resource [resource loaded from byte array] cannot be resolved to URL",
+                        ""
+                    ).trim()
+                    chatRestOption.isRag = false;
+                    chatRestOption.prompt = userPrompt;
+                    documentChatResStr = toChat(chatRestOption).chat.toString();
+//                    documentChatResStr =
+//                        chatGeneralAssistanceService.documentUnderstand(userPrompt, chatRestOption.modelName) as String
                 }
                 if (documentChatResStr.isNotEmpty()) {
                     memoryIn.append("\n").append("**").append(documentFileNames).append("**")
@@ -166,9 +163,21 @@ class ChatService(
                     ChatMemoryUtils.createdMessage(memoryOut.toString(), emptyMap(), MessageType.ASSISTANT)
                 )
                 return ChatModelResult().apply {
-                    chat = simulationThink.toString() + memoryOut.toString()
+                    chat = memoryOut.toString()
                     rag = emptyList()
                 }
+            }
+
+            // ------------------------------------------------------------------------------
+            // 意图识别
+            val intention = chatGeneralAssistanceService.chatIntentionClassifier(
+                chatRestOption.modelName,
+                chatRestOption.userMessage as String
+            )
+            // ------------------------------------------------------------------------------
+            // 处理对应意图 注意分支内要return
+            if (intention == "chat") {
+                return toChat(chatRestOption)
             }
             if (intention == "add_personal_knowledge_space") {
                 val simulationThink = StringBuilder()
@@ -243,33 +252,7 @@ class ChatService(
                     }
                 }
             }
-            if (intention.contains("feedback_information")) {
-                val tChatFeedback = TChatFeedback()
-                tChatFeedback.userId = SecurityUtils.getCurrentUsername()
-                tChatFeedback.suggestion = chatRestOption.userMessage
-                tChatFeedback.questionId = chatRestOption.chatId
-                tChatFeedback.questionContent = "对话中反馈" + "对话id:" + chatRestOption.chatId
-                tChatFeedback.answerContent = "对话中反馈" + "对话id:" + chatRestOption.chatId
-                tChatFeedback.knowledgeBaseIds = ""
-                if (intention == "feedback_information_yes") {
-                    tChatFeedback.interaction = "like"
-                }
-                if (intention == "feedback_information_no") {
-                    tChatFeedback.interaction = "dislike"
-                }
-                val save = tChatFeedbackService.save(tChatFeedback)
-                if (!save) {
-                    return ChatModelResult().apply {
-                        chat = "反馈信息保存失败"
-                        rag = emptyList()
-                    }
-                }
-                return ChatModelResult().apply {
-                    chat = "感谢支持，您的反馈已被提交。请继续使用"
-                    rag = emptyList()
-                }
-            }
-            toChat(chatRestOption)
+            return toChat(chatRestOption)
         } catch (e: Exception) {
             ChatModelResult().apply {
                 chat = e.message ?: "未知错误"

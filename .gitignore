@@ -11,6 +11,7 @@ langhuan-web/node_modules
 langhuan-web/node_modules/*
 langhuan-server/lucene_index/*
 .DS_Store
+.taskmaster
 postgres-data/*
 postgres-data
 langhuan_docker_dist/langhuan-service/langhuan-service-0.0.1-SNAPSHOT.jar

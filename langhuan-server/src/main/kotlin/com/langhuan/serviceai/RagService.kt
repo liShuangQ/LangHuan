@@ -203,8 +203,8 @@ class RagService(
         log.info("Deleted {} rows from vector_store_rag", deletedRowsFromVectorStore)
 
         val fileUrlList = tFileUrlService.query()
-            .eq("fileId", id)
-            .select("fUrl", "id") // 只选择需要的字段
+            .eq("file_id", id)
+            .select("f_url", "id") // 只选择需要的字段
             .list()
 
         if (fileUrlList.isNotEmpty()) {

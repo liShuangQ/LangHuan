@@ -55,6 +55,7 @@ class ChatController(
                 chatRestOption.modelName = defaultModelName
             }
         }
+
         //  系统 system prompt userMessage
         val chatModelResult = chatService.chat(chatRestOption, accessory)
 

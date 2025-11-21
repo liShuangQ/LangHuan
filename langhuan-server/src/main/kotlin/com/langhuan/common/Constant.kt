@@ -115,30 +115,5 @@ object Constant {
             attention =
                 "注意例子（Examples）中的添加或者记录等字样的关键字前后可能含有其他信息（例如：理解xxx的信息，添加知识库xxxx），也可能不带（例如：添加知识库，···）。"
         })
-        add(IntentionItem().apply {
-            id = "understand"
-            task = "理解文件"
-            description = "用户需要解析、描述或提取图片或者文档（文件）内容。"
-            examples =
-                listOf("解释文档内容", "文档里有什么", "理解这张图", "图里有什么", "识别图片文字")
-            notExamples = listOf("xxx是什么", "xxx是什么表")
-            attention = "注意文字关键字中要提到图片或者文档信息。"
-        })
-        add(IntentionItem().apply {
-            id = "feedback_information_yes"
-            task = "满意的积极的反馈信息"
-            description = "用户对系统、知识、回答等进行反馈，满意的积极的信息"
-            examples = listOf("回答的不错", "很满意", "你越来越好了")
-            notExamples = listOf("")
-            attention = ""
-        })
-        add(IntentionItem().apply {
-            id = "feedback_information_no"
-            task = "消极的不满意的反馈信息"
-            description = "用户对系统、知识、回答等进行反馈，不满意的消极的信息"
-            examples = listOf("不好的回答", "你说的不对", "没有说到我要的回答", "回答有问题")
-            notExamples = listOf("")
-            attention = ""
-        })
     }
 }

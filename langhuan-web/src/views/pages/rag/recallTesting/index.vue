@@ -101,8 +101,10 @@ const sendMessage = (recommend = null): void => {
                         {
                             text: e.text,
                             recommend: [
-                                `排名：${e.metadata.rank}`,
-                                `距离：${e.metadata.distance}`,
+                                `加权得分：${e.metadata.weightedScore}`,
+                                `向量得分：${e.metadata.normalizedSpringAiScore}`,
+                                `关键字得分：${e.metadata.normalizedBm25Score}`,
+                                `手工排名：${e.metadata.normalizedRankScore}`,
                                 `来源：${e.metadata.filename}`
                             ],
                             metadata: { ...e.metadata, id: e.id }, // HACK 集合处理
