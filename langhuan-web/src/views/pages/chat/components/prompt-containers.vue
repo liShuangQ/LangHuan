@@ -401,7 +401,7 @@ const getFileDisplayInfo = (file: UploadFile) => {
 
         <!-- 原有的消息列表容器 -->
         <div v-else ref="messageContainer"
-            class="flex-1 overflow-y-auto rounded-xl bg-slate-200 p-4 text-sm leading-6 text-slate-900 dark:bg-slate-800 dark:text-slate-300 sm:text-base sm:leading-7">
+            class="flex-1 overflow-y-auto bg-slate-200 p-4 text-sm leading-6 text-slate-900 dark:bg-slate-800 dark:text-slate-300 sm:text-base sm:leading-7">
             <!-- 欢迎提示框 - 当有窗口但没有消息时显示 -->
             <div v-if="messages.length === 0" class="flex flex-col items-center justify-center h-full text-slate-500">
                 <div class="bg-white dark:bg-slate-700 rounded-2xl p-8 shadow-lg max-w-md mx-auto text-center">
