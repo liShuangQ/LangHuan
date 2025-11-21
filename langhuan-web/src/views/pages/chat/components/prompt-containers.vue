@@ -5,7 +5,8 @@ import RagDocumentDialog from "./rag-document-dialog.vue";
 import type { ChatSeedEmitMessageData, Message } from "../types";
 import { ElMessage } from "element-plus";
 import { Upload } from "@element-plus/icons-vue";
-import { fileToBase64 } from "@/utils/imgFile";
+import user from "@/store/user";
+const userInfo = user().info;
 
 // 文件上传相关类型定义
 interface UploadFile {
@@ -100,10 +101,10 @@ const ALLOWED_IMAGE_TYPES = [
     "image/jpg",
     "image/png",
     "image/webp",
-    'text/plain', // .txt
-    'text/markdown', // .markdown
-    'text/x-markdown', // .md
-    'application/vnd.openxmlformats-officedocument.wordprocessingml.document' // .docx
+    "text/plain", // .txt
+    "text/markdown", // .markdown
+    "text/x-markdown", // .md
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document", // .docx
 ];
 const handleSubmit = async (e: Event) => {
     e.preventDefault();
@@ -116,16 +117,15 @@ const handleSubmit = async (e: Event) => {
     }
 
     try {
-
         // 构建附件信息
         let accessory: File[] = selectedFiles.value.map((file) => {
             return file.file;
-        })
+        });
 
         // 发送消息时包含文件信息
         const messageData: ChatSeedEmitMessageData = {
             userMessage: messageInput.value,
-            accessory
+            accessory,
         };
 
         emit("send-message", messageData);
@@ -201,8 +201,6 @@ const handleRagChecks = (msg: Message) => {
     ragDocuments.value = msg.rag || [];
     ragDocumentVisible.value = true;
 };
-const userImage = require("../imgs/user.png");
-const assistantImage = require("../imgs/assistant.png");
 
 const handleRagRank = (type: "good" | "bad", document: any) => {
     emit("action", "documentRank", { type, document });
@@ -335,46 +333,49 @@ const getFileDisplayInfo = (file: UploadFile) => {
     const fileType = file.file.type;
 
     // 图片文件类型
-    if (fileType.startsWith('image/')) {
+    if (fileType.startsWith("image/")) {
         return {
-            type: 'image',
+            type: "image",
             icon: null,
-            color: 'bg-blue-100 dark:bg-blue-900'
+            color: "bg-blue-100 dark:bg-blue-900",
         };
     }
 
     // 文本文件
-    if (fileType === 'text/plain') {
+    if (fileType === "text/plain") {
         return {
-            type: 'text',
-            icon: '📄',
-            color: 'bg-gray-100 dark:bg-gray-800'
+            type: "text",
+            icon: "📄",
+            color: "bg-gray-100 dark:bg-gray-800",
         };
     }
 
     // Markdown文件
-    if (fileType.includes('markdown')) {
+    if (fileType.includes("markdown")) {
         return {
-            type: 'markdown',
-            icon: '📝',
-            color: 'bg-orange-100 dark:bg-orange-900'
+            type: "markdown",
+            icon: "📝",
+            color: "bg-orange-100 dark:bg-orange-900",
         };
     }
 
     // Word文档
-    if (fileType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
+    if (
+        fileType ===
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    ) {
         return {
-            type: 'docx',
-            icon: '📄',
-            color: 'bg-blue-100 dark:bg-blue-900'
+            type: "docx",
+            icon: "📄",
+            color: "bg-blue-100 dark:bg-blue-900",
         };
     }
 
     // 默认情况
     return {
-        type: 'default',
-        icon: '📎',
-        color: 'bg-gray-100 dark:bg-gray-800'
+        type: "default",
+        icon: "📎",
+        color: "bg-gray-100 dark:bg-gray-800",
     };
 };
 </script>
@@ -429,126 +430,127 @@ const getFileDisplayInfo = (file: UploadFile) => {
             </div>
 
             <template v-for="(msg, index) in messages" :key="msg.id">
-                <!-- 消息主体部分-->
-                <div class="flex flex-row px-2 py-4 sm:px-4" v-if="
-                    msg.sender === 'user'
-                        ? msg?.showUserMessage !== undefined
-                            ? msg.showUserMessage
-                            : true
-                        : true
-                ">
-                    <img class="mr-2 flex h-8 w-8 rounded-full sm:mr-4" :src="`${msg.sender === 'user' ? userImage : assistantImage
-                        }`" />
-                    <div class="flex flex-col">
-                        <div class="text-sm font-medium text-slate-600 mb-1">
-                            {{
-                                msg.sender === "user"
-                                    ? "用户"
-                                    : msg.chatSettings?.fileGroupName ?? ""
-                            }}
-                            {{ msg.timestamp }}
-                        </div>
-                        <div :class="[
-                            'flex flex-1 items-center rounded-xl bg-slate-50 px-2 py-4 dark:bg-slate-900 sm:px-4',
-                        ]">
-                            <p v-if="msg.sender === 'user'" class="w-full ">
-                                <!-- {{ msg.content }} -->
-                                <v-md-preview :text="msg.content"></v-md-preview>
-                            </p>
-                            <template v-else>
-                                <div v-if="msg.loading" class="flex items-center space-x-2">
-                                    <!-- 闪烁效果 - 文字闪烁 -->
-                                    <span class="animate-pulse text-gray-500">{{
-                                        msg.content
-                                    }}</span>
-                                    <!-- 脉冲效果 - 文字大小变化 (取消注释即可使用) -->
-                                    <!-- <span class="animate-text-pulse text-gray-500">{{ msg.content }}</span> -->
-
-                                    <span class="loading loading-dots loading-sm"></span>
-                                </div>
-                                <div v-else class="w-full">
-                                    <template v-for="(
+                    <!-- 消息主体部分-->
+                    <div :class="[...['flex', 'flex-row', 'px-2', 'py-4', 'sm:px-4'], ...(msg.sender === 'user' ? [' justify-end'] : [' justify-start'])]"
+                        v-if="
+                            msg.sender === 'user'
+                                ? msg?.showUserMessage !== undefined
+                                    ? msg.showUserMessage
+                                    : true
+                                : true
+                        ">
+                        <div class="flex flex-col">
+                            <div class="text-sm font-medium text-slate-600 mb-1">
+                                {{
+                                    msg.sender === "user"
+                                        ? userInfo.user.name
+                                        : msg.chatSettings?.fileGroupName ?? ""
+                                }}
+                                {{ msg.timestamp }}
+                            </div>
+                            <div :class="[
+                                'flex flex-1 items-center rounded-xl bg-slate-50 px-2 py-4 dark:bg-slate-900 sm:px-4',
+                            ]">
+                                <p v-if="msg.sender === 'user'" class="w-full">
+                                    <v-md-preview :text="msg.content"></v-md-preview>
+                                </p>
+                                <template v-else>
+                                    <div v-if="msg.loading" class="flex items-center space-x-2">
+                                        <!-- 闪烁效果 - 文字闪烁 -->
+                                        <span class="animate-pulse text-gray-500">{{
+                                            msg.content
+                                            }}</span>
+                                        <!-- 脉冲效果 - 文字大小变化 (取消注释即可使用) -->
+                                        <!-- <span class="animate-text-pulse text-gray-500">{{ msg.content }}</span> -->
+                                        <span class="loading loading-dots loading-sm"></span>
+                                    </div>
+                                    <div v-else class="w-full">
+                                        <template v-for="(
 part, partIndex
                                         ) in processMessageContent(
     msg.content,
     msg.id
 )" :key="partIndex">
-                                        <!-- 正常内容 -->
-                                        <div v-if="part.type === 'normal'" class="mb-2">
-                                            <v-md-preview :text="part.content"></v-md-preview>
-                                        </div>
-                                        <!-- 思考过程 -->
-                                        <div v-else-if="part.type === 'thinking'"
-                                            class="mb-4 border border-gray-200 rounded-md">
-                                            <div class="flex items-center p-1 bg-gray-100 cursor-pointer" @click="
-                                                part.isOpen.value =
-                                                !part.isOpen.value
-                                                ">
-                                                <span class="mr-2">💭</span>
-                                                <span class="font-normal text-sm">思考过程</span>
-                                                <span class="ml-auto">
-                                                    {{
-                                                        part.isOpen.value
-                                                            ? "▼"
-                                                            : "▶"
-                                                    }}&nbsp;
-                                                </span>
+                                            <!-- 正常内容 -->
+                                            <div v-if="part.type === 'normal'" class="mb-2">
+                                                <v-md-preview :text="part.content"></v-md-preview>
                                             </div>
-                                            <div v-show="part.isOpen.value" class="p-3 bg-gray-50">
-                                                <pre class="whitespace-pre-wrap text-sm">{{ part.content }}</pre>
+                                            <!-- 思考过程 -->
+                                            <div v-else-if="part.type === 'thinking'"
+                                                class="mb-4 border border-gray-200 rounded-md">
+                                                <div class="flex items-center p-1 bg-gray-100 cursor-pointer" @click="
+                                                    part.isOpen.value =
+                                                    !part.isOpen.value
+                                                    ">
+                                                    <span class="mr-2">💭</span>
+                                                    <span class="font-normal text-sm">思考过程</span>
+                                                    <span class="ml-auto">
+                                                        {{
+                                                            part.isOpen.value
+                                                                ? "▼"
+                                                                : "▶"
+                                                        }}&nbsp;
+                                                    </span>
+                                                </div>
+                                                <div v-show="part.isOpen.value" class="p-3 bg-gray-50">
+                                                    <pre class="whitespace-pre-wrap text-sm">{{ part.content }}</pre>
+                                                </div>
                                             </div>
-                                        </div>
-                                    </template>
-                                </div>
-                            </template>
+                                        </template>
+                                    </div>
+                                </template>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <!-- 操作按钮部分 -->
-                <div class="mb-2 w-full">
-                    <div v-if="
-                        index === messages.length - 1 &&
-                        msg.sender === 'assistant'
-                    " class="flex flex-row justify-end gap-x-2 text-slate-500">
-                        <button @click="handleFeedback('like', msg)" class="hover:text-blue-600">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" stroke-width="2"
-                                stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                <path
-                                    d="M7 11v8a1 1 0 0 1 -1 1h-2a1 1 0 0 1 -1 -1v-7a1 1 0 0 1 1 -1h3a4 4 0 0 0 4 -4v-1a2 2 0 0 1 4 0v5h3a2 2 0 0 1 2 2l-1 5a2 3 0 0 1 -2 2h-7a3 3 0 0 1 -3 -3">
-                                </path>
-                            </svg>
-                        </button>
-                        <button @click="handleFeedback('dislike', msg)" class="hover:text-blue-600" type="button">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" stroke-width="2"
-                                stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                <path
-                                    d="M7 13v-8a1 1 0 0 0 -1 -1h-2a1 1 0 0 0 -1 1v7a1 1 0 0 0 1 1h3a4 4 0 0 1 4 4v1a2 2 0 0 0 4 0v-5h3a2 2 0 0 0 2 -2l-1 -5a2 3 0 0 0 -2 -2h-7a3 3 0 0 0 -3 3">
-                                </path>
-                            </svg>
-                        </button>
-                        <button @click="$emit('action', 'copy', msg)" class="hover:text-blue-600" type="button">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" stroke-width="2"
-                                stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                <path d="M8 8m0 2a2 2 0 0 1 2 -2h8a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-8a2 2 0 0 1 -2 -2z">
-                                </path>
-                                <path d="M16 8v-2a2 2 0 0 0 -2 -2h-8a2 2 0 0 0 -2 2v8a2 2 0 0 0 2 2h2"></path>
-                            </svg>
-                        </button>
-                        <button v-if="(msg.rag ?? []).length > 0" @click="handleRagChecks(msg)"
-                            class="hover:text-blue-600" type="button">
-                            <svg t="1748096953676" class="h-5 w-5" viewBox="0 0 1024 1024" version="1.1"
-                                xmlns="http://www.w3.org/2000/svg" p-id="5234" width="200" height="200">
-                                <path
-                                    d="M912.9 129.3H769.2c-24.9 0-45 20.1-45 45v677.8c0 24.9 20.1 45 45 45h143.7c24.9 0 45-20.1 45-45V174.3c0-24.8-20.1-45-45-45z m-27 72v466.9h-89.7V201.3h89.7z m-89.7 623.8v-84.9h89.7v84.9h-89.7zM636.8 129.3H493.1c-24.9 0-45 20.1-45 45v677.8c0 24.9 20.1 45 45 45h143.7c24.9 0 45-20.1 45-45V174.3c0-24.8-20.2-45-45-45z m-27 72v466.9h-89.7V201.3h89.7z m-89.7 623.8v-84.9h89.7v84.9h-89.7zM409.3 162.7l-140-32.5c-3.4-0.8-6.8-1.2-10.2-1.2-20.5 0-39 14.1-43.8 34.8L65.6 808.9c-5.6 24.2 9.5 48.4 33.7 54l140 32.5c3.4 0.8 6.8 1.2 10.2 1.2 20.5 0 39-14.1 43.8-34.8l116-499.9c0.3-1 0.6-2.1 0.9-3.2 0.2-1.1 0.4-2.1 0.6-3.2L443 216.6c5.6-24.1-9.5-48.3-33.7-53.9z m-130 43.7l87.4 20.3-18.7 80.6-87.4-20.3 18.7-80.6z m-50 612.8l-87.4-20.3 102.5-441.7 87.4 20.3-102.5 441.7z"
-                                    p-id="5235" fill="#515151"></path>
-                                <!-- #707070 -->
-                            </svg>
-                        </button>
+                    <!-- 操作按钮部分 -->
+                    <div class="mb-2 w-full">
+                        <div v-if="
+                            index === messages.length - 1 &&
+                            msg.sender === 'assistant'
+                        " class="flex flex-row justify-end gap-x-2 text-slate-500">
+                            <button @click="handleFeedback('like', msg)" class="hover:text-blue-600">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24"
+                                    stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                    <path
+                                        d="M7 11v8a1 1 0 0 1 -1 1h-2a1 1 0 0 1 -1 -1v-7a1 1 0 0 1 1 -1h3a4 4 0 0 0 4 -4v-1a2 2 0 0 1 4 0v5h3a2 2 0 0 1 2 2l-1 5a2 3 0 0 1 -2 2h-7a3 3 0 0 1 -3 -3">
+                                    </path>
+                                </svg>
+                            </button>
+                            <button @click="handleFeedback('dislike', msg)" class="hover:text-blue-600" type="button">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24"
+                                    stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                    <path
+                                        d="M7 13v-8a1 1 0 0 0 -1 -1h-2a1 1 0 0 0 -1 1v7a1 1 0 0 0 1 1h3a4 4 0 0 1 4 4v1a2 2 0 0 0 4 0v-5h3a2 2 0 0 0 2 -2l-1 -5a2 3 0 0 0 -2 -2h-7a3 3 0 0 0 -3 3">
+                                    </path>
+                                </svg>
+                            </button>
+                            <button @click="$emit('action', 'copy', msg)" class="hover:text-blue-600" type="button">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24"
+                                    stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                    <path
+                                        d="M8 8m0 2a2 2 0 0 1 2 -2h8a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-8a2 2 0 0 1 -2 -2z">
+                                    </path>
+                                    <path d="M16 8v-2a2 2 0 0 0 -2 -2h-8a2 2 0 0 0 -2 2v8a2 2 0 0 0 2 2h2"></path>
+                                </svg>
+                            </button>
+                            <button v-if="(msg.rag ?? []).length > 0" @click="handleRagChecks(msg)"
+                                class="hover:text-blue-600" type="button">
+                                <svg t="1748096953676" class="h-5 w-5" viewBox="0 0 1024 1024" version="1.1"
+                                    xmlns="http://www.w3.org/2000/svg" p-id="5234" width="200" height="200">
+                                    <path
+                                        d="M912.9 129.3H769.2c-24.9 0-45 20.1-45 45v677.8c0 24.9 20.1 45 45 45h143.7c24.9 0 45-20.1 45-45V174.3c0-24.8-20.1-45-45-45z m-27 72v466.9h-89.7V201.3h89.7z m-89.7 623.8v-84.9h89.7v84.9h-89.7zM636.8 129.3H493.1c-24.9 0-45 20.1-45 45v677.8c0 24.9 20.1 45 45 45h143.7c24.9 0 45-20.1 45-45V174.3c0-24.8-20.2-45-45-45z m-27 72v466.9h-89.7V201.3h89.7z m-89.7 623.8v-84.9h89.7v84.9h-89.7zM409.3 162.7l-140-32.5c-3.4-0.8-6.8-1.2-10.2-1.2-20.5 0-39 14.1-43.8 34.8L65.6 808.9c-5.6 24.2 9.5 48.4 33.7 54l140 32.5c3.4 0.8 6.8 1.2 10.2 1.2 20.5 0 39-14.1 43.8-34.8l116-499.9c0.3-1 0.6-2.1 0.9-3.2 0.2-1.1 0.4-2.1 0.6-3.2L443 216.6c5.6-24.1-9.5-48.3-33.7-53.9z m-130 43.7l87.4 20.3-18.7 80.6-87.4-20.3 18.7-80.6z m-50 612.8l-87.4-20.3 102.5-441.7 87.4 20.3-102.5 441.7z"
+                                        p-id="5235" fill="#515151"></path>
+                                    <!-- #707070 -->
+                                </svg>
+                            </button>
+                        </div>
                     </div>
-                </div>
             </template>
         </div>
 
@@ -568,7 +570,7 @@ part, partIndex
                     <div v-for="file in selectedFiles" :key="file.id" class="relative group">
                         <div :class="[
                             'w-16 h-16 rounded-lg overflow-hidden border-2 border-slate-300 dark:border-slate-600 flex items-center justify-center',
-                            getFileDisplayInfo(file).color
+                            getFileDisplayInfo(file).color,
                         ]">
                             <!-- 图片文件显示图片预览 -->
                             <img v-if="getFileDisplayInfo(file).type === 'image'" :src="file.url" :alt="file.name"
@@ -615,11 +617,11 @@ part, partIndex
                         </el-icon>
                     </button>
                     <!-- 隐藏的文件输入 -->
-                    <input ref="fileInputRef" type="file" multiple
-                        :accept="ALLOWED_IMAGE_TYPES.join(',')" @change="handleFileSelect" class="hidden" />
+                    <input ref="fileInputRef" type="file" multiple :accept="ALLOWED_IMAGE_TYPES.join(',')"
+                        @change="handleFileSelect" class="hidden" />
                     <textarea v-model="messageInput" @keydown.enter="handleSubmit" id="chat-input"
                         class="block w-full resize-none rounded-xl border-none bg-slate-200 p-4 pl-12 pr-20 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-slate-800 dark:text-slate-200 dark:placeholder-slate-400 dark:focus:ring-blue-500 sm:text-base"
-                        placeholder="   请输入您的问题 (支持拖拽文件上传)" rows="2" required></textarea>
+                        placeholder="   请输入您的问题 (支持文件上传)" rows="2" required></textarea>
                     <button type="submit" @click="handleSubmit" :disabled="!canSend" :class="[
                         'absolute bottom-2 right-2.5 rounded-lg px-4 py-2 text-sm font-medium text-slate-200 focus:outline-none focus:ring-4 sm:text-base',
                         canSend

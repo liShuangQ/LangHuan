@@ -4,11 +4,20 @@ import { Close } from "@element-plus/icons-vue";
 import type { ChatSettings, RagGroup } from "../types";
 import PersonalSpace from "./personal-space.vue";
 import userStore from "@/store/user";
+import { useBreakpoints } from "@vueuse/core";
 const user = userStore();
 defineOptions({
     name: "SettingsSidebar",
 });
 
+const breakpoints = useBreakpoints({
+    sm: 640,
+    md: 768,
+    lg: 1024,
+    xl: 1280,
+})
+
+const isMobile = breakpoints.smaller('sm')
 const props = defineProps<{
     modelValue: ChatSettings; // 改用 v-model 的标准命名
     availableModels: { label: string; value: string }[];
@@ -182,172 +191,96 @@ onMounted(() => {
 </script>
 
 <template>
-    <aside class="flex flex-row-reverse">
+    <aside
+        :class="!isMobile ? ['flex', 'flex-row-reverse'] : ['flex', 'flex-row-reverse', 'fixed', 'top-0', 'right-0', 'z-50']">
         <div
-            class="relative h-screen w-60 overflow-y-auto border-l border-slate-300 bg-slate-50 py-8 dark:border-slate-700 dark:bg-slate-900 sm:w-64"
-        >
+            class="relative h-screen w-60 overflow-y-auto border-l border-slate-300 bg-slate-50 py-8 dark:border-slate-700 dark:bg-slate-900 sm:w-64">
             <div class="mb-4 flex items-center justify-between px-4">
-                <h2
-                    class="text-lg font-medium text-slate-800 dark:text-slate-200"
-                >
+                <h2 class="text-xl font-medium text-slate-800 dark:text-slate-200">
                     设置
                 </h2>
-                <el-button link @click="$emit('close')" :icon="Close" />
+                <button @click="$emit('close')"
+                    class="rounded-lg p-2 bg-slate-200 dark:bg-slate-700 text-slate-500 hover:bg-slate-300 dark:hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" stroke-width="2"
+                        stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                        <path d="M18 6l-12 12"></path>
+                        <path d="M6 6l12 12"></path>
+                    </svg>
+                    <span class="sr-only">Close sidebar</span>
+                </button>
             </div>
 
             <div class="px-4 space-y-6">
                 <!-- 模型选择 -->
                 <div>
-                    <label
-                        class="block text-sm font-medium text-slate-700 dark:text-slate-300 pb-1"
-                        >使用的模型</label
-                    >
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 pb-1">使用的模型</label>
                     <el-select v-model="modelName" size="small" class="w-full" filterable>
-                        <el-option
-                            v-for="model in availableModels"
-                            :key="model.value"
-                            :label="model.label"
-                            :value="model.value"
-                        />
+                        <el-option v-for="model in availableModels" :key="model.value" :label="model.label"
+                            :value="model.value" />
                     </el-select>
                 </div>
 
                 <!-- 提示词 -->
                 <div>
-                    <label
-                        class="block text-sm font-medium text-slate-700 dark:text-slate-300 pb-1"
-                        >提示词</label
-                    >
-                    <el-input
-                        v-model="promptTemplate"
-                        type="textarea"
-                        size="small"
-                        :rows="3"
-                        placeholder="输入提示词..."
-                    />
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 pb-1">提示词</label>
+                    <el-input v-model="promptTemplate" type="textarea" size="small" :rows="3" placeholder="输入提示词..." />
                 </div>
                 <!-- RAG组选择 -->
                 <div>
-                    <label
-                        class="block text-sm font-medium text-slate-700 dark:text-slate-300 pb-1"
-                        >RAG文件组</label
-                    >
-                    <el-select
-                        v-model="ragGroup"
-                        multiple
-                        filterable
-                        :multiple-limit="5"
-                        clearable
-                        size="small"
-                        class="w-full"
-                        placeholder="选择RAG文件组"
-                        :disabled="isExpertMode"
-                    >
-                        <el-option
-                            v-for="group in ragGroups"
-                            :key="group.id"
-                            :label="group.name"
-                            :value="group.id"
-                        />
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 pb-1">RAG文件组</label>
+                    <el-select v-model="ragGroup" multiple filterable :multiple-limit="5" clearable size="small"
+                        class="w-full" placeholder="选择RAG文件组" :disabled="isExpertMode">
+                        <el-option v-for="group in ragGroups" :key="group.id" :label="group.name" :value="group.id" />
                     </el-select>
-                    <div
-                        v-if="isExpertMode"
-                        class="text-xs text-slate-500 dark:text-slate-400 mt-1"
-                    >
+                    <div v-if="isExpertMode" class="text-xs text-slate-500 dark:text-slate-400 mt-1">
                         专家模式下RAG文件组不可用
                     </div>
                 </div>
 
                 <!-- ReRank模型开关 -->
                 <div>
-                    <label
-                        class="block text-sm font-medium text-slate-700 dark:text-slate-300 pb-1"
-                        >启用ReRank模型</label
-                    >
-                    <el-switch
-                        v-model="isReRank"
-                        size="small"
-                        active-text="开启"
-                        inactive-text="关闭"
-                        :disabled="isReRankDisabled"
-                    />
-                    <div
-                        v-if="isReRankDisabled"
-                        class="text-xs text-slate-500 dark:text-slate-400 mt-1"
-                    >
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 pb-1">启用ReRank模型</label>
+                    <el-switch v-model="isReRank" size="small" active-text="开启" inactive-text="关闭"
+                        :disabled="isReRankDisabled" />
+                    <div v-if="isReRankDisabled" class="text-xs text-slate-500 dark:text-slate-400 mt-1">
                         需要选择RAG文件组才能启用ReRank模型
                     </div>
                 </div>
 
                 <!-- 个人空间 -->
                 <div>
-                    <label
-                        class="block text-sm font-medium text-slate-700 dark:text-slate-300 pb-1"
-                        >个人空间(Beta)</label
-                    >
-                    <el-button size="small" @click="openPersonalSpace"
-                        >进入个人空间</el-button
-                    >
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 pb-1">个人空间(Beta)</label>
+                    <el-button size="small" @click="openPersonalSpace">进入个人空间</el-button>
                 </div>
 
                 <!-- 专家模式 -->
                 <div>
-                    <label
-                        class="block text-sm font-medium text-slate-700 dark:text-slate-300 pb-1"
-                        >多专家模式(Beta)</label
-                    >
-                    <el-switch
-                        v-model="isExpertMode"
-                        size="small"
-                        active-text="开启"
-                        inactive-text="关闭"
-                    />
-                    <div
-                        v-if="isExpertMode"
-                        class="text-xs text-slate-500 dark:text-slate-400 mt-1"
-                    >
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 pb-1">多专家模式(Beta)</label>
+                    <el-switch v-model="isExpertMode" size="small" active-text="开启" inactive-text="关闭" />
+                    <div v-if="isExpertMode" class="text-xs text-slate-500 dark:text-slate-400 mt-1">
                         <span>建议：专家选择数 x 对话轮数 &lt;= 30</span>
                     </div>
                     <!-- 文件组选择 -->
                     <div v-if="isExpertMode" class="my-1">
-                        <el-select
-                            v-model="expertFileGroups"
-                            size="small"
-                            class="w-full"
-                            placeholder="选择文件组"
-                            multiple
-                        >
-                            <el-option
-                                v-for="group in ragGroups.filter(
-                                    (item) => item.name != '无'
-                                )"
-                                :key="group.id"
-                                :label="group.name"
-                                :value="group.id"
-                            />
+                        <el-select v-model="expertFileGroups" size="small" class="w-full" placeholder="选择文件组" multiple>
+                            <el-option v-for="group in ragGroups.filter(
+                                (item) => item.name != '无'
+                            )" :key="group.id" :label="group.name" :value="group.id" />
                         </el-select>
                     </div>
 
                     <!-- 对话轮数 -->
                     <div v-if="isExpertMode">
                         <span class="text-xs">对话轮数 : </span>
-                        <el-slider
-                            class="px-1"
-                            v-model="expertConversationRounds"
-                            show-stops
-                            :max="20"
-                            :min="1"
-                            :step="1"
-                        />
+                        <el-slider class="px-1" v-model="expertConversationRounds" show-stops :max="20" :min="1"
+                            :step="1" />
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- 个人空间组件 -->
-        <PersonalSpace
-            ref="personalSpaceRef"
-            v-model="isPersonalSpaceVisible"
-        />
+        <PersonalSpace ref="personalSpaceRef" v-model="isPersonalSpaceVisible" />
     </aside>
 </template>

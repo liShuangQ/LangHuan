@@ -114,9 +114,13 @@ class RagController(
     @Throws(Exception::class)
     fun writeDocumentsToVectorStore(@RequestBody ragWriteDocumentsReq: RagWriteDocumentsReq): Result<Any> {
         ragWriteDocumentsReq.ragFile?.documentNum?.let {
-            if (it.toInt() >= 1000) {
-                return Result.error("切分数量已达上限")
+            if (it.toInt() >= 2000) {
+                return Result.error("切分块数量已达上限，最大单文件2000条")
             }
+        }
+        val fileGroupId = ragWriteDocumentsReq.ragFile?.fileGroupId
+        if (fileGroupId.isNullOrEmpty()) {
+            return Result.error("请选择文件组")
         }
 
         return Result.success(

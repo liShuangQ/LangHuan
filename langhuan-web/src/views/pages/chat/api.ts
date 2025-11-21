@@ -157,7 +157,7 @@ export const getChatMemoryMessages = (chatId: string) => {
     return http.request<any>({
         url: "/chat/getChatMemoryMessages",
         method: "post",
-        q_spinning: false,
+        q_spinning: true,
         data: {
             id: chatId,
         },

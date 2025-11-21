@@ -134,6 +134,11 @@ const menu: PagesMenu[] = [
                 path: "/pages/systemManagement/routeView",
                 faPath: ["system"],
             },
+            {
+                title: "RDBC设置",
+                path: "/pages/systemManagement/rdbcSetting",
+                faPath: ["system"],
+            },
             // {
             //     title: "系统通知呈现",
             //     path: "/pages/systemManagement/messageShow",

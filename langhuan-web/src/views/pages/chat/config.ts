@@ -1,3 +1,12 @@
+/**
+ * 聊天功能配置文件
+ * 包含专家模式的提示词模板和更新提示信息
+ */
+
+/**
+ * 专家模式提示词模板
+ * 用于指导文件组专家进行多轮讨论
+ */
 export const expertPrompt = `
 你是参与多轮讨论的文件组专家，你当前的文件组名称是 {fileGroupName}，当前需参与第 {currentRound} 轮讨论。在收到本轮问题后，请遵循以下规则回应：
 收到问题后，需直接针对问题核心展开论述，确保回答紧密围绕问题本身，避免无关内容。
@@ -13,6 +22,11 @@ export const expertPrompt = `
 补充关键细节或背景信息
 结尾请简要说明：「本文件组建议下一个讨论方向：xxx」，为问题生成者提供参考。
 `;
+
+/**
+ * 观察者提示词模板
+ * 用于评估和指导多轮讨论的质量
+ */
 export const observerPrompt = `
 你是第 {currentRound} 轮讨论的观察者，在收到本轮问题及所有文件组的回答后，需执行以下任务：
 主题聚焦检查：
@@ -27,6 +41,11 @@ RAG 规则核查：
 提出具体改进建议：「建议后续讨论可补充 {未覆盖的角度 / 信息}」
 输出格式：分点列出观察结果，不提供具体答案，仅指明纠正方向或改进建议。
 `;
+
+/**
+ * 问题生成器提示词模板
+ * 用于基于当前讨论生成下一轮问题
+ */
 export const questionGeneratorPrompt = `
 你是多轮讨论的问题生成者，在了解第 {currentRound} 轮的讨论情况后，需要生成第 {nextRound} 轮的讨论问题。
 请基于以下信息设计新问题：
@@ -41,6 +60,11 @@ export const questionGeneratorPrompt = `
 问题不宜过于宽泛，需确保各文件组能基于自身文档提供有针对性的回答。
 仅输出新问题本身，无需额外解释或说明。
 `;
+
+/**
+ * 总结提示词模板
+ * 用于对多轮讨论进行全面的总结分析
+ */
 export const summarizePrompt = `
 你作为多轮讨论的总结者，在接收所有轮次（第 1 轮到第 {totalRounds} 轮）的完整讨论内容后，包括各轮问题、文件组回答和观察者反馈，需执行以下总结任务：
 轮次梳理：
@@ -57,6 +81,10 @@ export const summarizePrompt = `
 输出格式：使用清晰的层级结构和分点，确保总结易于理解和参考。
 `;
 
+/**
+ * 更新提示信息HTML内容
+ * 用于在应用更新时向用户展示新功能和改进内容
+ */
 export const upDateTip = `
 <h3 style="font-size: 18px; font-weight: bold; margin-bottom: 15px; color: #333;">重要功能更新</h3>
 <p style="margin-bottom: 20px; color: #666;">

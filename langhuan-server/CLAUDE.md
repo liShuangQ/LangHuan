@@ -138,3 +138,7 @@ com.langhuan/
 - 方法和变量使用 camelCase 命名
 - 类名使用 PascalCase 命名
 - 使用 companion object 进行日志记录和常量定义
+
+## Task Master AI Instructions
+**Import Task Master's development workflow commands and guidelines, treat as if import is in the main CLAUDE.md file.**
+@./.taskmaster/CLAUDE.md

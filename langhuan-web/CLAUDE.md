@@ -131,7 +131,7 @@ http.request<any>({
 })
 ```
 
-## 优先使用的组件
+## 优先使用的组件(如果提示了明确使用组件编写)
 
 ### 表单组件 (ElementFormC)
 - **使用方式参考**: `@src/views/pages/componentDemo/form`
@@ -190,3 +190,7 @@ http.request<any>({
 - **状态管理**: 在 `/store/` 中创建新的存储，遵循 Pinia 模式
 - **样式设计**: 使用 Tailwind 工具类结合 SCSS 进行组件特定样式
 - **TypeScript**: 保持严格类型检查
+
+## Task Master AI Instructions
+**Import Task Master's development workflow commands and guidelines, treat as if import is in the main CLAUDE.md file.**
+@./.taskmaster/CLAUDE.md
