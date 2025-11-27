@@ -57,17 +57,42 @@ export const formItemConfig = (
                             },
                         })
                             .then((res) => {
+                                function groupByFileGroupId(data: any) {
+                                    const groupMap = new Map();
+
+                                    for (const item of data) {
+                                        const {
+                                            fileGroupId,
+                                            groupName,
+                                            id,
+                                            fileName,
+                                        } = item;
+
+                                        if (!groupMap.has(fileGroupId)) {
+                                            groupMap.set(fileGroupId, {
+                                                label: groupName, // 取第一个 groupName，假设同组一致
+                                                option: [],
+                                            });
+                                        }
+
+                                        groupMap.get(fileGroupId).option.push({
+                                            value: String(id),
+                                            label: fileName,
+                                        });
+                                    }
+
+                                    return Array.from(groupMap.values());
+                                }
+
+                                const result = groupByFileGroupId(
+                                    res.data.records.filter(
+                                        (e: any) => e.canAdd
+                                    )
+                                );
                                 formRef.value.setFormOption([
                                     {
                                         key: "fileName",
-                                        option: res.data.records
-                                            .filter((e: any) => e.canAdd)
-                                            .map((e: any) => {
-                                                return {
-                                                    value: e.fileName,
-                                                    label: e.fileName,
-                                                };
-                                            }),
+                                        optionGroup: result,
                                     },
                                 ]);
                                 fileNowOptionCache.value = res.data.records;

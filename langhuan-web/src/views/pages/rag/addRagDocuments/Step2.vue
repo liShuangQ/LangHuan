@@ -1,89 +1,117 @@
 <template>
-    <div class="flex border-box py-2">
-        <div class="w-2/5 border-r-2 border-b-cyan-950 border-box pr-2">
-            <!-- ---------- -->
-            <div class="mb-4">
-                <div class="py-2 text-xl">拆分方式</div>
-                <el-radio-group v-model="splitFileMethod">
-                    <el-radio border label="FixedWindowTextSplitter"
-                        >固定窗口切分</el-radio
+    <div class="flex gap-6 p-6">
+        <div class="w-2/5 border-r border-gray-200 pr-6 flex flex-col">
+            <!-- 拆分方式 -->
+            <div class="mb-6">
+                <h3 class="text-base font-medium mb-3 text-gray-700">拆分方式</h3>
+                <el-radio-group v-model="splitFileMethod" class="w-full space-y-3">
+                    <el-radio
+                        border
+                        label="FixedWindowTextSplitter"
+                        style="margin-right: 0;"
+                        class="w-full hover:border-blue-400 transition-colors"
                     >
-                    <el-radio border label="PatternTokenTextSplitter"
-                        >正则切分</el-radio
+                        固定窗口切分
+                    </el-radio>
+                    <el-radio
+                        border
+                        label="PatternTokenTextSplitter"
+                        class="w-full hover:border-blue-400 transition-colors"
                     >
-                    <!-- <el-radio border label="LlmTextSplitter">大模型切分</el-radio> -->
+                        正则切分
+                    </el-radio>
                 </el-radio-group>
             </div>
-            <!-- ---------- -->
-            <div class="mb-4">
-                <div class="py-2 text-xl">参数选择</div>
-                <div v-if="splitFileMethod === 'FixedWindowTextSplitter'">
-                    <div class="text-xs">窗口大小</div>
-                    <el-slider
-                        v-model="methodData.FixedWindowTextSplitter.windowSize"
-                        show-input
-                        size="small"
-                        :min="50"
-                        :max="1000"
-                        :step="50"
-                        show-stops
-                    />
-                </div>
-                <div v-else-if="splitFileMethod === 'PatternTokenTextSplitter'">
-                    <div class="text-xs">正则表达式</div>
-                    <el-input
-                        v-model="
-                            methodData.PatternTokenTextSplitter.splitPattern
-                        "
-                        size="small"
-                    />
-                </div>
-                <div v-else-if="splitFileMethod === 'LlmTextSplitter'">
-                    <div class="text-xs">窗口大小</div>
-                    <el-slider
-                        v-model="methodData.LlmTextSplitter.windowSize"
-                        show-input
-                        size="small"
-                        :min="50"
-                        :max="1000"
-                        :step="50"
-                        show-stops
-                    />
-                    <div class="text-xs">选择模型</div>
-                    <el-select
-                        v-model="methodData.LlmTextSplitter.modelName"
-                        placeholder="选择模型"
-                    >
-                        <el-option
-                            v-for="item in chatModelOption"
-                            :key="item.value"
-                            :label="item.label"
-                            :value="item.value"
+
+            <!-- 参数选择 -->
+            <div class="mb-6 flex-1">
+                <h3 class="text-lg font-semibold mb-4 text-gray-800">参数选择</h3>
+                <div v-if="splitFileMethod === 'FixedWindowTextSplitter'" class="space-y-4">
+                    <div>
+                        <label class="text-sm font-medium text-gray-700 mb-2 block">窗口大小</label>
+                        <el-slider
+                            v-model="methodData.FixedWindowTextSplitter.windowSize"
+                            show-input
+                            size="default"
+                            :min="50"
+                            :max="1000"
+                            :step="50"
+                            show-stops
                         />
-                    </el-select>
+                    </div>
                 </div>
-                <div v-else>
-                    <span class="text-2xl text-zinc-400">请选择拆分方式</span>
+                <div v-else-if="splitFileMethod === 'PatternTokenTextSplitter'" class="space-y-4">
+                    <div>
+                        <label class="text-sm font-medium text-gray-700 mb-2 block">正则表达式</label>
+                        <el-input
+                            v-model="methodData.PatternTokenTextSplitter.splitPattern"
+                            size="default"
+                            placeholder="请输入正则表达式"
+                        />
+                    </div>
+                </div>
+                <div v-else-if="splitFileMethod === 'LlmTextSplitter'" class="space-y-4">
+                    <div>
+                        <label class="text-sm font-medium text-gray-700 mb-2 block">窗口大小</label>
+                        <el-slider
+                            v-model="methodData.LlmTextSplitter.windowSize"
+                            show-input
+                            size="default"
+                            :min="50"
+                            :max="1000"
+                            :step="50"
+                            show-stops
+                        />
+                    </div>
+                    <div>
+                        <label class="text-sm font-medium text-gray-700 mb-2 block">选择模型</label>
+                        <el-select
+                            v-model="methodData.LlmTextSplitter.modelName"
+                            placeholder="选择模型"
+                            class="w-full"
+                        >
+                            <el-option
+                                v-for="item in chatModelOption"
+                                :key="item.value"
+                                :label="item.label"
+                                :value="item.value"
+                            />
+                        </el-select>
+                    </div>
+                </div>
+                <div v-else class="flex items-center justify-center h-32">
+                    <span class="text-lg text-gray-400">请选择拆分方式</span>
                 </div>
             </div>
-            <!-- ---------- -->
-            <div>
+
+            <!-- 操作按钮 -->
+            <div class="flex justify-end">
                 <el-button
-                    class="float-right"
                     type="primary"
+                    size="default"
                     :disabled="!splitFileMethod"
                     @click="getDocument"
-                    >预览</el-button
+                    class="px-6"
                 >
+                    预览
+                </el-button>
             </div>
         </div>
-        <div class="w-3/5 overflow-y-scroll">
-            <div
-                class="border-b-2 border-b-slate-300 pb-2"
-                v-for="(item, index) in previewADocument"
-                :key="index"
-            >
-                {{ item }}
+
+        <!-- 预览区域 -->
+        <div class="w-3/5 pl-6 overflow-hidden flex flex-col">
+            <h3 class="text-lg font-semibold mb-4 text-gray-800">预览效果</h3>
+            <div class="flex-1 overflow-y-auto border border-gray-200 rounded-lg p-4 bg-gray-50">
+                <div
+                    class="mb-4 p-3 bg-white border border-gray-100 rounded last:mb-0"
+                    v-for="(item, index) in previewADocument"
+                    :key="index"
+                >
+                    <div class="text-sm text-gray-700 leading-relaxed">{{ item }}</div>
+                </div>
+                <div v-if="previewADocument.length === 0" class="flex items-center justify-center h-32">
+                    <span class="text-gray-400">暂无预览内容，请选择拆分方式并点击预览</span>
+                </div>
             </div>
         </div>
     </div>
@@ -170,7 +198,6 @@ const getDocument = () => {
         });
 };
 const init = () => {
-    console.log(stepData.value, "stepData.valuestepData.valuestepData.value");
 
     stepData.value.splitFileMethod &&
         (splitFileMethod.value = stepData.value.splitFileMethod);

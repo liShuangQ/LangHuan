@@ -1,5 +1,5 @@
 <template>
-    <div class="pt-4">
+    <div class="pt-6 px-4">
         <component
             ref="currentStepRef"
             :is="currentComponent"
@@ -23,7 +23,6 @@ const currentStepRef = ref<any>(null);
 // HACK
 const currentComponent = computed(() => {
     const fileType: FileType = stepData.value?.fileType;
-    console.log(stepData.value, "fileTypefileType");
 
     if (fileType === "file") {
         return Step1_file;
