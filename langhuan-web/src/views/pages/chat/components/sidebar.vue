@@ -22,7 +22,7 @@ interface EmitEvent {
 
 // 组件属性定义
 const props = defineProps<{
-    chatList: ChatItem[];
+    chatWindowList: ChatItem[];
 }>();
 
 // 事件发射器
@@ -107,9 +107,9 @@ const editingTitle = ref("");
  */
 const filteredChatList = computed(() => {
     const query = searchQuery.value.toLowerCase().trim();
-    if (!query) return props.chatList;
+    if (!query) return props.chatWindowList;
 
-    return props.chatList.filter(
+    return props.chatWindowList.filter(
         (chat) =>
             chat.title.toLowerCase().includes(query) ||
             chat.date.toLowerCase().includes(query)

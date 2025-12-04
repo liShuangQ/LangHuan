@@ -16,6 +16,12 @@ import type {
 import { ElMessage } from "element-plus";
 import { documentRankHandleApi } from "@/api/rag";
 import { blobToBase64 } from "@/utils/imgFile";
+import {
+    expertPrompt,
+    observerPrompt,
+    questionGeneratorPrompt,
+    summarizePrompt,
+} from "../config";
 // 获取项目中文名称
 const BASE_PROJECT_NAME_CN = computed(() => {
     return process.env.BASE_PROJECT_NAME_CN as string;
@@ -81,7 +87,7 @@ export function useChat() {
         if (chatParams.accessory) {
             const files = chatParams.accessory as Blob[];
             for (let index = 0; index < files.length; index++) {
-                const file: Blob = files[index];
+                const file: Blob | any = files[index];
                 if (file.type.indexOf("image") > -1) {
                     // 处理图片附件，转换为base64格式
                     imgInfo += `![img](${await blobToBase64(file)}) \n`;
@@ -118,7 +124,7 @@ export function useChat() {
         canSend.value = false;
 
         // 获取附件数据并从参数中移除
-        const accessory = chatParams?.accessory??[];
+        const accessory = chatParams?.accessory ?? [];
         if (chatParams.accessory) {
             delete chatParams.accessory;
         }
@@ -268,6 +274,112 @@ export function useChat() {
         }
     };
 
+    /**
+     * 专家模式发送消息 - 支持多轮对话和多文件组专家咨询
+     * TODO: 后续可优化记忆压缩，超出记忆的时候，总是留下总结者的信息
+     * @param windowId 窗口ID
+     * @param message 用户消息
+     */
+    const sendMessageExpertMode = async (
+        settings: ChatSettings,
+        getChatParams: any,
+        windowId: string,
+        message: string
+    ) => {
+
+        // 验证是否选择了至少两个文件组
+        if (settings.expertFileGroups.length < 2) {
+            ElMessage.warning("请选择至少两个文件组");
+            return;
+        }
+
+        // 复制专家文件组数据并添加观察者角色
+        let expertFileGroups: any = JSON.parse(
+            JSON.stringify(settings.expertFileGroups)
+        );
+        expertFileGroups.push({
+            id: "observer",
+            name: "观察者",
+        });
+
+        // 优化提示词，后面在二轮后会用其它问题替换这个提示词
+        let newMessage = message;
+
+        // 按配置的轮数进行多轮专家对话
+        for (let i = 0; i < settings.expertConversationRounds; i++) {
+            // 最后一轮不需要观察者
+            if (settings.expertConversationRounds === i + 1) {
+                expertFileGroups = expertFileGroups.filter(
+                    (item: any) => item.id !== "observer"
+                );
+            }
+
+            // 当前轮次的专家发言
+            for (let index = 0; index < expertFileGroups.length; index++) {
+                await sendMessage(windowId, {
+                    ...getChatParams,
+                    ragGroupId: expertFileGroups[index].id,
+                    isRag:
+                        expertFileGroups[index].id === "observer"
+                            ? false
+                            : true,
+                    prompt:
+                        expertFileGroups[index].id === "observer"
+                            ? observerPrompt.replaceAll(
+                                  "{currentRound}",
+                                  String(i + 1)
+                              )
+                            : expertPrompt
+                                  .replaceAll("{currentRound}", String(i + 1))
+                                  .replaceAll(
+                                      "{fileGroupName}",
+                                      expertFileGroups[index].name
+                                  ) +
+                              "\n" +
+                              getChatParams.prompt,
+                    fileGroupName: expertFileGroups[index].name,
+                    showUserMessage: index === 0,
+                    userMessage: `第${i + 1}轮问题：${newMessage}`,
+                });
+            }
+
+            // 不是最后一轮，需要生成下一轮的问题
+            if (settings.expertConversationRounds !== i + 1) {
+                const res = await api.sendEasyChatMessage({
+                    p: questionGeneratorPrompt
+                        .replaceAll("{currentRound}", String(i + 1))
+                        .replaceAll("{nextRound}", String(i + 2))
+                        .replaceAll("{originalQuestion}", message),
+                    q: messages.value
+                        .filter(
+                            (item: any) =>
+                                item.sender === "assistant" &&
+                                item.content !== "正在思考中..."
+                        )
+                        .slice(-expertFileGroups.length)
+                        .map((item: any) => item.content)
+                        .join("\n"),
+                    modelName: getChatParams.modelName,
+                });
+                newMessage = res.data.chat;
+            }
+        }
+
+        // 完成后进行总结
+        await sendMessage(windowId, {
+            ...getChatParams,
+            ragGroupId: "",
+            isRag: false,
+            prompt: summarizePrompt.replaceAll(
+                "{totalRounds}",
+                String(settings.expertConversationRounds)
+            ),
+            fileGroupName: "总结者",
+            showUserMessage: true,
+            userMessage: `总结问题`,
+        });
+    };
+
     // 返回需要对外暴露的属性和方法
     return {
         messages,
@@ -277,5 +389,6 @@ export function useChat() {
         optimizePrompt,
         handleMessageAction,
         documentRank,
+        sendMessageExpertMode,
     };
 }

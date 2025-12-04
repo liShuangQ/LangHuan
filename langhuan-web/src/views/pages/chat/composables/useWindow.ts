@@ -6,10 +6,9 @@ import { ref } from "vue";
 import dayjs from "dayjs";
 import * as api from "../api";
 import type { ChatWindow } from "../types";
-
 export function useWindow() {
     // 聊天窗口列表和当前窗口ID
-    const chatList = ref<ChatWindow[]>([]);
+    const chatWindowList = ref<ChatWindow[]>([]);
     const currentWindowId = ref("");
 
     /**
@@ -20,7 +19,7 @@ export function useWindow() {
         // 创建新窗口对象
         const newWindow = {
             id: "new", // 临时ID，与后端约定
-            title: "新窗口" + (chatList.value.length + 1),
+            title: "新窗口" + (chatWindowList.value.length + 1),
             date: dayjs().format("YYYY-MM-DD HH:mm:ss"),
             active: true,
         };
@@ -30,7 +29,7 @@ export function useWindow() {
         newWindow.id = res.data;
 
         // 添加到列表并选为当前窗口
-        chatList.value.push(newWindow);
+        chatWindowList.value.push(newWindow);
         selectWindow(newWindow.id);
 
         return newWindow.id;
@@ -43,7 +42,7 @@ export function useWindow() {
     const selectWindow = (id: string) => {
         currentWindowId.value = id;
         // 更新所有窗口的激活状态
-        chatList.value.forEach((chat) => {
+        chatWindowList.value.forEach((chat) => {
             chat.active = chat.id === id;
         });
     };
@@ -56,15 +55,14 @@ export function useWindow() {
         const res = await api.getChatMemoryWindows();
         if (res.data.length !== 0) {
             // 将后端数据转换为窗口格式
-            chatList.value = res.data.map((item: any) => ({
+            chatWindowList.value = res.data.map((item: any) => ({
                 id: item.conversationId,
                 title: item.conversationName,
                 date: item.createdTime,
                 active: false,
             }));
 
-            // 默认选择第一个窗口
-            selectWindow(res.data[0].conversationId);
+            // 默认返回选择第一个窗口
             return res.data[0].conversationId;
         }
         return "";
@@ -76,7 +74,9 @@ export function useWindow() {
      */
     const deleteWindow = async (id: string) => {
         // 从列表中移除
-        chatList.value = chatList.value.filter((chat) => chat.id !== id);
+        chatWindowList.value = chatWindowList.value.filter(
+            (chat) => chat.id !== id
+        );
 
         // 清除后端数据并重新加载列表
         await api.clearChatMemory(id);
@@ -89,7 +89,7 @@ export function useWindow() {
      * @param name 新的窗口名称
      */
     const updateWindowName = async (id: string, name: string) => {
-        const window = chatList.value.find((w) => w.id === id);
+        const window = chatWindowList.value.find((w) => w.id === id);
         if (window) {
             // 更新本地数据
             window.title = name;
@@ -100,7 +100,7 @@ export function useWindow() {
 
     // 返回需要对外暴露的属性和方法
     return {
-        chatList,
+        chatWindowList,
         currentWindowId,
         createWindow,
         selectWindow,

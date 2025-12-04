@@ -3,7 +3,7 @@
         <el-tooltip content="消息通知" effect="dark" placement="bottom">
             <el-badge :value="unreadCount" :hidden="unreadCount === 0">
                 <el-icon :size="iconSize" ref="messageButtonRef" :class="{ 'blink-icon': unreadCount > 0 }">
-                    <ChatSquare />
+                    <ChatSquare class="text-slate-500" />
                 </el-icon>
             </el-badge>
         </el-tooltip>

@@ -13,13 +13,13 @@ export function useSettings() {
 
     // 聊天设置配置
     const settings = ref<ChatSettings>({
-        modelName: "",                    // 模型名称
-        promptTemplate: "",               // 提示词模板
-        ragGroup: null,                   // RAG文件组
-        isReRank: false,                  // 是否启用重排序
-        isExpertMode: false,              // 是否启用专家模式
-        expertFileGroups: [],             // 专家模式文件组列表
-        expertConversationRounds: 1,      // 专家模式对话轮数
+        modelName: "", // 模型名称
+        promptTemplate: "", // 提示词模板
+        ragGroup: null, // RAG文件组
+        isReRank: false, // 是否启用重排序
+        isExpertMode: false, // 是否启用专家模式
+        expertFileGroups: [], // 专家模式文件组列表
+        expertConversationRounds: 1, // 专家模式对话轮数
     });
 
     // 可用模型列表
@@ -63,7 +63,7 @@ export function useSettings() {
     };
 
     /**
-     * 获取聊天参数配置
+     * 获取聊天参数配置，根据当前设置转换为后端对应的参数格式
      * TODO: HACK 根据后端参数改变
      */
     const getChatParams = computed(() => ({
@@ -74,6 +74,16 @@ export function useSettings() {
         isReRank: settings.value.isReRank,
     }));
 
+    /**
+     * 设置参数配置
+     */
+    const setChatParams = (params: Partial<ChatSettings>) => {
+        settings.value = {
+            ...settings.value,
+            ...params,
+        };
+    };
+
     // 返回需要对外暴露的属性和方法
     return {
         showSettings,
@@ -82,5 +92,6 @@ export function useSettings() {
         ragGroups,
         toggleSettings,
         getChatParams,
+        setChatParams,
     };
 }
