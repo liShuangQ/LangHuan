@@ -1,6 +1,8 @@
 package com.langhuan.serviceai
 
 import cn.hutool.core.util.IdUtil
+import cn.hutool.json.JSON
+import cn.hutool.json.JSONString
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper
 import com.langhuan.common.Constant
@@ -83,7 +85,24 @@ class ChatMemoryService {
         return userChatWindowService.update(
             UpdateWrapper<TUserChatWindow>()
                 .eq("conversation_id", conversationId)
-                .set("conversationName", conversationName)
+                .set("conversation_name", conversationName)
+        )
+    }
+
+    /**
+     * 设置聊天配置信息
+     *
+     * @param conversationId   会话ID
+     * @param conversationConfig 窗口配置信息(JSON格式)
+     * @return 更新是否成功
+     */
+    fun setChatMemoryConversationConfig(conversationId: String, conversationConfig: String): Boolean {
+        log.info("ChatMemory-set-setChatMemoryConversationConfig: {}, {}", conversationId, conversationConfig)
+        // 使用 setSql 来处理 JSON 类型转换，避免 PostgreSQL 类型错误
+        return userChatWindowService.update(
+            UpdateWrapper<TUserChatWindow>()
+                .eq("conversation_id", conversationId)
+                .setSql("conversation_config = ${if (conversationConfig.isNullOrEmpty()) "NULL" else "'${conversationConfig.replace("'", "''")}'::json"}")
         )
     }
 
@@ -99,7 +118,7 @@ class ChatMemoryService {
 
         // 查询该用户的所有聊天窗口
         return userChatWindowService.list(
-            QueryWrapper<TUserChatWindow>().eq("user_id", currentUserId)
+            QueryWrapper<TUserChatWindow>().eq("user_id", currentUserId).orderByAsc("created_time")
         )
     }
 

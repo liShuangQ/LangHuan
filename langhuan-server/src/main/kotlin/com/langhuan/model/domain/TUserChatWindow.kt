@@ -34,5 +34,10 @@ data class TUserChatWindow(
     /**
      * 
      */
-    var createdTime: Date? = null
+    var createdTime: Date? = null,
+
+    /**
+     * 对话配置信息，用于回显当时对话时候的配置信息
+     */
+    var conversationConfig: String? = null
 )

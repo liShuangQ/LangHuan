@@ -3,8 +3,8 @@ import { computed, ref, watch } from "vue";
 import { Close } from "@element-plus/icons-vue";
 import type { ChatSettings, RagGroup } from "../types";
 import PersonalSpace from "./personal-space.vue";
-import userStore from "@/store/user";
 import { useBreakpoints } from "@vueuse/core";
+import userStore from "@/store/user";
 const user = userStore();
 defineOptions({
     name: "SettingsSidebar",
@@ -16,12 +16,10 @@ const props = defineProps<{
 }>();
 const emit = defineEmits<{
     (e: "update:modelValue", value: ChatSettings): void;
+    (e: "action", type: string, payload?: any): void;
     (e: "close"): void;
 }>();
 
-// watch(() => props.modelValue, (newValue) => {
-//     console.log(newValue, 'newValuenewValuenewValue');
-// }, { deep: true });
 // --------------手机检测设置----------------------------------------------
 const breakpoints = useBreakpoints({
     sm: 640,
@@ -54,20 +52,9 @@ const ragGroup = computed({
         }
         if (props.modelValue.ragGroup?.id) {
             return props.modelValue.ragGroup.id.split(",").filter((e) => !!e);
-        } else {
-            if (ragGroupOnceBase.length > 0) {
-                ragGroupOnceBase = [];
-            } else {
-                ragGroupOnceBase = GROUP_BASE_NAMES.value
-                    .map((e: string) => {
-                        return (
-                            props.ragGroups.find((g) => g.name === e)?.id || ""
-                        );
-                    })
-                    .filter((e) => !!e);
-            }
-            return ragGroupOnceBase;
         }
+
+        return [];
     },
     set: (value: any) => {
         // 当专家模式开启时，不允许设置值
@@ -77,15 +64,7 @@ const ragGroup = computed({
         emitUpdateRagGroup(value);
     },
 });
-// 初始化RAG文件组的默认值，无值去找是不是有默认重置，有值后将长度>0 满足直接清空
-let ragGroupOnceBase: string[] = [];
-// 配置的默认文件组，${username}会被替换为用户名
-const GROUP_BASE_NAMES = computed(() => {
-    return process.env.GROUP_BASE_NAMES?.replaceAll(
-        "${username}",
-        user.info.user.username
-    )?.split(",") as string[];
-});
+
 // 更新RAG文件组
 const emitUpdateRagGroup = (value: any) => {
     const selectedGroup = {
@@ -107,7 +86,10 @@ const emitUpdateRagGroup = (value: any) => {
     if (value.length === 0) {
         newSettings.isReRank = false;
     }
+
+    // 把文件组改动同步到后端
     emit("update:modelValue", newSettings);
+    emit("action", 'updateSettingsConfig', newSettings);
 };
 // --------------表单-ReRank开关----------------------------------------------
 const isReRank = computed({
@@ -181,7 +163,6 @@ watch(isExpertMode, (newValue) => {
 onMounted(() => {
     nextTick(() => {
         setTimeout(() => {
-            emitUpdateRagGroup(ragGroupOnceBase);
         }, 500);
     });
 });
@@ -223,7 +204,7 @@ onMounted(() => {
                 </div>
 
                 <!-- 智能体选择 -->
-                <div class="space-y-2">
+                <!-- <div class="space-y-2">
                     <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">
                         智能体角色
                     </label>
@@ -232,7 +213,7 @@ onMounted(() => {
                         <el-option v-for="group in agentRoleGroup" :key="group.id" :label="group.name"
                             :value="group.id" />
                     </el-select>
-                </div>
+                </div> -->
 
                 <!-- RAG组选择 -->
                 <div class="space-y-2">

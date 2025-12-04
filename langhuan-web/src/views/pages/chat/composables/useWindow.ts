@@ -12,15 +12,23 @@ export function useWindow() {
     const currentWindowId = ref("");
 
     /**
-     * 创建新的聊天窗口
+     * HACK 创建新的聊天窗口
      * @returns 新创建窗口的ID
+     * @param defaultRagGroup 默认的RAG文件组信息，注意格式
      */
-    const createWindow = async () => {
+    const createWindow = async (defaultRagGroup: {
+        id: string;
+        name: string;
+    }) => {
         // 创建新窗口对象
         const newWindow = {
             id: "new", // 临时ID，与后端约定
             title: "新窗口" + (chatWindowList.value.length + 1),
             date: dayjs().format("YYYY-MM-DD HH:mm:ss"),
+            settingConfig: {
+                // 传入默认id{id:"x,y", name:"xn,yn"}
+                ragGroup: defaultRagGroup,
+            },
             active: true,
         };
 
@@ -30,7 +38,6 @@ export function useWindow() {
 
         // 添加到列表并选为当前窗口
         chatWindowList.value.push(newWindow);
-        selectWindow(newWindow.id);
 
         return newWindow.id;
     };
@@ -59,6 +66,9 @@ export function useWindow() {
                 id: item.conversationId,
                 title: item.conversationName,
                 date: item.createdTime,
+                settingConfig: item.conversationConfig
+                    ? JSON.parse(item.conversationConfig)
+                    : {},
                 active: false,
             }));
 

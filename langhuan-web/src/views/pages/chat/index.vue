@@ -23,7 +23,7 @@ import { useSettings } from "./composables/useSettings";
 // 导入用户状态管理和API
 import user from "@/store/user";
 // 导入类型定义
-import { ChatSeedEmitMessageData, } from "./types";
+import { ChatSeedEmitMessageData, ChatWindow, } from "./types";
 
 // 使用聊天相关功能的组合式函数
 const {
@@ -54,8 +54,11 @@ const {
     ragGroups,
     toggleSettings,
     getChatParams,
-    setChatParams
+    setChatParams,
+    updateSettingsConfig
 } = useSettings();
+// user pinia
+const userStore = user();
 // 提示词容器的引用
 const PromptContainersRef = ref<InstanceType<typeof PromptContainers> | null>(
     null
@@ -64,6 +67,15 @@ const PromptContainersRef = ref<InstanceType<typeof PromptContainers> | null>(
 const router = useRouter();
 // 判断当前是否在聊天页面
 const nowIsChat = router.currentRoute.value.path === "/chat";
+// 切换聊天窗口时的操作
+const switchChatWindow = async (toWindowId: string) => {
+    const windowInfo = chatWindowList.value.find((e: ChatWindow) => {
+        return e.id === toWindowId
+    }) as ChatWindow;
+    selectWindow(toWindowId);
+    setChatParams(windowInfo.settingConfig);
+    await loadMessages(toWindowId);
+};
 
 /**
  * 处理侧边栏操作事件
@@ -73,35 +85,44 @@ const nowIsChat = router.currentRoute.value.path === "/chat";
 const handleSidebarAction = async (type: string, payload?: any) => {
     if (type === "new-chat") {
         // 创建新聊天窗口
-        const newId = await createWindow();
+        // 配置的默认文件组，${username}会被替换为用户名
+        const GROUP_BASE_NAMES = process.env.GROUP_BASE_NAMES?.replaceAll(
+            "${username}",
+            userStore.info.user.username
+        )?.split(",") as string[];
+        const allDefault = GROUP_BASE_NAMES
+            .map((e: string) => {
+                return (
+                    ragGroups.value.find((g) => g.name === e)
+                );
+            })
+            .filter((e) => !!e);
+        const newId = await createWindow(
+            {
+                id: allDefault[0]?.id || "",
+                name: allDefault[0]?.name || ""
+            }
+        );
+        await switchChatWindow(newId);
+        // 这里在新创建的时候是需要手动设置的，这里就像是提前把东西都准备好了。
+        // 而在每次修改更新的时候，是由内而外触发的（此页面的“updateSettingsConfig”），重新赋值。
+        await updateSettingsConfig(newId, toRaw(settings.value));
         await loadMessages(newId);
     } else if (type === "barChat") {
         // 处理侧边栏聊天（暂时不做处理）
         return;
     } else if (type === "chat" && payload) {
-        // 选择指定聊天窗口
-        selectWindow(payload);
-        setChatParams({
-            modelName: "qwen-plus", // 模型名称
-            promptTemplate: new Date().toISOString().toString(), // 提示词模板
-            isReRank: true, // 是否启用重排序
-            isExpertMode: false, // 是否启用专家模式
-            expertFileGroups: [], // 专家模式文件组列表
-            expertConversationRounds: 1, // 专家模式对话轮数
-        });
-        await loadMessages(payload);
+        await switchChatWindow(payload);
     } else if (type === "delete") {
         // 删除聊天窗口
         await deleteWindow(payload);
         const oneId = chatWindowList.value[0]?.id;
         if (oneId) {
-            // 切换到第一个可用的聊天窗口
-            selectWindow(oneId);
-            await loadMessages(oneId);
+            await switchChatWindow(oneId);
         }
     } else if (type === "logout") {
         // 用户登出
-        user().userLogOut();
+        userStore.userLogOut();
     } else if (type === "settings") {
         // 切换设置面板显示状态
         toggleSettings();
@@ -164,7 +185,6 @@ const handlePromptAction = async (type: string, payload?: any) => {
                 loading.close();
                 return;
             }
-            console.error('导出聊天记录失败:', error);
             ElMessage.error('导出聊天记录失败');
         } finally {
             loading.close();
@@ -198,15 +218,23 @@ const handleSendMessage = (windowId: string, messageData: ChatSeedEmitMessageDat
     }
 };
 
+/**
+ * 处理设置侧边栏操作事件
+ */
+const handleSettingsAction = async (type: string, payload?: any) => {
+    if (type === "updateSettingsConfig") {
+        // 后端更新-设置配置
+        await updateSettingsConfig(currentWindowId.value, payload);
+        await loadWindows();
+    }
+}
 
 // 组件挂载时的初始化操作
 onMounted(async () => {
     // 加载所有聊天窗口
     const firstWindowId = await loadWindows();
     if (firstWindowId) {
-        // 加载第一个窗口的消息历史
-        selectWindow(firstWindowId);
-        await loadMessages(firstWindowId);
+        await switchChatWindow(firstWindowId);
     }
 });
 </script>
@@ -229,7 +257,7 @@ onMounted(async () => {
 
         <!-- 设置侧边栏 -->
         <SettingsSidebar v-if="showSettings" v-model="settings" :available-models="availableModels"
-            :rag-groups="ragGroups" @close="toggleSettings" />
+            :rag-groups="ragGroups" @close="toggleSettings" @action="handleSettingsAction" />
 
         <!-- 更新提示组件 -->
         <UpdateTip />

@@ -7,6 +7,6 @@ import {setupElementAndIcons} from "@/plugins/elementPlus";
 export function setupPlugins(app: App): void {
     setMdDditor(app);
     setupElementAndIcons(app)
-    setupPinia(app);
     autoRegisterComponents(app);
+    setupPinia(app);
 }

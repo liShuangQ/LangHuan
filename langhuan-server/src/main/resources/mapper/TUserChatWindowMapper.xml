@@ -10,9 +10,10 @@
             <result property="conversationId" column="conversation_id" />
             <result property="conversationName" column="conversation_name" />
             <result property="createdTime" column="created_time" />
+            <result property="conversationConfig" column="conversation_config" />
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,user_id,conversation_id,conversation_name,created_time
+        id,user_id,conversation_id,conversation_name,created_time,conversation_config
     </sql>
 </mapper>

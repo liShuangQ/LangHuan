@@ -2,7 +2,6 @@ package com.langhuan.controller
 
 import cn.hutool.json.JSONUtil
 import com.langhuan.common.ApiLog
-import com.langhuan.common.Constant
 import com.langhuan.common.Result
 import com.langhuan.model.pojo.ChatRestOption
 import com.langhuan.serviceai.*
@@ -106,6 +105,26 @@ class ChatController(
     ): Result<*> {
         return Result.success(chatMemoryService.setChatMemoryWindowsName(id, name))
     }
+
+    @PostMapping("/chat/setChatMemoryConversationConfig")
+    fun setChatMemoryConversationConfig(
+        @RequestParam(name = "id", required = true) id: String,
+        @RequestParam(name = "config", required = true) config: String
+    ): Result<*> {
+        fun isValidJson(str: String): Boolean {
+            try {
+                JSONUtil.parse(str)
+                return true
+            } catch (e: Exception) {
+                return false
+            }
+        }
+        if (!isValidJson(config)) {
+            return Result.error<String>("config不是有效的json")
+        }
+        return Result.success(chatMemoryService.setChatMemoryConversationConfig(id, config))
+    }
+
 
     @PostMapping("/chat/getChatMemoryWindows")
     fun getChatMemoryWindows(): Result<Any> {

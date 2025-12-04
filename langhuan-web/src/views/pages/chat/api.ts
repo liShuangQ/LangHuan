@@ -141,10 +141,26 @@ export const setChatMemoryWindowsName = (id: string, name: string) => {
     return http.request<any>({
         url: "/chat/setChatMemoryWindowsName",
         method: "post",
-        q_spinning: true,
+        q_spinning: false,
         data: {
             id,
             name,
+        },
+    });
+};
+/**
+ * 设置聊天窗口配置信息
+ * @param id 聊天窗口id
+ * @param config JSON配置字符串
+ */
+export const setChatMemoryConversationConfig = (id: string, config: string) => {
+    return http.request<any>({
+        url: "/chat/setChatMemoryConversationConfig",
+        method: "post",
+        q_spinning: true,
+        data: {
+            id,
+            config,
         },
     });
 };

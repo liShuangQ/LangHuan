@@ -75,13 +75,35 @@ export function useSettings() {
     }));
 
     /**
-     * 设置参数配置
+     * 设置参数配置，挑选参数更新
      */
     const setChatParams = (params: Partial<ChatSettings>) => {
-        settings.value = {
-            ...settings.value,
-            ...params,
-        };
+        const keys = Object.keys(params) as Array<keyof ChatSettings>;
+        if (keys.includes("modelName")) {
+            settings.value.modelName =
+                params.modelName || settings.value.modelName;
+        }
+        if (keys.includes("ragGroup")) {
+            // 如果是手清空的应该是{"id": "","name": ""}，用来区分是手清空的还是新创建的窗口。
+            settings.value.ragGroup = params.ragGroup || null;
+        }
+        if (keys.includes("promptTemplate")) {
+            settings.value.promptTemplate =
+                params.promptTemplate || settings.value.promptTemplate;
+        }
+    };
+
+    /**
+     * 更新线上参数配置信息，注意存入的是settings信息
+     */
+    const updateSettingsConfig = async (
+        currentWindowId: string,
+        newSettings: ChatSettings
+    ) => {
+        await api.setChatMemoryConversationConfig(
+            currentWindowId,
+            JSON.stringify(newSettings)
+        );
     };
 
     // 返回需要对外暴露的属性和方法
@@ -93,5 +115,6 @@ export function useSettings() {
         toggleSettings,
         getChatParams,
         setChatParams,
+        updateSettingsConfig,
     };
 }

@@ -235,6 +235,9 @@ CREATE TABLE t_user_chat_window (
                                   created_time TIMESTAMP DEFAULT NOW()    -- 创建时间
 );
 
+ALTER TABLE t_user_chat_window
+ADD COLUMN conversation_config JSON  DEFAULT NULL;
+COMMENT ON COLUMN t_user_chat_window.conversation_config IS '对话配置信息，用于回显当时对话时候的配置信息';
 
 -- 对话记忆
 CREATE TABLE IF NOT EXISTS SPRING_AI_CHAT_MEMORY (
