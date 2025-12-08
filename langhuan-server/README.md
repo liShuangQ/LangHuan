@@ -1,4 +1,4 @@
-# langhuan-service
+# langhuan-server
 
 ## 介绍
 
