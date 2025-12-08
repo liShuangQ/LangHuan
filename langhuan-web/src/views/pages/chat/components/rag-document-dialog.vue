@@ -36,7 +36,7 @@ const handleRank = (type: 'good' | 'bad', document: any) => {
                             {{ index + 1 }}
                         </span>
                         <span class="text-sm text-gray-500">
-                            文档 ID: {{ item.id }}
+                            文档来源: {{ item.metadata.filename  }}
                         </span>
                     </div>
                     <p class="text-gray-800 leading-relaxed text-base">
@@ -46,14 +46,7 @@ const handleRank = (type: 'good' | 'bad', document: any) => {
 
                 <!-- 元数据信息 -->
                 <div class="space-y-2">
-                    <!-- 第一行：基础信息 -->
-                    <div class="flex flex-wrap items-center gap-2">
-                        <el-tag type="primary" effect="light" size="small">
-                            <span class="font-medium">来源文件：</span>{{ item.metadata.filename }}
-                        </el-tag>
-                    </div>
-
-                    <!-- 第二行：详细分数 -->
+                    <!-- 第一行：详细分数 -->
                     <div class="flex flex-wrap items-center gap-2">
                         <el-tag type="danger" effect="light" size="small">
                             <span class="font-medium">加权得分：</span>{{ item.metadata.weightedScore }}
@@ -61,10 +54,10 @@ const handleRank = (type: 'good' | 'bad', document: any) => {
                         <el-tag type="warning" effect="light" size="small">
                             <span class="font-medium">向量得分：</span>{{ item.metadata.normalizedSpringAiScore }}
                         </el-tag>
-                        <el-tag type="light" effect="light" size="small">
+                        <el-tag type="primary" size="small">
                             <span class="font-medium">关键字得分：</span>{{ item.metadata.normalizedBm25Score }}
                         </el-tag>
-                        <el-tag effect="info" size="small">
+                        <el-tag type="info" size="small">
                             <span class="font-medium">手工排名：</span>{{ item.metadata.normalizedRankScore }}
                         </el-tag>
                     </div>
@@ -82,7 +75,7 @@ const handleRank = (type: 'good' | 'bad', document: any) => {
                                         @click="handleRank('good', item)"
                                         class="flex items-center justify-center hover:bg-green-600 transition-colors"
                                     >
-                                        <el-icon>
+                                        <el-icon style="font-size: 16px;">
                                             <Top />
                                         </el-icon>
                                     </el-button>
@@ -95,7 +88,7 @@ const handleRank = (type: 'good' | 'bad', document: any) => {
                                         @click="handleRank('bad', item)"
                                         class="flex items-center justify-center hover:bg-red-600 transition-colors"
                                     >
-                                        <el-icon>
+                                        <el-icon style="font-size: 16px;">
                                             <Bottom />
                                         </el-icon>
                                     </el-button>

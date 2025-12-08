@@ -107,10 +107,10 @@ export function useChat() {
             showUserMessage: chatParams.showUserMessage,
         };
 
-        // 构建助手消息对象（初始显示"正在思考中..."）
+        // 构建助手消息对象（初始显示"正在思考中"）
         const assistantMessageInfo = {
             id: "loading-" + Date.now().toString(),
-            content: "正在思考中...",
+            content: "正在思考中",
             sender: "assistant" as const,
             timestamp: dayjs().format("YYYY-MM-DD HH:mm:ss"),
             loading: true,
@@ -354,7 +354,7 @@ export function useChat() {
                         .filter(
                             (item: any) =>
                                 item.sender === "assistant" &&
-                                item.content !== "正在思考中..."
+                                item.content !== "正在思考中"
                         )
                         .slice(-expertFileGroups.length)
                         .map((item: any) => item.content)

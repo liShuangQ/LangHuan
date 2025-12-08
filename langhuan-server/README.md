@@ -78,3 +78,100 @@ docker run -d \
   minio/minio:RELEASE.2025-04-22T22-12-26Z server /data --console-address ":9001"
 
 ```
+
+## 系统环境需求
+
+### 技术栈配置
+
+- **Java运行环境**: JDK 21（LTS版本）
+- **Spring Boot**: 3.4.1-SNAPSHOT
+- **数据库**: PostgreSQL with pgvector插件（向量数据库）
+- **AI框架**: Spring AI 1.0.0
+- **文件存储**: MinIO对象存储
+- **构建工具**: Maven
+
+### 核心功能模块
+
+1. AI对话系统（多模型支持）
+2. RAG知识库（BM25+向量混合检索）
+3. 文件管理与文档处理
+4. 用户权限管理（RBAC）
+5. API日志与统计分析
+
+## 硬件配置建议（并发量100）
+
+### 最低配置
+
+- **CPU**: 4核心 2.4GHz+
+- **内存**: 8GB RAM
+- **存储**: 100GB SSD
+- **网络**: 100Mbps带宽
+
+### 推荐配置
+
+- **CPU**: 8核心 3.0GHz+
+- **内存**: 16GB RAM
+- **存储**: 200GB NVMe SSD
+- **网络**: 1Gbps带宽
+
+### 详细配置分析
+
+**内存分配**:
+
+- JVM堆内存: 4-6GB
+- PostgreSQL: 2-3GB（向量索引优化）
+- 系统预留: 6GB
+
+**存储需求**:
+
+- 应用程序: 500MB
+- 日志文件: 10GB（30天保留）
+- 数据库: 25GB（含向量数据）
+- 文件存储: 50GB
+- 系统增长预留: 30%
+
+**数据库优化配置**:
+
+```yaml
+shared_buffers: 2GB
+max_connections: 200
+work_mem: 64MB
+```
+
+**连接池配置**:
+
+```yaml
+maximum-pool-size: 20
+minimum-idle: 20
+connection-timeout: 20000
+```
+
+**JVM参数**:
+
+```bash
+-Xms4g -Xmx6g -XX:+UseG1GC -XX:MaxGCPauseMillis=200
+```
+
+### 性能监控指标
+
+- CPU使用率: <70%（峰值）
+- 内存使用率: <80%
+- 响应时间: <500ms（95th percentile）
+- 数据库连接: <80%使用率
+
+## 扩展性建议
+
+### 水平扩展
+
+- 支持多实例部署（需要会话共享）
+- 数据库读写分离
+- 添加Redis缓存层
+- 负载均衡（Nginx/HAProxy）
+
+### 垂直扩展
+
+- 根据业务增长升级硬件配置
+- 优化数据库索引和查询
+- 调整JVM参数和连接池配置
+
+该配置可稳定支持100并发用户，并预留扩展空间。如需更高并发，建议增加服务器实例或升级硬件配置。

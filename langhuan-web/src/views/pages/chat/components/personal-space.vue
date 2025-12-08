@@ -119,11 +119,11 @@
                 </div>
 
                 <!-- 分页 -->
-                <div class="flex items-center justify-between mt-4 pt-4 border-t border-gray-200">
+                <div class="flex flex-wrap items-center justify-between mt-4 pt-4 border-t border-gray-200">
                     <div class="text-sm text-gray-700">
                         共 {{ documentPagination.total }} 条记录
                     </div>
-                    <div class="flex items-center gap-2">
+                    <div class="flex flex-wrap items-center justify-end gap-2">
                         <!-- 每页条数选择 -->
                         <select
                             v-model="documentPagination.pageSize"

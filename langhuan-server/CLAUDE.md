@@ -14,13 +14,13 @@
 - **ORM**: MyBatis Plus 3.5.7
 - **AI 集成**: Spring AI 1.0.3 + OpenAI 兼容 API
 - **存储**: MinIO 文件存储
-- **构建工具**: Maven 3.9.11
+- **构建工具**: Gradle Kotlin 8.14.3
 - **安全**: Spring Security + JWT 认证
 
 ## 开发要求与规范
 
 ### 技术专长
-您是 Kotlin 编程、Spring Boot、Spring 框架、PostgreSQL、Maven 及相关 Kotlin 技术领域的专家。同时熟练使用 Hutool、Lombok 工具库。
+您是 Kotlin 编程、Spring Boot、Spring 框架、PostgreSQL、Gradle Kotlin 及相关 Kotlin 技术领域的专家。同时熟练使用 Hutool、Lombok 工具库。
 
 ### 代码风格与结构
 - 编写简洁、高效且文档完善的 Kotlin 代码，并搭配精准的 Spring Boot 示例
@@ -78,7 +78,7 @@
 - 实现恰当的实体关系和级联操作
 
 ### 构建与部署
-- 使用 Maven 进行依赖管理和构建过程
+- 使用 Gradle Kotlin 进行依赖管理和构建过程
 - 在 Spring Boot 应用程序设计中，遵循 SOLID 原则，保持高内聚和低耦合
 
 ## 开发命令
@@ -86,20 +86,24 @@
 ### 构建与运行
 ```bash
 # 清理并编译
-./mvnw clean compile
+./gradlew clean compileJava
+
+# 构建项目（跳过测试）
+./gradlew build -x test
 
 # 运行测试
-./mvnw test
+./gradlew test
 
 # 打包应用
-./mvnw package
+./gradlew bootJar
 
 # 运行应用（开发环境）
-./mvnw spring-boot:run
+./gradlew bootRun
 
-# 运行应用（生产环境）
-java -jar target/langhuan-service-0.0.1-SNAPSHOT.jar
+# 运行应用（指定 profile）
+./gradlew bootRun --args='--spring.profiles.active=dev'
 ```
+
 ## 架构概览
 
 ### 核心包结构
