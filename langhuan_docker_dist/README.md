@@ -2,7 +2,7 @@
 
 ## 项目架构
 
-LangHuan 是一个基于 Docker Compose 的多服务应用，包含以下组件：
+LangHuan 是一个可基于 Docker Compose 的多服务应用，包含以下组件：
 
 - **Web 服务** (nginx): 前端静态文件服务和反向代理
 - **App 服务** (Spring Boot): 后端应用服务
@@ -55,7 +55,7 @@ docker-compose logs -f [service_name]
 - **后端 API**: http://localhost:9077
 - **MinIO 控制台**: http://localhost:9001
   - 用户名: `minio`
-  - 密码: `minio123456`
+  - 密码: `xxxxxx`
 
 ## 服务管理
 
@@ -149,13 +149,13 @@ docker system prune -f
 ### 数据库配置
 
 - `POSTGRES_USER`: postgres
-- `POSTGRES_PASSWORD`: postgres
+- `POSTGRES_PASSWORD`: xxxxxx
 - `SPRING_DATASOURCE_URL`: jdbc:postgresql://db:5432/postgres?serverTimezone=Asia/Shanghai&useTimezone=true
 
 ### MinIO 配置
 
 - `MINIO_ROOT_USER`: minio
-- `MINIO_ROOT_PASSWORD`: minio123456
+- `MINIO_ROOT_PASSWORD`: xxxxxx
 
 ## 故障排除
 

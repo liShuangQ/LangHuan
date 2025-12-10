@@ -1,177 +1,198 @@
 # langhuan-server
 
-## 介绍
+## 项目概述
 
-"琅嬛福地"，藏天下典籍
+琅嬛福地是基于 Spring Boot 3.5.6 + Kotlin 1.9.25 的 AI 知识管理系统，提供 RAG（检索增强生成）功能、文档处理和对话 AI 特性。系统集成了多种 AI 模型，支持结合 BM25 和向量搜索的混合检索策略。
 
-## 部署
+## 系统要求
 
-### 基本环境
+### 基础环境
+- **Java**: JDK 21（LTS版本）
+- **操作系统**: Linux/macOS/Windows
+- **内存**: 最低 8GB，推荐 16GB+
+- **存储**: 最低 50GB 可用空间，推荐 100GB+
 
-- 推荐使用 jdk21
-- postgres数据库+pgvector+minio+模型
-- 启动时添加虚拟机选项 --add-modules jdk.incubator.vector --enable-native-access=ALL-UNNAMED
+### 依赖服务
+- **PostgreSQL**: 15+ (需要 pgvector 插件)
+- **MinIO**: 对象存储服务
+- **AI模型(包括嵌入模型)**: OpenAI兼容API或本地Ollama
 
-### 部署
+## 快速部署指南
 
-#### ollama(可选)
+### 第一步：环境准备
 
-Ollama 是一个基于 Go 语言开发的开源工具，能让用户在本地便捷地管理和运行如 Llama、Falcon、Qwen2 等多种大型语言模型，具有自动硬件加速、无需虚拟化、支持
-API、多平台兼容等特性。
+#### 1.1 安装 JDK 21
+```bash
+# Ubuntu/Debian
+sudo apt update
+sudo apt install openjdk-21-jdk
 
-- 下载 ollama [https://ollama.com/](ollama)
-- 通过 ollama run xxx 下载需要的模型 [https://ollama.com/library/](library)
+# macOS (使用 Homebrew)
+brew install openjdk@21
 
-```text
-ollama run qwen2.5:3b (例子，使用其它模型在 https://ollama.com/library 中查询下载后修改application.yml中模型配置)
+# 验证安装
+java -version
 ```
 
-- 在application.yml中修改对应配置
+#### 1.2 安装 PostgreSQL + pgvector
+```bash
+# Ubuntu/Debian
+sudo apt install postgresql-15 postgresql-contrib postgresql-15-pgvector
 
-#### one api(可选)
+# macOS (使用 Homebrew)
+brew install postgresql@15 pgvector
 
-是一个开源的接口管理与分发系统，支持如 OpenAI、Google PaLM 2、百度文心一言等多种大模型平台。通过统一接口访问不同大模型服务，可用于二次分发管理
-key，仅单可执行文件，已打包好 Docker 镜像，能一键部署，开箱即用。
+# 启动 PostgreSQL
+sudo systemctl start postgresql  # Linux
+brew services start postgresql@15  # macOS
 
-`推荐使用作为模型管理工具，也可直接使用兼容openai api的模型（针对qwen等兼容更多的模型）`
+# 或者使用 Docker
+docker pull postgres pgvector/pgvector
+docker run -it -d --rm --name postgres -p 5432:5432 -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=xxxxxx pgvector/pgvector
 
-```text
-# 使用 SQLite 的部署命令：
-docker run --name one-api -d --restart always -p 3000:3000 -e TZ=Asia/Shanghai -v /home/ubuntu/data/one-api:/data justsong/one-api
-# 使用 MySQL 的部署命令，在上面的基础上添加 `-e SQL_DSN="root:123456@tcp(localhost:3306)/oneapi"`，请自行修改数据库连接参数，不清楚如何修改请参见下面环境变量一节。
-# 例如：
-docker run --name one-api -d --restart always -p 3000:3000 -e SQL_DSN="root:123456@tcp(localhost:3306)/oneapi" -e TZ=Asia/Shanghai -v /home/ubuntu/data/one-api:/data justsong/one-api
-
-# 默认管理员账号密码：root 123456
 ```
 
-安装后，在oneapi中配置ollama的模型渠道，具体配置方式见官网。
+#### 1.3 配置 PostgreSQL
+```sql
+-- 连接数据库
+sudo -u postgres psql
 
-#### 嵌入模型和向量数据库（RAG使用）
+-- 创建数据库和用户
+CREATE DATABASE langhuan_db;
+CREATE USER langhuan_user WITH PASSWORD 'your_password';
+GRANT ALL PRIVILEGES ON DATABASE langhuan_db TO langhuan_user;
 
-- 下载嵌入模型（ollama方式。如果使用云端模型直接在application填入对应地址即可）
-
-```text
-ollama pull mxbai-embed-large（默认配置） 或 ollama pull mofanke/dmeta-embedding-zh（需要在application.yml中单独配置）
-执行 ollama list 检查是否下载成功
+-- 启用 pgvector 扩展
+\c langhuan_db;
+CREATE EXTENSION IF NOT EXISTS vector;
 ```
 
-- 下载 postgres pgvector/pgvector （如果你有数据库则跳过这步，如没有pgvector则需要添加此插件）
+#### 1.4 安装和配置 MinIO
+```bash
+# 下载 MinIO
+wget https://dl.min.io/server/minio/release/linux-amd64/minio
+chmod +x minio
 
-```text
-docker run -it -d --rm --name postgres -p 5432:5432 -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres pgvector/pgvector
-```
+# 创建数据和配置目录
+mkdir -p ~/minio/data
 
-#### minio
+# 启动 MinIO (端口 9000 API, 9001 Console)
+./minio server ~/minio/data --console-address ":9001"
 
-- docker pull minio/minio:RELEASE.2025-04-22T22-12-26Z
-
-```txt
+# 或者使用 Docker
+docker pull minio/minio:RELEASE.2025-04-22T22-12-26Z
 docker run -d \
   --name minio \
   -p 9000:9000 \
   -p 9001:9001 \
   -e MINIO_ROOT_USER=minio \
-  -e MINIO_ROOT_PASSWORD=minio123456 \
-  -v /etc/localtime:/etc/localtime:ro \
-  -v /usr/share/zoneinfo/Asia/Shanghai:/etc/timezone:ro \
+  -e MINIO_ROOT_PASSWORD=your_password \
+  -v ~/minio/data:/data \
   minio/minio:RELEASE.2025-04-22T22-12-26Z server /data --console-address ":9001"
-
 ```
 
-## 系统环境需求
+### 第二步：项目部署
 
-### 技术栈配置
-
-- **Java运行环境**: JDK 21（LTS版本）
-- **Spring Boot**: 3.4.1-SNAPSHOT
-- **数据库**: PostgreSQL with pgvector插件（向量数据库）
-- **AI框架**: Spring AI 1.0.0
-- **文件存储**: MinIO对象存储
-- **构建工具**: Maven
-
-### 核心功能模块
-
-1. AI对话系统（多模型支持）
-2. RAG知识库（BM25+向量混合检索）
-3. 文件管理与文档处理
-4. 用户权限管理（RBAC）
-5. API日志与统计分析
-
-## 硬件配置建议（并发量100）
-
-### 最低配置
-
-- **CPU**: 4核心 2.4GHz+
-- **内存**: 8GB RAM
-- **存储**: 100GB SSD
-- **网络**: 100Mbps带宽
-
-### 推荐配置
-
-- **CPU**: 8核心 3.0GHz+
-- **内存**: 16GB RAM
-- **存储**: 200GB NVMe SSD
-- **网络**: 1Gbps带宽
-
-### 详细配置分析
-
-**内存分配**:
-
-- JVM堆内存: 4-6GB
-- PostgreSQL: 2-3GB（向量索引优化）
-- 系统预留: 6GB
-
-**存储需求**:
-
-- 应用程序: 500MB
-- 日志文件: 10GB（30天保留）
-- 数据库: 25GB（含向量数据）
-- 文件存储: 50GB
-- 系统增长预留: 30%
-
-**数据库优化配置**:
-
-```yaml
-shared_buffers: 2GB
-max_connections: 200
-work_mem: 64MB
-```
-
-**连接池配置**:
-
-```yaml
-maximum-pool-size: 20
-minimum-idle: 20
-connection-timeout: 20000
-```
-
-**JVM参数**:
-
+#### 2.1 克隆项目
 ```bash
--Xms4g -Xmx6g -XX:+UseG1GC -XX:MaxGCPauseMillis=200
+git clone <repository-url>
+cd langhuan-server
 ```
 
-### 性能监控指标
+#### 2.2 配置应用参数
+编辑 `src/main/resources/application.yml`：
 
-- CPU使用率: <70%（峰值）
-- 内存使用率: <80%
-- 响应时间: <500ms（95th percentile）
-- 数据库连接: <80%使用率
+```yaml
+server:
+  port: 9077
 
-## 扩展性建议
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/langhuan_db?serverTimezone=Asia/Shanghai&useTimezone=true
+    username: langhuan_user
+    password: your_password
+    driver-class-name: org.postgresql.Driver
 
-### 水平扩展
+  ai:
+    openai:
+      base-url: https://dashscope.aliyuncs.com/compatible-mode  # 或你的模型API
+      api-key: your-api-key
+      chat:
+        options:
+          model: qwen-plus  # 或其他模型
+      embedding:
+        options:
+          model: text-embedding-v3
 
-- 支持多实例部署（需要会话共享）
-- 数据库读写分离
-- 添加Redis缓存层
-- 负载均衡（Nginx/HAProxy）
+minio:
+  url: http://localhost:9000
+  access-key: minio
+  secret-key: your_password
+  img-bucket-name: langhuan-img
+  file-bucket-name: langhuan-file
 
-### 垂直扩展
+# 其他配置保持默认...
+```
 
-- 根据业务增长升级硬件配置
-- 优化数据库索引和查询
-- 调整JVM参数和连接池配置
+#### 2.3 创建数据库表结构
+```bash
+# 执行 SQL 文件（按顺序执行）
+src/main/resources/sql/ddl_1.sql
+src/main/resources/sql/admin_dml_2.sql
+src/main/resources/sql/api_log_ddl_3.sql
+src/main/resources/sql/prompt_dml_4.sql
+src/main/resources/sql/index_dlc.sql
+```
 
-该配置可稳定支持100并发用户，并预留扩展空间。如需更高并发，建议增加服务器实例或升级硬件配置。
+#### 2.4 构建和启动应用
+```bash
+# 方式一：直接运行
+./gradlew bootRun
+
+# 方式二：构建后运行
+./gradlew build -x test
+java -jar build/libs/langhuan-server-0.0.1-SNAPSHOT.jar
+```
+
+#### 2.5 启动参数（推荐）
+```bash
+# 完整启动命令（包含必要的 JVM 参数）
+java \
+  --add-modules jdk.incubator.vector \
+  --enable-native-access=ALL-UNNAMED \
+  -Xms2g -Xmx4g \
+  -XX:+UseG1GC \
+  -XX:MaxGCPauseMillis=200 \
+  -jar build/libs/langhuan-server-0.0.1-SNAPSHOT.jar
+```
+
+### 第三步：验证部署
+
+#### 3.1 检查应用启动
+```bash
+# 检查应用是否启动成功
+curl -X POST http://localhost:9077/user/search \
+  -H "Content-Type: application/json" \
+  -d '{}'
+
+# 或查看日志
+tail -f logs/langhuan.log
+```
+
+#### 3.2 验证 Web 界面
+- **MinIO 控制台**: http://localhost:9001
+  - 用户名: `minio`
+  - 密码: `xxxxxx`
+
+#### 3.3 数据库验证
+```sql
+-- 检查表是否创建成功
+\dt
+
+-- 检查向量表
+SELECT * FROM vector_store_rag LIMIT 1;
+
+-- 检查用户表
+SELECT * FROM t_user;
+```
+

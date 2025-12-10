@@ -85,7 +85,7 @@ export function useWindow() {
     const deleteWindow = async (id: string) => {
         // 从列表中移除
         chatWindowList.value = chatWindowList.value.filter(
-            (chat) => chat.id !== id
+            (chat) => chat.id !== id,
         );
 
         // 清除后端数据并重新加载列表

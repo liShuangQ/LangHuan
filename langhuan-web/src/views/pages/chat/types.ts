@@ -11,6 +11,7 @@ export interface ChatWindow {
     title: string;           // 窗口标题
     date: string;            // 创建日期
     active?: boolean;        // 是否为当前激活窗口
+    settingConfig?: ChatSettings | any;  // 窗口设置配置
 }
 
 /**
