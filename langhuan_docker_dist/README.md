@@ -29,6 +29,28 @@ LangHuan 是一个可基于 Docker Compose 的多服务应用，包含以下组�
 
 ### 2. 部署步骤
 
+#### 克隆代码
+```
+git clone [项目地址]
+```
+
+#### 构建代码
+```
+# 进入前端
+cd langhuan-web
+调节 .env 文件参数后运行如下命令打包
+npm run build
+
+# 进入后端
+cd langhuan-server
+调节 application.yml 文件参数后运行如下命令打包
+./gradlew build -x test
+
+# 将构建后参数分别对应放在如下目录
+langhuan_docker_dist/langhuan-web
+langhuan_docker_dist/langhuan-server
+```
+
 #### 启动所有服务
 
 ```bash

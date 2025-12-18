@@ -1,6 +1,7 @@
 package com.langhuan.utils.http
 
 import org.slf4j.LoggerFactory
+import org.springframework.util.MultiValueMap
 import java.io.*
 import java.net.HttpURLConnection
 import java.net.URI
@@ -73,7 +74,7 @@ object PostRequestUtils {
 	 * @throws Exception 如果请求过程中发生异常
 	 */
 	@Throws(Exception::class)
-	fun sendPostRequestWithFormData(url: String, formData: Map<String, Any>): String {
+	fun sendPostRequestWithFormData(url: String, formData: MultiValueMap<String, Any>): String {
 		return sendPostRequestWithFormData(url, formData, null)
 	}
 
@@ -89,7 +90,7 @@ object PostRequestUtils {
 	@Throws(Exception::class)
 	fun sendPostRequestWithFormData(
 		url: String,
-		formData: Map<String, Any>,
+		formData: MultiValueMap<String, Any>,
 		headers: Map<String, String>?
 	): String {
 		log.debug("Sending POST request with form-data to URL: $url")
@@ -114,32 +115,34 @@ object PostRequestUtils {
 
 		con.outputStream.use { os ->
 			PrintWriter(OutputStreamWriter(os, StandardCharsets.UTF_8), true).use { writer ->
-				for ((fieldName, fieldValue) in formData) {
-					if (fieldValue is File) {
-						// 处理文件上传
-						val file = fieldValue
-						writer.append("--").append(boundary).append("\r\n")
-						writer.append("Content-Disposition: form-data; name=\"$fieldName\"; filename=\"${file.name}\"").append("\r\n")
-						writer.append("Content-Type: application/octet-stream").append("\r\n")
-						writer.append("\r\n")
-						writer.flush()
+				for ((fieldName, fieldValues) in formData) {
+					for (fieldValue in fieldValues) {
+						if (fieldValue is File) {
+							// 处理文件上传
+							val file = fieldValue
+							writer.append("--").append(boundary).append("\r\n")
+							writer.append("Content-Disposition: form-data; name=\"$fieldName\"; filename=\"${file.name}\"").append("\r\n")
+							writer.append("Content-Type: application/octet-stream").append("\r\n")
+							writer.append("\r\n")
+							writer.flush()
 
-						// 写入文件内容
-						FileInputStream(file).use { fis ->
-							val buffer = ByteArray(4096)
-							var bytesRead: Int
-							while (fis.read(buffer).also { bytesRead = it } != -1) {
-								os.write(buffer, 0, bytesRead)
+							// 写入文件内容
+							FileInputStream(file).use { fis ->
+								val buffer = ByteArray(4096)
+								var bytesRead: Int
+								while (fis.read(buffer).also { bytesRead = it } != -1) {
+									os.write(buffer, 0, bytesRead)
+								}
+								os.flush()
 							}
-							os.flush()
+							writer.append("\r\n")
+						} else {
+							// 处理普通表单字段
+							writer.append("--").append(boundary).append("\r\n")
+							writer.append("Content-Disposition: form-data; name=\"$fieldName\"").append("\r\n")
+							writer.append("\r\n")
+							writer.append(fieldValue.toString()).append("\r\n")
 						}
-						writer.append("\r\n")
-					} else {
-						// 处理普通表单字段
-						writer.append("--").append(boundary).append("\r\n")
-						writer.append("Content-Disposition: form-data; name=\"$fieldName\"").append("\r\n")
-						writer.append("\r\n")
-						writer.append(fieldValue.toString()).append("\r\n")
 					}
 				}
 

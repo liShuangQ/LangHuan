@@ -51,7 +51,7 @@ LangHuan 是一个基于 Kotlin + Spring AI 的智能对话与知识检索系统
 
 ## 部署
 
-### 快速体验推荐使用
+### 推荐使用
  [Docker部署方案](./langhuan_docker_dist/README.md)
 ### 基于源码部署：
  [前端本地部署](./langhuan-web/README.md) |  [后端本地部署](./langhuan-server/README.md) 
@@ -312,6 +312,7 @@ flowchart TD
 - [x] 移动端适配，更多的使用细节处理 (2025.12)
 
 ### 规划中功能
+- [ ] 对MCP的支持
 - [ ] 添加更多的拆分文档方式（在全文中划线拆分chunk）
 - [ ] 不满意的回答过滤文档后重新回答
 - [ ] 在对话中标记文档，记录被调用次数多并且满意的文档，区分高低价值 便于维护
