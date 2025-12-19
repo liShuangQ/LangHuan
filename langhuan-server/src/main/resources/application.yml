@@ -55,31 +55,25 @@ spring:
     mcp:
       client:
         enabled: true
-        #        type: SYNC
-        #        stdio:
-        #          root-change-notification: true
-        #          connections:
-        #            server1:
-        #              command: /path/to/server
-        #              args:
-        #                - --port=8080
-        #                - --mode=production
-        #              env:
-        #                API_KEY: your-api-key
-        #                DEBUG: "true"
-        streamable-http:
-          connections:
-            #            server1:
-            #              url: http://localhost:8080
-            #            server2:
-            #              url: http://otherserver:8081
-            #              endpoint: /custom-sse
-            12306-mcp:
-              url: https://mcp.api-inference.modelscope.net
-              endpoint: /xxxx/mcp
-            amap-maps:
-              url: https://mcp.api-inference.modelscope.net
-              endpoint: /xxxxx/mcp
+#        type: SYNC
+#        stdio:
+#          root-change-notification: true
+#          connections:
+#            server1:
+#              command: /path/to/server
+#              args:
+#                - --port=8080
+#                - --mode=production
+#              env:
+#                API_KEY: your-api-key
+#                DEBUG: "true"
+#        streamable-http:
+#          connections:
+#            server1:
+#              url: http://localhost:8080
+#            server2:
+#              url: http://otherserver:8081
+#              endpoint: /custom-sse
 #        sse:
 #          connections:
 #            # Simple configuration using default /sse endpoint

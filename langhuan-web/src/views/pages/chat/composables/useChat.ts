@@ -251,7 +251,23 @@ export function useChat() {
                 });
         } else if (type === "copy") {
             // 复制消息内容到剪贴板
-            navigator.clipboard.writeText(msg.content);
+            // navigator.clipboard.writeText(msg.content);
+            const textarea = document.createElement("textarea");
+            textarea.value = msg.content;
+            textarea.style.position = "fixed"; // 避免滚动问题
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                const successful = document.execCommand("copy");
+                if (successful) {
+                    ElMessage.success("复制成功!");
+                } else {
+                    ElMessage.error("本设备不支持复制!");
+                }
+            } catch (err) {
+                ElMessage.error("复制失败" + err);
+            }
+            document.body.removeChild(textarea); // 清理
         }
     };
 

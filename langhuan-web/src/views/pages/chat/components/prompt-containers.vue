@@ -430,19 +430,19 @@ const getFileDisplayInfo = (file: UploadFile) => {
             </div>
 
             <template v-for="(msg, index) in messages" :key="msg.id">
-                <!-- 消息主体部分-->
+                <!-- 消息主体部分 - 操作按钮 -->
                 <div :class="[
                     ...['flex', 'flex-row', 'px-2', 'py-4', 'sm:px-4'],
                     ...(msg.sender === 'user'
                         ? [' justify-end']
                         : [' justify-start']),
                 ]" v-if="
-                        msg.sender === 'user'
-                            ? msg?.showUserMessage !== undefined
-                                ? msg.showUserMessage
-                                : true
+                    msg.sender === 'user'
+                        ? msg?.showUserMessage !== undefined
+                            ? msg.showUserMessage
                             : true
-                    ">
+                        : true
+                ">
                     <div class="flex flex-col">
                         <div class="text-sm font-medium text-slate-600 mb-1">
                             {{
@@ -453,7 +453,7 @@ const getFileDisplayInfo = (file: UploadFile) => {
                             {{ msg.timestamp }}
                         </div>
                         <div :class="[
-                            'flex flex-1 items-center rounded-xl bg-slate-50 px-2 py-4 dark:bg-slate-900 sm:px-4',
+                            'flex flex-1 items-center flex-col rounded-xl bg-slate-50 px-2 py-4 dark:bg-slate-900 sm:px-4',
                         ]">
                             <p v-if="msg.sender === 'user'" class="w-full">
                                 <v-md-preview :text="msg.content"></v-md-preview>
@@ -464,7 +464,7 @@ const getFileDisplayInfo = (file: UploadFile) => {
                                     <span class="typing-indicator text-gray-500 dark:text-gray-400">
                                         <span class="typing-text">{{
                                             msg.content || "正在思考中"
-                                            }}</span>
+                                        }}</span>
                                         <!-- <span
                                             class="typing-cursor animate-pulse"
                                             >|</span
@@ -481,17 +481,14 @@ const getFileDisplayInfo = (file: UploadFile) => {
                                     </div>
                                 </div>
                                 <div v-else class="w-full">
-                                    <template v-for="(
-part, partIndex
-                                        ) in processMessageContent(
-                                                msg.content,
-                                                msg.id
-                                            )" :key="partIndex" >
+                                    <template v-for="(part, partIndex
+                                    ) in processMessageContent(
+                                        msg.content,
+                                        msg.id
+                                    )" :key="partIndex">
                                         <!-- 正常内容 -->
                                         <div v-if="part.type === 'normal'" class="mb-2" :key="part.content.length">
-                                            <v-md-preview
-                                                :text="part.content"
-                                            ></v-md-preview>
+                                            <v-md-preview :text="part.content"></v-md-preview>
                                         </div>
                                         <!-- 思考过程 -->
                                         <div v-else-if="part.type === 'thinking'"
@@ -517,52 +514,57 @@ part, partIndex
                                     </template>
                                 </div>
                             </template>
+
                         </div>
-                    </div>
-                </div>
-                <!-- 操作按钮部分 -->
-                <div class="mb-2 w-full">
-                    <div v-if="
-                        index === messages.length - 1 &&
-                        msg.sender === 'assistant'
-                    " class="flex flex-row justify-end gap-x-2 text-slate-500">
-                        <button @click="handleFeedback('like', msg)" class="hover:text-blue-600">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" stroke-width="2"
-                                stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                <path
-                                    d="M7 11v8a1 1 0 0 1 -1 1h-2a1 1 0 0 1 -1 -1v-7a1 1 0 0 1 1 -1h3a4 4 0 0 0 4 -4v-1a2 2 0 0 1 4 0v5h3a2 2 0 0 1 2 2l-1 5a2 3 0 0 1 -2 2h-7a3 3 0 0 1 -3 -3">
-                                </path>
-                            </svg>
-                        </button>
-                        <button @click="handleFeedback('dislike', msg)" class="hover:text-blue-600" type="button">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" stroke-width="2"
-                                stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                <path
-                                    d="M7 13v-8a1 1 0 0 0 -1 -1h-2a1 1 0 0 0 -1 1v7a1 1 0 0 0 1 1h3a4 4 0 0 1 4 4v1a2 2 0 0 0 4 0v-5h3a2 2 0 0 0 2 -2l-1 -5a2 3 0 0 0 -2 -2h-7a3 3 0 0 0 -3 3">
-                                </path>
-                            </svg>
-                        </button>
-                        <button @click="$emit('action', 'copy', msg)" class="hover:text-blue-600" type="button">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" stroke-width="2"
-                                stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                <path d="M8 8m0 2a2 2 0 0 1 2 -2h8a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-8a2 2 0 0 1 -2 -2z">
-                                </path>
-                                <path d="M16 8v-2a2 2 0 0 0 -2 -2h-8a2 2 0 0 0 -2 2v8a2 2 0 0 0 2 2h2"></path>
-                            </svg>
-                        </button>
-                        <button v-if="(msg.rag ?? []).length > 0" @click="handleRagChecks(msg)"
-                            class="hover:text-blue-600" type="button">
-                            <svg t="1748096953676" class="h-5 w-5" viewBox="0 0 1024 1024" version="1.1"
-                                xmlns="http://www.w3.org/2000/svg" p-id="5234" width="200" height="200">
-                                <path
-                                    d="M912.9 129.3H769.2c-24.9 0-45 20.1-45 45v677.8c0 24.9 20.1 45 45 45h143.7c24.9 0 45-20.1 45-45V174.3c0-24.8-20.1-45-45-45z m-27 72v466.9h-89.7V201.3h89.7z m-89.7 623.8v-84.9h89.7v84.9h-89.7zM636.8 129.3H493.1c-24.9 0-45 20.1-45 45v677.8c0 24.9 20.1 45 45 45h143.7c24.9 0 45-20.1 45-45V174.3c0-24.8-20.2-45-45-45z m-27 72v466.9h-89.7V201.3h89.7z m-89.7 623.8v-84.9h89.7v84.9h-89.7zM409.3 162.7l-140-32.5c-3.4-0.8-6.8-1.2-10.2-1.2-20.5 0-39 14.1-43.8 34.8L65.6 808.9c-5.6 24.2 9.5 48.4 33.7 54l140 32.5c3.4 0.8 6.8 1.2 10.2 1.2 20.5 0 39-14.1 43.8-34.8l116-499.9c0.3-1 0.6-2.1 0.9-3.2 0.2-1.1 0.4-2.1 0.6-3.2L443 216.6c5.6-24.1-9.5-48.3-33.7-53.9z m-130 43.7l87.4 20.3-18.7 80.6-87.4-20.3 18.7-80.6z m-50 612.8l-87.4-20.3 102.5-441.7 87.4 20.3-102.5 441.7z"
-                                    p-id="5235" fill="#515151"></path>
-                                <!-- #707070 -->
-                            </svg>
-                        </button>
+                        <!-- 操作按钮部分 -->
+                        <div v-if="msg.sender === 'assistant'" class="mt-2 w-full">
+                            <div class="flex flex-row justify-end gap-x-2 text-slate-500">
+                                <button v-if="index === messages.length - 1" @click="handleFeedback('like', msg)"
+                                    class="hover:text-blue-600">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24"
+                                        stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round"
+                                        stroke-linejoin="round">
+                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                        <path
+                                            d="M7 11v8a1 1 0 0 1 -1 1h-2a1 1 0 0 1 -1 -1v-7a1 1 0 0 1 1 -1h3a4 4 0 0 0 4 -4v-1a2 2 0 0 1 4 0v5h3a2 2 0 0 1 2 2l-1 5a2 3 0 0 1 -2 2h-7a3 3 0 0 1 -3 -3">
+                                        </path>
+                                    </svg>
+                                </button>
+                                <button v-if="index === messages.length - 1" @click="handleFeedback('dislike', msg)"
+                                    class="hover:text-blue-600" type="button">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24"
+                                        stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round"
+                                        stroke-linejoin="round">
+                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                        <path
+                                            d="M7 13v-8a1 1 0 0 0 -1 -1h-2a1 1 0 0 0 -1 1v7a1 1 0 0 0 1 1h3a4 4 0 0 1 4 4v1a2 2 0 0 0 4 0v-5h3a2 2 0 0 0 2 -2l-1 -5a2 3 0 0 0 -2 -2h-7a3 3 0 0 0 -3 3">
+                                        </path>
+                                    </svg>
+                                </button>
+                                <button @click="$emit('action', 'copy', msg)" class="hover:text-blue-600" type="button">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24"
+                                        stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round"
+                                        stroke-linejoin="round">
+                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                        <path
+                                            d="M8 8m0 2a2 2 0 0 1 2 -2h8a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-8a2 2 0 0 1 -2 -2z">
+                                        </path>
+                                        <path d="M16 8v-2a2 2 0 0 0 -2 -2h-8a2 2 0 0 0 -2 2v8a2 2 0 0 0 2 2h2">
+                                        </path>
+                                    </svg>
+                                </button>
+                                <button v-if="(msg.rag ?? []).length > 0" @click="handleRagChecks(msg)"
+                                    class="hover:text-blue-600" type="button">
+                                    <svg t="1748096953676" class="h-5 w-5" viewBox="0 0 1024 1024" version="1.1"
+                                        xmlns="http://www.w3.org/2000/svg" p-id="5234" width="200" height="200">
+                                        <path
+                                            d="M912.9 129.3H769.2c-24.9 0-45 20.1-45 45v677.8c0 24.9 20.1 45 45 45h143.7c24.9 0 45-20.1 45-45V174.3c0-24.8-20.1-45-45-45z m-27 72v466.9h-89.7V201.3h89.7z m-89.7 623.8v-84.9h89.7v84.9h-89.7zM636.8 129.3H493.1c-24.9 0-45 20.1-45 45v677.8c0 24.9 20.1 45 45 45h143.7c24.9 0 45-20.1 45-45V174.3c0-24.8-20.2-45-45-45z m-27 72v466.9h-89.7V201.3h89.7z m-89.7 623.8v-84.9h89.7v84.9h-89.7zM409.3 162.7l-140-32.5c-3.4-0.8-6.8-1.2-10.2-1.2-20.5 0-39 14.1-43.8 34.8L65.6 808.9c-5.6 24.2 9.5 48.4 33.7 54l140 32.5c3.4 0.8 6.8 1.2 10.2 1.2 20.5 0 39-14.1 43.8-34.8l116-499.9c0.3-1 0.6-2.1 0.9-3.2 0.2-1.1 0.4-2.1 0.6-3.2L443 216.6c5.6-24.1-9.5-48.3-33.7-53.9z m-130 43.7l87.4 20.3-18.7 80.6-87.4-20.3 18.7-80.6z m-50 612.8l-87.4-20.3 102.5-441.7 87.4 20.3-102.5 441.7z"
+                                            p-id="5235" fill="#515151"></path>
+                                        <!-- #707070 -->
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </template>
