@@ -77,6 +77,7 @@ CREATE TABLE IF NOT EXISTS vector_store_rag (
                                             id uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
                                             content text,
                                             metadata json,
+--      格外注意模型的默认向量维度和创建vector_store_rag表的维度要对应！
                                             embedding vector(1024)
 );
 
@@ -254,8 +255,8 @@ CREATE INDEX IF NOT EXISTS SPRING_AI_CHAT_MEMORY_CONVERSATION_ID_TIMESTAMP_IDX
 -- 系统通知
 CREATE TABLE t_notifications (
     id SERIAL PRIMARY KEY,
-    user_id VARCHAR(255),  
-    template_id VARCHAR(255),  
+    user_id VARCHAR(255),
+    template_id VARCHAR(255),
     title TEXT NOT NULL,
     content TEXT NOT NULL,
     notification_level VARCHAR(20) NOT NULL CHECK (notification_level IN ('info', 'warning', 'error', 'critical')),
