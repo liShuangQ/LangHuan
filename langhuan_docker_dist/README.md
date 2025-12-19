@@ -43,7 +43,7 @@ npm run build
 
 # 进入后端
 cd langhuan-server
-调节 application.yml 文件参数后运行如下命令打包
+调节 langhuan-server/src/main/resources/xxxxxx.yml 文件参数后运行如下命令打包
 ./gradlew build -x test
 
 # 将构建后参数分别对应放在如下目录

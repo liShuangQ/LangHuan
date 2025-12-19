@@ -13,23 +13,11 @@ const menu: PagesMenu[] = [
         title: "仪表盘",
         icon: "HomeFilled",
     },
-    {
-        path: "chats",
+        {
+        path: "/pages/chat",
         faPath: [],
         title: "对话窗口",
-        icon: "Menu",
-        children: [
-            {
-                title: "对话",
-                path: "/pages/chat",
-                faPath: ["chats"],
-            },
-            {
-                title: "对话-旧",
-                path: "/pages/homeNext",
-                faPath: ["chats"],
-            },
-        ],
+        icon: "Comment",
     },
     {
         path: "prompt",

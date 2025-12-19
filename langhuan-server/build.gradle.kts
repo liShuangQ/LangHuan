@@ -20,7 +20,7 @@ repositories {
     mavenCentral()
 }
 
-extra["springAiVersion"] = "1.0.3"
+extra["springAiVersion"] = "1.1.2"
 
 dependencies {
     // Spring Boot Starters
@@ -37,6 +37,9 @@ dependencies {
     implementation("org.springframework.ai:spring-ai-pgvector-store")
     implementation("org.springframework.ai:spring-ai-tika-document-reader")
     implementation("org.springframework.ai:spring-ai-starter-model-openai")
+    implementation("org.springframework.ai:spring-ai-starter-mcp-client")
+
+
 
     // Storage
     implementation("io.minio:minio:8.4.0") {
