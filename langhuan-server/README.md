@@ -137,6 +137,7 @@ minio:
 #### 2.3 创建数据库表结构
 ```bash
 # 执行 SQL 文件（按顺序执行）
+# 格外注意模型的默认向量维度和创建vector_store_rag表的维度要对应！这里默认1024维度。如果需要修改去ddl_1.sql中搜索修改。
 src/main/resources/sql/ddl_1.sql
 src/main/resources/sql/admin_dml_2.sql
 src/main/resources/sql/api_log_ddl_3.sql
