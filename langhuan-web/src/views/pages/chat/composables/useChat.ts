@@ -134,10 +134,8 @@ export function useChat() {
             chatId: windowId,
             prompt: "",
             userMessage: chatParams.userMessage,
-            isRag: false,
             isReRank: false,
             ragGroupId: "",
-            isFunction: false,
             modelName: "",
             ...chatParams,
         } as ChatSendParam;
@@ -286,7 +284,6 @@ export function useChat() {
         windowId: string,
         message: string
     ) => {
-
         // 验证是否选择了至少两个文件组
         if (settings.expertFileGroups.length < 2) {
             ElMessage.warning("请选择至少两个文件组");
@@ -318,11 +315,10 @@ export function useChat() {
             for (let index = 0; index < expertFileGroups.length; index++) {
                 await sendMessage(windowId, {
                     ...getChatParams,
-                    ragGroupId: expertFileGroups[index].id,
-                    isRag:
+                    ragGroupId:
                         expertFileGroups[index].id === "observer"
-                            ? false
-                            : true,
+                            ? ""
+                            : expertFileGroups[index].id,
                     prompt:
                         expertFileGroups[index].id === "observer"
                             ? observerPrompt.replaceAll(
@@ -369,7 +365,6 @@ export function useChat() {
         await sendMessage(windowId, {
             ...getChatParams,
             ragGroupId: "",
-            isRag: false,
             prompt: summarizePrompt.replaceAll(
                 "{totalRounds}",
                 String(settings.expertConversationRounds)

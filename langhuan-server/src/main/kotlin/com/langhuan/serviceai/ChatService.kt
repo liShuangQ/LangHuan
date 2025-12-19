@@ -2,15 +2,12 @@ package com.langhuan.serviceai
 
 import com.langhuan.common.BusinessException
 import com.langhuan.common.Constant
-import com.langhuan.functionTools.RestRequestTools
-import com.langhuan.model.domain.TChatFeedback
 import com.langhuan.model.pojo.ChatModelResult
 import com.langhuan.model.pojo.ChatRestOption
 import com.langhuan.service.TChatFeedbackService
 import com.langhuan.service.TPromptsService
 import com.langhuan.utils.chatMemory.ChatMemoryUtils
 import com.langhuan.utils.other.FileUtil
-import com.langhuan.utils.other.SecurityUtils
 import com.langhuan.utils.rag.config.SplitConfig
 import org.slf4j.LoggerFactory
 import org.springframework.ai.chat.client.ChatClient
@@ -20,10 +17,10 @@ import org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor
 import org.springframework.ai.chat.memory.ChatMemory
 import org.springframework.ai.chat.messages.MessageType
 import org.springframework.ai.chat.prompt.Prompt
+import org.springframework.ai.document.Document
 import org.springframework.ai.openai.OpenAiChatOptions
 import org.springframework.ai.reader.tika.TikaDocumentReader
-import org.springframework.ai.support.ToolCallbacks
-import org.springframework.ai.tool.ToolCallback
+import org.springframework.ai.tool.ToolCallbackProvider
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
@@ -37,6 +34,7 @@ import org.springframework.web.multipart.MultipartFile
 @Service
 class ChatService(
     chatClientBuilder: ChatClient.Builder,
+    mcpTools: ToolCallbackProvider,
     private val ragService: RagService,
     private val ragCallBackService: RagCallBackService
 ) {
@@ -46,6 +44,7 @@ class ChatService(
 
     lateinit var chatClient: ChatClient
     lateinit var chatMemory: ChatMemory
+    lateinit var mcpTools: ToolCallbackProvider
 
     @Autowired
     lateinit var chatGeneralAssistanceService: ChatGeneralAssistanceService
@@ -58,6 +57,7 @@ class ChatService(
 
     init {
         this.chatClient = chatClientBuilder.build()
+        this.mcpTools = mcpTools
     }
 
     // 添加Advisor
@@ -81,12 +81,6 @@ class ChatService(
 
     /**
      * 聊天服务主方法
-     *
-     * <p>
-     * 根据聊天配置选项，决定使用RAG模式还是普通聊天模式。
-     * 支持工具函数调用和动态提示词配置。
-     * </p>
-     *
      * @param chatRestOption 聊天请求选项对象，包含聊天ID、问题内容、是否使用RAG等配置
      * @return ChatModelResult 聊天结果对象，包含AI回复内容和相关文档列表
      * @throws BusinessException 当AI服务异常时抛出，向用户显示友好的错误消息
@@ -142,7 +136,7 @@ class ChatService(
                         "source: Invalid source URI: Byte array resource [resource loaded from byte array] cannot be resolved to URL",
                         ""
                     ).trim()
-                    chatRestOption.isRag = false;
+                    chatRestOption.ragGroupId = "";
                     chatRestOption.prompt = userPrompt;
                     documentChatResStr = toChat(chatRestOption).chat.toString();
 //                    documentChatResStr =
@@ -261,100 +255,64 @@ class ChatService(
         }
     }
 
+
+    // TODO 过滤MCP服务名，达到选择MCP的目的
+    @Throws(Exception::class)
     fun toChat(chatRestOption: ChatRestOption): ChatModelResult {
-        // 根据配置决定是否启用工具函数调用
-        val tools = if (chatRestOption.isFunction == true) ToolCallbacks.from(RestRequestTools::class.java)
-        else ToolCallbacks.from()
         return try {
-            // 根据是否启用RAG选择不同的聊天模式
-            if (chatRestOption.isRag == true) {
-                this.isRagChat(
-                    chatRestOption.chatId ?: "", chatRestOption.prompt ?: "",
-                    chatRestOption.userMessage ?: "", chatRestOption.ragGroupId ?: "",
-                    chatRestOption.modelName ?: "", chatRestOption.isReRank ?: false, tools
+            var ragPrompt: String? = ""
+            var documentList: List<Document>? = emptyList()
+            val groupId = chatRestOption.ragGroupId ?: ""
+
+            if (!groupId.isEmpty()) {
+                // 获取RAG专用提示词模板，优先使用缓存配置
+                var aiDefaultQuestionAnswerAdvisorPrompt: String? = TPromptsService
+                    .getCachedTPromptsByMethodName("AIDEFAULTQUESTIONANSWERADVISORRPROMPT")
+                if (aiDefaultQuestionAnswerAdvisorPrompt == null) {
+                    aiDefaultQuestionAnswerAdvisorPrompt = Constant.AIDEFAULTQUESTIONANSWERADVISORRPROMPT
+                }
+
+                // 手动获取召回信息
+                documentList = ragCallBackService.ragSearch(
+                    chatRestOption.userMessage ?: "",
+                    groupId,
+                    "",
+                    chatRestOption.isReRank ?: false
                 )
-            } else {
-                this.noRagChat(
-                    chatRestOption.chatId ?: "", chatRestOption.prompt ?: "",
-                    chatRestOption.userMessage ?: "", chatRestOption.modelName ?: "", tools
-                )
+
+                // 将检索到的文档内容拼接成上下文字符串
+                val ragContents = StringBuilder()
+                for (document in documentList) {
+                    ragContents.append(document.text).append(";").append("\n")
+                }
+                // 替换模板变量，构建包含检索上下文的提示词
+                ragPrompt =
+                    aiDefaultQuestionAnswerAdvisorPrompt.replace("{question_answer_context}", ragContents.toString())
             }
+
+            val chatResponse = this.chatClient.prompt(
+                Prompt(
+                    ragPrompt + "\n" + (chatRestOption.prompt ?: ""),
+                    OpenAiChatOptions.builder()
+                        .model(chatRestOption.modelName ?: "")
+                        .build()
+                )
+            ).user(chatRestOption.userMessage ?: "")
+                .advisors { a -> a.param(ChatMemory.CONVERSATION_ID, chatRestOption.chatId ?: "") }
+                .toolCallbacks(mcpTools)
+                //.tools(DateTimeToolsD())  // 弃用，工具调用转为MCP实现
+                .call()
+
+            val chat = chatResponse.content()
+
+            val chatModelResult = ChatModelResult()
+            chatModelResult.chat = chat
+            chatModelResult.rag = documentList
+            chatModelResult
         } catch (e: Exception) {
             log.error("advisor-error: {}", e.message)
             throw BusinessException("抱歉，我暂时无法回答这个问题。")
         }
     }
 
-    @Throws(Exception::class)
-    fun isRagChat(
-        id: String, p: String, q: String, groupId: String, modelName: String, isReRank: Boolean,
-        tools: Array<ToolCallback>
-    ): ChatModelResult {
-        // 获取RAG专用提示词模板，优先使用缓存配置
-        var aiDefaultQuestionAnswerAdvisorPrompt: String? = TPromptsService
-            .getCachedTPromptsByMethodName("AIDEFAULTQUESTIONANSWERADVISORRPROMPT")
-        if (aiDefaultQuestionAnswerAdvisorPrompt == null) {
-            aiDefaultQuestionAnswerAdvisorPrompt = Constant.AIDEFAULTQUESTIONANSWERADVISORRPROMPT
-        }
-
-        // 手动获取召回信息
-        val documentList = ragCallBackService.ragSearch(q, groupId, "", isReRank)
-
-        // 将检索到的文档内容拼接成上下文字符串
-        val ragContents = StringBuilder()
-        for (document in documentList) {
-            ragContents.append(document.text).append(";").append("\n")
-        }
-
-        // 替换模板变量，构建包含检索上下文的提示词
-        val ragPrompt =
-            aiDefaultQuestionAnswerAdvisorPrompt.replace("{question_answer_context}", ragContents.toString())
-
-        // 构建附带用户其他提示词，发送AI请求
-        val chatResponse = this.chatClient.prompt(
-            Prompt(
-                ragPrompt + "\n" + p,
-                OpenAiChatOptions.builder()
-                    .model(modelName)
-                    .build()
-            )
-        )
-            .user(q)
-            .advisors { a -> a.param(ChatMemory.CONVERSATION_ID, id) }
-            .toolCallbacks(*tools)
-            .call()
-
-        val chat = chatResponse.content()
-
-        // 构建返回结果，包含AI回复和检索到的文档
-        val chatModelResult = ChatModelResult()
-        chatModelResult.chat = chat
-        chatModelResult.rag = documentList
-        return chatModelResult
-    }
-
-    fun noRagChat(id: String, p: String, q: String, modelName: String, tools: Array<ToolCallback>): ChatModelResult {
-
-        // 构建并发送AI请求，不包含RAG上下文
-        val chatResponse = this.chatClient.prompt(
-            Prompt(
-                p,
-                OpenAiChatOptions.builder()
-                    .model(modelName)
-                    .build()
-            )
-        )
-            .user(q)
-            .advisors { a -> a.param(ChatMemory.CONVERSATION_ID, id) }
-            .toolCallbacks(*tools)
-            .call()
-
-        val chat = chatResponse.content()
-
-        // 构建返回结果，RAG文档列表为空
-        val chatModelResult = ChatModelResult()
-        chatModelResult.chat = chat
-        chatModelResult.rag = ArrayList()
-        return chatModelResult
-    }
 }

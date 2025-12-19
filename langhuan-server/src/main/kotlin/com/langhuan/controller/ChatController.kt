@@ -150,31 +150,6 @@ class ChatController(
         return Result.success(chatMemoryService.clearChatMemory(id))
     }
 
-    @PostMapping("/onlyRag/chat")
-    @Throws(Exception::class)
-    fun onlyRagChat(
-        @RequestParam(name = "id", required = true) id: String,
-        @RequestParam(name = "p", required = true, defaultValue = ".") p: String,
-        @RequestParam(name = "q", required = true) q: String,
-        @RequestParam(name = "isRag", required = true) isRag: Boolean,
-        @RequestParam(name = "groupId", required = true, defaultValue = "") groupId: String,
-        @RequestParam(name = "isFunction", required = true) isFunction: Boolean
-    ): Result<*> {
-        val documentList = ragCallBackService.ragSearch(q, groupId, "", false)
-        val contents = StringBuilder()
-        var i = 0
-        for (document in documentList) {
-            i += 1
-            contents.append("<p>").append(i).append(":").append("&nbsp;").append(document.text).append("</p>")
-        }
-        return Result.success(
-            mapOf(
-                "chat" to contents.toString()
-                // "recommend", chatGeneralAssistanceService.otherQuestionsRecommended(q)
-            )
-        )
-    }
-
     @PostMapping("/chatModel/getModelList")
     @Throws(IOException::class)
     fun getModelList(): Result<*> {

@@ -17,6 +17,7 @@ import java.sql.ResultSet
 import java.sql.SQLException
 import java.sql.Timestamp
 import java.time.Instant
+import java.util.Objects
 import java.util.concurrent.atomic.AtomicLong
 
 class MyJdbcChatMemoryRepository private constructor(
@@ -150,7 +151,8 @@ class MyJdbcChatMemoryRepository private constructor(
 				// The content is always stored empty for ToolResponseMessages.
 				// If we want to capture the actual content, we need to extend
 				// AddBatchPreparedStatement to support it.
-				MessageType.TOOL -> ToolResponseMessage(emptyList())
+//				MessageType.TOOL -> ToolResponseMessage(emptyList(), emptyMap<String, Any>())
+				MessageType.TOOL -> null
 			}
 		}
 	}

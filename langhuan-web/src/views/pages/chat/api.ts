@@ -128,7 +128,7 @@ export const getChatMemoryWindows = () => {
     return http.request<any>({
         url: "/chat/getChatMemoryWindows",
         method: "post",
-        q_spinning: true,
+        q_spinning: false,
     });
 };
 
@@ -157,7 +157,7 @@ export const setChatMemoryConversationConfig = (id: string, config: string) => {
     return http.request<any>({
         url: "/chat/setChatMemoryConversationConfig",
         method: "post",
-        q_spinning: true,
+        q_spinning: false,
         data: {
             id,
             config,

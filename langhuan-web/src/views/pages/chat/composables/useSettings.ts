@@ -69,7 +69,6 @@ export function useSettings() {
     const getChatParams = computed(() => ({
         modelName: settings.value.modelName,
         prompt: settings.value.promptTemplate,
-        isRag: !!settings.value.ragGroup?.id,
         ragGroupId: settings.value.ragGroup?.id || "",
         isReRank: settings.value.isReRank,
     }));

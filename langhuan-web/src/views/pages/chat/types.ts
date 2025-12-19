@@ -29,10 +29,8 @@ export interface ChatSendParam {
     chatId: string;          // 聊天ID
     prompt: string;          // 系统提示词
     userMessage: string;     // 用户消息
-    isRag: boolean;          // 是否启用RAG（检索增强生成）
     isReRank: boolean;       // 是否启用重排序
     ragGroupId: string;      // RAG文件组ID
-    isFunction: boolean;     // 是否使用函数调用
     modelName: string;       // 使用的模型名称
 }
 
