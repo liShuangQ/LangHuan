@@ -57,6 +57,11 @@ LangHuan 是一个基于 Kotlin + Spring AI 的智能对话与知识检索系统
 ### 基于源码部署：
  [前端本地部署](./langhuan-web/README.md) |  [后端本地部署](./langhuan-server/README.md) 
 
+### 默认登陆账号
+- 账号： admin
+- 密码： asb#1234
+`默认密码在 langhuan-server/src/main/kotlin/com/langhuan/common/Constant.kt 文件中调节后重新启动`
+
 ## 部分功能截图
 
 ![image.png](./readme/chat.png)
